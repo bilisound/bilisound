@@ -41,6 +41,7 @@ import { PlaylistMeta } from "~/storage/sqlite/schema";
 import useSettingsStore from "~/store/settings";
 import { exportPlaylistToFile, importPlaylistFromFile } from "~/utils/exchange/playlist";
 import log from "~/utils/logger";
+import { padArrayToColumns } from "~/utils/misc";
 
 interface PlaylistContextProps {
     onLongPress: (id: number) => void;
@@ -55,7 +56,7 @@ const PlaylistContext = createContext<PlaylistContextProps>({
 });
 
 function PlaylistActionItem(item: PlaylistMeta & { grid: boolean }) {
-    const { onLongPress, columns, width } = useContext(PlaylistContext);
+    const { onLongPress } = useContext(PlaylistContext);
 
     return (
         <PlaylistItem
@@ -66,7 +67,6 @@ function PlaylistActionItem(item: PlaylistMeta & { grid: boolean }) {
             onLongPress={() => {
                 onLongPress(item.id);
             }}
-            style={{ width: columns === 2 ? width / 2 : undefined }}
             grid={item.grid}
         />
     );
@@ -368,8 +368,15 @@ export default function Page() {
                                 key={columns}
                                 refreshing={isLoading}
                                 onRefresh={() => refetch()}
-                                data={filteredData}
-                                renderItem={({ item }) => <PlaylistActionItem grid={showPlaylistInGrid} {...item} />}
+                                // https://stackoverflow.com/questions/43502954/react-native-flatlist-with-columns-last-item-width
+                                data={padArrayToColumns(filteredData, columns)}
+                                renderItem={({ item }) => {
+                                    if (!item) {
+                                        return <View className={"p-2 @md:p-3 flex-1"} />;
+                                    }
+
+                                    return <PlaylistActionItem grid={showPlaylistInGrid} {...item} />;
+                                }}
                                 numColumns={columns}
                                 onLayout={e => {
                                     setWidth(e.nativeEvent.layout.width);
@@ -379,7 +386,12 @@ export default function Page() {
                                     paddingBottom: edgeInsets.bottom,
                                 }}
                                 extraData={[showPlaylistInGrid, searchQuery]}
-                                keyExtractor={item => item.id.toString()}
+                                keyExtractor={(item, index) => {
+                                    if (!item) {
+                                        return "placeholder-" + index;
+                                    }
+                                    return item.id.toString();
+                                }}
                             />
                         </View>
                     ) : (
