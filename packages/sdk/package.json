@@ -2,10 +2,10 @@
   "name": "@bilisound/sdk",
   "description": "Runtime-agnostic core business logic",
   "scripts": {
-    "build": "tsup-node ./src/index.ts --format esm --dts"
+    "build": "tsdown ./src/index.ts --format esm --dts"
   },
   "devDependencies": {
-    "tsup": "^8.5.0",
+    "tsdown": "^0.14.1",
     "typescript": "~5.8.3"
   },
   "peerDependencies": {
