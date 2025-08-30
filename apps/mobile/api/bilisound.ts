@@ -3,34 +3,37 @@ import { Platform } from "react-native";
 import { defineWrap } from "./common";
 
 import { BILISOUND_API_PREFIX, USER_AGENT_BILIBILI, USER_AGENT_BILISOUND } from "~/constants/network";
-import { PlaylistDetail } from "~/storage/sqlite/schema";
 import { Numberish } from "~/typings/common";
-import { BilisoundSDK, GetMetadataResponse, GetEpisodeUserResponse, UserListMode, EpisodeItem } from "@bilisound/sdk";
+import {
+    GetMetadataResponse,
+    GetEpisodeUserResponse,
+    UserListMode,
+    EpisodeItem,
+    BilisoundSDKRemote,
+    BilisoundSDKDirect,
+} from "@bilisound/sdk";
 import log from "~/utils/logger";
 
-const sdk = new BilisoundSDK({
-    userAgent: USER_AGENT_BILIBILI,
-    apiPrefix: "https://api.bilibili.com",
-    sitePrefix: "https://www.bilibili.com",
-    key: "",
-    logger: {
-        info: log.info.bind(log),
-        warn: log.warn.bind(log),
-        error: log.error.bind(log),
-        debug: log.debug.bind(log),
-    },
-});
+const sdk =
+    Platform.OS === "web"
+        ? new BilisoundSDKRemote(BILISOUND_API_PREFIX ?? "/api")
+        : new BilisoundSDKDirect({
+              userAgent: USER_AGENT_BILIBILI,
+              apiPrefix: "https://api.bilibili.com",
+              sitePrefix: "https://www.bilibili.com",
+              key: "",
+              logger: {
+                  info: log.info.bind(log),
+                  warn: log.warn.bind(log),
+                  error: log.error.bind(log),
+                  debug: log.debug.bind(log),
+              },
+          });
 
 /**
  * 解析短链接
  */
 export async function parseB23(id: string) {
-    if (Platform.OS === "web") {
-        const response = await fetch(BILISOUND_API_PREFIX + `/internal/resolve-b23?id=${id}`);
-        const json = await response.json();
-        return json.data;
-    }
-
     return sdk.parseB23(id);
 }
 
@@ -39,15 +42,6 @@ export async function parseB23(id: string) {
  * @param data
  */
 export async function getBilisoundMetadata(data: { id: string }): Promise<GetMetadataResponse> {
-    if (Platform.OS === "web") {
-        const response = await fetch(BILISOUND_API_PREFIX + `/internal/metadata?id=${data.id}`);
-        const outData = await response.json();
-        if (outData.code !== 200) {
-            throw new Error(outData.msg);
-        }
-        return outData.data;
-    }
-
     return sdk.getMetadata(data.id);
 }
 
@@ -86,13 +80,6 @@ export async function getUserList(
     listId: Numberish,
     page = 1,
 ): Promise<GetEpisodeUserResponse> {
-    if (Platform.OS === "web") {
-        const res = await fetch(
-            `${BILISOUND_API_PREFIX}/internal/user-list?mode=${mode}&userId=${userId}&listId=${listId}&page=${page}`,
-        );
-        return (await res.json()).data;
-    }
-
     return sdk.getUserList(mode, userId, listId, page);
 }
 
@@ -109,13 +96,6 @@ export async function getUserListFull(
     listId: Numberish,
     progressCallback?: (progress: number) => void,
 ): Promise<EpisodeItem[]> {
-    if (Platform.OS === "web") {
-        const res = await fetch(
-            `${BILISOUND_API_PREFIX}/internal/user-list-all?mode=${mode}&userId=${userId}&listId=${listId}`,
-        );
-        return (await res.json()).data;
-    }
-
     return sdk.getUserListFull(mode, userId, listId, progressCallback);
 }
 

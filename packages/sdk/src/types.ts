@@ -10,9 +10,9 @@ export interface Logger {
 }
 
 export interface CacheProvider {
-    get(key: string): Promise<string | null | undefined>
-    set(key: string, value: string): Promise<void>
-    delete(key: string): Promise<void>
+    get(key: string): Promise<string | null | undefined>;
+    set(key: string, value: string): Promise<void>;
+    delete(key: string): Promise<void>;
 }
 
 export interface SDKOptions {
@@ -93,6 +93,6 @@ export interface GetResourceUrlResponse {
 export type UserListMode = "season" | "series";
 
 export interface GetResourceOptions {
-    method?: string
-    range?: string
+    method?: string;
+    range?: string;
 }

@@ -1,4 +1,4 @@
-import { BilisoundSDK } from "@bilisound/sdk";
+import { BilisoundSDKDirect } from "@bilisound/sdk";
 import { USER_AGENT } from "../constants/values";
 
 interface Endpoint {
@@ -12,7 +12,7 @@ export function getSDK(env: any) {
     const endpoint = endpoints[Math.floor(Math.random() * endpoints.length)];
     const cache = env.bilisound as KVNamespace;
 
-    return new BilisoundSDK({
+    return new BilisoundSDKDirect({
         sitePrefix: endpoint.siteUrl,
         apiPrefix: endpoint.apiUrl,
         key: endpoint.key,
