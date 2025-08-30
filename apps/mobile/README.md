@@ -4,13 +4,13 @@
 
 ## 技术栈
 
-| 名称                                                                    | 简介                                 |
-|-----------------------------------------------------------------------|------------------------------------|
-| [Expo](https://expo.dev/)                                             | 基于 React Native 的跨端框架              |
-| [React Query](https://tanstack.com/query/latest)                      | 异步请求状态管理                           |
-| [FFmpegKit for React Native](https://github.com/arthenica/ffmpeg-kit) | 音频提取和转码处理                          |
-| [Zustand](https://zustand-demo.pmnd.rs/)                              | React 全局状态管理                       |
-| [react-native-mmkv](https://github.com/mrousavy/react-native-mmkv)    | 持久化键值对存储                           |
+| 名称                                                                  | 简介                         |
+| --------------------------------------------------------------------- | ---------------------------- |
+| [Expo](https://expo.dev/)                                             | 基于 React Native 的跨端框架 |
+| [React Query](https://tanstack.com/query/latest)                      | 异步请求状态管理             |
+| [FFmpegKit for React Native](https://github.com/arthenica/ffmpeg-kit) | 音频提取和转码处理           |
+| [Zustand](https://zustand-demo.pmnd.rs/)                              | React 全局状态管理           |
+| [react-native-mmkv](https://github.com/mrousavy/react-native-mmkv)    | 持久化键值对存储             |
 
 ## 开发模式
 

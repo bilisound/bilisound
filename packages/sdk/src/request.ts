@@ -1,9 +1,9 @@
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
 
 export interface BiliRequestConfig extends AxiosRequestConfig {
-    disableWbi?: boolean;
+  disableWbi?: boolean;
 }
 
 export interface InternalBiliRequestConfig extends InternalAxiosRequestConfig {
-    disableWbi?: boolean;
+  disableWbi?: boolean;
 }

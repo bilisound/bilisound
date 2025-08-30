@@ -1,22 +1,22 @@
 {
-    "name": "@bilisound/server-netlify",
-    "version": "0.0.0",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "deploy": "netlify deploy --prod",
-        "dev": "netlify dev"
-    },
-    "dependencies": {
-        "@bilisound/sdk": "workspace:*",
-        "@netlify/blobs": "^10.0.8",
-        "node-fetch": "^3.3.2"
-    },
-    "devDependencies": {
-        "@netlify/functions": "^4.2.0",
-        "@types/node": "^24.1.0",
-        "@types/node-fetch": "^2.6.12",
-        "netlify-cli": "^23.0.0",
-        "typescript": "^5.8.3"
-    }
+  "name": "@bilisound/server-netlify",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "netlify deploy --prod",
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@bilisound/sdk": "workspace:*",
+    "@netlify/blobs": "^10.0.8",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^4.2.0",
+    "@types/node": "^24.1.0",
+    "@types/node-fetch": "^2.6.12",
+    "netlify-cli": "^23.0.0",
+    "typescript": "^5.8.3"
+  }
 }

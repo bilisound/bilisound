@@ -70,12 +70,8 @@
           "name": "playlist_detail_playlist_id_playlist_meta_id_fk",
           "tableFrom": "playlist_detail",
           "tableTo": "playlist_meta",
-          "columnsFrom": [
-            "playlist_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["playlist_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

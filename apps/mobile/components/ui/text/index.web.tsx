@@ -5,40 +5,40 @@ import { textStyle } from "./styles";
 type ITextProps = React.ComponentProps<"span"> & VariantProps<typeof textStyle> & { selectable: any };
 
 const Text = React.forwardRef<React.ElementRef<"span">, ITextProps>(
-    (
-        {
-            className,
-            isTruncated,
-            bold,
-            underline,
-            strikeThrough,
-            size = "md",
-            sub,
-            italic,
-            highlight,
-            selectable, // 在 Web 端过滤掉这个属性
-            ...props
-        }: { className?: string } & ITextProps,
-        ref,
-    ) => {
-        return (
-            <span
-                className={textStyle({
-                    isTruncated,
-                    bold,
-                    underline,
-                    strikeThrough,
-                    size,
-                    sub,
-                    italic,
-                    highlight,
-                    class: className,
-                })}
-                {...props}
-                ref={ref}
-            />
-        );
-    },
+  (
+    {
+      className,
+      isTruncated,
+      bold,
+      underline,
+      strikeThrough,
+      size = "md",
+      sub,
+      italic,
+      highlight,
+      selectable, // 在 Web 端过滤掉这个属性
+      ...props
+    }: { className?: string } & ITextProps,
+    ref,
+  ) => {
+    return (
+      <span
+        className={textStyle({
+          isTruncated,
+          bold,
+          underline,
+          strikeThrough,
+          size,
+          sub,
+          italic,
+          highlight,
+          class: className,
+        })}
+        {...props}
+        ref={ref}
+      />
+    );
+  },
 );
 
 Text.displayName = "Text";

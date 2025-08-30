@@ -7,12 +7,12 @@ export const BILIBILI_GOOD_CDN_REGEX: readonly RegExp[] = [/^upos-[hs]z-[a-z|0-9
  * @returns 过滤后的 URL 列表
  */
 export function filterCdnUrls(urlList: string[]): string[] {
-    return urlList.filter(url => {
-        try {
-            const hostname = new URL(url).hostname;
-            return BILIBILI_GOOD_CDN_REGEX.some(regex => regex.test(hostname));
-        } catch {
-            return false;
-        }
-    });
+  return urlList.filter(url => {
+    try {
+      const hostname = new URL(url).hostname;
+      return BILIBILI_GOOD_CDN_REGEX.some(regex => regex.test(hostname));
+    } catch {
+      return false;
+    }
+  });
 }

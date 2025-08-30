@@ -5,5 +5,5 @@ import { openDatabaseSync } from "expo-sqlite";
 const sqLiteDatabase = openDatabaseSync("playlist");
 
 export const db = drizzle(sqLiteDatabase, {
-    logger: true,
+  logger: true,
 });

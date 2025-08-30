@@ -1,18 +1,18 @@
 {
-	"name": "@bilisound/server-cf",
-	"version": "0.0.0",
-	"private": true,
-	"type": "module",
-	"scripts": {
-		"deploy": "wrangler deploy index.ts",
-		"dev": "wrangler dev index.ts"
-	},
-	"dependencies": {
-		"@bilisound/sdk": "workspace:*",
-		"itty-router": "^5.0.20"
-	},
-	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20250726.0",
-		"wrangler": "^4.26.1"
-	}
+  "name": "@bilisound/server-cf",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy index.ts",
+    "dev": "wrangler dev index.ts"
+  },
+  "dependencies": {
+    "@bilisound/sdk": "workspace:*",
+    "itty-router": "^5.0.20"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250726.0",
+    "wrangler": "^4.26.1"
+  }
 }

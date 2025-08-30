@@ -23,16 +23,16 @@ export type QueuePlayingMode = "normal" | "shuffle";
 export const queueStorage = new MMKV({ id: "storage-queue" });
 
 export function useQueuePlayingMode() {
-    return useMMKVString(QUEUE_PLAYING_MODE, queueStorage);
+  return useMMKVString(QUEUE_PLAYING_MODE, queueStorage);
 }
 
 export function getQueuePlayingMode() {
-    return (queueStorage.getString(QUEUE_PLAYING_MODE) ?? "normal") as QueuePlayingMode;
+  return (queueStorage.getString(QUEUE_PLAYING_MODE) ?? "normal") as QueuePlayingMode;
 }
 
 export function addToQueueListBackup(tracks: any[]) {
-    const got = queueStorage.getString(QUEUE_LIST_BACKUP) ?? "[]";
-    const list: any[] = JSON.parse(got); // Track
-    const newList = list.concat(tracks);
-    queueStorage.set(QUEUE_LIST_BACKUP, JSON.stringify(newList));
+  const got = queueStorage.getString(QUEUE_LIST_BACKUP) ?? "[]";
+  const list: any[] = JSON.parse(got); // Track
+  const newList = list.concat(tracks);
+  queueStorage.set(QUEUE_LIST_BACKUP, JSON.stringify(newList));
 }

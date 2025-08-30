@@ -9,43 +9,43 @@ import { useWindowSize } from "~/hooks/useWindowSize";
 import { Platform } from "react-native";
 
 export interface DownloadButtonProps {
-    items: { id: string; episode: number; title: string }[];
+  items: { id: string; episode: number; title: string }[];
 }
 
 function DownloadButtonRaw({ items }: DownloadButtonProps) {
-    const { width } = useWindowSize();
-    const showFullText = width >= 768;
+  const { width } = useWindowSize();
+  const showFullText = width >= 768;
 
-    if (Platform.OS === "web") {
-        return null;
-    }
+  if (Platform.OS === "web") {
+    return null;
+  }
 
-    return (
-        <ButtonOuter className={"rounded-full"}>
-            <Button
-                icon={!showFullText}
-                aria-label={"下载"}
-                className={"rounded-full"}
-                onPress={() => {
-                    for (let i = 0; i < items.length; i++) {
-                        const e = items[i];
-                        if (!isCacheExists(e.id, e.episode)) {
-                            addDownloadTask(e.id, e.episode, e.title);
-                        }
-                        useDownloadStore.getState().pickTask();
-                        Toast.show({
-                            type: "success",
-                            text1: "下载任务已添加",
-                            text2: `让 ${BRAND} 一直播放音乐，可以加快下载速度`,
-                        });
-                    }
-                }}
-            >
-                <ButtonMonIcon name={"fa6-solid:download"} size={16} />
-                {showFullText ? <ButtonText>下载</ButtonText> : null}
-            </Button>
-        </ButtonOuter>
-    );
+  return (
+    <ButtonOuter className={"rounded-full"}>
+      <Button
+        icon={!showFullText}
+        aria-label={"下载"}
+        className={"rounded-full"}
+        onPress={() => {
+          for (let i = 0; i < items.length; i++) {
+            const e = items[i];
+            if (!isCacheExists(e.id, e.episode)) {
+              addDownloadTask(e.id, e.episode, e.title);
+            }
+            useDownloadStore.getState().pickTask();
+            Toast.show({
+              type: "success",
+              text1: "下载任务已添加",
+              text2: `让 ${BRAND} 一直播放音乐，可以加快下载速度`,
+            });
+          }
+        }}
+      >
+        <ButtonMonIcon name={"fa6-solid:download"} size={16} />
+        {showFullText ? <ButtonText>下载</ButtonText> : null}
+      </Button>
+    </ButtonOuter>
+  );
 }
 
 export const DownloadButton = memo(DownloadButtonRaw);

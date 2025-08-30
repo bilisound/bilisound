@@ -6,20 +6,20 @@ import LogViewerDom from "~/components/dom/LogViewerDom";
 import { Monicon } from "@monicon/native";
 
 cssInterop(Image, {
-    className: {
-        target: "style",
-    },
+  className: {
+    target: "style",
+  },
 });
 remapProps(LinearGradient, {
-    className: "style",
+  className: "style",
 });
 cssInterop(LogViewerDom, { className: "style" });
 cssInterop(Monicon, {
-    className: {
-        // @ts-ignore
-        target: "style",
-        nativeStyleToProp: {
-            color: true,
-        },
+  className: {
+    // @ts-ignore
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
     },
+  },
 });

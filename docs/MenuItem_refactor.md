@@ -10,66 +10,62 @@
 
 ```tsx
 function LongPressActions({ showActionSheet, displayTrack, onAction, onClose }: LongPressActionsProps) {
-    const { colorValue } = useRawThemeValues();
-    const showEditCover = !displayTrack?.source;
+  const { colorValue } = useRawThemeValues();
+  const showEditCover = !displayTrack?.source;
 
-    return (
-        <Actionsheet isOpen={showActionSheet} onClose={onClose}>
-            <ActionsheetBackdrop />
-            <ActionsheetContent className="z-50">
-                <ActionsheetDragIndicatorWrapper>
-                    <ActionsheetDragIndicator />
-                </ActionsheetDragIndicatorWrapper>
-                {!!displayTrack && (
-                    <ActionSheetCurrent
-                        line1={displayTrack.title}
-                        line2={`${displayTrack.amount} 首歌曲`}
-                        image={getImageProxyUrl(displayTrack.imgUrl!)}
-                    />
-                )}
-                <ActionsheetItem onPress={() => onAction("edit")}>
-                    <View className={"size-6 items-center justify-center"}>
-                        <Monicon name={"fa6-solid:pen"} size={18} color={colorValue("--color-typography-700")} />
-                    </View>
-                    <ActionsheetItemText>修改信息</ActionsheetItemText>
-                </ActionsheetItem>
-                {showEditCover && (displayTrack?.amount ?? 0) > 0 ? (
-                    <ActionsheetItem onPress={() => onAction("editCover")}>
-                        <View className={"size-6 items-center justify-center"}>
-                            <Monicon name={"fa6-solid:images"} size={18} color={colorValue("--color-typography-700")} />
-                        </View>
-                        <ActionsheetItemText>修改封面</ActionsheetItemText>
-                    </ActionsheetItem>
-                ) : null}
-                <ActionsheetItem onPress={() => onAction("delete")}>
-                    <View className={"size-6 items-center justify-center"}>
-                        <Monicon name={"fa6-solid:trash"} size={18} color={colorValue("--color-typography-700")} />
-                    </View>
-                    <ActionsheetItemText>删除</ActionsheetItemText>
-                </ActionsheetItem>
-                <ActionsheetItem
-                    onPress={() => {
-                        onAction("export");
-                    }}
-                >
-                    <View className={"size-6 items-center justify-center"}>
-                        <Monicon
-                            name={"fa6-solid:file-export"}
-                            size={18}
-                            color={colorValue("--color-typography-700")}
-                        />
-                    </View>
-                    <ActionsheetItemText>导出</ActionsheetItemText>
-                </ActionsheetItem>
-                <ActionsheetItem onPress={() => onAction("close")}>
-                    <View className={"size-6 items-center justify-center"}>
-                        <Monicon name={"fa6-solid:xmark"} size={20} color={colorValue("--color-typography-700")} />
-                    </View>
-                    <ActionsheetItemText>取消</ActionsheetItemText>
-                </ActionsheetItem>
-            </ActionsheetContent>
-        </Actionsheet>
-    );
+  return (
+    <Actionsheet isOpen={showActionSheet} onClose={onClose}>
+      <ActionsheetBackdrop />
+      <ActionsheetContent className="z-50">
+        <ActionsheetDragIndicatorWrapper>
+          <ActionsheetDragIndicator />
+        </ActionsheetDragIndicatorWrapper>
+        {!!displayTrack && (
+          <ActionSheetCurrent
+            line1={displayTrack.title}
+            line2={`${displayTrack.amount} 首歌曲`}
+            image={getImageProxyUrl(displayTrack.imgUrl!)}
+          />
+        )}
+        <ActionsheetItem onPress={() => onAction("edit")}>
+          <View className={"size-6 items-center justify-center"}>
+            <Monicon name={"fa6-solid:pen"} size={18} color={colorValue("--color-typography-700")} />
+          </View>
+          <ActionsheetItemText>修改信息</ActionsheetItemText>
+        </ActionsheetItem>
+        {showEditCover && (displayTrack?.amount ?? 0) > 0 ? (
+          <ActionsheetItem onPress={() => onAction("editCover")}>
+            <View className={"size-6 items-center justify-center"}>
+              <Monicon name={"fa6-solid:images"} size={18} color={colorValue("--color-typography-700")} />
+            </View>
+            <ActionsheetItemText>修改封面</ActionsheetItemText>
+          </ActionsheetItem>
+        ) : null}
+        <ActionsheetItem onPress={() => onAction("delete")}>
+          <View className={"size-6 items-center justify-center"}>
+            <Monicon name={"fa6-solid:trash"} size={18} color={colorValue("--color-typography-700")} />
+          </View>
+          <ActionsheetItemText>删除</ActionsheetItemText>
+        </ActionsheetItem>
+        <ActionsheetItem
+          onPress={() => {
+            onAction("export");
+          }}
+        >
+          <View className={"size-6 items-center justify-center"}>
+            <Monicon name={"fa6-solid:file-export"} size={18} color={colorValue("--color-typography-700")} />
+          </View>
+          <ActionsheetItemText>导出</ActionsheetItemText>
+        </ActionsheetItem>
+        <ActionsheetItem onPress={() => onAction("close")}>
+          <View className={"size-6 items-center justify-center"}>
+            <Monicon name={"fa6-solid:xmark"} size={20} color={colorValue("--color-typography-700")} />
+          </View>
+          <ActionsheetItemText>取消</ActionsheetItemText>
+        </ActionsheetItem>
+      </ActionsheetContent>
+    </Actionsheet>
+  );
 }
 ```
 
@@ -79,76 +75,77 @@ function LongPressActions({ showActionSheet, displayTrack, onAction, onClose }: 
 
 ```tsx
 function LongPressActions({ showActionSheet, displayTrack, onAction, onClose }: LongPressActionsProps) {
-    const { colorValue } = useRawThemeValues();
-    const showEditCover = !displayTrack?.source;
+  const { colorValue } = useRawThemeValues();
+  const showEditCover = !displayTrack?.source;
 
-    const menuItems: ActionMenuItem[] = [
-        {
-            show: true,
-            disabled: false,
-            icon: "fa6-solid:pen",
-            iconSize: 18,
-            text: "修改信息",
-            action: () => onAction("edit"),
-        },
-        {
-            show: showEditCover && (displayTrack?.amount ?? 0) > 0,
-            disabled: false,
-            icon: "fa6-solid:images",
-            iconSize: 18,
-            text: "修改封面",
-            action: () => onAction("editCover"),
-        },
-        {
-            show: true,
-            disabled: false,
-            icon: "fa6-solid:trash",
-            iconSize: 18,
-            text: "删除",
-            action: () => onAction("delete"),
-        },
-        {
-            show: true,
-            disabled: false,
-            icon: "fa6-solid:file-export",
-            iconSize: 18,
-            text: "导出",
-            action: () => onAction("export"),
-        },
-        {
-            show: true,
-            disabled: false,
-            icon: "fa6-solid:xmark",
-            iconSize: 20,
-            text: "取消",
-            action: () => onAction("close"),
-        },
-    ];
+  const menuItems: ActionMenuItem[] = [
+    {
+      show: true,
+      disabled: false,
+      icon: "fa6-solid:pen",
+      iconSize: 18,
+      text: "修改信息",
+      action: () => onAction("edit"),
+    },
+    {
+      show: showEditCover && (displayTrack?.amount ?? 0) > 0,
+      disabled: false,
+      icon: "fa6-solid:images",
+      iconSize: 18,
+      text: "修改封面",
+      action: () => onAction("editCover"),
+    },
+    {
+      show: true,
+      disabled: false,
+      icon: "fa6-solid:trash",
+      iconSize: 18,
+      text: "删除",
+      action: () => onAction("delete"),
+    },
+    {
+      show: true,
+      disabled: false,
+      icon: "fa6-solid:file-export",
+      iconSize: 18,
+      text: "导出",
+      action: () => onAction("export"),
+    },
+    {
+      show: true,
+      disabled: false,
+      icon: "fa6-solid:xmark",
+      iconSize: 20,
+      text: "取消",
+      action: () => onAction("close"),
+    },
+  ];
 
-    return (
-        <Actionsheet isOpen={showActionSheet} onClose={onClose}>
-            <ActionsheetBackdrop />
-            <ActionsheetContent className="z-50">
-                <ActionsheetDragIndicatorWrapper>
-                    <ActionsheetDragIndicator />
-                </ActionsheetDragIndicatorWrapper>
-                {!!displayTrack && (
-                    <ActionSheetCurrent
-                        line1={displayTrack.title}
-                        line2={`${displayTrack.amount} 首歌曲`}
-                        image={getImageProxyUrl(displayTrack.imgUrl!)}
-                    />
-                )}
-                <ActionMenu menuItems={menuItems} />
-            </ActionsheetContent>
-        </Actionsheet>
-    );
+  return (
+    <Actionsheet isOpen={showActionSheet} onClose={onClose}>
+      <ActionsheetBackdrop />
+      <ActionsheetContent className="z-50">
+        <ActionsheetDragIndicatorWrapper>
+          <ActionsheetDragIndicator />
+        </ActionsheetDragIndicatorWrapper>
+        {!!displayTrack && (
+          <ActionSheetCurrent
+            line1={displayTrack.title}
+            line2={`${displayTrack.amount} 首歌曲`}
+            image={getImageProxyUrl(displayTrack.imgUrl!)}
+          />
+        )}
+        <ActionMenu menuItems={menuItems} />
+      </ActionsheetContent>
+    </Actionsheet>
+  );
 }
 ```
 
 ## 重构步骤
 
 1. 添加 `ActionMenu` 和 `ActionMenuItem` 组件的导入：
+
    ```tsx
    import { ActionMenu, ActionMenuItem } from "~/components/action-menu";
    ```

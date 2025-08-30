@@ -8,40 +8,40 @@ import { BackHandler, Platform } from "react-native";
 export const InsidePageContext = createContext(false);
 
 export function isLoading(activeTrack: TrackData | null | undefined, duration: number) {
-    return activeTrack?.uri === PLACEHOLDER_AUDIO || duration <= 0;
+  return activeTrack?.uri === PLACEHOLDER_AUDIO || duration <= 0;
 }
 
 function MainBottomSheetCloseHostInner() {
-    const { isOpen, close } = useBottomSheetStore();
+  const { isOpen, close } = useBottomSheetStore();
 
-    // 拦截系统返回事件
-    useEffect(() => {
-        const onBackPress = () => {
-            // 开启 bottom sheet 时，关闭它
-            if (isOpen) {
-                close();
-                return true;
-            }
-            // 普通返回
-            if (router.canGoBack()) {
-                router.back();
-            } else {
-                BackHandler.exitApp();
-            }
+  // 拦截系统返回事件
+  useEffect(() => {
+    const onBackPress = () => {
+      // 开启 bottom sheet 时，关闭它
+      if (isOpen) {
+        close();
+        return true;
+      }
+      // 普通返回
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        BackHandler.exitApp();
+      }
 
-            return true;
-        };
+      return true;
+    };
 
-        const backHandler = BackHandler.addEventListener("hardwareBackPress", onBackPress);
-        return () => backHandler.remove();
-    }, [isOpen, close]);
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+    return () => backHandler.remove();
+  }, [isOpen, close]);
 
-    return null;
+  return null;
 }
 
 export function MainBottomSheetCloseHost() {
-    if (Platform.OS === "web") {
-        return null;
-    }
-    return <MainBottomSheetCloseHostInner />;
+  if (Platform.OS === "web") {
+    return null;
+  }
+  return <MainBottomSheetCloseHostInner />;
 }

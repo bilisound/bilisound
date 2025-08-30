@@ -41,122 +41,120 @@ const queryClient = new QueryClient();
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const unstable_settings = {
-    initialRouteName: "(main)",
+  initialRouteName: "(main)",
 };
 
 registerBackgroundEventListener(async ({ event, data }) => {
-    if (event === "onTrackChange") {
-        // console.log(event, data);
-        const trackData = await Player.getCurrentTrack();
-        if (!trackData) {
-            return;
-        }
-        await refreshCurrentTrack();
-        await saveTrackData();
-        await saveCurrentAndNextTrack();
+  if (event === "onTrackChange") {
+    // console.log(event, data);
+    const trackData = await Player.getCurrentTrack();
+    if (!trackData) {
+      return;
     }
+    await refreshCurrentTrack();
+    await saveTrackData();
+    await saveCurrentAndNextTrack();
+  }
 });
 
 function CheckUpdate() {
-    // 检查更新处理
-    const [modalVisible, setModalVisible] = useState(false);
-    const { data } = useQuery({
-        queryKey: ["check_update"],
-        queryFn: () => checkLatestVersion(VERSION),
-        staleTime: 86400_000,
-    });
+  // 检查更新处理
+  const [modalVisible, setModalVisible] = useState(false);
+  const { data } = useQuery({
+    queryKey: ["check_update"],
+    queryFn: () => checkLatestVersion(VERSION),
+    staleTime: 86400_000,
+  });
 
-    function handleClose(positive: boolean) {
-        setModalVisible(false);
-        if (positive && data?.downloadUrl) {
-            downloadApk(data.downloadUrl, data.latestVersion);
-            return;
-        }
-        if (positive && data?.downloadPage) {
-            Linking.openURL(data.downloadPage);
-        }
+  function handleClose(positive: boolean) {
+    setModalVisible(false);
+    if (positive && data?.downloadUrl) {
+      downloadApk(data.downloadUrl, data.latestVersion);
+      return;
     }
+    if (positive && data?.downloadPage) {
+      Linking.openURL(data.downloadPage);
+    }
+  }
 
-    useEffect(() => {
-        if (data && !data.isLatest) {
-            setModalVisible(true);
-        }
-    }, [data, setModalVisible]);
+  useEffect(() => {
+    if (data && !data.isLatest) {
+      setModalVisible(true);
+    }
+  }, [data, setModalVisible]);
 
-    return <CheckUpdateDialog open={modalVisible} onClose={handleClose} result={data} />;
+  return <CheckUpdateDialog open={modalVisible} onClose={handleClose} result={data} />;
 }
 
 export default function RootLayout() {
-    const [loaded, error] = useFonts({
-        Roboto_400Regular,
-        Roboto_700Bold,
-        Poppins_700Bold,
-    });
+  const [loaded, error] = useFonts({
+    Roboto_400Regular,
+    Roboto_700Bold,
+    Poppins_700Bold,
+  });
 
-    const isInitializing = useRef(false);
-    const colorScheme = useColorScheme();
-    const edgeInsets = useSafeAreaInsets();
+  const isInitializing = useRef(false);
+  const colorScheme = useColorScheme();
+  const edgeInsets = useSafeAreaInsets();
 
-    // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-    useEffect(() => {
-        if (error) {
-            log.error("捕捉到未处理的错误：" + (error?.message || error) + " ，调用栈：" + error?.stack);
-        }
-        if (error && process.env.NODE_ENV !== "production") {
-            throw error;
-        }
-    }, [error]);
-
-    // 各种初始化操作（程序加载后）
-    useEffect(() => {
-        if (!loaded || isInitializing.current) {
-            return;
-        }
-        isInitializing.current = true;
-        init();
-    }, [loaded]);
-
-    useEffect(() => {
-        (async () => {
-            await SystemUI.setBackgroundColorAsync(
-                colorScheme === "dark" || Platform.OS === "ios" ? "#171717" : "#ffffff",
-            );
-        })();
-    }, [colorScheme]);
-
-    if (!loaded) {
-        return null;
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(() => {
+    if (error) {
+      log.error("捕捉到未处理的错误：" + (error?.message || error) + " ，调用栈：" + error?.stack);
     }
+    if (error && process.env.NODE_ENV !== "production") {
+      throw error;
+    }
+  }, [error]);
 
-    return (
-        <QueryClientProvider client={queryClient}>
-            <GluestackUIProvider mode={(colorScheme ?? "light") as "light" | "dark"}>
-                <ThemeProvider value={colorScheme === "dark" ? darkTheme : defaultTheme}>
-                    <GestureHandlerRootView style={{ flex: 1 }}>
-                        <BottomSheetModalProvider>
-                            <SystemBars style={colorScheme === "dark" ? "light" : "dark"} />
-                            <Stack
-                                screenOptions={{
-                                    headerShown: false,
-                                }}
-                            >
-                                <Stack.Screen
-                                    name="description"
-                                    options={{
-                                        presentation: "formSheet",
-                                        sheetAllowedDetents: "fitToContents",
-                                        gestureEnabled: false,
-                                    }}
-                                />
-                            </Stack>
-                            <MainBottomSheet />
-                            <ErrorToastHost />
-                            <CheckUpdate />
-                            <Toast config={toastConfig} topOffset={edgeInsets.top} />
-                        </BottomSheetModalProvider>
-                    </GestureHandlerRootView>
-                </ThemeProvider>
-            </GluestackUIProvider>
-        </QueryClientProvider>
-    );
+  // 各种初始化操作（程序加载后）
+  useEffect(() => {
+    if (!loaded || isInitializing.current) {
+      return;
+    }
+    isInitializing.current = true;
+    init();
+  }, [loaded]);
+
+  useEffect(() => {
+    (async () => {
+      await SystemUI.setBackgroundColorAsync(colorScheme === "dark" || Platform.OS === "ios" ? "#171717" : "#ffffff");
+    })();
+  }, [colorScheme]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GluestackUIProvider mode={(colorScheme ?? "light") as "light" | "dark"}>
+        <ThemeProvider value={colorScheme === "dark" ? darkTheme : defaultTheme}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
+              <SystemBars style={colorScheme === "dark" ? "light" : "dark"} />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                }}
+              >
+                <Stack.Screen
+                  name="description"
+                  options={{
+                    presentation: "formSheet",
+                    sheetAllowedDetents: "fitToContents",
+                    gestureEnabled: false,
+                  }}
+                />
+              </Stack>
+              <MainBottomSheet />
+              <ErrorToastHost />
+              <CheckUpdate />
+              <Toast config={toastConfig} topOffset={edgeInsets.top} />
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </QueryClientProvider>
+  );
 }

@@ -8,10 +8,10 @@
 
 - 项目概览请见 [README](../README.md)。
 - 如果您是首次参与开源项目，建议先参考以下资料：
-    - [如何在 GitHub 上参与开源](https://docs.github.com/en/get-started/exploring-projects-on-github/finding-ways-to-contribute-to-open-source-on-github)
-    - [设置 Git 环境](https://docs.github.com/en/get-started/git-basics/set-up-git)
-    - [GitHub Flow 工作流程](https://docs.github.com/en/get-started/using-github/github-flow)
-    - [如何使用 Pull Request 协作](https://docs.github.com/en/github/collaborating-with-pull-requests)
+  - [如何在 GitHub 上参与开源](https://docs.github.com/en/get-started/exploring-projects-on-github/finding-ways-to-contribute-to-open-source-on-github)
+  - [设置 Git 环境](https://docs.github.com/en/get-started/git-basics/set-up-git)
+  - [GitHub Flow 工作流程](https://docs.github.com/en/get-started/using-github/github-flow)
+  - [如何使用 Pull Request 协作](https://docs.github.com/en/github/collaborating-with-pull-requests)
 
 ---
 
@@ -24,6 +24,7 @@
 ### 处理问题
 
 如果您想帮助解决某个 issue：
+
 - 可自由挑选，无需申请「认领」；
 - 欢迎在 Issue 下留言说明打算如何处理；
 - 然后提交 PR。
@@ -40,8 +41,8 @@
 - **已有 issue：** 处理现有问题前，建议简单说明解决思路，方便协作与沟通。
 - **新功能 / 大改动：** 请先将 PR 设置为 Draft，最好在 24 小时内完成初版内容。
 - **我们不接受完全通过 Vibe Coding 方式生成的 PR。**
-    - 请确保您的修改能通过构建，且行为已验证可用。
-    - 不建议完全依赖 AI 工具一键生成复杂改动。
+  - 请确保您的修改能通过构建，且行为已验证可用。
+  - 不建议完全依赖 AI 工具一键生成复杂改动。
 
 ### 📚 文档类 PR
 

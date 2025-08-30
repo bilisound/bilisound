@@ -10,120 +10,120 @@ type Env = "development" | "production";
 const env: Env = process.env.APP_ENV as Env;
 
 const baseConfig: ExpoConfig = {
-    name: "Bilisound",
-    slug: "bilisound-client-mobile",
-    version: packageJson.version,
-    icon: "./assets/images/icon.png",
-    scheme: "bilisound",
-    userInterfaceStyle: "automatic",
-    primaryColor: "#00ba9d",
-    newArchEnabled: true,
-    ios: {
-        supportsTablet: true,
-        infoPlist: {
-            NSCameraUsageDescription: `${BRAND} 需要通过摄像头扫描二维码`,
-            UIBackgroundModes: ["audio"],
-        },
-        bundleIdentifier: "moe.bilisound.app",
+  name: "Bilisound",
+  slug: "bilisound-client-mobile",
+  version: packageJson.version,
+  icon: "./assets/images/icon.png",
+  scheme: "bilisound",
+  userInterfaceStyle: "automatic",
+  primaryColor: "#00ba9d",
+  newArchEnabled: true,
+  ios: {
+    supportsTablet: true,
+    infoPlist: {
+      NSCameraUsageDescription: `${BRAND} 需要通过摄像头扫描二维码`,
+      UIBackgroundModes: ["audio"],
     },
-    android: {
-        edgeToEdgeEnabled: true,
-        adaptiveIcon: {
-            foregroundImage: "./assets/images/adaptive-icon.png",
-            backgroundColor: "#97E7DC",
-        },
-        permissions: [
-            "android.permission.MODIFY_AUDIO_SETTINGS",
-            "android.permission.CAMERA",
-            "android.permission.RECORD_AUDIO",
-        ],
-        package: "moe.bilisound.app",
+    bundleIdentifier: "moe.bilisound.app",
+  },
+  android: {
+    edgeToEdgeEnabled: true,
+    adaptiveIcon: {
+      foregroundImage: "./assets/images/adaptive-icon.png",
+      backgroundColor: "#97E7DC",
     },
-    web: {
-        bundler: "metro",
-        // output: "static",
-        favicon: "./assets/images/favicon.png",
-    },
-    plugins: [
-        "./plugins/withAndroidSignature",
-        [
-            "react-native-edge-to-edge",
-            {
-                android: {
-                    enforceNavigationBarContrast: false,
-                },
-            },
-        ],
-        [
-            "expo-splash-screen",
-            {
-                backgroundColor: "#ffffff",
-                image: "./assets/images/icon.png",
-                dark: {
-                    image: "./assets/images/icon.png",
-                    backgroundColor: "#171717",
-                },
-                imageWidth: 200,
-            },
-        ],
-        "expo-router",
-        [
-            "expo-camera",
-            {
-                cameraPermission: `${BRAND} 需要通过摄像头扫描二维码`,
-            },
-        ],
-        [
-            "expo-build-properties",
-            {
-                android: {
-                    // kotlinVersion: "2.0.0",
-                    compileSdkVersion: 35,
-                    targetSdkVersion: 35,
-                    buildToolsVersion: "35.0.0",
-                    usesCleartextTraffic: true,
-                    enableProguardInReleaseBuilds: true,
-                },
-                ios: {
-                    deploymentTarget: "17.0",
-                },
-            },
-        ],
-        "expo-font",
-        "expo-asset",
-        "expo-sqlite",
+    permissions: [
+      "android.permission.MODIFY_AUDIO_SETTINGS",
+      "android.permission.CAMERA",
+      "android.permission.RECORD_AUDIO",
     ],
-    experiments: {
-        typedRoutes: true,
-    },
-    extra: {
-        router: {
-            origin: false,
+    package: "moe.bilisound.app",
+  },
+  web: {
+    bundler: "metro",
+    // output: "static",
+    favicon: "./assets/images/favicon.png",
+  },
+  plugins: [
+    "./plugins/withAndroidSignature",
+    [
+      "react-native-edge-to-edge",
+      {
+        android: {
+          enforceNavigationBarContrast: false,
         },
+      },
+    ],
+    [
+      "expo-splash-screen",
+      {
+        backgroundColor: "#ffffff",
+        image: "./assets/images/icon.png",
+        dark: {
+          image: "./assets/images/icon.png",
+          backgroundColor: "#171717",
+        },
+        imageWidth: 200,
+      },
+    ],
+    "expo-router",
+    [
+      "expo-camera",
+      {
+        cameraPermission: `${BRAND} 需要通过摄像头扫描二维码`,
+      },
+    ],
+    [
+      "expo-build-properties",
+      {
+        android: {
+          // kotlinVersion: "2.0.0",
+          compileSdkVersion: 35,
+          targetSdkVersion: 35,
+          buildToolsVersion: "35.0.0",
+          usesCleartextTraffic: true,
+          enableProguardInReleaseBuilds: true,
+        },
+        ios: {
+          deploymentTarget: "17.0",
+        },
+      },
+    ],
+    "expo-font",
+    "expo-asset",
+    "expo-sqlite",
+  ],
+  experiments: {
+    typedRoutes: true,
+  },
+  extra: {
+    router: {
+      origin: false,
     },
+  },
 };
 
 export default ({ config }: ConfigContext): ExpoConfig => {
-    if (!env) {
-        throw new Error("Please configure APP_ENV before processing!");
-    }
-    let dynamicConfig: Partial<ExpoConfig> = {};
-    if (env === "development") {
-        dynamicConfig = {
-            name: "Bilisound Dev",
-            icon: "./assets/images/icon-dev.png",
-            ios: {
-                bundleIdentifier: "moe.bilisound.app.dev",
-            },
-            android: {
-                package: "moe.bilisound.app.dev",
-                adaptiveIcon: {
-                    foregroundImage: "./assets/images/adaptive-icon-dev.png",
-                    backgroundColor: "#e79797",
-                },
-            },
-        };
-    }
+  if (!env) {
+    throw new Error("Please configure APP_ENV before processing!");
+  }
+  let dynamicConfig: Partial<ExpoConfig> = {};
+  if (env === "development") {
+    dynamicConfig = {
+      name: "Bilisound Dev",
+      icon: "./assets/images/icon-dev.png",
+      ios: {
+        bundleIdentifier: "moe.bilisound.app.dev",
+      },
+      android: {
+        package: "moe.bilisound.app.dev",
+        adaptiveIcon: {
+          foregroundImage: "./assets/images/adaptive-icon-dev.png",
+          backgroundColor: "#e79797",
+        },
+      },
+    };
+  }
 
-    return merge(baseConfig, dynamicConfig);
+  return merge(baseConfig, dynamicConfig);
 };
