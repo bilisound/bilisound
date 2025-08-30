@@ -101,7 +101,7 @@ export function PlaylistItem({ item, onPress, onLongPress, className, style, gri
 
     return (
         <Pressable
-            className={twMerge(grid ? "p-2 @md:p-3 flex-1" : "gap-1 px-5 py-3", className)}
+            className={twMerge(grid ? "p-2 @md:p-3 flex-1" : "gap-1 px-5 py-3 flex-1", className)}
             style={style}
             onPress={onPress}
             onLongPress={onLongPress}

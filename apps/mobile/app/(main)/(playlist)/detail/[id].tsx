@@ -742,7 +742,7 @@ export default function Page() {
                             {dialogInfo.title}
                         </Heading>
                     </AlertDialogHeader>
-                    <AlertDialogBody className="mt-4 mb-6">
+                    <AlertDialogBody className="mt-3 mb-5">
                         <Text size="sm" className="leading-normal">
                             {dialogInfo.description}
                         </Text>
