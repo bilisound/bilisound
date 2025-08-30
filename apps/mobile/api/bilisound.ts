@@ -16,7 +16,7 @@ import log from "~/utils/logger";
 
 const sdk =
   Platform.OS === "web"
-    ? new BilisoundSDKRemote(BILISOUND_API_PREFIX ?? "/api")
+    ? new BilisoundSDKRemote(BILISOUND_API_PREFIX!)
     : new BilisoundSDKDirect({
         userAgent: USER_AGENT_BILIBILI,
         apiPrefix: "https://api.bilibili.com",
