@@ -67,9 +67,9 @@ export default function CoverPicker() {
       id: Number(listId),
       imgUrl: userPickResult,
     });
-    await queryClient.invalidateQueries({ queryKey: ["playlist_meta"] });
-    await queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
-    await queryClient.invalidateQueries({ queryKey: [`playlist_meta_${listId}`] });
+    await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
+    await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
+    await queryClient.refetchQueries({ queryKey: [`playlist_meta_${listId}`] });
     Toast.show({
       type: "success",
       text1: "歌单封面修改成功",

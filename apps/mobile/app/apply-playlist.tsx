@@ -19,7 +19,6 @@ import { Pressable } from "~/components/ui/pressable";
 import { playlistToTracks } from "~/business/playlist/handler";
 import * as Player from "@bilisound/player";
 import { Monicon } from "@monicon/native";
-import { useUpdateTriggerStore } from "~/store/update-trigger";
 
 export default function Page() {
   const [playlistOnQueue = {}] = usePlaylistOnQueue();
@@ -55,11 +54,10 @@ export default function Page() {
       }
     }
 
-    await queryClient.invalidateQueries({ queryKey: ["playlist_meta"] });
-    await queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
-    await queryClient.invalidateQueries({ queryKey: [`playlist_meta_${id}`] });
-    await queryClient.invalidateQueries({ queryKey: [`playlist_detail_${id}`] });
-    useUpdateTriggerStore.getState().incrementCount();
+    await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
+    await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
+    await queryClient.refetchQueries({ queryKey: [`playlist_meta_${id}`] });
+    await queryClient.refetchQueries({ queryKey: [`playlist_detail_${id}`] });
     Toast.show({
       type: "success",
       text1: "曲目添加成功",
@@ -100,9 +98,8 @@ export default function Page() {
             className="gap-1 px-5 py-3"
             onPress={async () => {
               await quickCreatePlaylist(name, description, playlistDetail ?? [], source, cover);
-              await queryClient.invalidateQueries({ queryKey: ["playlist_meta"] });
-              await queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
-              useUpdateTriggerStore.getState().incrementCount();
+              await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
+              await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
               Toast.show({
                 type: "success",
                 text1: "歌单创建成功",

@@ -33,7 +33,6 @@ import log from "~/utils/logger";
 import { Layout } from "~/components/layout";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
-import { useUpdateTriggerStore } from "~/store/update-trigger";
 
 const MAGIC_ID_NEW_ENTRY = "new";
 
@@ -90,9 +89,8 @@ export default function Page() {
         id: cloneId,
         source: "", // 不能是 null，否则会被 ORM 无视
       });
-      await queryClient.invalidateQueries({ queryKey: ["playlist_meta"] });
-      await queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
-      useUpdateTriggerStore.getState().incrementCount();
+      await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
+      await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
       Toast.show({
         type: "success",
         text1: "歌单副本创建成功",
@@ -135,10 +133,9 @@ export default function Page() {
       await addToPlaylist(id, fromTracks);
       await syncPlaylistAmount(id);
     }
-    await queryClient.invalidateQueries({ queryKey: ["playlist_meta"] });
-    await queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
-    await queryClient.invalidateQueries({ queryKey: [`playlist_meta_${id}`] });
-    useUpdateTriggerStore.getState().incrementCount();
+    await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
+    await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
+    await queryClient.refetchQueries({ queryKey: [`playlist_meta_${id}`] });
 
     if (isCreate) {
       Toast.show({

@@ -152,7 +152,7 @@ export default function Page() {
   const edgeInsets = useTabSafeAreaInsets();
   const queryClient = useQueryClient();
   const { colorValue } = useRawThemeValues();
-  const { data, refetch, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["playlist_meta"],
     queryFn: () => getPlaylistMetas(),
   });
@@ -160,9 +160,8 @@ export default function Page() {
   const handleImport = async () => {
     const result = await importPlaylistFromFile();
     if (result) {
-      await queryClient.invalidateQueries({ queryKey: ["playlist_meta"] });
-      await queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
-      await refetch();
+      await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
+      await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
     }
   };
 
@@ -229,9 +228,8 @@ export default function Page() {
     dialogCallback.current = async () => {
       log.info("用户删除歌单");
       await deletePlaylistMeta(displayTrack!.id);
-      await queryClient.invalidateQueries({ queryKey: ["playlist_meta"] });
-      await queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
-      await refetch();
+      await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
+      await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
 
       // 清空当前播放队列隶属歌单的状态机
       const got: { value?: PlaylistMeta } = JSON.parse(playlistStorage.getString(PLAYLIST_ON_QUEUE) || "{}");
@@ -346,8 +344,6 @@ export default function Page() {
             <View style={{ flex: 1 }}>
               <FlatList
                 key={columns}
-                refreshing={isLoading}
-                onRefresh={() => refetch()}
                 // https://stackoverflow.com/questions/43502954/react-native-flatlist-with-columns-last-item-width
                 data={padArrayToColumns(filteredData, columns)}
                 renderItem={({ item }) => {

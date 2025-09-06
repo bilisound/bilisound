@@ -157,10 +157,10 @@ function Header({ meta, detail, images, onPlay, showPlayButton, className }: Hea
         setProgress(progress);
       });
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["playlist_meta"] }),
-        queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] }),
-        queryClient.invalidateQueries({ queryKey: [`playlist_meta_${meta.id}`] }),
-        queryClient.invalidateQueries({ queryKey: [`playlist_detail_${meta.id}`] }),
+        queryClient.refetchQueries({ queryKey: ["playlist_meta"] }),
+        queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] }),
+        queryClient.refetchQueries({ queryKey: [`playlist_meta_${meta.id}`] }),
+        queryClient.refetchQueries({ queryKey: [`playlist_detail_${meta.id}`] }),
       ]);
       Toast.show({
         type: "success",
@@ -500,10 +500,10 @@ export default function Page() {
       }
       await syncPlaylistAmount(Number(id));
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["playlist_meta"] }),
-        queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] }),
-        queryClient.invalidateQueries({ queryKey: [`playlist_meta_${id}`] }),
-        queryClient.invalidateQueries({ queryKey: [`playlist_detail_${id}`] }),
+        queryClient.refetchQueries({ queryKey: ["playlist_meta"] }),
+        queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] }),
+        queryClient.refetchQueries({ queryKey: [`playlist_meta_${id}`] }),
+        queryClient.refetchQueries({ queryKey: [`playlist_detail_${id}`] }),
       ]);
       await Promise.all([metaRefetch(), dataRefetch()]);
       if (onQueue?.id === Number(id)) {
