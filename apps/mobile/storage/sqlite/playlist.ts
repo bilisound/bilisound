@@ -1,4 +1,4 @@
-import { eq, count as countFunc, sql, isNull } from "drizzle-orm";
+import { eq, count as countFunc, sql, isNull, or } from "drizzle-orm";
 import omit from "lodash/omit";
 
 import {
@@ -23,7 +23,10 @@ import { PlaylistSource } from "~/typings/playlist";
  */
 export async function getPlaylistMetas(filterHasSource = false): Promise<PlaylistMeta[]> {
   if (filterHasSource) {
-    return db.select().from(playlistMeta).where(isNull(playlistMeta.source));
+    return db
+      .select()
+      .from(playlistMeta)
+      .where(or(isNull(playlistMeta.source), eq(playlistMeta.source, "")));
   }
   return db.select().from(playlistMeta);
 }
