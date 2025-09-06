@@ -65,7 +65,7 @@ const alertDialogFooterStyle = tva({
   base: "flex-row justify-end items-center gap-2",
 });
 
-const alertDialogBodyStyle = tva({ base: "" });
+const alertDialogBodyStyle = tva({ base: "mt-3 mb-5" });
 
 const alertDialogBackdropStyle = tva({
   base: "absolute left-0 top-0 right-0 bottom-0 bg-background-dark web:cursor-default",

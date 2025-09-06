@@ -30,7 +30,7 @@ export default function CheckUpdateDialog({ open, onClose, result }: CheckUpdate
             发现新版本！
           </Heading>
         </AlertDialogHeader>
-        <AlertDialogBody className="mt-4 mb-6">
+        <AlertDialogBody>
           <Text size="sm" className="leading-normal">
             {`${BRAND} ${result?.latestVersion} 现已发布，而您当前正在使用 ${result?.currentVersion}。${
               result?.extraInfo ? `\n\n${result?.extraInfo}\n` : ""

@@ -142,7 +142,7 @@ export default function CoverPicker() {
               预览选择的图片
             </Heading>
           </AlertDialogHeader>
-          <AlertDialogBody className="mt-4 mb-6">
+          <AlertDialogBody>
             <Image source={getImageProxyUrl(userPickResult)} className={"rounded-xl w-full aspect-video"} />
           </AlertDialogBody>
           <AlertDialogFooter>
