@@ -17,7 +17,7 @@
     "clean": "node -e \"const opt = { recursive: true, force: true }; fs.rmSync('./ios', opt); fs.rmSync('./android', opt); fs.rmSync('./node_modules/.cache', opt)\"",
     "open:ios": "xed ios",
     "open:android": "open -a \"Android Studio\" android",
-    "prebuild": "expo prebuild"
+    "prebuild": "watchman watch-del-all && expo prebuild"
   },
   "jest": {
     "preset": "jest-expo"
