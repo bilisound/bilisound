@@ -10,12 +10,14 @@ Bilisound 的目标是：
 - 专注于核心的播放功能，无广告和不相关的社交元素。
 
 ## Project Structure & Module Organization
+
 - apps/mobile: Expo React Native client (iOS/Android/Web). Source lives alongside feature folders under `components/`, `business/`, `store/`, `utils/`, etc. Assets in `assets/` and `public/`.
 - apps/server-netlify: Netlify Functions for release proxying. Entrypoints in `netlify/functions/`.
 - packages/sdk: Runtime‑agnostic core logic published as `@bilisound/sdk` (TypeScript built to `dist/`).
 - Tooling: pnpm workspaces + Turborepo (`pnpm-workspace.yaml`, `turbo.json`).
 
 ## Build, Test, and Development Commands
+
 - Root build: `pnpm build` — runs Turborepo builds (e.g., `packages/sdk`).
 - Lint all: `pnpm lint` — runs package lint tasks.
 - Format: `pnpm format` — Prettier write across repo.
@@ -25,18 +27,22 @@ Bilisound 的目标是：
 - Netlify dev: `pnpm -C apps/server-netlify dev`; deploy: `pnpm -C apps/server-netlify deploy`.
 
 ## Coding Style & Naming Conventions
+
 - Prettier: 2‑space indent, semicolons, double quotes, trailing commas, width 120.
 - ESLint: Expo config + Prettier plugin (see `apps/mobile/eslint.config.js`).
 - Files: hooks `useThing.ts`, components `Thing.tsx` (PascalCase exports), modules commonly kebab‑case.
 - Imports: use local alias `~/` in mobile per `tsconfig.json`.
 
 ## Testing Guidelines
+
 - Current status: no required CI tests.
 
 ## Commit & Pull Request Guidelines
+
 - Commits: Conventional Commits (e.g., `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`). Keep scope small and messages imperative.
 - PRs: clear description, linked issues, rationale, before/after screenshots for UI, and testing notes. Keep changes focused; update docs when behavior changes.
 
 ## Security & Configuration Tips
+
 - Android signing: place `apps/mobile/credentials/bilisound-release.keystore` and root‑level `credentials.json` (both git‑ignored). Do not commit secrets.
 - Environment/config: prefer platform configs (`app.config.ts`, Netlify `netlify.toml`). Avoid hard‑coding keys; use platform stores or deploy‑time variables.
