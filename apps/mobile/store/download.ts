@@ -1,7 +1,6 @@
-import { DownloadProgressData } from "expo-file-system";
+import { DownloadProgressData } from "expo-file-system/legacy";
 import { create } from "zustand";
-import * as FileSystem from "expo-file-system";
-import { downloadResource } from "~/business/download";
+import * as FileSystem from "expo-file-system/legacy";
 import log from "~/utils/logger";
 
 export interface DownloadItem {
@@ -28,6 +27,7 @@ export interface DownloadProps {
   max: number;
   count: number;
   processTasks: string[];
+  downloadWorker?: (id: string, episode: number) => Promise<unknown>;
 }
 
 export interface DownloadMethods {
@@ -39,6 +39,7 @@ export interface DownloadMethods {
   pickTask: () => void;
   addProcessTask: (id: string) => void;
   removeProcessTask: (id: string) => void;
+  setDownloadWorker: (worker: (id: string, episode: number) => Promise<unknown>) => void;
 }
 
 const useDownloadStore = create<DownloadProps & DownloadMethods>()((set, get) => ({
@@ -46,6 +47,7 @@ const useDownloadStore = create<DownloadProps & DownloadMethods>()((set, get) =>
   max: 5,
   count: 0,
   processTasks: [],
+  downloadWorker: undefined,
   abortController: new AbortController(),
   addDownloadItem: (key, downloadItem) => {
     const downloadList = new Map(get().downloadList);
@@ -86,6 +88,11 @@ const useDownloadStore = create<DownloadProps & DownloadMethods>()((set, get) =>
     }
   },
   pickTask: () => {
+    const worker = get().downloadWorker;
+    if (!worker) {
+      log.warn("download worker is not registered; skip picking task");
+      return;
+    }
     // 抓取当前队列
     const list = Array.from(get().downloadList.values())
       .sort((a, b) => b.count - a.count)
@@ -109,7 +116,7 @@ const useDownloadStore = create<DownloadProps & DownloadMethods>()((set, get) =>
 
       log.debug("处理任务 " + id);
 
-      downloadResource(got.id, got.episode)
+      worker(got.id, got.episode)
         .then(() => {
           log.info(`[${got.id} / ${got.episode}] 下载完毕`);
         })
@@ -127,6 +134,9 @@ const useDownloadStore = create<DownloadProps & DownloadMethods>()((set, get) =>
           get().pickTask();
         });
     }
+  },
+  setDownloadWorker: worker => {
+    set(() => ({ downloadWorker: worker }));
   },
 }));
 

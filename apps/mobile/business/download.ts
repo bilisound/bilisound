@@ -1,6 +1,6 @@
 import useDownloadStore from "~/store/download";
 import { getCacheAudioPath } from "~/utils/file";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { filesize } from "filesize";
 import { getBilisoundResourceUrl } from "~/api/bilisound";
 import log from "~/utils/logger";
@@ -9,9 +9,17 @@ import { getVideoUrl } from "~/business/constant-helper";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { cacheStatusStorage } from "~/storage/cache-status";
 import { extractAudioFile } from "~/business/mp4";
-import { File } from "expo-file-system/next";
+import { File } from "expo-file-system";
+
+function registerDownloadWorker() {
+  const { downloadWorker, setDownloadWorker } = useDownloadStore.getState();
+  if (downloadWorker !== downloadResource) {
+    setDownloadWorker(downloadResource);
+  }
+}
 
 export function addDownloadTask(bvid: string, episode: number, title: string) {
+  registerDownloadWorker();
   const prefix = `[${bvid} / ${episode}] `;
   const { addDownloadItem, downloadList } = useDownloadStore.getState();
 
@@ -59,6 +67,7 @@ export function addDownloadTask(bvid: string, episode: number, title: string) {
 }
 
 export async function downloadResource(bvid: string, episode: number) {
+  registerDownloadWorker();
   const prefix = `[${bvid} / ${episode}] `;
   const { updateDownloadItemPartial, removeDownloadItem } = useDownloadStore.getState();
 
@@ -170,3 +179,10 @@ export async function downloadResourceNow(bvid: string, episode: number, title: 
   }
   return downloadResource(bvid, episode);
 }
+
+export function pickDownloadTask() {
+  registerDownloadWorker();
+  useDownloadStore.getState().pickTask();
+}
+
+registerDownloadWorker();
