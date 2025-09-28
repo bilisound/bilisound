@@ -1,4 +1,4 @@
-import { File } from "expo-file-system/next";
+import { File } from "expo-file-system";
 import { Mp4 } from "mp4.js/dist";
 import log from "~/utils/logger";
 

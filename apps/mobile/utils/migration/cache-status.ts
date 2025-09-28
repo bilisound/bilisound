@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 import { BILISOUND_OFFLINE_URI } from "~/constants/file";
 import { CACHE_STATUS_VERSION, cacheStatusStorage } from "~/storage/cache-status";

@@ -29,7 +29,7 @@ import { convertToHTTPS } from "~/utils/string";
 import useSettingsStore from "~/store/settings";
 import useErrorMessageStore from "~/store/error-message";
 import { downloadResourceNow } from "~/business/download";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 interface TrackDataOld {
   /** The track title */

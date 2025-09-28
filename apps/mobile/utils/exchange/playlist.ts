@@ -1,5 +1,5 @@
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { stringify } from "smol-toml";
 
 import { exportAllPlaylist, exportPlaylist } from "~/storage/sqlite/playlist";

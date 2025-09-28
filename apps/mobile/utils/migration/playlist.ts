@@ -1,5 +1,5 @@
 import { eq, isNull, sql } from "drizzle-orm";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 
 import log from "../logger";
 
