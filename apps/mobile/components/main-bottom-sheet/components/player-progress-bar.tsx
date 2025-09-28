@@ -1,5 +1,5 @@
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Animated, {
   ReduceMotion,
   useAnimatedStyle,
@@ -12,7 +12,7 @@ import { useProgressSecond } from "~/hooks/useProgressSecond";
 import { isLoading } from "~/components/main-bottom-sheet/utils";
 import { View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { NativeViewGestureHandler } from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Slider } from "@miblanchard/react-native-slider";
 
 export function PlayerProgressBar() {
@@ -50,6 +50,8 @@ export function PlayerProgressBar() {
     transform: [{ translateX: glowPosition.value - glowWidth }],
   }));
 
+  const nativeGesture = useMemo(() => Gesture.Native().disallowInterruption(true), []);
+
   if (isLoading(activeTrack, duration)) {
     return (
       <View
@@ -75,7 +77,7 @@ export function PlayerProgressBar() {
   }
 
   return (
-    <NativeViewGestureHandler disallowInterruption={true}>
+    <GestureDetector gesture={nativeGesture}>
       <View className="h-4 justify-center flex-1 relative">
         <View className="left-[8px] right-[8px] top-[6.5px] h-[0.1875rem] rounded-full absolute overflow-hidden bg-background-50">
           <View
@@ -111,6 +113,6 @@ export function PlayerProgressBar() {
           />
         </View>
       </View>
-    </NativeViewGestureHandler>
+    </GestureDetector>
   );
 }
