@@ -1,7 +1,7 @@
 {
   "name": "@bilisound/mobile",
   "main": "expo-router/entry",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "scripts": {
     "start": "expo start -c --dev-client",
     "android": "expo run:android",
@@ -17,7 +17,8 @@
     "clean": "node -e \"const opt = { recursive: true, force: true }; fs.rmSync('./ios', opt); fs.rmSync('./android', opt); fs.rmSync('./node_modules/.cache', opt)\"",
     "open:ios": "xed ios",
     "open:android": "open -a \"Android Studio\" android",
-    "prebuild": "watchman watch-del-all && expo prebuild"
+    "prebuild": "expo prebuild",
+    "prebuild:local": "watchman watch-del-all && expo prebuild"
   },
   "jest": {
     "preset": "jest-expo"
