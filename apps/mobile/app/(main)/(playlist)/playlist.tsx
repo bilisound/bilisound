@@ -1,5 +1,6 @@
 import { Monicon } from "@monicon/native";
-import { FlatList, View } from "react-native";
+import { FlashList } from "@shopify/flash-list";
+import { View } from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import Fuse from "fuse.js";
@@ -342,7 +343,7 @@ export default function Page() {
 
           {(data || []).length > 0 ? (
             <View style={{ flex: 1 }}>
-              <FlatList
+              <FlashList
                 key={columns}
                 // https://stackoverflow.com/questions/43502954/react-native-flatlist-with-columns-last-item-width
                 data={padArrayToColumns(filteredData, columns)}
