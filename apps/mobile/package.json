@@ -10,7 +10,7 @@
     "prepare": "pnpm run generate-license",
     "test": "jest --watchAll",
     "build:android": "node ./scripts/run-gradle.js assembleRelease",
-    "build:web": "expo export --platform web",
+    "build:web": "node --env-file=.env ./scripts/export-web.js",
     "lint": "eslint --fix .",
     "generate-migration": "drizzle-kit generate",
     "generate-license": "generate-license-file --input package.json --output third-party-licenses.txt --overwrite --ci",
