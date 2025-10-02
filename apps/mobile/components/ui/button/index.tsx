@@ -3,7 +3,7 @@ import React from "react";
 import { createButton } from "@gluestack-ui/button";
 import { withStyleContext, useStyleContext } from "@gluestack-ui/nativewind-utils/withStyleContext";
 import { cssInterop } from "nativewind";
-import { ActivityIndicator, Platform, Pressable, Text, View, ViewProps } from "react-native";
+import { ActivityIndicator, Pressable, Text, View, ViewProps } from "react-native";
 import type { VariantProps } from "@gluestack-ui/nativewind-utils";
 import { PrimitiveIcon, UIIcon } from "@gluestack-ui/icon";
 import { twMerge } from "tailwind-merge";
@@ -17,6 +17,7 @@ import {
   buttonMonIconInternalStyle,
 } from "./styles";
 import { Monicon } from "@monicon/native";
+import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
 const SCOPE = "BUTTON";
 
@@ -154,7 +155,7 @@ const ButtonOuter = React.forwardRef<React.ElementRef<typeof View>, IButtonOuter
       <View
         ref={ref}
         {...props}
-        className={twMerge(Platform.OS === "android" ? "rounded-lg overflow-hidden" : "", className)}
+        className={twMerge(IS_ANDROID_RIPPLE_ENABLED ? "rounded-lg overflow-hidden" : "", className)}
       />
     );
   },

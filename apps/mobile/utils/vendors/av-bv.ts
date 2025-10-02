@@ -1,5 +1,3 @@
-/* eslint-disable no-bitwise */
-
 // https://github.com/IvanLuLyf/bilibili-av-bv-converter
 
 const magicStr = "FcwAPNKTMug3GV5Lj7EJnHpWsx4tb8haYeviqBz6rkCy12mUSDQX9RdoZf";

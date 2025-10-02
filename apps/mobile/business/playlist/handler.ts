@@ -63,7 +63,7 @@ interface TrackDataOld {
   contentType?: string;
   /** (iOS only) The pitch algorithm to apply to the sound. */
   pitchAlgorithm?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   headers?: { [key: string]: any };
 
   bilisoundId: string;
@@ -71,7 +71,6 @@ interface TrackDataOld {
   bilisoundUniqueId: string;
   bilisoundIsLoaded: boolean;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // [key: string]: any;
 }
 

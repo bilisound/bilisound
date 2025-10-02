@@ -19,6 +19,7 @@ import { useBottomSheetStore } from "~/store/bottom-sheet";
 import { convertToHTTPS } from "~/utils/string";
 import { router } from "expo-router";
 import { useWindowSize } from "~/hooks/useWindowSize";
+import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
 type TabTriggerChildProps = TabTriggerSlotProps & {
   iconName: string;
@@ -36,19 +37,18 @@ const TabTriggerChild = ({
   ...props
 }: TabTriggerChildProps & { ref?: React.Ref<View> }) => {
   const { colorValue } = useRawThemeValues();
+  const triggerClasses = [
+    IS_ANDROID_RIPPLE_ENABLED ? "{}-[android_ripple.color]/color:color-background-200" : "",
+    "max-sm:flex-1 sm:basis-auto h-16 gap-2 w-full flex-col items-center justify-center",
+    "sm:w-16",
+    "xl:flex-row xl:gap-3 xl:h-12 xl:justify-start xl:px-5 xl:w-56 xl:rounded-full",
+    isFocused ? "xl:bg-background-0" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <Pressable
-      onPress={onPress}
-      className={
-        "{}-[android_ripple.color]/color:color-background-200 max-sm:flex-1 sm:basis-auto h-16 gap-2 w-full flex-col items-center justify-center " +
-        "sm:w-16 " +
-        "xl:flex-row xl:gap-3 xl:h-12 xl:justify-start xl:px-5 xl:w-56 xl:rounded-full " +
-        (isFocused ? "xl:bg-background-0" : "")
-      }
-      {...props}
-      ref={ref}
-    >
+    <Pressable onPress={onPress} className={triggerClasses} {...props} ref={ref}>
       <Monicon
         name={iconName}
         color={isFocused ? colorValue("--color-accent-500") : colorValue("--color-typography-700", 0.4)}
@@ -113,7 +113,7 @@ function CurrentPlayingTablet() {
           <Pressable
             className={
               "size-10 items-center justify-center " +
-              (Platform.OS === "android"
+              (IS_ANDROID_RIPPLE_ENABLED
                 ? "{}-[android_ripple.color]/color:color-background-200"
                 : "rounded-lg hover:bg-background-100 active:bg-background-200")
             }
@@ -143,7 +143,7 @@ function CurrentPlayingTablet() {
       </View>
       <Pressable
         className={
-          (Platform.OS === "android"
+          (IS_ANDROID_RIPPLE_ENABLED
             ? "{}-[android_ripple.color]/color:color-background-200"
             : "hover:bg-background-100 active:bg-background-200") +
           " flex-1 flex-row items-center px-3 gap-3 h-16 hidden xl:flex"
@@ -159,7 +159,7 @@ function CurrentPlayingTablet() {
         <ButtonOuter className={"rounded-lg flex-0 basis-auto"}>
           <Pressable
             className={
-              (Platform.OS === "android"
+              (IS_ANDROID_RIPPLE_ENABLED
                 ? "{}-[android_ripple.color]/color:color-background-200"
                 : "hover:bg-background-100 active:bg-background-200") +
               " rounded-lg size-10 items-center justify-center"
@@ -201,7 +201,7 @@ function CurrentPlaying() {
     >
       <Pressable
         className={
-          (Platform.OS === "android"
+          (IS_ANDROID_RIPPLE_ENABLED
             ? "{}-[android_ripple.color]/color:color-background-200"
             : "hover:bg-background-100 active:bg-background-200") + " flex-1 flex-row items-center px-3 gap-4 h-16"
         }
@@ -215,7 +215,7 @@ function CurrentPlaying() {
       <ButtonOuter className={"rounded-lg flex-0 basis-auto"}>
         <Pressable
           className={
-            (Platform.OS === "android"
+            (IS_ANDROID_RIPPLE_ENABLED
               ? "{}-[android_ripple.color]/color:color-background-200"
               : "hover:bg-background-100 active:bg-background-200") + " rounded-lg size-10 items-center justify-center"
           }

@@ -1,7 +1,27 @@
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
+import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
+
+const cx = (...classes: string[]) => classes.filter(Boolean).join(" ");
+
+const baseRippleClass = "{}-[android_ripple.color]/color:color-background-100";
+const solidRippleClasses = {
+  primary: "{}-[android_ripple.color]/color:color-primary-700",
+  secondary: "{}-[android_ripple.color]/color:color-secondary-700",
+  positive: "{}-[android_ripple.color]/color:color-success-700",
+  negative: "{}-[android_ripple.color]/color:color-error-700",
+};
+const surfaceRippleClasses = {
+  primary: "{}-[android_ripple.color]/color:color-primary-100",
+  secondary: "{}-[android_ripple.color]/color:color-secondary-100",
+  positive: "{}-[android_ripple.color]/color:color-positive-100",
+  negative: "{}-[android_ripple.color]/color:color-negative-100",
+};
 
 export const buttonStyle = tva({
-  base: "group/button rounded-lg bg-primary-500 flex-row items-center justify-center data-[focus-visible=true]:web:outline-none data-[focus-visible=true]:web:ring-2 data-[disabled=true]:opacity-40 gap-2",
+  base: cx(
+    "group/button rounded-lg bg-primary-500 flex-row items-center justify-center data-[focus-visible=true]:web:outline-none data-[focus-visible=true]:web:ring-2 data-[disabled=true]:opacity-40 gap-2",
+    IS_ANDROID_RIPPLE_ENABLED ? baseRippleClass : "",
+  ),
   variants: {
     action: {
       primary:
@@ -16,9 +36,17 @@ export const buttonStyle = tva({
     },
     variant: {
       link: "px-0",
-      outline: "bg-transparent border data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+      outline: cx(
+        "bg-transparent border",
+        !IS_ANDROID_RIPPLE_ENABLED ? "data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent" : "",
+        IS_ANDROID_RIPPLE_ENABLED ? baseRippleClass : "",
+      ),
       solid: "",
-      ghost: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+      ghost: cx(
+        "bg-transparent",
+        !IS_ANDROID_RIPPLE_ENABLED ? "data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent" : "",
+        IS_ANDROID_RIPPLE_ENABLED ? baseRippleClass : "",
+      ),
     },
     size: {
       xs: "px-3.5 h-8",
@@ -85,42 +113,86 @@ export const buttonStyle = tva({
     {
       action: "primary",
       variant: "outline",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.primary : "",
+      ),
     },
     {
       action: "secondary",
       variant: "outline",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.secondary : "",
+      ),
     },
     {
       action: "positive",
       variant: "outline",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.positive : "",
+      ),
     },
     {
       action: "negative",
       variant: "outline",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.negative : "",
+      ),
     },
     {
       action: "primary",
       variant: "ghost",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.primary : "",
+      ),
     },
     {
       action: "secondary",
       variant: "ghost",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.secondary : "",
+      ),
     },
     {
       action: "positive",
       variant: "ghost",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.positive : "",
+      ),
     },
     {
       action: "negative",
       variant: "ghost",
-      class: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+      class: cx(
+        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
+        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.negative : "",
+      ),
+    },
+    {
+      action: "primary",
+      variant: "solid",
+      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.primary : "",
+    },
+    {
+      action: "secondary",
+      variant: "solid",
+      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.secondary : "",
+    },
+    {
+      action: "positive",
+      variant: "solid",
+      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.positive : "",
+    },
+    {
+      action: "negative",
+      variant: "solid",
+      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.negative : "",
     },
   ],
 });
