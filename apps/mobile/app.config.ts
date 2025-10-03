@@ -1,5 +1,5 @@
 import "tsx/cjs";
-import { ExpoConfig, ConfigContext } from "expo/config";
+import { ExpoConfig } from "expo/config";
 import { merge } from "lodash";
 
 import packageJson from "./package.json";
@@ -7,7 +7,7 @@ import { BRAND } from "./constants/branding";
 
 type Env = "development" | "production";
 
-const env: Env = process.env.APP_ENV as Env;
+const env: Env = process.env.EXPO_PUBLIC_ENV as Env;
 
 const baseConfig: ExpoConfig = {
   name: "Bilisound",
@@ -103,9 +103,9 @@ const baseConfig: ExpoConfig = {
   },
 };
 
-export default ({ config }: ConfigContext): ExpoConfig => {
+export default (): ExpoConfig => {
   if (!env) {
-    throw new Error("Please configure APP_ENV before processing!");
+    throw new Error("Please configure EXPO_PUBLIC_ENV before processing!");
   }
   let dynamicConfig: Partial<ExpoConfig> = {};
   if (env === "development") {

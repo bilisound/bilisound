@@ -62,3 +62,4 @@ patches/react-native-css-interop+0.0.36.patch
 /.monicon
 
 playlist.db
+.envrc

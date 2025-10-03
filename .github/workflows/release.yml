@@ -4,7 +4,7 @@ permissions:
 on:
   push:
     tags:
-      - '*'
+      - "*"
     branches:
       - preview
 
@@ -45,7 +45,6 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
-#          node-version: 22.11.0
           cache: pnpm
 
       - name: 🏗 Set build version
@@ -54,7 +53,6 @@ jobs:
           EXPO_VERSION: ${{ steps.build_version.outputs.version }}
         run: |
           node ./scripts/change-version.js
-
 
       - name: 📦 Install dependencies
         run: |
@@ -65,8 +63,8 @@ jobs:
       - name: 🏗 Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
           cache: gradle
 
       - name: 🏗 Setup Gradle
@@ -75,12 +73,16 @@ jobs:
       - name: 🚀 Build Android app
         working-directory: apps/mobile
         env:
+          APP_ENV: production
+          EXPO_PUBLIC_API_URL: https://api.bilisound.com/api
           EXPO_PUBLIC_RELEASE_CHANNEL: ${{ steps.build_version.outputs.channel }}
         run: pnpm run build:android
 
       - name: 🚀 Build Web app
         working-directory: apps/mobile
         env:
+          APP_ENV: production
+          EXPO_PUBLIC_API_URL: https://api.bilisound.com/api
           EXPO_PUBLIC_RELEASE_CHANNEL: ${{ steps.build_version.outputs.channel_web }}
         run: pnpm run build:web
 

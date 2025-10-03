@@ -1,0 +1,4 @@
+export \
+EXPO_PUBLIC_ENV=production \
+EXPO_PUBLIC_API_URL=https://api.bilisound.com/api \
+EXPO_PUBLIC_RELEASE_CHANNEL=unknown
