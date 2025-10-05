@@ -55,6 +55,8 @@ jobs:
           node ./scripts/change-version.js
 
       - name: 📦 Install dependencies
+        env:
+          APP_ENV: production
         run: |
           pnpm install
           cd apps/mobile
