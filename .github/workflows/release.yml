@@ -56,7 +56,7 @@ jobs:
 
       - name: 📦 Install dependencies
         env:
-          APP_ENV: production
+          EXPO_PUBLIC_ENV: production
         run: |
           pnpm install
           cd apps/mobile
@@ -75,7 +75,7 @@ jobs:
       - name: 🚀 Build Android app
         working-directory: apps/mobile
         env:
-          APP_ENV: production
+          EXPO_PUBLIC_ENV: production
           EXPO_PUBLIC_API_URL: https://api.bilisound.com/api
           EXPO_PUBLIC_RELEASE_CHANNEL: ${{ steps.build_version.outputs.channel }}
         run: pnpm run build:android
@@ -83,7 +83,7 @@ jobs:
       - name: 🚀 Build Web app
         working-directory: apps/mobile
         env:
-          APP_ENV: production
+          EXPO_PUBLIC_ENV: production
           EXPO_PUBLIC_API_URL: https://api.bilisound.com/api
           EXPO_PUBLIC_RELEASE_CHANNEL: ${{ steps.build_version.outputs.channel_web }}
         run: pnpm run build:web
