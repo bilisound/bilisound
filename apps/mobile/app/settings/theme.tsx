@@ -75,6 +75,7 @@ export default function Page() {
         <SettingMenuItem
           icon={"fa6-solid:image"}
           title="在首页右下角展示看板娘"
+          subTitle="如果看板娘干扰内容显示，可以关闭此功能"
           rightAccessories={
             <Switch
               value={showYuruChara}

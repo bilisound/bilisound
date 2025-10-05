@@ -165,6 +165,7 @@ export default function Page() {
           key="settings_10060"
           icon={"fa6-solid:code"}
           title="开发者模式"
+          subTitle="开启后可显示高级选项"
           rightAccessories={
             <Switch
               value={debugMode}

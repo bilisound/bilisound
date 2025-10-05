@@ -28,7 +28,7 @@ export function SettingMenuItem({
   const { colorValue } = useRawThemeValues();
 
   const inner = (
-    <View className={`flex-row p-4 gap-3 items-start ${disabled ? "opacity-60" : ""}`}>
+    <View className={`flex-row p-4 gap-3 items-center ${disabled ? "opacity-60" : ""}`}>
       <View className="flex-1">
         <View className="flex-row items-center gap-3">
           <View className="size-6 items-center justify-center">
