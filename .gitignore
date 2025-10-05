@@ -21,3 +21,5 @@ yarn-error.*
 
 # Local Netlify folder
 .netlify
+
+.envrc
