@@ -31,9 +31,20 @@ export default function Page() {
       setChecking(true);
       const result = await checkLatestVersion(VERSION);
       setCheckInfo(result);
+
+      if (result.isLatest) {
+        Toast.show({
+          type: "success",
+          text1: "您使用的是最新版本！",
+          text2: "当前最新版本是 " + result.latestVersion,
+        });
+        return;
+      }
+
+      setModalVisible(true);
       Toast.show({
-        type: "success",
-        text1: "您使用的是最新版本！",
+        type: "info",
+        text1: "发现新版本",
         text2: "当前最新版本是 " + result.latestVersion,
       });
     } catch (e) {
