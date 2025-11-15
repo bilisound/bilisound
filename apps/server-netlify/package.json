@@ -9,14 +9,14 @@
   },
   "dependencies": {
     "@bilisound/sdk": "workspace:*",
-    "@netlify/blobs": "^10.0.8",
+    "@netlify/blobs": "^10.3.3",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@netlify/functions": "^4.2.0",
-    "@types/node": "^24.1.0",
-    "@types/node-fetch": "^2.6.12",
-    "netlify-cli": "^23.0.0",
-    "typescript": "^5.8.3"
+    "@netlify/functions": "^4.3.0",
+    "@types/node": "^24.10.1",
+    "@types/node-fetch": "^2.6.13",
+    "netlify-cli": "^23.11.0",
+    "typescript": "^5.9.3"
   }
 }

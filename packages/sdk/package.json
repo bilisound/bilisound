@@ -5,7 +5,7 @@
     "build": "tsdown ./src/index.ts --format esm --dts"
   },
   "devDependencies": {
-    "tsdown": "^0.14.1",
+    "tsdown": "^0.14.2",
     "typescript": "~5.8.3"
   },
   "peerDependencies": {
