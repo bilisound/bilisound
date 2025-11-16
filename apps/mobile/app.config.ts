@@ -86,6 +86,9 @@ const baseConfig: ExpoConfig = {
           enableProguardInReleaseBuilds: true,
           gradleProperties: {
             "org.gradle.jvmargs": "-Xmx6g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError",
+            "org.gradle.daemon": "false",
+            "org.gradle.workers.max": "1",
+            "kotlin.daemon.jvm.options": "-Xmx2g",
           },
         },
         ios: {
