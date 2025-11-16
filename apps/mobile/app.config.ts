@@ -84,6 +84,9 @@ const baseConfig: ExpoConfig = {
           buildToolsVersion: "36.0.0",
           usesCleartextTraffic: true,
           enableProguardInReleaseBuilds: true,
+          gradleProperties: {
+            "org.gradle.jvmargs": "-Xmx6g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError",
+          },
         },
         ios: {
           deploymentTarget: "17.0",
