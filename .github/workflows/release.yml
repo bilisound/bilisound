@@ -78,9 +78,6 @@ jobs:
           EXPO_PUBLIC_ENV: production
           EXPO_PUBLIC_API_URL: https://api.bilisound.com/api
           EXPO_PUBLIC_RELEASE_CHANNEL: ${{ steps.build_version.outputs.channel }}
-          # Ensure sufficient heap for Gradle/R8 on CI runners
-          GRADLE_OPTS: -Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8
-          JAVA_TOOL_OPTIONS: -Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8
         run: pnpm run build:android
 
       - name: 🚀 Build Web app

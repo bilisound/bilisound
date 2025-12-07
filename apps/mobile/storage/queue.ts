@@ -1,4 +1,4 @@
-import { MMKV, useMMKVString } from "react-native-mmkv";
+import { createMMKV, useMMKVString } from "react-native-mmkv";
 
 // 当前队列
 export const QUEUE_LIST = "queue_list";
@@ -20,7 +20,7 @@ export const QUEUE_PLAYING_MODE = "queue_playing_mode";
 
 export type QueuePlayingMode = "normal" | "shuffle";
 
-export const queueStorage = new MMKV({ id: "storage-queue" });
+export const queueStorage = createMMKV({ id: "storage-queue" });
 
 export function useQueuePlayingMode() {
   return useMMKVString(QUEUE_PLAYING_MODE, queueStorage);

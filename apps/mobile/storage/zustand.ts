@@ -1,8 +1,8 @@
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 import superJson from "superjson";
 import { PersistStorage } from "zustand/middleware";
 
-export const zustandStorage = new MMKV({ id: "storage-zustand" });
+export const zustandStorage = createMMKV({ id: "storage-zustand" });
 
 export function createStorage<T>() {
   const storage: PersistStorage<T> = {

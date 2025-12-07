@@ -12,46 +12,73 @@ export default function withCustomAppTheme(config: ExpoConfig) {
     styles.resources.style?.map(style => {
       if (style.$.name === "AppTheme") {
         // HyperOS 2 Android 15 TextInput (EditText) 内容不垂直居中问题修复
-        style.item.push({
-          $: { name: "android:textViewStyle" },
-          _: "@style/Widget.App.TextView",
-        });
-        style.item.push({
-          $: { name: "editTextStyle" },
-          _: "@style/Widget.App.EditText",
-        });
-        style.item.push({
-          $: { name: "android:editTextStyle" },
-          _: "@style/Widget.App.EditText",
-        });
+        const hasTextView = style.item.some(
+          item => item.$.name === "android:textViewStyle"
+        );
+        if (!hasTextView) {
+          style.item.push({
+            $: { name: "android:textViewStyle" },
+            _: "@style/Widget.App.TextView",
+          });
+        }
+        const hasEditText = style.item.some(
+          item => item.$.name === "editTextStyle"
+        );
+        if (!hasEditText) {
+          style.item.push({
+            $: { name: "editTextStyle" },
+            _: "@style/Widget.App.EditText",
+          });
+        }
+        const hasAndroidEditText = style.item.some(
+          item => item.$.name === "android:editTextStyle"
+        );
+        if (!hasAndroidEditText) {
+          style.item.push({
+            $: { name: "android:editTextStyle" },
+            _: "@style/Widget.App.EditText",
+          });
+        }
       }
     });
-    styles.resources.style?.push({
-      $: { name: "Widget.App.TextView", parent: "Widget.AppCompat.TextView" },
-      item: [
-        {
-          $: { name: "android:elegantTextHeight" },
-          _: "false",
-        },
-        {
-          $: { name: "android:useLocalePreferredLineHeightForMinimum" },
-          _: "false",
-        },
-      ],
-    });
-    styles.resources.style?.push({
-      $: { name: "Widget.App.EditText", parent: "Widget.AppCompat.EditText" },
-      item: [
-        {
-          $: { name: "android:elegantTextHeight" },
-          _: "false",
-        },
-        {
-          $: { name: "android:useLocalePreferredLineHeightForMinimum" },
-          _: "false",
-        },
-      ],
-    });
+
+    const hasWidgetTextView = styles.resources.style?.some(
+      style => style.$.name === "Widget.App.TextView"
+    );
+    if (!hasWidgetTextView) {
+      styles.resources.style?.push({
+        $: { name: "Widget.App.TextView", parent: "Widget.AppCompat.TextView" },
+        item: [
+          {
+            $: { name: "android:elegantTextHeight" },
+            _: "false",
+          },
+          {
+            $: { name: "android:useLocalePreferredLineHeightForMinimum" },
+            _: "false",
+          },
+        ],
+      });
+    }
+
+    const hasWidgetEditText = styles.resources.style?.some(
+      style => style.$.name === "Widget.App.EditText"
+    );
+    if (!hasWidgetEditText) {
+      styles.resources.style?.push({
+        $: { name: "Widget.App.EditText", parent: "Widget.AppCompat.EditText" },
+        item: [
+          {
+            $: { name: "android:elegantTextHeight" },
+            _: "false",
+          },
+          {
+            $: { name: "android:useLocalePreferredLineHeightForMinimum" },
+            _: "false",
+          },
+        ],
+      });
+    }
 
     return androidStylesConfig;
   });

@@ -1,4 +1,4 @@
-import { MMKV, useMMKVBoolean, useMMKVObject } from "react-native-mmkv";
+import { createMMKV, useMMKVBoolean, useMMKVObject } from "react-native-mmkv";
 
 import { PlaylistMeta } from "~/storage/sqlite/schema";
 
@@ -30,7 +30,7 @@ export interface LegacyPlaylistDetailRow {
   imgUrl: string;
 }
 
-export const playlistStorage = new MMKV({ id: "storage-playlist" });
+export const playlistStorage = createMMKV({ id: "storage-playlist" });
 
 export function usePlaylistOnQueue() {
   return useMMKVObject<{ value?: PlaylistMeta | undefined }>(PLAYLIST_ON_QUEUE, playlistStorage);
