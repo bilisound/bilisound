@@ -1,5 +1,5 @@
 import { createMMKV } from "react-native-mmkv";
-import superJson from "superjson";
+import * as superJson from "superjson";
 import { PersistStorage } from "zustand/middleware";
 
 export const zustandStorage = createMMKV({ id: "storage-zustand" });
@@ -15,7 +15,7 @@ export function createStorage<T>() {
       zustandStorage.set(name, superJson.stringify(value));
     },
     removeItem: name => {
-      zustandStorage.delete(name);
+      zustandStorage.remove(name);
     },
   };
   return storage;

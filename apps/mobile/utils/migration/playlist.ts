@@ -80,7 +80,7 @@ export async function handlePlaylist() {
         // 准备歌单 index
         log.info("正在迁移歌单数据……");
         const index: LegacyPlaylistMeta[] = JSON.parse(playlistStorage.getString(LEGACY_PLAYLIST_INDEX_KEY) || "[]");
-        playlistStorage.delete(LEGACY_PLAYLIST_INDEX_KEY);
+        playlistStorage.remove(LEGACY_PLAYLIST_INDEX_KEY);
 
         // 遍历歌单 index，插入到 SQLite 中，并处理歌单列表
         index.forEach(e => {
@@ -92,7 +92,7 @@ export async function handlePlaylist() {
           const detail: LegacyPlaylistDetailRow[] = JSON.parse(
             playlistStorage.getString(LEGACY_PLAYLIST_ITEM_KEY_PREFIX + e.id) || "[]",
           );
-          playlistStorage.delete(LEGACY_PLAYLIST_ITEM_KEY_PREFIX + e.id);
+          playlistStorage.remove(LEGACY_PLAYLIST_ITEM_KEY_PREFIX + e.id);
 
           // 插入歌单歌曲项
           detail.forEach(f => {
