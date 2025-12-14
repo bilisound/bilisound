@@ -12,27 +12,21 @@ export default function withCustomAppTheme(config: ExpoConfig) {
     styles.resources.style?.map(style => {
       if (style.$.name === "AppTheme") {
         // HyperOS 2 Android 15 TextInput (EditText) 内容不垂直居中问题修复
-        const hasTextView = style.item.some(
-          item => item.$.name === "android:textViewStyle"
-        );
+        const hasTextView = style.item.some(item => item.$.name === "android:textViewStyle");
         if (!hasTextView) {
           style.item.push({
             $: { name: "android:textViewStyle" },
             _: "@style/Widget.App.TextView",
           });
         }
-        const hasEditText = style.item.some(
-          item => item.$.name === "editTextStyle"
-        );
+        const hasEditText = style.item.some(item => item.$.name === "editTextStyle");
         if (!hasEditText) {
           style.item.push({
             $: { name: "editTextStyle" },
             _: "@style/Widget.App.EditText",
           });
         }
-        const hasAndroidEditText = style.item.some(
-          item => item.$.name === "android:editTextStyle"
-        );
+        const hasAndroidEditText = style.item.some(item => item.$.name === "android:editTextStyle");
         if (!hasAndroidEditText) {
           style.item.push({
             $: { name: "android:editTextStyle" },
@@ -42,9 +36,7 @@ export default function withCustomAppTheme(config: ExpoConfig) {
       }
     });
 
-    const hasWidgetTextView = styles.resources.style?.some(
-      style => style.$.name === "Widget.App.TextView"
-    );
+    const hasWidgetTextView = styles.resources.style?.some(style => style.$.name === "Widget.App.TextView");
     if (!hasWidgetTextView) {
       styles.resources.style?.push({
         $: { name: "Widget.App.TextView", parent: "Widget.AppCompat.TextView" },
@@ -61,9 +53,7 @@ export default function withCustomAppTheme(config: ExpoConfig) {
       });
     }
 
-    const hasWidgetEditText = styles.resources.style?.some(
-      style => style.$.name === "Widget.App.EditText"
-    );
+    const hasWidgetEditText = styles.resources.style?.some(style => style.$.name === "Widget.App.EditText");
     if (!hasWidgetEditText) {
       styles.resources.style?.push({
         $: { name: "Widget.App.EditText", parent: "Widget.AppCompat.EditText" },

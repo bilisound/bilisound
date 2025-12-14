@@ -7,7 +7,8 @@
     "lint": "turbo lint",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "postinstall": "pnpm run build"
+    "postinstall": "pnpm run build",
+    "prettier:fix": "prettier -w --ignore-unknown ."
   },
   "devDependencies": {
     "prettier": "^3.6.2",
