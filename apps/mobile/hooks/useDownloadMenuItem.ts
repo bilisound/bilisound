@@ -4,8 +4,7 @@ import { Platform } from "react-native";
 import { downloadResourceNow } from "~/business/download";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import Toast from "react-native-toast-message";
-import { useMMKVBoolean } from "react-native-mmkv";
-import { CACHE_INVALID_KEY_DO_NOT_USE, cacheStatusStorage } from "~/storage/cache-status";
+import { useCacheExists } from "~/storage/cache-status";
 import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
 import useSettingsStore from "~/store/settings";
 import { bv2av } from "~/utils/vendors/av-bv";
@@ -19,15 +18,10 @@ export function useDownloadMenuItem(
   closeCallback: () => void,
 ): ActionMenuItem[] {
   const { downloadList } = useDownloadStore();
-  const currentItemDownload = downloadList.get(
-    currentTrack?.extendedData?.id + "_" + currentTrack?.extendedData?.episode,
-  );
-  const [currentCache] = useMMKVBoolean(
-    currentTrack?.extendedData
-      ? currentTrack.extendedData.id + "_" + currentTrack.extendedData.episode
-      : CACHE_INVALID_KEY_DO_NOT_USE,
-    cacheStatusStorage,
-  );
+  const id = currentTrack?.extendedData?.id;
+  const episode = currentTrack?.extendedData?.episode;
+  const currentItemDownload = id && episode != null ? downloadList.get(`${id}_${episode}`) : undefined;
+  const currentCache = useCacheExists(id, episode);
   const currentProgress = currentItemDownload?.progress;
 
   return [

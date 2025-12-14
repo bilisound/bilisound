@@ -7,7 +7,7 @@ import log from "~/utils/logger";
 import useSettingsStore from "~/store/settings";
 import { getVideoUrl } from "~/business/constant-helper";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
-import { cacheStatusStorage } from "~/storage/cache-status";
+import { isCacheExists, setCacheExists } from "~/storage/cache-status";
 import { extractAudioFile } from "~/business/mp4";
 import { File } from "expo-file-system";
 
@@ -37,7 +37,7 @@ export function addDownloadTask(bvid: string, episode: number, title: string) {
   // 待检查的本地音频路径（包括从视频提取的音频）
   const checkUrl = getCacheAudioPath(playingRequest.id, playingRequest.episode, false);
 
-  if (cacheStatusStorage.getBoolean(playingRequest.id + "_" + playingRequest.episode)) {
+  if (isCacheExists(playingRequest.id, playingRequest.episode)) {
     log.debug(prefix + "本地缓存有对应内容记录，不需要下载");
     return false;
   }
@@ -148,7 +148,7 @@ export async function downloadResource(bvid: string, episode: number) {
       from: getCacheAudioPath(playingRequest.id, playingRequest.episode, true),
       to: checkUrl,
     });
-    cacheStatusStorage.set(playingRequest.id + "_" + playingRequest.episode, true);
+    setCacheExists(playingRequest.id, playingRequest.episode, true);
     removeDownloadItem(id);
     return;
   }
@@ -168,7 +168,7 @@ export async function downloadResource(bvid: string, episode: number) {
   // 收尾
   log.debug(prefix + "删除不再需要的视频文件");
   await FileSystem.deleteAsync(downloadTargetFileUrl);
-  cacheStatusStorage.set(playingRequest.id + "_" + playingRequest.episode, true);
+  setCacheExists(playingRequest.id, playingRequest.episode, true);
   removeDownloadItem(id);
 }
 

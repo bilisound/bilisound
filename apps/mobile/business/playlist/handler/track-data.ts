@@ -7,7 +7,7 @@ import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
 import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
 import type { PlaylistDetail } from "~/storage/sqlite/schema";
-import { cacheStatusStorage } from "~/storage/cache-status";
+import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 
 /**
@@ -62,7 +62,7 @@ export function processTrackDataForLoad(trackData: TrackData[]) {
  */
 export function playlistToTracks(playlist: PlaylistDetail[]): TrackData[] {
   return playlist.map(e => {
-    const isLoaded = !!cacheStatusStorage.getBoolean(e.bvid + "_" + e.episode);
+    const isLoaded = !!isCacheExists(e.bvid, e.episode);
 
     let uri = isLoaded ? getCacheAudioPath(e.bvid, e.episode) : PLACEHOLDER_AUDIO;
     if (Platform.OS === "web") {
@@ -85,7 +85,7 @@ export function playlistToTracks(playlist: PlaylistDetail[]): TrackData[] {
         referer: getVideoUrl(e.bvid, e.episode),
         "user-agent": USER_AGENT_BILIBILI,
       },
-      id: e.bvid + "_" + e.episode,
+      id: getCacheStatusKey(e.bvid, e.episode),
       title: e.title,
     };
   });

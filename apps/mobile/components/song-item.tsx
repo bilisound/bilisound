@@ -1,10 +1,9 @@
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
 import { ActivityIndicator, View } from "react-native";
-import { useMMKVBoolean } from "react-native-mmkv";
 
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Text } from "~/components/ui/text";
-import { cacheStatusStorage, useCacheExists } from "~/storage/cache-status";
+import { useCacheExists } from "~/storage/cache-status";
 import { PlaylistDetail } from "~/storage/sqlite/schema";
 import { formatSecond } from "~/utils/datetime";
 

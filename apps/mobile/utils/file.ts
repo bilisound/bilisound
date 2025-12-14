@@ -5,6 +5,7 @@ import path from "path-browserify";
 
 import { BILISOUND_OFFLINE_URI, BILISOUND_PROCESS_URI } from "~/constants/file";
 import { cacheStatusStorage } from "~/storage/cache-status";
+// 注意：cleanAudioCache 中直接使用 cacheStatusStorage.remove()，因为 key 是从文件名解析的
 import log from "~/utils/logger";
 import { getTracks } from "@bilisound/player";
 import { Platform } from "react-native";
@@ -111,7 +112,7 @@ export async function cleanAudioCache() {
   for (let i = 0; i < items.length; i++) {
     const name = path.parse(uriToPath(items[i])).name;
     await FileSystem.deleteAsync(items[i]);
-    cacheStatusStorage.delete(name);
+    cacheStatusStorage.remove(name);
   }
 }
 

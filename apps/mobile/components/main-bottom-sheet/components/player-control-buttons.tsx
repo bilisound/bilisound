@@ -10,8 +10,7 @@ import {
   useIsPlaying,
 } from "@bilisound/player";
 import { useRepeatMode } from "@bilisound/player/build/hooks/useRepeatMode";
-import { useMMKVString } from "react-native-mmkv";
-import { QUEUE_PLAYING_MODE, queueStorage } from "~/storage/queue";
+import { useQueuePlayingMode } from "~/storage/queue";
 import { usePlaylistRestoreLoopOnceFlag } from "~/storage/playlist";
 import React, { useState } from "react";
 import { isLoading } from "~/components/main-bottom-sheet/utils";
@@ -28,7 +27,7 @@ export function PlayerControlButtons() {
   const { colorValue } = useRawThemeValues();
   const isPlaying = useIsPlaying();
   const repeatModeRaw = useRepeatMode();
-  const [queuePlayingMode] = useMMKVString(QUEUE_PLAYING_MODE, queueStorage);
+  const [queuePlayingMode] = useQueuePlayingMode();
   const [restoreLoopOnceFlag] = usePlaylistRestoreLoopOnceFlag();
   const repeatMode = restoreLoopOnceFlag ? RepeatMode.ONE : repeatModeRaw;
 

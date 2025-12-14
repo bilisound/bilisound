@@ -17,7 +17,7 @@ import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
 import { getBilisoundMetadata, getBilisoundResourceUrl } from "~/api/bilisound";
 import log from "~/utils/logger";
-import { cacheStatusStorage } from "~/storage/cache-status";
+import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
 import { getPlaylistDetail } from "~/storage/sqlite/playlist";
 import { invalidateOnQueueStatus, PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
@@ -63,7 +63,7 @@ export async function addTrackFromDetail(id: string, episode: number) {
       referer: getVideoUrl(id, episode),
       "user-agent": USER_AGENT_BILIBILI,
     },
-    id: id + "_" + episode,
+    id: getCacheStatusKey(id, episode),
     title: data.pages.length === 1 ? data.title : currentEpisode.part,
   };
   await Player.addTrack(trackData);
@@ -90,7 +90,7 @@ export async function refreshTrack(trackData: TrackData) {
   log.debug(`id: ${id}, episode: ${episode}`);
 
   // 处理本地缓存
-  const got = cacheStatusStorage.getBoolean(`${id}_${episode}`);
+  const got = isCacheExists(id, episode);
   if (got) {
     log.info("有缓存，应用缓存");
     // url 设置为缓存数据
@@ -127,7 +127,7 @@ export async function refreshCurrentTrack() {
   const toPersistentCondition =
     trackData?.extendedData &&
     !trackData.extendedData.isLoaded &&
-    cacheStatusStorage.getBoolean(`${trackData.extendedData.id}_${trackData.extendedData.episode}`);
+    isCacheExists(trackData.extendedData.id, trackData.extendedData.episode);
 
   if (toPersistentCondition || updateCondition) {
     if ((await Player.getRepeatMode()) === RepeatMode.ONE) {

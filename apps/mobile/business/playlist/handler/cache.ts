@@ -3,7 +3,7 @@ import * as Player from "@bilisound/player";
 import { Platform } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
 
-import { cacheStatusStorage } from "~/storage/cache-status";
+import { deleteCacheStatus } from "~/storage/cache-status";
 import { PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 import useSettingsStore from "~/store/settings";
@@ -73,7 +73,7 @@ export async function deleteCurrentTrackCache() {
   try {
     await Player.replaceTrack(currentTrackIndex, currentTrack);
     await FileSystem.deleteAsync(deleteTarget);
-    cacheStatusStorage.remove(currentTrack.extendedData.id + "_" + currentTrack.extendedData.episode);
+    deleteCacheStatus(currentTrack.extendedData.id, currentTrack.extendedData.episode);
   } catch (e) {
     log.error("错误捕获：" + e);
     useErrorMessageStore.getState().setMessage(String((e as Error)?.message || e));
