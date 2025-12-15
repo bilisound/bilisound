@@ -1,14 +1,17 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsx
 
-const { spawn } = require("child_process");
-const os = require("os");
-const path = require("path");
+import { spawn } from "node:child_process";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // 获取命令行参数，去掉前两个（node 和脚本名）
 const args = process.argv.slice(2);
 
 // 根据操作系统确定要执行的命令
-let command;
+let command: string;
 if (os.platform() === "win32") {
   command = ".\\gradlew.bat";
 } else {
@@ -27,5 +30,5 @@ const child = spawn(command, args, {
 
 // 处理子进程的退出
 child.on("exit", code => {
-  process.exit(code);
+  process.exit(code ?? 0);
 });

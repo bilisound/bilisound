@@ -9,7 +9,7 @@
     "web": "expo start -c --web",
     "prepare": "pnpm run generate-license",
     "test": "jest --watchAll",
-    "build:android": "node ./scripts/run-gradle.js assembleRelease",
+    "build:android": "tsx ./scripts/run-gradle.mts assembleRelease",
     "build:web": "expo export --platform web",
     "lint": "eslint --fix .",
     "generate-migration": "drizzle-kit generate",

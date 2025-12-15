@@ -1,6 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const generateLicenseFile = require("generate-license-file");
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { getProjectLicenses } from "generate-license-file";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Script to generate license data from npm dependencies
@@ -11,8 +14,13 @@ const PACKAGE_DIR = path.resolve(__dirname, "..");
 const PACKAGE_JSON_PATH = path.resolve(PACKAGE_DIR, "package.json");
 const OUTPUT_FILE = path.resolve(__dirname, "../assets/licenses.json");
 
+interface LicensePattern {
+  pattern: RegExp;
+  name: string;
+}
+
 // Common license patterns to identify license types from text
-const LICENSE_PATTERNS = [
+const LICENSE_PATTERNS: LicensePattern[] = [
   // 确保 Apache 许可证检测更加精确，并放在更高优先级
   {
     pattern:
@@ -32,16 +40,23 @@ const LICENSE_PATTERNS = [
   { pattern: /Unlicense|This is free and unencumbered software released into the public domain/i, name: "Unlicense" },
 ];
 
-async function generateLicenseData() {
+interface FormattedLicense {
+  name: string;
+  version: string;
+  license: string;
+  licenseText: string;
+}
+
+async function generateLicenseData(): Promise<void> {
   try {
     console.log("Generating license data...");
 
     // Get license data using getProjectLicenses method
-    const licenses = await generateLicenseFile.getProjectLicenses(PACKAGE_JSON_PATH);
+    const licenses = await getProjectLicenses(PACKAGE_JSON_PATH);
 
     // Format the license data as needed
-    const formattedData = [];
-    const warnings = [];
+    const formattedData: FormattedLicense[] = [];
+    const warnings: string[] = [];
 
     // Process each license
     for (const license of licenses) {
@@ -50,7 +65,7 @@ async function generateLicenseData() {
         try {
           // Extract package name and version from dependency string (format: package@version)
           const lastAtIndex = dependency.lastIndexOf("@");
-          let name, version;
+          let name: string, version: string;
 
           if (lastAtIndex > 0) {
             // Handle scoped packages like @scope/package@version
@@ -78,7 +93,7 @@ async function generateLicenseData() {
             licenseText: license.content || "",
           });
         } catch (err) {
-          warnings.push(`Error processing dependency ${dependency}: ${err.message}`);
+          warnings.push(`Error processing dependency ${dependency}: ${(err as Error).message}`);
         }
       }
     }
@@ -118,11 +133,8 @@ async function generateLicenseData() {
 
 /**
  * Determine license type from license text
- * @param {string} licenseText - The text content of the license
- * @param {string} packageName - The name of the package
- * @returns {string} - The identified license type or "Unknown"
  */
-function determineLicenseType(licenseText, packageName) {
+function determineLicenseType(licenseText: string, packageName: string): string {
   if (!licenseText) return "Unknown";
 
   // 特殊处理 typescript 包

@@ -52,7 +52,7 @@ jobs:
         env:
           EXPO_VERSION: ${{ steps.build_version.outputs.version }}
         run: |
-          node ./scripts/change-version.js
+          npx tsx ./scripts/change-version.mts
 
       - name: 📦 Install dependencies
         env:
