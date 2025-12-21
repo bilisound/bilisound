@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "useGitignore": true,
+  "dictionaries": ["typescript", "node", "html", "css", "npm", "softwareTerms", "companies"],
+  "ignorePaths": ["pnpm-lock.yaml", "*.patch", "*.json", "*.html", "*.xml", "*.svg", "*.polyfill.js"],
+  "words": ["bilibili", "bvid", "jvmargs", "Metaspace", "Numberish"]
+}
