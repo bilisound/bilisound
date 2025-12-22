@@ -4,7 +4,7 @@ import { ActivityIndicator, GestureResponderEvent, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Pressable } from "~/components/ui/pressable";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 
 export interface SettingMenuItemProps {
   title: string;
@@ -35,7 +35,7 @@ export function SettingMenuItem({
             {icon === "loading" ? (
               <ActivityIndicator size={iconSize ?? 20} color={colorValue("--color-typography-700")} />
             ) : (
-              <Monicon name={icon} size={iconSize ?? 20} color={colorValue("--color-typography-700")} />
+              <Icon name={icon} size={iconSize ?? 20} color={colorValue("--color-typography-700")} />
             )}
           </View>
           <Text className="font-semibold text-[15px]">{title}</Text>

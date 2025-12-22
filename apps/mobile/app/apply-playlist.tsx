@@ -18,7 +18,7 @@ import { Layout } from "~/components/layout";
 import { Pressable } from "~/components/ui/pressable";
 import { playlistToTracks } from "~/business/playlist/handler";
 import * as Player from "@bilisound/player";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 
 export default function Page() {
   const [playlistOnQueue = {}] = usePlaylistOnQueue();
@@ -110,7 +110,7 @@ export default function Page() {
           >
             <View className="flex-row items-center gap-3">
               <View className={"items-center justify-center size-6"}>
-                <Monicon name="fa6-solid:plus" size={18} color="red" />
+                <Icon name="fa6-solid:plus" size={18} color="red" />
               </View>
               <Text className="text-base leading-normal flex-1" isTruncated>
                 {name}

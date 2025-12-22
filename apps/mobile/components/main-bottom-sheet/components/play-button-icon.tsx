@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { isLoading } from "~/components/main-bottom-sheet/utils";
 import { useProgressSecond } from "~/hooks/useProgressSecond";
 import { ActivityIndicator, View } from "react-native";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 
 export function PlayButtonIcon({ size = 28 }: { size?: number }) {
   const duration = 200;
@@ -48,10 +48,10 @@ export function PlayButtonIcon({ size = 28 }: { size?: number }) {
   return (
     <View className="relative size-8">
       <Animated.View style={pauseAnimatedStyle} className="absolute size-full items-center justify-center">
-        <Monicon name="fa6-solid:pause" size={size / 0.875} color={colorValue("--color-background-0")} />
+        <Icon name="fa6-solid:pause" size={size / 0.875} color={colorValue("--color-background-0")} />
       </Animated.View>
       <Animated.View style={playAnimatedStyle} className="absolute size-full items-center justify-center">
-        <Monicon name="fa6-solid:play" size={size} color={colorValue("--color-background-0")} />
+        <Icon name="fa6-solid:play" size={size} color={colorValue("--color-background-0")} />
       </Animated.View>
     </View>
   );

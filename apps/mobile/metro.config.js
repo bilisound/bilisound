@@ -1,6 +1,5 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
-const { withMonicon } = require("@monicon/metro");
 const { mergeConfig } = require("axios");
 const path = require("path");
 
@@ -13,28 +12,17 @@ const config = mergeConfig(getDefaultConfig(__dirname), {
     },*/
 });
 
+// SVG transformer configuration
+const defaultAssetExts = config.resolver.assetExts || [];
+const defaultSourceExts = config.resolver.sourceExts || [];
+config.resolver.assetExts = defaultAssetExts.filter((ext) => ext !== "svg");
 config.resolver.assetExts.push("txt");
+config.resolver.sourceExts = [...defaultSourceExts, "svg"];
+config.transformer = {
+  ...config.transformer,
+  babelTransformerPath: require.resolve("react-native-svg-transformer"),
+};
 
 const configWithNativeWind = withNativeWind(config, { input: "./global.css", inlineRem: 16 });
 
-const configWithMonicon = withMonicon(configWithNativeWind, {
-  collections: ["fa6-solid"],
-  icons: [
-    "uil:qrcode-scan",
-    "ri:skip-back-mini-fill",
-    "tabler:alert-square-rounded",
-    "tabler:repeat-off",
-    "tabler:repeat",
-    "tabler:repeat-once",
-    "tabler:arrows-right",
-    "tabler:arrows-shuffle",
-    "ion:checkmark-circle",
-    "ion:information-circle",
-    "ion:alert-circle",
-    "ion:close-circle",
-    "material-symbols:speed-rounded",
-    "mingcute:grid-fill",
-  ],
-});
-
-module.exports = configWithMonicon;
+module.exports = configWithNativeWind;

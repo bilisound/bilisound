@@ -58,8 +58,6 @@
     "@iconify-json/uil": "^1.2.3",
     "@legendapp/motion": "^2.5.3",
     "@miblanchard/react-native-slider": "^2.6.0",
-    "@monicon/metro": "1.2.2",
-    "@monicon/native": "1.2.2",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-navigation/native": "^7.1.24",
     "@rn-primitives/tabs": "^1.2.0",
@@ -153,5 +151,8 @@
     "zod": "^4.1.13",
     "zustand": "^5.0.9"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "react-native-svg-transformer": "^1.5.2"
+  }
 }

@@ -356,7 +356,7 @@ export const buttonGroupStyle = tva({
 
 export const buttonMonIconStyle = tva({
   base: "items-center justify-center",
-  // 尽管这里的样式不会在 Native 端被应用到子元素，但是能够缓解 Monicon 图标在 Web 端上色不生效的问题
+  // 尽管这里的样式不会在 Native 端被应用到子元素，但是能够缓解图标在 Web 端上色不生效的问题
   parentVariants: {
     variant: {
       link: "",

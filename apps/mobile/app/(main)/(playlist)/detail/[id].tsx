@@ -1,4 +1,4 @@
-import Monicon from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { usePreventRemove } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
@@ -123,7 +123,7 @@ export default function Page() {
     <View className="px-4 pb-2">
       <Input className="rounded-xl">
         <InputSlot className="pl-4">
-          <Monicon name="fa6-solid:filter" size={16} color={colorValue("--color-primary-500")} />
+          <Icon name="fa6-solid:filter" size={16} color={colorValue("--color-primary-500")} />
         </InputSlot>
         <InputField
           placeholder="过滤歌曲或作者……"
@@ -139,7 +139,7 @@ export default function Page() {
               setSearchQuery("");
             }}
           >
-            <Monicon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
+            <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
           </InputSlot>
         )}
       </Input>

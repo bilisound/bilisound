@@ -7,7 +7,7 @@ import { PlaylistMeta } from "~/storage/sqlite/schema";
 import { Pressable } from "~/components/ui/pressable";
 import { Skeleton } from "~/components/ui/skeleton";
 import { SkeletonText } from "~/components/skeleton-text";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { Image } from "expo-image";
 import { getImageProxyUrl } from "~/business/constant-helper";
 import { Svg, Polygon } from "react-native-svg";
@@ -31,7 +31,7 @@ export function PlaylistItem({ item, onPress, onLongPress, className, style, gri
         {item ? (
           <View className="w-6 h-6 items-center justify-center basis-auto flex-0">
             {item.source ? (
-              <Monicon name="fa6-solid:cloud" size={16} color={item.color} />
+              <Icon name="fa6-solid:cloud" size={20} color={item.color} />
             ) : (
               <View className="w-[0.875rem] h-[0.875rem] rounded-full" style={[{ backgroundColor: item.color }]} />
             )}
@@ -72,7 +72,7 @@ export function PlaylistItem({ item, onPress, onLongPress, className, style, gri
                     <Polygon points="58,0 58,58 0,58" fill={item.color} />
                   </Svg>
                   <View className={"absolute right-3 bottom-3 size-3 items-center justify-center"}>
-                    <Monicon name="fa6-solid:cloud" size={12} color="white" />
+                    <Icon name="fa6-solid:cloud" size={16} color="white" />
                   </View>
                 </>
               ) : null}

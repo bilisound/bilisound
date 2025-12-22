@@ -20,7 +20,7 @@ import { useConfirm } from "~/hooks/useConfirm";
 import log from "~/utils/logger";
 import { handleQrCode } from "~/business/qrcode";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { BRAND } from "~/constants/branding";
 
 export default function Page() {
@@ -94,7 +94,7 @@ export default function Page() {
           }}
           style={[styles.backButton, { top: 10 + safeAreaInsets.top, left: 10 + safeAreaInsets.left }]}
         >
-          <Monicon name="fa6-solid:arrow-left" size={20} color="#fff" />
+          <Icon name="fa6-solid:arrow-left" size={20} color="#fff" />
         </Pressable>
         <Text style={styles.headerText}>扫描二维码</Text>
       </View>

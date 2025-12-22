@@ -13,7 +13,7 @@ import { toggle, useCurrentTrack, useIsPlaying, usePlaybackState } from "@biliso
 import { Image } from "expo-image";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { ButtonOuter } from "~/components/ui/button";
 import { useBottomSheetStore } from "~/store/bottom-sheet";
 import { convertToHTTPS } from "~/utils/string";
@@ -49,7 +49,7 @@ const TabTriggerChild = ({
 
   return (
     <Pressable onPress={onPress} className={triggerClasses} {...props} ref={ref}>
-      <Monicon
+      <Icon
         name={iconName}
         color={isFocused ? colorValue("--color-accent-500") : colorValue("--color-typography-700", 0.4)}
         size={16}
@@ -79,7 +79,7 @@ function PlayingIcon() {
 
   return (
     <View className="items-center justify-center size-6 flex-0">
-      <Monicon name={isPlaying ? "fa6-solid:pause" : "fa6-solid:play"} size={isPlaying ? 24 : 20} color={accentColor} />
+      <Icon name={isPlaying ? "fa6-solid:pause" : "fa6-solid:play"} size={isPlaying ? 24 : 20} color={accentColor} />
     </View>
   );
 }
@@ -122,7 +122,7 @@ function CurrentPlayingTablet() {
             {playbackState === "STATE_BUFFERING" || isPlaceholderTrack ? (
               <ActivityIndicator color={colorValue("--color-accent-500")} size={22} />
             ) : (
-              <Monicon
+              <Icon
                 name={isPlaying ? "fa6-solid:pause" : "fa6-solid:play"}
                 size={isPlaying ? 22 : 18}
                 color={colorValue("--color-accent-500")}

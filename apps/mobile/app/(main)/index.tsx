@@ -16,7 +16,7 @@ import { AlertCircleIcon } from "~/components/ui/icon";
 import React from "react";
 import { router } from "expo-router";
 import { resolveVideo, resolveVideoAndJump } from "~/business/format";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { BRAND } from "~/constants/branding";
 
@@ -126,7 +126,7 @@ export default function MainScreen() {
                       setFormValue("videoUrl", "");
                     }}
                   >
-                    <Monicon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
+                    <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
                   </InputSlot>
                   <View className={"w-[1px] h-6 bg-background-100"}></View>
                   <InputSlot className="h-12 px-3 items-center justify-center" onPress={handleSubmit(onSubmit)}>

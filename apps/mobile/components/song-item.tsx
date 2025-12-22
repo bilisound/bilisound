@@ -13,7 +13,7 @@ import React from "react";
 import { Pressable } from "~/components/ui/pressable";
 import { useCurrentTrack, useIsPlaying, usePlaybackState } from "@bilisound/player";
 import { shadow } from "~/constants/styles";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 import { Skeleton } from "~/components/ui/skeleton";
 import { SkeletonText } from "~/components/skeleton-text";
@@ -35,7 +35,7 @@ function PlayingIcon() {
 
   return (
     <View className="items-center justify-center size-6">
-      <Monicon name={isPlaying ? "fa6-solid:pause" : "fa6-solid:play"} size={isPlaying ? 24 : 20} color={accentColor} />
+      <Icon name={isPlaying ? "fa6-solid:pause" : "fa6-solid:play"} size={isPlaying ? 24 : 20} color={accentColor} />
     </View>
   );
 }
@@ -115,7 +115,7 @@ export function SongItem({
           )}
           <View className="mt-1 flex-row items-center gap-1.5">
             {exists ? (
-              <Monicon name="ion:checkmark-circle" size={16} color={colorValue("--color-typography-700", 0.5)} />
+              <Icon name="ion:checkmark-circle" size={16} color={colorValue("--color-typography-700", 0.5)} />
             ) : null}
             {data ? (
               <Text className="text-sm opacity-50" style={{ fontFamily: "Roboto_400Regular" }}>
@@ -134,7 +134,7 @@ export function SongItem({
               isChecked ? "bg-primary-500 dark:bg-primary-400" : "bg-transparent"
             }`}
           >
-            <Monicon name={"fa6-solid:check"} size={16} color={isChecked ? "white" : "transparent"} />
+            <Icon name={"fa6-solid:check"} size={16} color={isChecked ? "white" : "transparent"} />
           </View>
         </View>
       ) : isActiveTrack ? (

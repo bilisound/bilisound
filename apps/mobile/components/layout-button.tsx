@@ -3,7 +3,7 @@ import { Button, ButtonOuter } from "~/components/ui/button";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Pressable } from "~/components/ui/pressable";
 import { twMerge } from "tailwind-merge";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 
 export interface LayoutButtonProps extends React.ComponentPropsWithoutRef<typeof Button> {
   iconSize?: number;
@@ -27,7 +27,7 @@ export const LayoutButton = ({
         className={twMerge("w-[2.75rem] h-[2.75rem] rounded-lg px-0 items-center justify-center", className)}
         ref={ref}
       >
-        <Monicon size={iconSize} color={colorValue("--color-primary-500")} name={iconName} />
+        <Icon size={iconSize} color={colorValue("--color-primary-500")} name={iconName} />
       </Pressable>
     </ButtonOuter>
   );

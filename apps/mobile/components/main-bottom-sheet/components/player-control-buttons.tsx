@@ -20,7 +20,7 @@ import { DEBUG_COLOR, REPEAT_MODE } from "~/components/main-bottom-sheet/constan
 import { setMode } from "~/business/playlist/shuffle";
 import { View } from "react-native";
 import { Button, ButtonOuter } from "~/components/ui/button";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { PlayButtonIcon } from "./play-button-icon";
 
 export function PlayerControlButtons() {
@@ -92,7 +92,7 @@ export function PlayerControlButtons() {
           disabled={buttonDisabled}
         >
           <View className={"size-[44px] items-center justify-center"}>
-            <Monicon
+            <Icon
               name={REPEAT_MODE[repeatMode].icon}
               size={iconToolSize}
               color={colorValue("--color-primary-500")}
@@ -111,7 +111,7 @@ export function PlayerControlButtons() {
             variant={"ghost"}
           >
             <View className={"size-[44px] items-center justify-center"}>
-              <Monicon name={"ri:skip-back-mini-fill"} size={iconJumpSize} color={colorValue("--color-primary-500")} />
+              <Icon name={"ri:skip-back-mini-fill"} size={iconJumpSize} color={colorValue("--color-primary-500")} />
             </View>
           </Button>
         </ButtonOuter>
@@ -133,7 +133,7 @@ export function PlayerControlButtons() {
             variant={"ghost"}
           >
             <View className={"size-[44px] items-center justify-center rotate-180"}>
-              <Monicon name={"ri:skip-back-mini-fill"} size={iconJumpSize} color={colorValue("--color-primary-500")} />
+              <Icon name={"ri:skip-back-mini-fill"} size={iconJumpSize} color={colorValue("--color-primary-500")} />
             </View>
           </Button>
         </ButtonOuter>
@@ -149,7 +149,7 @@ export function PlayerControlButtons() {
           disabled={buttonDisabled}
         >
           <View className={"size-[44px] items-center justify-center"}>
-            <Monicon
+            <Icon
               name={queuePlayingMode === "shuffle" ? "tabler:arrows-shuffle" : "tabler:arrows-right"}
               size={iconToolSize}
               color={colorValue("--color-primary-500")}

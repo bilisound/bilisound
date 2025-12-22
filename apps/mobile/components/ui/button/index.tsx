@@ -16,7 +16,7 @@ import {
   buttonMonIconStyle,
   buttonMonIconInternalStyle,
 } from "./styles";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
 const SCOPE = "BUTTON";
@@ -185,7 +185,7 @@ const ButtonMonIcon = React.forwardRef<React.ElementRef<typeof View>, IButtonMon
         })}
         ref={ref}
       >
-        <Monicon
+        <Icon
           name={name}
           size={size}
           className={buttonMonIconInternalStyle({

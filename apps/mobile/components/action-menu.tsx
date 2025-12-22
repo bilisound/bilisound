@@ -1,6 +1,6 @@
 import { ActionsheetItem, ActionsheetItemText } from "~/components/ui/actionsheet";
 import { Platform, View } from "react-native";
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import React from "react";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { useWindowSize } from "~/hooks/useWindowSize";
@@ -28,7 +28,7 @@ export function ActionMenu({ menuItems }: ActionSheetProps) {
     .map((item, index) => (
       <ActionsheetItem key={index} onPress={item.action} isDisabled={item.disabled}>
         <View className={"size-6 items-center justify-center"}>
-          <Monicon name={item.icon} size={item.iconSize ?? 18} color={colorValue("--color-typography-700")} />
+          <Icon name={item.icon} size={item.iconSize ?? 18} color={colorValue("--color-typography-700")} />
         </View>
         <ActionsheetItemText>{item.text}</ActionsheetItemText>
       </ActionsheetItem>

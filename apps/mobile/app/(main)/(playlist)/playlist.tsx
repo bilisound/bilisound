@@ -1,4 +1,4 @@
-import { Monicon } from "@monicon/native";
+import { Icon } from "~/components/icon";
 import { FlashList } from "@shopify/flash-list";
 import { View } from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -293,13 +293,13 @@ export default function Page() {
                 }}
               >
                 <Box className={"size-4 items-center justify-center mr-3"}>
-                  <Monicon name={"fa6-solid:plus"} size={16} className={"text-typography-700"} />
+                  <Icon name={"fa6-solid:plus"} size={16} className={"text-typography-700"} />
                 </Box>
                 <MenuItemLabel>创建新歌单</MenuItemLabel>
               </MenuItem>
               <MenuItem key="import" textValue="导入歌单" onPress={handleImport}>
                 <Box className={"size-4 items-center justify-center mr-3"}>
-                  <Monicon name={"fa6-solid:file-import"} size={16} className={"text-typography-700"} />
+                  <Icon name={"fa6-solid:file-import"} size={16} className={"text-typography-700"} />
                 </Box>
                 <MenuItemLabel>导入歌单</MenuItemLabel>
               </MenuItem>
@@ -313,7 +313,7 @@ export default function Page() {
             <View className="px-4 pb-2">
               <Input className="rounded-xl">
                 <InputSlot className="pl-4">
-                  <Monicon name="fa6-solid:filter" size={16} color={colorValue("--color-primary-500")} />
+                  <Icon name="fa6-solid:filter" size={16} color={colorValue("--color-primary-500")} />
                 </InputSlot>
                 <InputField
                   placeholder="过滤歌单标题或描述……"
@@ -329,7 +329,7 @@ export default function Page() {
                       setSearchQuery("");
                     }}
                   >
-                    <Monicon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
+                    <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
                   </InputSlot>
                 )}
               </Input>
