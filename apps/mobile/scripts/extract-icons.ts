@@ -53,6 +53,7 @@ const iconsToExtract = [
   "fa6-solid:circle-up",
   "fa6-solid:award",
   "fa6-solid:circle-stop",
+  "fa6-solid:face-kiss-wink-heart",
 
   // ion icons
   "ion:checkmark-circle",

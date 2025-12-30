@@ -61,6 +61,7 @@ import SkipBackMiniFillIcon from "~/assets/icons/skip-back-mini-fill.svg";
 import QrcodeScanIcon from "~/assets/icons/qrcode-scan.svg";
 import GridFillIcon from "~/assets/icons/grid-fill.svg";
 import SpeedRoundedIcon from "~/assets/icons/speed-rounded.svg";
+import FaceKissWinkHeartIcon from "~/assets/icons/face-kiss-wink-heart.svg";
 
 // Icon name to component mapping
 const iconMap: Record<string, React.FC<SvgProps>> = {
@@ -109,6 +110,7 @@ const iconMap: Record<string, React.FC<SvgProps>> = {
   "fa6-solid:circle-up": CircleUpIcon,
   "fa6-solid:award": AwardIcon,
   "fa6-solid:circle-stop": CircleStopIcon,
+  "fa6-solid:face-kiss-wink-heart": FaceKissWinkHeartIcon,
 
   // ion icons
   "ion:checkmark-circle": CheckmarkCircleIcon,

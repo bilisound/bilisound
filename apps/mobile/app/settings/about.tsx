@@ -91,6 +91,11 @@ export default function Page() {
           title="开源软件许可证"
           onPress={() => router.navigate("/settings/license")}
         />
+        <SettingMenuItem
+          icon={"fa6-solid:face-kiss-wink-heart"}
+          title="致谢"
+          onPress={() => router.navigate("/settings/credit")}
+        />
       </ScrollView>
       {checkInfo ? <CheckUpdateDialog open={modalVisible} onClose={handleClose} result={checkInfo} /> : null}
     </Layout>
