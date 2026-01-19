@@ -1,16 +1,7 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
-const { mergeConfig } = require("axios");
-const path = require("path");
 
-const config = mergeConfig(getDefaultConfig(__dirname), {
-  projectRoot: path.resolve(__dirname, ".."),
-  /*resolver: {
-        unstable_enableSymlinks: true,
-        unstable_enablePackageExports: true,
-        unstable_conditionNames: ["browser", "require", "react-native"],
-    },*/
-});
+const config = getDefaultConfig(__dirname);
 
 // SVG transformer configuration
 const defaultAssetExts = config.resolver.assetExts || [];

@@ -12,7 +12,7 @@
     "itty-router": "^5.0.22"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20251115.0",
-    "wrangler": "^4.47.0"
+    "@cloudflare/workers-types": "^4.20260118.0",
+    "wrangler": "^4.59.2"
   }
 }
