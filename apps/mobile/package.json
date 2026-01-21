@@ -26,7 +26,7 @@
   "dependencies": {
     "@animatereactnative/marquee": "^0.5.2",
     "@babel/core": "^7.28.6",
-    "@bilisound/player": "0.2.0",
+    "@bilisound/player": "workspace:*",
     "@bilisound/sdk": "workspace:*",
     "@expo-google-fonts/poppins": "^0.4.1",
     "@expo-google-fonts/roboto": "^0.4.2",

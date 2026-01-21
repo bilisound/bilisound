@@ -1,0 +1,43 @@
+{
+  "name": "bilisound-player-example",
+  "version": "1.0.0",
+  "main": "expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start --dev-client -c",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "build:web": "expo export --platform web",
+    "prepare": "pnpm clean && expo prebuild",
+    "clean": "node -e \"const opt = { recursive: true, force: true }; fs.rmSync('./ios', opt); fs.rmSync('./android', opt); fs.rmSync('./node_modules/.cache', opt)\""
+  },
+  "dependencies": {
+    "@bilisound/player": "workspace:*",
+    "@expo/metro-runtime": "~6.1.2",
+    "@babel/runtime": "^7.28.0",
+    "axios": "^1.9.0",
+    "expo": "~54.0.31",
+    "expo-build-properties": "~1.0.10",
+    "expo-system-ui": "~6.0.9",
+    "md5": "^2.3.0",
+    "promise-memoize": "^1.2.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-logs": "^5.3.0",
+    "react-native-web": "~0.21.2"
+  },
+  "devDependencies": {
+    "@types/md5": "^2.3.5",
+    "@types/promise-memoize": "^1.2.4",
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.2.9",
+    "typescript": "~5.9.2"
+  },
+  "private": true,
+  "expo": {
+    "autolinking": {
+      "nativeModulesDir": "../../packages/player"
+    }
+  }
+}
