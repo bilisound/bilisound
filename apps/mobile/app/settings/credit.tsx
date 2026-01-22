@@ -99,11 +99,11 @@ function CreditSection({ category, items }: CreditItem) {
   return (
     <View className="mb-6">
       <Text className="text-lg font-semibold px-4 mb-3 opacity-80">{category}</Text>
-      <View className="bg-background-50 dark:bg-background-800 rounded-xl mx-4">
+      <View className="bg-background-50 rounded-xl mx-4">
         {items.map((item, index) => (
           <View
             key={item.name}
-            className={`px-4 py-3 ${index !== items.length - 1 ? "border-b border-background-200 dark:border-background-700" : ""}`}
+            className={`px-4 py-3 ${index !== items.length - 1 ? "border-b border-background-200" : ""}`}
           >
             <Text className="text-base font-medium">{item.name}</Text>
             <Text className="text-sm opacity-60 mt-0.5">{item.author}</Text>
