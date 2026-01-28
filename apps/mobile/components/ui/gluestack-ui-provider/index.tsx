@@ -1,7 +1,7 @@
 import React from "react";
 import { config, ConfigName, parsedConfig } from "./config";
 import { View } from "react-native";
-import { OverlayProvider } from "@gluestack-ui/overlay";
+import { OverlayProvider } from "@gluestack-ui/core/overlay/creator";
 import useSettingsStore from "~/store/settings";
 import { ThemeValueProvider } from "~/components/ui/gluestack-ui-provider/theme";
 

@@ -92,11 +92,7 @@ export function PlayerControlButtons() {
           disabled={buttonDisabled}
         >
           <View className={"size-[44px] items-center justify-center"}>
-            <Icon
-              name={REPEAT_MODE[repeatMode].icon}
-              size={iconToolSize}
-              color={colorValue("--color-primary-500")}
-            />
+            <Icon name={REPEAT_MODE[repeatMode].icon} size={iconToolSize} color={colorValue("--color-primary-500")} />
           </View>
         </Button>
       </ButtonOuter>

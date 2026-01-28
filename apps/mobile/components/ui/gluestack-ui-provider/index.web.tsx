@@ -1,6 +1,6 @@
 "use client";
-import { setFlushStyles } from "@gluestack-ui/nativewind-utils/flush";
-import { OverlayProvider } from "@gluestack-ui/overlay";
+import { setFlushStyles } from "@gluestack-ui/utils/nativewind-utils";
+import { OverlayProvider } from "@gluestack-ui/core/overlay/creator";
 import React from "react";
 
 import { config, ConfigName, parsedConfig } from "./config";

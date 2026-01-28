@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { createPressable } from "@gluestack-ui/pressable";
+import { createPressable } from "@gluestack-ui/core/pressable/creator";
 import { Pressable as RNPressable, Platform } from "react-native";
 
-import { withStyleContext } from "@gluestack-ui/nativewind-utils/withStyleContext";
-import { withStyleContextAndStates } from "@gluestack-ui/nativewind-utils/withStyleContextAndStates";
+import { withStyleContext } from "@gluestack-ui/utils/nativewind-utils";
+import { withStyleContextAndStates } from "~/components/ui/utils/with-style-context-and-states";
 import { cssInterop } from "nativewind";
-import type { VariantProps } from "@gluestack-ui/nativewind-utils";
+import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { pressableStyle } from "./styles";
 
 const UIPressable = createPressable({
