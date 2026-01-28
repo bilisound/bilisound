@@ -12,10 +12,7 @@ import {
 import { BilisoundPlayerModuleInterface } from "./types/module";
 import { deleteItems } from "./utils";
 
-class BilisoundPlayerModuleWeb
-  extends NativeModule<EventListFunc>
-  implements BilisoundPlayerModuleInterface
-{
+class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements BilisoundPlayerModuleInterface {
   private static isMediaSessionAvailable = !!window?.navigator?.mediaSession;
   /**
    * HTMLAudioElement 本体
@@ -99,16 +96,14 @@ class BilisoundPlayerModuleWeb
     el.addEventListener("pause", () => {
       this.emit("onIsPlayingChange", { isPlaying: false });
     });
-    el.addEventListener("error", (e) => {
+    el.addEventListener("error", e => {
       this.emit("onPlaybackError", {
         type: "ERROR_GENERIC",
         message: e.message,
       });
     });
     if (BilisoundPlayerModuleWeb.isMediaSessionAvailable) {
-      navigator.mediaSession.setActionHandler("previoustrack", () =>
-        this.prev(),
-      );
+      navigator.mediaSession.setActionHandler("previoustrack", () => this.prev());
       navigator.mediaSession.setActionHandler("nexttrack", () => this.next());
     }
 
@@ -206,10 +201,7 @@ class BilisoundPlayerModuleWeb
     return this.setCurrent(to);
   }
 
-  private async setCurrent(
-    to: number,
-    options: { noUpdateUri?: boolean } = {},
-  ) {
+  private async setCurrent(to: number, options: { noUpdateUri?: boolean } = {}) {
     const { audioElement } = this;
     if (!audioElement) {
       return;
@@ -246,10 +238,7 @@ class BilisoundPlayerModuleWeb
       // 音频总长度
       duration: audioElement.duration || 0,
       // 已加载长度
-      buffered:
-        audioElement.buffered.length > 0
-          ? audioElement.buffered.end(audioElement.buffered.length - 1)
-          : 0,
+      buffered: audioElement.buffered.length > 0 ? audioElement.buffered.end(audioElement.buffered.length - 1) : 0,
     };
   }
 
@@ -359,7 +348,7 @@ class BilisoundPlayerModuleWeb
     } else {
       const targetId = this.trackData[this.index].id;
       this.trackData = deleteItems(this.trackData, indexesJson);
-      this.index = this.trackData.findIndex((e) => e.id === targetId);
+      this.index = this.trackData.findIndex(e => e.id === targetId);
     }
 
     this.emitQueueChange();
@@ -408,7 +397,4 @@ class BilisoundPlayerModuleWeb
   async saveFile(path: string, mimeType: string, replaceName?: string | null) {}
 }
 
-export const BilisoundPlayerModule = registerWebModule(
-  BilisoundPlayerModuleWeb,
-  "BilisoundPlayerModule"
-);
+export const BilisoundPlayerModule = registerWebModule(BilisoundPlayerModuleWeb, "BilisoundPlayerModule");

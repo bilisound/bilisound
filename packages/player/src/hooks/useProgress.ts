@@ -27,7 +27,7 @@ const loop = async () => {
   ) {
     currentProgress = result;
     // console.log(result);
-    progressListeners.forEach((listener) => listener());
+    progressListeners.forEach(listener => listener());
   }
   if (progressListeners.size <= 0) {
     // console.log("Looping exit!!");

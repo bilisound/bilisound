@@ -1,11 +1,4 @@
-import {
-  DownloadState,
-  PlaybackProgress,
-  PlaybackState,
-  RepeatMode,
-  TrackData,
-  TrackDataInternal,
-} from "./index";
+import { DownloadState, PlaybackProgress, PlaybackState, RepeatMode, TrackData, TrackDataInternal } from "./index";
 
 export interface BilisoundPlayerModuleInterface {
   // 播放器相关
@@ -30,19 +23,13 @@ export interface BilisoundPlayerModuleInterface {
   addTrack(trackDataJson: string | TrackData): Promise<void>;
   addTrackAt(trackDataJson: string | TrackData, index: number): Promise<void>;
   addTracks(trackDatasJson: string | TrackData[]): Promise<void>;
-  addTracksAt(
-    trackDatasJson: string | TrackData[],
-    index: number,
-  ): Promise<void>;
+  addTracksAt(trackDatasJson: string | TrackData[], index: number): Promise<void>;
   getTracks(): Promise<string | TrackData[]>;
   replaceTrack(index: number, trackDataJson: string | TrackData): Promise<void>;
   deleteTrack(index: number): Promise<void>;
   deleteTracks(indexesJson: string | number[]): Promise<void>;
   clearQueue(): Promise<void>;
-  setQueue(
-    trackDatasJson: string | TrackData[],
-    beginIndex: number,
-  ): Promise<void>;
+  setQueue(trackDatasJson: string | TrackData[], beginIndex: number): Promise<void>;
 
   // 缓存管理相关
   addDownload(id: string, uri: string, metadataJson: string): Promise<void>;

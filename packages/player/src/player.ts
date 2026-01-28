@@ -103,8 +103,7 @@ export async function getCurrentTrack() {
   if (Platform.OS === "web") {
     return BilisoundPlayerModule.getCurrentTrackWeb();
   }
-  const e: TrackDataInternal | null =
-    await BilisoundPlayerModule.getCurrentTrack();
+  const e: TrackDataInternal | null = await BilisoundPlayerModule.getCurrentTrack();
   if (!e) {
     return undefined;
   }
@@ -154,20 +153,14 @@ export function setRepeatMode(mode: RepeatMode): Promise<void> {
 export function addTrack(trackData: TrackData, index?: number): Promise<void> {
   if (Platform.OS === "web") {
     if (typeof index === "number") {
-      return BilisoundPlayerModule.addTrackAt(
-        structuredClone(trackData),
-        index,
-      );
+      return BilisoundPlayerModule.addTrackAt(structuredClone(trackData), index);
     }
     return BilisoundPlayerModule.addTrack(structuredClone(trackData));
   }
 
   const builtTrackData = toTrackDataInternal(trackData);
   if (typeof index === "number") {
-    return BilisoundPlayerModule.addTrackAt(
-      JSON.stringify(builtTrackData),
-      index,
-    );
+    return BilisoundPlayerModule.addTrackAt(JSON.stringify(builtTrackData), index);
   }
   return BilisoundPlayerModule.addTrack(JSON.stringify(builtTrackData));
 }
@@ -177,16 +170,10 @@ export function addTrack(trackData: TrackData, index?: number): Promise<void> {
  * @param trackDatas 曲目信息
  * @param index 插入位置。不指定则插入到末尾
  */
-export function addTracks(
-  trackDatas: TrackData[],
-  index?: number,
-): Promise<void> {
+export function addTracks(trackDatas: TrackData[], index?: number): Promise<void> {
   if (Platform.OS === "web") {
     if (typeof index === "number") {
-      return BilisoundPlayerModule.addTracksAt(
-        structuredClone(trackDatas),
-        index,
-      );
+      return BilisoundPlayerModule.addTracksAt(structuredClone(trackDatas), index);
     }
     return BilisoundPlayerModule.addTracks(structuredClone(trackDatas));
   }
@@ -197,10 +184,7 @@ export function addTracks(
     processedData.push(toTrackDataInternal(trackData));
   }
   if (typeof index === "number") {
-    return BilisoundPlayerModule.addTracksAt(
-      JSON.stringify(processedData),
-      index,
-    );
+    return BilisoundPlayerModule.addTracksAt(JSON.stringify(processedData), index);
   }
   return BilisoundPlayerModule.addTracks(JSON.stringify(processedData));
 }
@@ -213,7 +197,7 @@ export async function getTracks(): Promise<TrackData[]> {
   const raw = await BilisoundPlayerModule.getTracks();
   if (typeof raw === "string") {
     const rawData: TrackDataInternal[] = JSON.parse(raw);
-    return rawData.map((e) => {
+    return rawData.map(e => {
       return toTrackData(e);
     });
   }
@@ -225,19 +209,13 @@ export async function getTracks(): Promise<TrackData[]> {
  * @param trackData 待替换曲目
  * @param index 被替换的曲目的 index
  */
-export async function replaceTrack(
-  index: number,
-  trackData: TrackData,
-): Promise<void> {
+export async function replaceTrack(index: number, trackData: TrackData): Promise<void> {
   if (Platform.OS === "web") {
     return BilisoundPlayerModule.replaceTrack(index, trackData);
   }
 
   const builtTrackData = toTrackDataInternal(trackData);
-  return BilisoundPlayerModule.replaceTrack(
-    index,
-    JSON.stringify(builtTrackData),
-  );
+  return BilisoundPlayerModule.replaceTrack(index, JSON.stringify(builtTrackData));
 }
 
 /**
@@ -270,15 +248,9 @@ export async function clearQueue() {
  * @param trackDatas
  * @param beginIndex
  */
-export function setQueue(
-  trackDatas: TrackData[],
-  beginIndex = 0,
-): Promise<void> {
+export function setQueue(trackDatas: TrackData[], beginIndex = 0): Promise<void> {
   if (Platform.OS === "web") {
-    return BilisoundPlayerModule.setQueue(
-      structuredClone(trackDatas),
-      beginIndex,
-    );
+    return BilisoundPlayerModule.setQueue(structuredClone(trackDatas), beginIndex);
   }
 
   const processedData: TrackDataInternal[] = [];
@@ -286,10 +258,7 @@ export function setQueue(
     const trackData = trackDatas[i];
     processedData.push(toTrackDataInternal(trackData));
   }
-  return BilisoundPlayerModule.setQueue(
-    JSON.stringify(processedData),
-    beginIndex,
-  );
+  return BilisoundPlayerModule.setQueue(JSON.stringify(processedData), beginIndex);
 }
 
 /**
@@ -298,19 +267,11 @@ export function setQueue(
  * @param uri
  * @param metadata
  */
-export async function addDownload(
-  id: string,
-  uri: string,
-  metadata: DownloadData = { headers: {} },
-): Promise<void> {
+export async function addDownload(id: string, uri: string, metadata: DownloadData = { headers: {} }): Promise<void> {
   const outputMetadata: DownloadData = {
     headers: { ...Config.instance.defaultHeaders, ...metadata.headers },
   };
-  return BilisoundPlayerModule.addDownload(
-    id,
-    uri,
-    JSON.stringify(outputMetadata),
-  );
+  return BilisoundPlayerModule.addDownload(id, uri, JSON.stringify(outputMetadata));
 }
 
 /**
@@ -324,9 +285,7 @@ export async function getDownload(id: string): Promise<DownloadItem> {
  * 查询符合条件的下载项列表
  * @param state
  */
-export async function getDownloads(
-  state?: DownloadState,
-): Promise<DownloadItem[]> {
+export async function getDownloads(state?: DownloadState): Promise<DownloadItem[]> {
   return JSON.parse(await BilisoundPlayerModule.getDownloads(state));
 }
 
