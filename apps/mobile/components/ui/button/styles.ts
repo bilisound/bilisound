@@ -1,4 +1,4 @@
-import { tva } from "@gluestack-ui/nativewind-utils/tva";
+import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
 const cx = (...classes: string[]) => classes.filter(Boolean).join(" ");

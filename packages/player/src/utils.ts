@@ -21,9 +21,7 @@ export function toTrackDataInternal(trackData: TrackData): TrackDataInternal {
     duration: trackData.duration ?? null,
     mimeType: trackData.mimeType ?? null,
     headers: JSON.stringify(headers),
-    extendedData: trackData.extendedData
-      ? JSON.stringify(trackData.extendedData)
-      : null,
+    extendedData: trackData.extendedData ? JSON.stringify(trackData.extendedData) : null,
   };
 }
 
@@ -34,12 +32,8 @@ export function toTrackDataInternal(trackData: TrackData): TrackDataInternal {
 export function toTrackData(trackDataInternal: TrackDataInternal): TrackData {
   return {
     ...trackDataInternal,
-    headers: trackDataInternal.headers
-      ? JSON.parse(trackDataInternal.headers)
-      : undefined,
-    extendedData: trackDataInternal.extendedData
-      ? JSON.parse(trackDataInternal.extendedData)
-      : undefined,
+    headers: trackDataInternal.headers ? JSON.parse(trackDataInternal.headers) : undefined,
+    extendedData: trackDataInternal.extendedData ? JSON.parse(trackDataInternal.extendedData) : undefined,
   };
 }
 
@@ -80,7 +74,7 @@ export function createSubscriptionStore<T>({
 
   const doFetch = async () => {
     currentValue = await fetchData();
-    progressListeners.forEach((listener) => listener());
+    progressListeners.forEach(listener => listener());
   };
 
   const startFetching = () => {

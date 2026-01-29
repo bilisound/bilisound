@@ -1,4 +1,3 @@
-import gluestackPlugin from "@gluestack-ui/nativewind-utils/tailwind-plugin/index.ts"; // 显式声明 .ts 以解决 esm/commonjs 互操作问题
 import containerQueriesPlugin from "@tailwindcss/container-queries";
 
 /** @type {import('tailwindcss').Config} */
@@ -220,5 +219,5 @@ export default {
       },
     },
   },
-  plugins: [gluestackPlugin, containerQueriesPlugin],
+  plugins: [containerQueriesPlugin],
 };

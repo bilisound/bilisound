@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
-import { createIcon, PrimitiveIcon, Svg } from "@gluestack-ui/icon";
-import { tva } from "@gluestack-ui/nativewind-utils/tva";
-import { VariantProps } from "@gluestack-ui/nativewind-utils";
+import { createIcon, PrimitiveIcon, Svg } from "@gluestack-ui/core/icon/creator";
+import { tva, VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 
 export const UIIcon = createIcon({
   Root: PrimitiveIcon,

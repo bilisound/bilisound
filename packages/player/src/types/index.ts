@@ -59,17 +59,10 @@ export interface PlaybackProgress {
 }
 
 // 播放状态类型
-export type PlaybackState =
-  | "STATE_IDLE"
-  | "STATE_BUFFERING"
-  | "STATE_READY"
-  | "STATE_ENDED";
+export type PlaybackState = "STATE_IDLE" | "STATE_BUFFERING" | "STATE_READY" | "STATE_ENDED";
 
 // 错误类型
-export type ErrorType =
-  | "ERROR_NETWORK_FAILURE"
-  | "ERROR_BAD_HTTP_STATUS_CODE"
-  | "ERROR_GENERIC";
+export type ErrorType = "ERROR_NETWORK_FAILURE" | "ERROR_BAD_HTTP_STATUS_CODE" | "ERROR_GENERIC";
 
 // 下载状态字典
 export enum DownloadState {
@@ -186,6 +179,4 @@ export type BackgroundEventParamUnconfirmed = {
   data: any;
 };
 
-export type BackgroundEventListener = (
-  param: BackgroundEventParam,
-) => Promise<void> | void;
+export type BackgroundEventListener = (param: BackgroundEventParam) => Promise<void> | void;

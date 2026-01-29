@@ -41,7 +41,7 @@ No additional configuration required for Android.
 ## Basic Usage
 
 ```typescript
-import * as Player from '@bilisound/player';
+import * as Player from "@bilisound/player";
 
 // Play a track
 await Player.play();
@@ -53,7 +53,7 @@ await Player.pause();
 await Player.addTrack({
   title: "Track Title",
   artist: "Artist Name",
-  uri: "https://example.com/audio.mp3"
+  uri: "https://example.com/audio.mp3",
 });
 
 // Control playback speed

@@ -1,4 +1,4 @@
-import { tva } from "@gluestack-ui/nativewind-utils/tva";
+import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { ActivityIndicator, View } from "react-native";
 
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";

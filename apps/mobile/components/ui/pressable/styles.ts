@@ -1,4 +1,4 @@
-import { tva } from "@gluestack-ui/nativewind-utils/tva";
+import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
 const rippleClass = "{}-[android_ripple.color]/color:color-background-100";
