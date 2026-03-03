@@ -2,15 +2,14 @@ import React, { useContext } from "react";
 import { InsidePageContext } from "~/components/main-bottom-sheet/utils";
 import { jump, toggle, useQueue } from "@bilisound/player";
 import { FlashList } from "@shopify/flash-list";
-import { BottomSheetFlashList } from "@gorhom/bottom-sheet";
+import { useBottomSheetScrollableCreator } from "@gorhom/bottom-sheet";
 import { View } from "react-native";
 import { SongItem } from "~/components/song-item";
 
 export function PlayerQueueList() {
   const isInsidePage = useContext(InsidePageContext);
   const queue = useQueue();
-
-  const FlashListComponent = isInsidePage ? FlashList : BottomSheetFlashList;
+  const renderScrollComponent = useBottomSheetScrollableCreator();
 
   async function handleJump(index: number) {
     await jump(index);
@@ -18,9 +17,10 @@ export function PlayerQueueList() {
 
   return (
     <View className={"pb-2 md:py-0 flex-1"}>
-      <FlashListComponent
+      <FlashList
         data={queue}
         className={"md:py-2.5"}
+        {...(!isInsidePage && { renderScrollComponent: renderScrollComponent })}
         renderItem={({ item, index }) => (
           <SongItem
             data={{
