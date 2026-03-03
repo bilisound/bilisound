@@ -17,7 +17,6 @@ const baseConfig: ExpoConfig = {
   scheme: "bilisound",
   userInterfaceStyle: "automatic",
   primaryColor: "#00ba9d",
-  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     infoPlist: {
@@ -27,7 +26,6 @@ const baseConfig: ExpoConfig = {
     bundleIdentifier: "moe.bilisound.app",
   },
   android: {
-    edgeToEdgeEnabled: true,
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
       backgroundColor: "#97E7DC",
