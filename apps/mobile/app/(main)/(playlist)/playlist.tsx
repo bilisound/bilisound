@@ -40,7 +40,7 @@ import { invalidateOnQueueStatus, PLAYLIST_ON_QUEUE, playlistStorage } from "~/s
 import { deletePlaylistMeta, getPlaylistMetas } from "~/storage/sqlite/playlist";
 import { PlaylistMeta } from "~/storage/sqlite/schema";
 import useSettingsStore from "~/store/settings";
-import { exportPlaylistToFile, importPlaylistFromFile } from "~/utils/exchange/playlist";
+import { exportPlaylistToFile, exportPlaylistToLLMFile, importPlaylistFromFile } from "~/utils/exchange/playlist";
 import log from "~/utils/logger";
 import { padArrayToColumns } from "~/utils/misc";
 
@@ -77,7 +77,7 @@ interface LongPressActionsProps {
   showActionSheet: boolean;
   displayTrack?: PlaylistMeta;
   onClose: () => void;
-  onAction: (action: "delete" | "close" | "edit" | "editCover" | "export") => void;
+  onAction: (action: "delete" | "close" | "edit" | "editCover" | "export" | "exportForLLM") => void;
 }
 
 /**
@@ -118,6 +118,14 @@ function LongPressActions({ showActionSheet, displayTrack, onAction, onClose }: 
       iconSize: 18,
       text: "导出",
       action: () => onAction("export"),
+    },
+    {
+      show: true,
+      disabled: false,
+      icon: "fa6-solid:file-lines",
+      iconSize: 18,
+      text: "Export for LLM",
+      action: () => onAction("exportForLLM"),
     },
     {
       show: true,
@@ -405,6 +413,11 @@ export default function Page() {
               case "export":
                 if (displayTrack?.id) {
                   exportPlaylistToFile(displayTrack.id);
+                }
+                break;
+              case "exportForLLM":
+                if (displayTrack?.id) {
+                  exportPlaylistToLLMFile(displayTrack.id);
                 }
                 break;
               default:

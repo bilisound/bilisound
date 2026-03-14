@@ -2,6 +2,7 @@ import Toast from "react-native-toast-message";
 import log from "~/utils/logger";
 import { importHelper } from "~/utils/exchange/import-helper";
 import { addToPlaylist, exportAllPlaylist, exportPlaylist, insertPlaylistMeta } from "~/storage/sqlite/playlist";
+import { buildPlaylistLLMExportFileName, formatPlaylistForLLMExport } from "~/utils/exchange/playlist-llm";
 import { stringify } from "smol-toml";
 import { BRAND } from "~/constants/branding";
 export async function exportPlaylistToFile(id?: number) {
@@ -35,6 +36,30 @@ export async function exportPlaylistToFile(id?: number) {
   Toast.show({
     type: "success",
     text1: "文件已保存",
+    text2: fileName,
+  });
+}
+
+export async function exportPlaylistToLLMFile(id: number) {
+  const output = await exportPlaylist(id);
+  const doc = formatPlaylistForLLMExport(output);
+  const fileName = buildPlaylistLLMExportFileName(output);
+
+  const url = window.URL.createObjectURL(new Blob([doc], { type: "text/plain;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => {
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }, 0);
+
+  Toast.show({
+    type: "success",
+    text1: "LLM 导出已保存",
     text2: fileName,
   });
 }
