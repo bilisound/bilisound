@@ -27,11 +27,46 @@ http://localhost:{port}/api/v1
 
 ### 3.2 认证
 
-采用 Bearer Token 认证。用户在应用设置中生成 API Token，外部应用通过 `Authorization` 头传递：
+采用 **配对码 + Access Token** 的两阶段认证机制。
 
+#### 配对流程
+
+Bilisound 生成一个短时 6 位配对码，展示给用户。
+
+OpenClaw 输入这个配对码，向 Bilisound 发起配对请求。
+
+#### 授权阶段
+
+如果配对码正确，而且没过期，Bilisound 给 OpenClaw 签发一个随机生成的长期 access token。
+
+#### 使用阶段
+
+以后 OpenClaw 调 management API 时，只带这个 token：
+
+```text
+Authorization: Bearer <random_token>
 ```
-Authorization: Bearer <token>
-```
+
+#### 管理阶段
+
+Bilisound 后台可以查看：
+
+- 已授权客户端列表
+- 每个客户端的名字
+- 创建时间
+- 最后使用时间
+- 撤销按钮
+
+#### 免认证接口
+
+以下接口不需要 Token 即可访问：
+
+- `GET /status` — 服务发现与连接测试
+- `POST /pair` — 配对请求
+
+#### Token 管理
+
+用户可在 Bilisound 设置中查看所有已配对的客户端，并可随时吊销任意客户端的 Token。
 
 ### 3.3 通用响应格式
 
@@ -64,14 +99,16 @@ Authorization: Bearer <token>
 
 ### 3.4 通用错误码
 
-| HTTP Status | Code               | 说明                             |
-| ----------- | ------------------ | -------------------------------- |
-| 400         | `BAD_REQUEST`      | 请求参数无效                     |
-| 401         | `UNAUTHORIZED`     | 未提供或无效的 Token             |
-| 404         | `NOT_FOUND`        | 资源不存在                       |
-| 409         | `CONFLICT`         | 操作冲突（如对同步歌单执行编辑） |
-| 422         | `VALIDATION_ERROR` | 请求体校验失败                   |
-| 500         | `INTERNAL_ERROR`   | 服务端内部错误                   |
+| HTTP Status | Code                | 说明                             |
+| ----------- | ------------------- | -------------------------------- |
+| 400         | `BAD_REQUEST`       | 请求参数无效                     |
+| 401         | `UNAUTHORIZED`      | 未提供或无效的 Token             |
+| 401         | `INVALID_PAIR_CODE` | 配对码无效或已过期               |
+| 404         | `NOT_FOUND`         | 资源不存在                       |
+| 409         | `CONFLICT`          | 操作冲突（如对同步歌单执行编辑） |
+| 422         | `VALIDATION_ERROR`  | 请求体校验失败                   |
+| 429         | `TOO_MANY_REQUESTS` | 请求过于频繁（配对暴力破解保护） |
+| 500         | `INTERNAL_ERROR`    | 服务端内部错误                   |
 
 ---
 
@@ -684,11 +721,74 @@ type PlaylistSource =
 
 ---
 
-### 5.6 系统
+### 5.6 配对与认证
+
+#### `POST /pair`
+
+提交配对请求。**此接口不需要 Token。**
+
+**Request Body:**
+
+```json
+{
+  "code": "482916",
+  "clientName": "OpenClaw",
+  "clientVersion": "1.2.0"
+}
+```
+
+| 字段            | 必填 | 说明                                     |
+| --------------- | ---- | ---------------------------------------- |
+| `code`          | 是   | 用户在 Bilisound 界面上看到的 6 位配对码 |
+| `clientName`    | 是   | 客户端应用名称，用于在管理界面中展示     |
+| `clientVersion` | 否   | 客户端版本号                             |
+
+**Response:** `201 Created`
+
+```json
+{
+  "data": {
+    "accessToken": "bsk_a1b2c3d4e5f6...",
+    "clientId": "clnt_xxxxxxxx",
+    "expiresAt": null
+  }
+}
+```
+
+| 字段          | 说明                                          |
+| ------------- | --------------------------------------------- |
+| `accessToken` | 持久化 Access Token，以 `bsk_` 为前缀         |
+| `clientId`    | 客户端唯一标识，以 `clnt_` 为前缀             |
+| `expiresAt`   | 过期时间戳，`null` 表示永不过期（需手动吊销） |
+
+**Error:** `401 Unauthorized` — 配对码无效或已过期
+
+```json
+{
+  "error": {
+    "code": "INVALID_PAIR_CODE",
+    "message": "Pair code is invalid or expired"
+  }
+}
+```
+
+**Error:** `429 Too Many Requests` — 连续配对失败次数过多（防暴力破解）
+
+---
+
+#### `DELETE /pair`
+
+吊销当前 Token（客户端主动断开配对）。
+
+**Response:** `204 No Content`
+
+---
+
+### 5.7 系统
 
 #### `GET /status`
 
-获取 API 服务状态（可用于连接测试）。
+获取 API 服务状态（可用于服务发现和连接测试）。**此接口不需要 Token。**
 
 **Response:** `200 OK`
 
@@ -696,7 +796,8 @@ type PlaylistSource =
 {
   "data": {
     "app": "bilisound",
-    "apiVersion": 1
+    "apiVersion": 1,
+    "deviceName": "tcdw 的 iPhone"
   }
 }
 ```
@@ -705,10 +806,11 @@ type PlaylistSource =
 
 ## 6. 安全考虑
 
-1. **仅监听 localhost**: API Server 默认仅监听 `127.0.0.1`，不对外网开放
-2. **Token 认证**: 所有请求必须携带有效 Token，防止本机其他应用未授权访问
-3. **同步歌单保护**: 有上游同步来源的歌单，其曲目列表只能通过 sync 接口更新，不允许直接增删改
-4. **速率限制**: 考虑对写操作添加基础速率限制，防止滥用
+1. **仅监听 localhost**: API Server 默认仅监听常见局域网 IP 段（并防止通过 IPv6 无意间泄露到公网）
+2. **配对认证**: 外部应用必须通过配对流程获取 Token，确保物理设备持有者知情授权
+3. **配对码安全**: 配对码为 6 位数字，有效期 5 分钟，同一时刻只能存在一个有效配对码；连续失败 5 次后锁定 15 分钟，防止暴力破解
+4. **Token 管理**: 用户可在设置中查看所有已配对客户端（名称、版本、配对时间、最后活跃时间），并可随时吊销任意客户端的 Token
+5. **同步歌单保护**: 有上游同步来源的歌单，其曲目列表只能通过 sync 接口更新，不允许直接增删改
 
 ## 7. 待讨论事项
 
