@@ -40,10 +40,15 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   };
   private playbackState: PlaybackState = "STATE_IDLE";
   private repeatMode: RepeatMode = RepeatMode.OFF;
+  private audioContext: AudioContext | null = null;
+  private gainNode: GainNode | null = null;
+  private sourceNode: MediaElementAudioSourceNode | null = null;
+  private static readonly FADE_DURATION = 0.2;
 
   constructor() {
     super();
     const el = document.createElement("audio");
+    el.crossOrigin = "anonymous";
     el.dataset.managedByBilisound = this.id;
     el.addEventListener("loadstart", () => {
       this.playbackState = "STATE_BUFFERING";
@@ -103,6 +108,8 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
       });
     });
     if (BilisoundPlayerModuleWeb.isMediaSessionAvailable) {
+      navigator.mediaSession.setActionHandler("play", () => this.play());
+      navigator.mediaSession.setActionHandler("pause", () => this.pause());
       navigator.mediaSession.setActionHandler("previoustrack", () => this.prev());
       navigator.mediaSession.setActionHandler("nexttrack", () => this.next());
     }
@@ -143,7 +150,10 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     });
   }
 
-  private clear() {
+  private async clear() {
+    if (!this.audioElement.paused) {
+      await this.fadeOut();
+    }
     this.audioElement.pause();
     this.audioElement.src = "";
     this.index = -1;
@@ -156,11 +166,49 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     }
   }
 
+  private ensureAudioContext() {
+    if (this.audioContext) return;
+    this.audioContext = new AudioContext();
+    this.sourceNode = this.audioContext.createMediaElementSource(this.audioElement);
+    this.gainNode = this.audioContext.createGain();
+    this.sourceNode.connect(this.gainNode);
+    this.gainNode.connect(this.audioContext.destination);
+  }
+
+  private async fadeIn(): Promise<void> {
+    if (!this.gainNode || !this.audioContext) return;
+    const now = this.audioContext.currentTime;
+    this.gainNode.gain.cancelScheduledValues(now);
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+    this.gainNode.gain.linearRampToValueAtTime(1, now + BilisoundPlayerModuleWeb.FADE_DURATION);
+    return new Promise(resolve => setTimeout(resolve, BilisoundPlayerModuleWeb.FADE_DURATION * 1000));
+  }
+
+  private async fadeOut(): Promise<void> {
+    if (!this.gainNode || !this.audioContext) return;
+    const now = this.audioContext.currentTime;
+    this.gainNode.gain.cancelScheduledValues(now);
+    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+    this.gainNode.gain.linearRampToValueAtTime(0, now + BilisoundPlayerModuleWeb.FADE_DURATION);
+    return new Promise(resolve => setTimeout(resolve, BilisoundPlayerModuleWeb.FADE_DURATION * 1000));
+  }
+
   async play() {
+    this.ensureAudioContext();
+    if (this.audioContext?.state === "suspended") {
+      await this.audioContext.resume();
+    }
+    if (this.gainNode && this.audioContext) {
+      const now = this.audioContext.currentTime;
+      this.gainNode.gain.cancelScheduledValues(now);
+      this.gainNode.gain.setValueAtTime(0, now);
+    }
     await this.audioElement.play();
+    await this.fadeIn();
   }
 
   async pause() {
+    await this.fadeOut();
     this.audioElement.pause();
   }
 
@@ -171,7 +219,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     }
     // https://ux.stackexchange.com/questions/80335/why-does-previous-button-in-music-player-apps-start-the-current-track-from-the-b
     if (!audioElement.paused && audioElement.currentTime > 3) {
-      audioElement.currentTime = 0;
+      await this.seek(0);
       return;
     }
     if (this.index > 0) {
@@ -194,7 +242,14 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async seek(to: number) {
+    const wasPlaying = !this.audioElement.paused;
+    if (wasPlaying) {
+      await this.fadeOut();
+    }
     this.audioElement.currentTime = to;
+    if (wasPlaying) {
+      await this.fadeIn();
+    }
   }
 
   async jump(to: number) {
@@ -207,6 +262,9 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
       return;
     }
     if (this.trackData.length <= 0) {
+      if (!audioElement.paused) {
+        await this.fadeOut();
+      }
       audioElement.pause();
       audioElement.src = "";
       return;
@@ -214,6 +272,9 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     this.assertInRange(to);
     this.index = to;
     const prevPlayState = !audioElement.paused;
+    if (prevPlayState && !options.noUpdateUri) {
+      await this.fadeOut();
+    }
     const obj = this.trackData[to];
     if (!options.noUpdateUri) {
       audioElement.src = obj.uri;
@@ -355,12 +416,12 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async clearQueue() {
-    this.clear();
+    await this.clear();
     this.emitQueueChange();
   }
 
   async setQueue(trackDatasJson: TrackData[], beginIndex: number) {
-    this.clear();
+    await this.clear();
     await this.addTracks(trackDatasJson);
     await this.jump(beginIndex);
   }
