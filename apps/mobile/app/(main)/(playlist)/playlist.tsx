@@ -341,7 +341,7 @@ export default function Page() {
                   </InputSlot>
                 )}
               </Input>
-              {searchQuery.trim() && (
+              {!!searchQuery.trim() && (
                 <View className="flex-row items-center justify-between mt-3 px-1">
                   <Text className="text-sm text-typography-500">过滤后有 {filteredData.length} 个歌单</Text>
                 </View>

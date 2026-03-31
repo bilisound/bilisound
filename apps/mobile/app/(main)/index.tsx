@@ -118,7 +118,7 @@ export default function MainScreen() {
                   />
                 )}
               />
-              {videoUrl && (
+              {!!videoUrl && (
                 <View className={"flex-row items-center"}>
                   <InputSlot
                     className="h-12 px-3 items-center justify-center"
