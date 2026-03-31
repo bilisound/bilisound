@@ -2,7 +2,7 @@ import containerQueriesPlugin from "@tailwindcss/container-queries";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: "media",
+  darkMode: "class",
   content: ["app/**/*.{tsx,jsx,ts,js}", "components/**/*.{tsx,jsx,ts,js}"],
   presets: [require("nativewind/preset")],
   safelist: [
