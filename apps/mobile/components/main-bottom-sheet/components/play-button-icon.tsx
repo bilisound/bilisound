@@ -47,10 +47,20 @@ export function PlayButtonIcon({ size = 28 }: { size?: number }) {
 
   return (
     <View className="relative size-8">
-      <Animated.View style={pauseAnimatedStyle} className="absolute size-full items-center justify-center">
+      <Animated.View
+        style={[
+          { position: "absolute", width: "100%", height: "100%", alignItems: "center", justifyContent: "center" },
+          pauseAnimatedStyle,
+        ]}
+      >
         <Icon name="fa6-solid:pause" size={size / 0.875} color={colorValue("--color-background-0")} />
       </Animated.View>
-      <Animated.View style={playAnimatedStyle} className="absolute size-full items-center justify-center">
+      <Animated.View
+        style={[
+          { position: "absolute", width: "100%", height: "100%", alignItems: "center", justifyContent: "center" },
+          playAnimatedStyle,
+        ]}
+      >
         <Icon name="fa6-solid:play" size={size} color={colorValue("--color-background-0")} />
       </Animated.View>
     </View>
