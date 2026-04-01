@@ -15,6 +15,7 @@ import { Icon } from "~/components/icon";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { shadow } from "~/constants/styles";
 import BgCornerClassic from "~/assets/images/bg-corner-classic.svg";
+import BgCornerRed from "~/assets/images/bg-corner-red.svg";
 
 interface ThemeButtonProps {
   selected?: boolean;
@@ -78,7 +79,8 @@ export default function Page() {
             />
             <ThemeButton
               name="红色主题"
-              yuruChara={require("../../assets/images/bg-corner-red.webp")}
+              yuruChara={BgCornerRed}
+              isSvg
               onPress={() => update("theme", "red")}
               selected={theme === "red"}
             />

@@ -5,6 +5,7 @@ import { View, ViewProps } from "react-native";
 import useSettingsStore from "~/store/settings";
 import { twMerge } from "tailwind-merge";
 import BgCornerClassic from "~/assets/images/bg-corner-classic.svg";
+import BgCornerRed from "~/assets/images/bg-corner-red.svg";
 
 export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
   const { theme } = useSettingsStore(state => ({ theme: state.theme }));
@@ -24,7 +25,7 @@ export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
       {isClassicTheme ? (
         <BgCornerClassic width="240px" height="240px" style={{ opacity: 0.4 }} />
       ) : (
-        <Image source={require("../assets/images/bg-corner-red.webp")} className="w-[15rem] aspect-square opacity-15" />
+        <BgCornerRed width="240px" height="240px" style={{ opacity: 0.15 }} />
       )}
     </View>
   );
