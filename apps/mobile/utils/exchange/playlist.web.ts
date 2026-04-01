@@ -99,7 +99,7 @@ export async function importPlaylistFromFile() {
     const migratePlan = importHelper(await readPlaylistFromFile());
     for (let i = 0; i < migratePlan.length; i++) {
       const e = migratePlan[i];
-      const { lastInsertRowId } = await insertPlaylistMeta({ ...e.meta, amount: e.detail.length });
+      const { lastInsertRowId } = await insertPlaylistMeta({ ...e.meta, amount: e.detail.length, id: undefined });
       await addToPlaylist(
         lastInsertRowId,
         e.detail.map(f => ({ ...f, playlistId: lastInsertRowId })),

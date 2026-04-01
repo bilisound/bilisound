@@ -169,8 +169,8 @@ export default function Page() {
   const handleImport = async () => {
     const result = await importPlaylistFromFile();
     if (result) {
-      await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
-      await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
+      queryClient.setQueryData(["playlist_meta"], await getPlaylistMetas());
+      queryClient.invalidateQueries({ queryKey: ["playlist_meta_apply"] });
     }
   };
 

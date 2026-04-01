@@ -72,7 +72,7 @@ export async function setPlaylistMeta(meta: Partial<PlaylistMetaInsert> & { id: 
 }
 
 export async function insertPlaylistMeta(meta: PlaylistMetaInsert) {
-  return { lastInsertRowId: await idb.add("playlistMeta", { ...meta }) };
+  return { lastInsertRowId: await idb.add("playlistMeta", omit(meta, "id")) };
 }
 
 // ============================================================================
