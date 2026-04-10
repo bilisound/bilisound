@@ -565,7 +565,7 @@ const EyeOffIcon = createIcon({
 EyeOffIcon.displayName = "EyeOffIcon";
 export { EyeIcon, EyeOffIcon };
 
-const FavouriteIcon = createIcon({
+const FavoriteIcon = createIcon({
   Root: Svg,
   viewBox: "0 0 24 24",
   path: (
@@ -580,8 +580,8 @@ const FavouriteIcon = createIcon({
   ),
 });
 
-FavouriteIcon.displayName = "FavouriteIcon";
-export { FavouriteIcon };
+FavoriteIcon.displayName = "FavoriteIcon";
+export { FavoriteIcon };
 
 const GlobeIcon = createIcon({
   Root: Svg,

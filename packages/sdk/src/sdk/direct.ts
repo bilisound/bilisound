@@ -18,7 +18,7 @@ import axiosClient from "axios";
 import { signParam } from "../wbi";
 import { BiliRequestConfig, InternalBiliRequestConfig } from "../request";
 import { Numberish } from "../types";
-import { UserSeasonInfo, UserSeriesInfo, UserSeriesMetadata } from "../types-vendor";
+import { UserSeasonInfo, UserSeriesInfo, UserSeriesMetadata, UserFavoriteInfo } from "../types-vendor";
 import { BilisoundSDK } from "./base";
 
 export class BilisoundSDKDirect extends BilisoundSDK {
@@ -212,6 +212,28 @@ export class BilisoundSDKDirect extends BilisoundSDK {
         description = meta.data.meta.description;
         cover = response.data.archives[0].pic;
         break;
+      case "favorite": {
+        const favResponse = await this.getUserFavorite(listId, page);
+        const favMedias = (favResponse.data.medias ?? []).filter(e => e.attr === 0);
+        return {
+          pageSize: 20,
+          pageNum: page,
+          total: favResponse.data.info.media_count,
+          rows: favMedias.map(e => ({
+            bvid: e.bvid,
+            title: e.title,
+            cover: e.cover,
+            duration: e.duration,
+          })),
+          meta: {
+            name: favResponse.data.info.title,
+            description: favResponse.data.info.intro,
+            cover: favResponse.data.info.cover,
+            userId: favResponse.data.info.upper.mid,
+            seasonId: listId,
+          },
+        };
+      }
     }
     const rows = response.data.archives.map(e => ({
       bvid: e.bvid,
@@ -252,6 +274,9 @@ export class BilisoundSDKDirect extends BilisoundSDK {
       const newResults = (await this.getUserList(mode, userId, listId, i + 1)).rows;
       progressCallback?.((i + 1) / totalPages);
       results = results.concat(newResults);
+      if (newResults.length === 0) {
+        break;
+      }
     }
     return results;
   }
@@ -613,6 +638,27 @@ export class BilisoundSDKDirect extends BilisoundSDK {
         series_id: seriesId,
       },
       disableWbi: true,
+    });
+    await this.cacheProvider.set(cacheKey, JSON.stringify(response));
+    return response;
+  }
+
+  private async getUserFavorite(mediaId: Numberish, pageNum = 1): Promise<UserFavoriteInfo> {
+    const cacheKey = `bilisound_getUserFavorite_${mediaId}_${pageNum}`;
+    const cacheGot = await this.cacheProvider.get(cacheKey);
+    if (cacheGot) {
+      return JSON.parse(cacheGot);
+    }
+    const response = await this.request<UserFavoriteInfo>({
+      url: "/x/v3/fav/resource/list",
+      params: {
+        media_id: mediaId,
+        pn: pageNum,
+        ps: 20,
+      },
+      headers: {
+        referer: "https://space.bilibili.com/",
+      },
     });
     await this.cacheProvider.set(cacheKey, JSON.stringify(response));
     return response;

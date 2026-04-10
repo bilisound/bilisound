@@ -161,7 +161,11 @@ export default function Page() {
   };
 
   return (
-    <Layout title={"合集详情"} leftAccessories={"BACK_BUTTON"} edgeInsets={{ ...edgeInsets, bottom: 0 }}>
+    <Layout
+      title={mode === "favorite" ? "收藏夹详情" : "合集详情"}
+      leftAccessories={"BACK_BUTTON"}
+      edgeInsets={{ ...edgeInsets, bottom: 0 }}
+    >
       {error ? (
         <View className={"flex-1 items-center justify-center"}>
           <ErrorContent message={error.message} />

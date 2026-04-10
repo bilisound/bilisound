@@ -90,7 +90,7 @@ export interface GetResourceUrlResponse {
   volume?: WebPlayInfo["data"]["volume"];
 }
 
-export type UserListMode = "season" | "series";
+export type UserListMode = "season" | "series" | "favorite";
 
 export interface GetResourceOptions {
   method?: string;

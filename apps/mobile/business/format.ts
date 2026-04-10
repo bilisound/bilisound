@@ -7,6 +7,7 @@ import { UserListMode } from "@bilisound/sdk";
 export const B23_REGEX = /https?:\/\/b23\.tv\/([a-zA-Z0-9]+)/;
 export const USER_LIST_URL_REGEX = /^\/(\d+)\/channel\/(seriesdetail|collectiondetail)$/;
 export const USER_LIST_URL_REGEX_2 = /^\/(\d+)\/lists\/(\d+)/;
+export const USER_FAV_URL_REGEX = /^\/(\d+)\/favlist$/;
 
 export interface UserListParseResult {
   type: "userList";
@@ -30,6 +31,7 @@ export interface UserListParseResult {
  * - `https://space.bilibili.com/1741301/channel/collectiondetail?sid=49333`
  * - `https://space.bilibili.com/9283084/lists/537652?type=series`
  * - `https://space.bilibili.com/1464161420/lists/2654915?type=season`
+ * - `https://space.bilibili.com/258322/favlist?fid=2672593822`
  * @param input
  */
 export async function resolveVideo(input: string): Promise<string | UserListParseResult> {
@@ -89,6 +91,20 @@ export async function resolveVideo(input: string): Promise<string | UserListPars
           mode: "season",
           userId: match2[1],
           listId: match2[2],
+        };
+      }
+    }
+
+    // 收藏夹链接
+    const matchFav = USER_FAV_URL_REGEX.exec(url.pathname);
+    if (matchFav) {
+      const fid = url.searchParams.get("fid");
+      if (fid) {
+        return {
+          type: "userList",
+          mode: "favorite",
+          userId: matchFav[1],
+          listId: fid,
         };
       }
     }

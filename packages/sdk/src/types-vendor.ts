@@ -1233,3 +1233,43 @@ export type UserSeriesMetadata = {
     recent_aids: number[];
   };
 };
+
+export type UserFavoriteInfo = {
+  code: number;
+  message: string;
+  ttl: number;
+  data: {
+    info: {
+      id: number;
+      fid: number;
+      mid: number;
+      title: string;
+      cover: string;
+      upper: {
+        mid: number;
+        name: string;
+        face: string;
+      };
+      media_count: number;
+      intro: string;
+    };
+    medias:
+      | {
+          id: number;
+          title: string;
+          cover: string;
+          duration: number;
+          upper: {
+            mid: number;
+            name: string;
+            face: string;
+          };
+          attr: number;
+          bv_id: string;
+          bvid: string;
+          page: number;
+        }[]
+      | null;
+    has_more: boolean;
+  };
+};
