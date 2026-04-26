@@ -11,10 +11,43 @@ Bilisound 的目标是：
 
 ## Project Structure & Module Organization
 
-- apps/mobile: Expo React Native client (iOS/Android/Web). Source lives alongside feature folders under `components/`, `business/`, `store/`, `utils/`, etc. Assets in `assets/` and `public/`.
-- apps/server-netlify: Netlify Functions for release proxying. Entrypoints in `netlify/functions/`.
-- packages/sdk: Runtime‑agnostic core logic published as `@bilisound/sdk` (TypeScript built to `dist/`).
-- Tooling: pnpm workspaces + Turborepo (`pnpm-workspace.yaml`, `turbo.json`).
+```
+bilisound/
+├── apps/
+│   ├── mobile/            ← Expo React Native 客户端 (iOS/Android/Web)
+│   ├── server-cf/         ← Cloudflare Worker API 代理 (Web 端后端)
+│   └── server-netlify/    ← Netlify Functions 版本分发代理
+├── packages/
+│   ├── sdk/               ← @bilisound/sdk — B 站 API 封装 (运行时无关)
+│   └── player/            ← @bilisound/player — Expo 原生音频播放模块
+```
+
+- **apps/mobile**: Expo SDK 55 客户端。源文件按功能分目录：`app/`（路由页面）、`components/`、`business/`、`store/`、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。
+- **apps/server-cf**: Cloudflare Worker，为 Web 端代理 B 站 API 请求。入口 `index.ts`，路由在 `route/bilisound.ts`。
+- **apps/server-netlify**: Netlify Functions，代理 GitHub Releases 用于版本检查与 APK 下载。
+- **packages/sdk**: 运行时无关的核心逻辑，发布为 `@bilisound/sdk`（TypeScript → `dist/`）。
+- **packages/player**: Expo 原生音频播放模块（iOS/Android/Kotlin + Swift + Web shim），发布为 `@bilisound/player`。
+
+## Architecture Overview
+
+**数据流**: `用户输入 URL → SDK (解析 B23/获取元数据/音频流) → Player (播放/下载) → 音频输出`
+
+- **SDK 双模式**: Web 端使用 `BilisoundSDKRemote`（通过 server-cf 代理），原生端使用 `BilisoundSDKDirect`（直接调 B 站 API 并做 WBI 签名）。切换逻辑在 `apps/mobile/api/bilisound.ts`。
+- **两个 Server 的区别**: `server-cf` 是 B 站 API 代理（核心后端），`server-netlify` 是 GitHub Release 代理（仅版本分发）。
+- **平台分叉**: `.web.ts` 后缀文件为 Web 专属实现，同名无后缀文件供原生端使用。
+
+架构细节参见 **[docs/architecture.md](docs/architecture.md)**。
+
+## Where to Look
+
+| 你想了解…… | 去看…… |
+|------------|--------|
+| 整体架构、数据流、SDK 双模式、Server 职责 | [docs/architecture.md](docs/architecture.md) |
+| B 站术语 (bvid, cid, WBI, DASH 等) | [docs/glossary.md](docs/glossary.md) |
+| 存储层 (SQLite/MMKV/Zustand) | [docs/data-layer.md](docs/data-layer.md) |
+| 页面路由结构 | [docs/routes.md](docs/routes.md) |
+| Player 模块 API | [packages/player/README.md](packages/player/README.md) |
+| CF Worker API 端点 | [apps/server-cf/README.md](apps/server-cf/README.md) |
 
 ## Build, Test, and Development Commands
 
@@ -24,6 +57,8 @@ Bilisound 的目标是：
 - Mobile dev: `pnpm -C apps/mobile start` (Expo dev client), `pnpm -C apps/mobile ios`, `pnpm -C apps/mobile android`, `pnpm -C apps/mobile web`.
 - Mobile release: `pnpm -C apps/mobile build:android`, `pnpm -C apps/mobile build:web`.
 - SDK build: `pnpm -C packages/sdk build` (tsdown → `dist/`).
+- Player build: `pnpm -C packages/player build` (expo-module build).
+- CF Worker dev: `pnpm -C apps/server-cf dev`; deploy: `pnpm -C apps/server-cf deploy`.
 - Netlify dev: `pnpm -C apps/server-netlify dev`; deploy: `pnpm -C apps/server-netlify deploy`.
 
 ## Coding Style & Naming Conventions
@@ -31,7 +66,8 @@ Bilisound 的目标是：
 - Prettier: 2‑space indent, semicolons, double quotes, trailing commas, width 120.
 - ESLint: Expo config + Prettier plugin (see `apps/mobile/eslint.config.js`).
 - Files: hooks `useThing.ts`, components `Thing.tsx` (PascalCase exports), modules commonly kebab‑case.
-- Imports: use local alias `~/` in mobile per `tsconfig.json`.
+- Imports: use local alias `~/` in mobile per `tsconfig.json` (resolved to `apps/mobile/`).
+- Platform extensions: `*.web.ts` for web-specific implementations (Expo convention).
 
 ## Testing Guidelines
 
