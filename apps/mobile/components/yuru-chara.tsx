@@ -6,9 +6,10 @@ import useSettingsStore from "~/store/settings";
 import { twMerge } from "tailwind-merge";
 import BgCornerClassic from "~/assets/images/bg-corner-classic.svg";
 import BgCornerRed from "~/assets/images/bg-corner-red.svg";
+import { useShallow } from "zustand/shallow";
 
 export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
-  const theme = useSettingsStore(state => state.theme);
+  const theme = useSettingsStore(useShallow(state => state.theme));
 
   // SVG 需要作为组件使用，webp 可以作为 Image source
   const isClassicTheme = theme === "classic" || !theme;

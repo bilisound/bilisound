@@ -1,8 +1,7 @@
 import { Image } from "expo-image";
-import React, { FC } from "react";
+import React from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { twMerge } from "tailwind-merge";
-import { SvgProps } from "react-native-svg";
 
 import { SettingMenuItem } from "~/components/setting-menu";
 import { HStack } from "~/components/ui/hstack";
@@ -15,20 +14,17 @@ import { Layout } from "~/components/layout";
 import { Icon } from "~/components/icon";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { shadow } from "~/constants/styles";
-import BgCornerClassic from "~/assets/images/bg-corner-classic.svg";
-import BgCornerRed from "~/assets/images/bg-corner-red.svg";
+import BgCornerClassic from "~/assets/images/bg-corner-classic.png";
+import BgCornerRed from "~/assets/images/bg-corner-red.png";
 
 interface ThemeButtonProps {
   selected?: boolean;
   name: string;
   onPress?: () => void;
-  yuruChara?: number | FC<SvgProps>; // number for require(), FC for SVG component
-  isSvg?: boolean;
+  yuruChara?: number;
 }
 
-function ThemeButton({ selected = false, name, onPress, yuruChara, isSvg = false }: ThemeButtonProps) {
-  const YuruCharaSvg = isSvg ? (yuruChara as FC<SvgProps>) : null;
-
+function ThemeButton({ selected = false, name, onPress, yuruChara }: ThemeButtonProps) {
   return (
     <Pressable
       onPress={onPress}
@@ -40,12 +36,8 @@ function ThemeButton({ selected = false, name, onPress, yuruChara, isSvg = false
     >
       <Text className={`font-semibold text-lg ${selected ? "text-white" : ""}`}>{name}</Text>
       {selected && <Text className={`font-semibold text-sm ${selected ? "text-white" : ""}`}>已启用</Text>}
-      {isSvg && YuruCharaSvg ? (
-        <View className="absolute right-0 -top-16 w-64 h-64 opacity-30">
-          <YuruCharaSvg width="100%" height="100%" />
-        </View>
-      ) : (
-        <Image source={yuruChara as number} className="absolute right-0 -top-16 w-64 h-64 opacity-30" />
+      {yuruChara != null && (
+        <Image source={yuruChara} className="absolute right-0 -top-16 w-64 h-64 opacity-30" />
       )}
     </Pressable>
   );
@@ -76,14 +68,12 @@ export default function Page() {
             <ThemeButton
               name="默认主题"
               yuruChara={BgCornerClassic}
-              isSvg
               onPress={() => update("theme", "classic")}
               selected={theme === "classic"}
             />
             <ThemeButton
               name="红色主题"
               yuruChara={BgCornerRed}
-              isSvg
               onPress={() => update("theme", "red")}
               selected={theme === "red"}
             />

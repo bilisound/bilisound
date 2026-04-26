@@ -7,3 +7,8 @@ declare const process: {
     EXPO_PUBLIC_RELEASE_CHANNEL: ReleaseChannel;
   };
 };
+
+declare module "*.png" {
+  const value: number;
+  export default value;
+}
