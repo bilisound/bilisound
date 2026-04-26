@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/shallow";
 import { usePlaybackSpeedStore } from "~/store/playback-speed";
 import { Text } from "~/components/ui/text";
 import { View } from "react-native";
@@ -5,11 +6,13 @@ import { Slider, SliderFilledTrack, SliderThumb, SliderTrack } from "~/component
 import React from "react";
 
 export function SpeedControlPanel() {
-  const { speedValue, retainPitch, applySpeed } = usePlaybackSpeedStore(state => ({
-    speedValue: state.speedValue,
-    retainPitch: state.retainPitch,
-    applySpeed: state.applySpeed,
-  }));
+  const { speedValue, retainPitch, applySpeed } = usePlaybackSpeedStore(
+    useShallow(state => ({
+      speedValue: state.speedValue,
+      retainPitch: state.retainPitch,
+      applySpeed: state.applySpeed,
+    })),
+  );
 
   return (
     <>

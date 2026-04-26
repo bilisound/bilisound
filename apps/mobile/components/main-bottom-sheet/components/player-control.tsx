@@ -23,12 +23,8 @@ import { useWindowSize } from "~/hooks/useWindowSize";
 export function PlayerControl() {
   const isInsidePage = useContext(InsidePageContext);
   const currentTrack = useCurrentTrack();
-  const { setShowActionSheet } = useActionSheetStore(state => ({
-    setShowActionSheet: state.setShowActionSheet,
-  }));
-  const { close } = useBottomSheetStore(state => ({
-    close: state.close,
-  }));
+  const setShowActionSheet = useActionSheetStore(state => state.setShowActionSheet);
+  const close = useBottomSheetStore(state => state.close);
   const [closing, setClosing] = useState(false);
   const [value, setValue] = useState<"current" | "list">("current");
   const { width, height } = useWindowSize();

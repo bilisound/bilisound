@@ -1,4 +1,4 @@
-import { createWithEqualityFn } from "zustand/traditional";
+import { create } from "zustand";
 
 interface BottomSheetState {
   isOpen: boolean;
@@ -7,7 +7,7 @@ interface BottomSheetState {
   toggle: () => void;
 }
 
-export const useBottomSheetStore = createWithEqualityFn<BottomSheetState>(set => ({
+export const useBottomSheetStore = create<BottomSheetState>(set => ({
   isOpen: false,
   open: () => set({ isOpen: true }),
   close: () => set({ isOpen: false }),

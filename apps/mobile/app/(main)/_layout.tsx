@@ -89,7 +89,7 @@ function CurrentPlayingTablet() {
   const currentTrack = useCurrentTrack();
   const isPlaying = useIsPlaying();
   const playbackState = usePlaybackState();
-  const { open } = useBottomSheetStore();
+  const open = useBottomSheetStore(state => state.open);
 
   // 解决 placeholder 音频还没替换时不恰当的状态显示
   const isPlaceholderTrack = currentTrack?.uri === PLACEHOLDER_AUDIO;
@@ -176,9 +176,7 @@ function CurrentPlayingTablet() {
 
 function CurrentPlaying() {
   const currentTrack = useCurrentTrack();
-  const { open } = useBottomSheetStore(state => ({
-    open: state.open,
-  }));
+  const open = useBottomSheetStore(state => state.open);
 
   function handleOpen() {
     if (Platform.OS === "web") {
@@ -232,9 +230,7 @@ export default function TabLayout() {
   const edgeInsets = useSafeAreaInsets();
   const edgeInsetsTab = simpleCopy(edgeInsets);
   const windowDimensions = useWindowSize();
-  const { showYuruChara } = useSettingsStore(state => ({
-    showYuruChara: state.showYuruChara,
-  }));
+  const showYuruChara = useSettingsStore(state => state.showYuruChara);
 
   if (windowDimensions.width < breakpoints.md) {
     edgeInsetsTab.bottom = 0;

@@ -2,6 +2,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import React from "react";
+import { useShallow } from "zustand/shallow";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -25,13 +26,15 @@ export default function Page() {
   // const { update } = useTracks();
 
   // 添加歌单
-  const { playlistDetail, name, description, source, cover } = useApplyPlaylistStore(state => ({
-    playlistDetail: state.playlistDetail,
-    name: state.name,
-    description: state.description,
-    source: state.source,
-    cover: state.cover,
-  }));
+  const { playlistDetail, name, description, source, cover } = useApplyPlaylistStore(
+    useShallow(state => ({
+      playlistDetail: state.playlistDetail,
+      name: state.name,
+      description: state.description,
+      source: state.source,
+      cover: state.cover,
+    })),
+  );
 
   const edgeInsets = useSafeAreaInsets();
   const queryClient = useQueryClient();

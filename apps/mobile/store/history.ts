@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 import { createStorage } from "~/storage/zustand";
 import log from "../utils/logger";
-import { createWithEqualityFn } from "zustand/traditional";
+import { create } from "zustand";
 
 export interface HistoryItem {
   name: string;
@@ -31,7 +31,7 @@ const initialState: HistoryProps = {
   historyList: [],
 };
 
-const useHistoryStore = createWithEqualityFn<HistoryProps & HistoryMethods>()(
+const useHistoryStore = create<HistoryProps & HistoryMethods>()(
   persist(
     (set, get) => ({
       ...initialState,

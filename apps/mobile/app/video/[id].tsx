@@ -41,9 +41,7 @@ export default function Page() {
   });
 
   // 增加历史记录条目
-  const { appendHistoryList } = useHistoryStore(state => ({
-    appendHistoryList: state.appendHistoryList,
-  }));
+  const appendHistoryList = useHistoryStore(state => state.appendHistoryList);
 
   useEffect(() => {
     if (data && !noHistory) {

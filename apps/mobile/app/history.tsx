@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/shallow";
 import useHistoryStore from "~/store/history";
 import { Layout, LayoutButton } from "~/components/layout";
 import { FlashList } from "@shopify/flash-list";
@@ -22,11 +23,13 @@ import { View } from "react-native";
 
 export default function Page() {
   // 历史记录信息
-  const { historyList, clearHistoryList, repairHistoryList } = useHistoryStore(state => ({
-    historyList: state.historyList,
-    clearHistoryList: state.clearHistoryList,
-    repairHistoryList: state.repairHistoryList,
-  }));
+  const { historyList, clearHistoryList, repairHistoryList } = useHistoryStore(
+    useShallow(state => ({
+      historyList: state.historyList,
+      clearHistoryList: state.clearHistoryList,
+      repairHistoryList: state.repairHistoryList,
+    })),
+  );
 
   useEffect(() => {
     repairHistoryList();

@@ -14,6 +14,7 @@ import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/
 import { ActivityIndicator, View, ViewStyle } from "react-native";
 import { Image } from "expo-image";
 import React, { useState } from "react";
+import { useShallow } from "zustand/shallow";
 import { ErrorContent } from "~/components/error-content";
 import { FlashList } from "@shopify/flash-list";
 import { VideoItem } from "~/components/video-item";
@@ -35,13 +36,15 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
   const { colorValue } = useRawThemeValues();
 
   // 添加歌单
-  const { setPlaylistDetail, setName, setDescription, setSource, setCover } = useApplyPlaylistStore(state => ({
-    setPlaylistDetail: state.setPlaylistDetail,
-    setName: state.setName,
-    setDescription: state.setDescription,
-    setSource: state.setSource,
-    setCover: state.setCover,
-  }));
+  const { setPlaylistDetail, setName, setDescription, setSource, setCover } = useApplyPlaylistStore(
+    useShallow(state => ({
+      setPlaylistDetail: state.setPlaylistDetail,
+      setName: state.setName,
+      setDescription: state.setDescription,
+      setSource: state.setSource,
+      setCover: state.setCover,
+    })),
+  );
 
   async function handleCreatePlaylist() {
     if (!data) {

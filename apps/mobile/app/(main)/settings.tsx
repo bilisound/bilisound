@@ -5,6 +5,7 @@ import { Platform, ScrollView, View } from "react-native";
 import { SettingMenuItem } from "~/components/setting-menu";
 import { Switch } from "~/components/ui/switch";
 import { VERSION } from "~/constants/releasing";
+import { useShallow } from "zustand/shallow";
 import useSettingsStore from "~/store/settings";
 import log from "~/utils/logger";
 import { Layout } from "~/components/layout";
@@ -28,14 +29,15 @@ function DownloadDescription() {
 
 export default function Page() {
   const edgeInsets = useTabSafeAreaInsets();
-  const { useLegacyID, downloadNextTrack, filterResourceURL, debugMode, toggle } = useSettingsStore(state => ({
-    useLegacyID: state.useLegacyID,
-    downloadNextTrack: state.downloadNextTrack,
-    filterResourceURL: state.filterResourceURL,
-    debugMode: state.debugMode,
-    // update: state.update,
-    toggle: state.toggle,
-  }));
+  const { useLegacyID, downloadNextTrack, filterResourceURL, debugMode, toggle } = useSettingsStore(
+    useShallow(state => ({
+      useLegacyID: state.useLegacyID,
+      downloadNextTrack: state.downloadNextTrack,
+      filterResourceURL: state.filterResourceURL,
+      debugMode: state.debugMode,
+      toggle: state.toggle,
+    })),
+  );
 
   const developerOptions = (
     <>

@@ -1,4 +1,4 @@
-import { createWithEqualityFn } from "zustand/traditional";
+import { create } from "zustand";
 
 export interface ActionSheetState {
   showActionSheet: boolean;
@@ -9,7 +9,7 @@ export interface ActionSheetState {
   handleSpeedClose: () => void;
 }
 
-export const useActionSheetStore = createWithEqualityFn<ActionSheetState>(set => ({
+export const useActionSheetStore = create<ActionSheetState>(set => ({
   showActionSheet: false,
   showSpeedActionSheet: false,
   setShowActionSheet: value => set(() => ({ showActionSheet: value })),

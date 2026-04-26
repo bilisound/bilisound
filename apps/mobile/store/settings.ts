@@ -1,7 +1,7 @@
 import { persist } from "zustand/middleware";
+import { create } from "zustand";
 
 import { createStorage } from "~/storage/zustand";
-import { createWithEqualityFn } from "zustand/traditional";
 
 export interface SettingsProps {
   useLegacyID: boolean;
@@ -35,7 +35,7 @@ const initialState: SettingsProps = {
   showYuruChara: true,
 };
 
-const useSettingsStore = createWithEqualityFn<SettingsProps & SettingsMethods>()(
+const useSettingsStore = create<SettingsProps & SettingsMethods>()(
   persist(
     (set, get) => ({
       ...initialState,

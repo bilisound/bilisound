@@ -9,6 +9,7 @@ import { HStack } from "~/components/ui/hstack";
 import { Switch } from "~/components/ui/switch";
 import { Text } from "~/components/ui/text";
 import { VStack } from "~/components/ui/vstack";
+import { useShallow } from "zustand/shallow";
 import useSettingsStore from "~/store/settings";
 import { Layout } from "~/components/layout";
 import { Icon } from "~/components/icon";
@@ -52,12 +53,14 @@ function ThemeButton({ selected = false, name, onPress, yuruChara, isSvg = false
 
 export default function Page() {
   const { colorValue } = useRawThemeValues();
-  const { theme, update, showYuruChara, toggle } = useSettingsStore(state => ({
-    theme: state.theme,
-    update: state.update,
-    showYuruChara: state.showYuruChara,
-    toggle: state.toggle,
-  }));
+  const { theme, update, showYuruChara, toggle } = useSettingsStore(
+    useShallow(state => ({
+      theme: state.theme,
+      update: state.update,
+      showYuruChara: state.showYuruChara,
+      toggle: state.toggle,
+    })),
+  );
 
   return (
     <Layout title="外观设置" leftAccessories="BACK_BUTTON">

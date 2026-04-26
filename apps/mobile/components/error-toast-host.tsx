@@ -1,12 +1,15 @@
+import { useShallow } from "zustand/shallow";
 import useErrorMessageStore from "~/store/error-message";
 import { useEffect } from "react";
 import Toast from "react-native-toast-message";
 
 export function ErrorToastHost() {
-  const { message, setMessage } = useErrorMessageStore(state => ({
-    message: state.message,
-    setMessage: state.setMessage,
-  }));
+  const { message, setMessage } = useErrorMessageStore(
+    useShallow(state => ({
+      message: state.message,
+      setMessage: state.setMessage,
+    })),
+  );
 
   useEffect(() => {
     if (message) {

@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useShallow } from "zustand/shallow";
 import { InsidePageContext } from "~/components/main-bottom-sheet/utils";
 import { useCurrentTrack } from "@bilisound/player";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
@@ -29,18 +30,22 @@ export function PlayerControlMenu() {
   const isInsidePage = useContext(InsidePageContext);
   const currentTrack = useCurrentTrack();
   const { showActionSheet, showSpeedActionSheet, handleClose, handleSpeedClose, setShowSpeedActionSheet } =
-    useActionSheetStore(state => ({
-      showActionSheet: state.showActionSheet,
-      showSpeedActionSheet: state.showSpeedActionSheet,
-      handleClose: state.handleClose,
-      handleSpeedClose: state.handleSpeedClose,
-      setShowSpeedActionSheet: state.setShowSpeedActionSheet,
-    }));
-  const { speedValue, retainPitch, applySpeed } = usePlaybackSpeedStore(state => ({
-    speedValue: state.speedValue,
-    retainPitch: state.retainPitch,
-    applySpeed: state.applySpeed,
-  }));
+    useActionSheetStore(
+      useShallow(state => ({
+        showActionSheet: state.showActionSheet,
+        showSpeedActionSheet: state.showSpeedActionSheet,
+        handleClose: state.handleClose,
+        handleSpeedClose: state.handleSpeedClose,
+        setShowSpeedActionSheet: state.setShowSpeedActionSheet,
+      })),
+    );
+  const { speedValue, retainPitch, applySpeed } = usePlaybackSpeedStore(
+    useShallow(state => ({
+      speedValue: state.speedValue,
+      retainPitch: state.retainPitch,
+      applySpeed: state.applySpeed,
+    })),
+  );
 
   const menuItems: ActionMenuItem[] = [
     {

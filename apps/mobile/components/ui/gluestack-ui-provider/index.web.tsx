@@ -9,9 +9,7 @@ import { ThemeValueProvider } from "./theme";
 import useSettingsStore from "~/store/settings";
 
 export function GluestackUIProvider({ mode = "light", ...props }: { mode?: "light" | "dark"; children?: any }) {
-  const { theme } = useSettingsStore(state => ({
-    theme: state.theme,
-  }));
+  const theme = useSettingsStore(state => state.theme);
 
   const themeName = theme + "_" + mode;
 

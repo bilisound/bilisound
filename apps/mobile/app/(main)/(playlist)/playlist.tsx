@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import Fuse from "fuse.js";
 import React, { createContext, useContext, useMemo, useState } from "react";
+import { useShallow } from "zustand/shallow";
 import Toast from "react-native-toast-message";
 import { getImageProxyUrl } from "~/business/constant-helper";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu"; // Fixing the import path for ActionMenu and ActionMenuItem components
@@ -213,10 +214,13 @@ export default function Page() {
   if (windowDimensions.width >= 1536) {
     windowWidth = 1280;
   }
-  const { showPlaylistInGrid, toggle } = useSettingsStore(state => ({
-    showPlaylistInGrid: state.showPlaylistInGrid,
-    toggle: state.toggle,
-  }));
+  const { showPlaylistInGrid, toggle } = useSettingsStore(
+    useShallow(state => ({
+      showPlaylistInGrid: state.showPlaylistInGrid,
+      toggle: state.toggle,
+    })),
+  );
+
   const columns = showPlaylistInGrid ? Math.max(Math.floor(windowWidth / 200), 2) : windowWidth > 1024 ? 2 : 1;
   const gridSidePadding = windowWidth >= 448 ? 12 : 8;
   const [width, setWidth] = useState(0);

@@ -8,7 +8,7 @@ import BgCornerClassic from "~/assets/images/bg-corner-classic.svg";
 import BgCornerRed from "~/assets/images/bg-corner-red.svg";
 
 export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
-  const { theme } = useSettingsStore(state => ({ theme: state.theme }));
+  const theme = useSettingsStore(state => state.theme);
 
   // SVG 需要作为组件使用，webp 可以作为 Image source
   const isClassicTheme = theme === "classic" || !theme;
