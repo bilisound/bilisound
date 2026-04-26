@@ -40,14 +40,23 @@ bilisound/
 
 ## Where to Look
 
-| 你想了解…… | 去看…… |
-|------------|--------|
-| 整体架构、数据流、SDK 双模式、Server 职责 | [docs/architecture.md](docs/architecture.md) |
-| B 站术语 (bvid, cid, WBI, DASH 等) | [docs/glossary.md](docs/glossary.md) |
-| 存储层 (SQLite/MMKV/Zustand) | [docs/data-layer.md](docs/data-layer.md) |
-| 页面路由结构 | [docs/routes.md](docs/routes.md) |
-| Player 模块 API | [packages/player/README.md](packages/player/README.md) |
-| CF Worker API 端点 | [apps/server-cf/README.md](apps/server-cf/README.md) |
+| 你想了解……                                | 去看……                                                 |
+| ----------------------------------------- | ------------------------------------------------------ |
+| 整体架构、数据流、SDK 双模式、Server 职责 | [docs/architecture.md](docs/architecture.md)           |
+| B 站术语 (bvid, cid, WBI, DASH 等)        | [docs/glossary.md](docs/glossary.md)                   |
+| 存储层 (SQLite/MMKV/Zustand)              | [docs/data-layer.md](docs/data-layer.md)               |
+| 页面路由结构                              | [docs/routes.md](docs/routes.md)                       |
+| Player 模块 API                           | [packages/player/README.md](packages/player/README.md) |
+| CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)   |
+
+## What subproject user may want you to view
+
+| 用户提到……                     | 去看……            |
+| ------------------------------ | ----------------- |
+| App、客户端、Android、iOS、Web | `apps/mobile`     |
+| 服务端                         | `apps/server-cf`  |
+| 播放库、播放服务               | `packages/player` |
+| API、SDK                       | `packages/sdk`    |
 
 ## Build, Test, and Development Commands
 
@@ -65,7 +74,7 @@ bilisound/
 
 - Prettier: 2‑space indent, semicolons, double quotes, trailing commas, width 120.
 - ESLint: Expo config + Prettier plugin (see `apps/mobile/eslint.config.js`).
-- Files: hooks `useThing.ts`, components `Thing.tsx` (PascalCase exports), modules commonly kebab‑case.
+- Files: hooks `useThing.ts`, components `kebab‑case.tsx`, modules commonly kebab‑case.
 - Imports: use local alias `~/` in mobile per `tsconfig.json` (resolved to `apps/mobile/`).
 - Platform extensions: `*.web.ts` for web-specific implementations (Expo convention).
 
