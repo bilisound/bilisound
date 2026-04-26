@@ -8,9 +8,12 @@
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "postinstall": "pnpm run build",
-    "prettier:fix": "prettier -w --ignore-unknown ."
+    "prettier:fix": "prettier -w --ignore-unknown .",
+    "spell": "cspell lint .",
+    "spell:fix": "cspell lint --show-suggestions --no-must-find-files ."
   },
   "devDependencies": {
+    "cspell": "^10.0.0",
     "prettier": "^3.8.0",
     "turbo": "^2.7.5"
   },
