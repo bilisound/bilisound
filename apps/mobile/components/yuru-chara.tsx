@@ -25,7 +25,7 @@ export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
       {isClassicTheme ? (
         <BgCornerClassic width="240px" height="240px" style={{ opacity: 0.4 }} />
       ) : (
-        <BgCornerRed width="240px" height="240px" style={{ opacity: 0.15 }} />
+        <BgCornerRed width="240px" height="240px" style={{ opacity: 0.4 }} />
       )}
     </View>
   );
