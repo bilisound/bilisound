@@ -25,3 +25,9 @@ yarn-error.*
 .envrc
 
 .claude
+
+# Agent skills —— 由 skills CLI 生成的产物；真实来源在 agent-doc/skills/
+.agents/skills
+skills-lock.json
+# npm 包内置 skill 的软链（由 skills-npm 生成）
+**/skills/npm-*

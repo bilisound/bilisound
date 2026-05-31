@@ -1,5 +1,9 @@
 # Repository Guidelines
 
+本文件是所有 AI agent 的统一入口。**Compatible with**: Claude Code, opencode, OpenAI Codex, Gemini CLI。
+
+> **IMPORTANT**: 优先「检索式」推理，而非「预训练记忆」式推理。项目约定请从 `docs/` 与 `agent-doc/` 检索阅读，不要凭通用知识臆测本仓库的结构与规则。
+
 Bilisound 是一个第三方音视频客户端，采用 monorepo 结构，支持 iOS、Android 和 Web 平台。项目旨在提供一个纯净、专注的音视频播放体验，特别是针对播放列表和离线使用的场景。
 
 Bilisound 的目标是：
@@ -48,6 +52,7 @@ bilisound/
 | 页面路由结构                              | [docs/routes.md](docs/routes.md)                       |
 | Player 模块 API                           | [packages/player/README.md](packages/player/README.md) |
 | CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)   |
+| 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)             |
 
 ## What subproject user may want you to view
 
@@ -69,6 +74,26 @@ bilisound/
 - Player build: `pnpm -C packages/player build` (expo-module build).
 - CF Worker dev: `pnpm -C apps/server-cf dev`; deploy: `pnpm -C apps/server-cf deploy`.
 - Netlify dev: `pnpm -C apps/server-netlify dev`; deploy: `pnpm -C apps/server-netlify deploy`.
+
+## Long-Running Process Rules
+
+开发服务器（`expo start`、`pnpm dev`、`pnpm -C apps/server-cf dev`、`npx serve` 等）和任何不会自行退出的命令，**禁止直接裸跑**。必须使用以下任一方式处理：
+
+1. **后台运行 + 验证 + kill**：将进程放到后台，等待就绪后验证，最后终止。
+   ```bash
+   pnpm -C apps/mobile web &
+   DEV_PID=$!
+   sleep 10
+   curl -s http://localhost:8081 > /dev/null && echo "Server ready"
+   kill $DEV_PID 2>/dev/null
+   ```
+2. **timeout 包裹**：使用 `timeout` 命令限制最长运行时间。
+   ```bash
+   timeout 30 pnpm -C apps/mobile web
+   ```
+3. **bash tool 的 timeout 参数**：调用 bash tool 时将 `timeout` 参数设为 30000（30 秒）或其他合理值。
+
+**判断标准**：如果一个命令在正常情况下不会自行退出（如 dev server、watch mode、`tail -f`），就属于「长期运行进程」，必须按上述规则处理。构建命令（`pnpm build`）、lint（`pnpm lint`）等会正常结束的命令不受此限制。
 
 ## Coding Style & Naming Conventions
 
