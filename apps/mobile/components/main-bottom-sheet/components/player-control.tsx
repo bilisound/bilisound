@@ -28,7 +28,7 @@ export function PlayerControl() {
   const [closing, setClosing] = useState(false);
   const [value, setValue] = useState<"current" | "list">("current");
   const { width, height } = useWindowSize();
-  const { top, left, right } = useSafeAreaInsets();
+  const { top, left, right, bottom } = useSafeAreaInsets();
 
   function handleJump() {
     if (closing) {
@@ -54,7 +54,18 @@ export function PlayerControl() {
   return (
     // iOS 下播放界面横屏布局问题的 workaround
     // 新增：key={isHorizontal} 以确保在横屏切换时重新渲染
-    <View className={"flex-col sm:flex-row p-safe"} style={{ width, height }} key={`${isHorizontal}`}>
+    <View
+      className={"flex-col sm:flex-row"}
+      style={{
+        width,
+        height,
+        paddingTop: top,
+        paddingBottom: bottom,
+        paddingLeft: left,
+        paddingRight: right,
+      }}
+      key={`${isHorizontal}`}
+    >
       <View className={"absolute z-10"} style={{ left: 10 + left, top: 10 + top }}>
         <LayoutButton
           iconName={"fa6-solid:angle-down"}

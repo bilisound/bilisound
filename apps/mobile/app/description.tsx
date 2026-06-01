@@ -4,9 +4,11 @@ import { useLocalSearchParams } from "expo-router";
 import { getBilisoundMetadata } from "~/api/bilisound";
 import { useQuery } from "@tanstack/react-query";
 import { useWindowSize } from "~/hooks/useWindowSize";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Page() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const insets = useSafeAreaInsets();
 
   const { height } = useWindowSize();
 
@@ -23,7 +25,13 @@ export default function Page() {
 
   return (
     <View className={"bg-background-0"} style={{ maxHeight: height * 0.75 }}>
-      <ScrollView className={"px-safe pb-safe"}>
+      <ScrollView
+        style={{
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+          paddingBottom: insets.bottom,
+        }}
+      >
         <Text className={"text-sm leading-normal p-4"}>{data?.desc}</Text>
       </ScrollView>
     </View>

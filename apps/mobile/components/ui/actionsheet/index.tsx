@@ -17,6 +17,7 @@ import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { cssInterop } from "nativewind";
 import { Motion, AnimatePresence, createMotionAnimatedComponent } from "@legendapp/motion";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ItemWrapper = React.forwardRef<React.ElementRef<typeof Pressable>, PressableProps>(({ ...props }, ref) => {
   return <Pressable {...props} ref={ref} />;
@@ -84,10 +85,10 @@ cssInterop(PrimitiveIcon, {
   },
 });
 
-const actionsheetStyle = tva({ base: "h-full mx-safe web:pointer-events-none" });
+const actionsheetStyle = tva({ base: "h-full web:pointer-events-none" });
 
 const actionsheetContentStyle = tva({
-  base: "max-w-screen-md w-full mx-auto items-center rounded-tl-3xl rounded-tr-3xl p-2 pt-2 pb-safe bg-background-0 web:pointer-events-auto web:select-none shadow-hard-5 border border-b-0 border-outline-100",
+  base: "max-w-screen-md w-full mx-auto items-center rounded-tl-3xl rounded-tr-3xl p-2 pt-2 bg-background-0 web:pointer-events-auto web:select-none shadow-hard-5 border border-b-0 border-outline-100",
 });
 
 const actionsheetItemStyle = tva({
@@ -258,11 +259,13 @@ type IActionsheetIconProps = VariantProps<typeof actionsheetIconStyle> &
 
 const Actionsheet = React.forwardRef<React.ElementRef<typeof UIActionsheet>, IActionsheetProps>(
   ({ className, ...props }, ref) => {
+    const insets = useSafeAreaInsets();
     return (
       <UIActionsheet
         className={actionsheetStyle({
           class: className,
         })}
+        style={{ marginLeft: insets.left, marginRight: insets.right }}
         ref={ref}
         {...props}
       />
@@ -272,11 +275,13 @@ const Actionsheet = React.forwardRef<React.ElementRef<typeof UIActionsheet>, IAc
 
 const ActionsheetContent = React.forwardRef<React.ElementRef<typeof UIActionsheet.Content>, IActionsheetContentProps>(
   ({ className, ...props }, ref) => {
+    const insets = useSafeAreaInsets();
     return (
       <UIActionsheet.Content
         className={actionsheetContentStyle({
           class: className,
         })}
+        style={{ paddingBottom: insets.bottom }}
         ref={ref}
         {...props}
       />

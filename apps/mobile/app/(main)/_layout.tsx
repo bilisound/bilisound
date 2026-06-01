@@ -90,6 +90,7 @@ function CurrentPlayingTablet() {
   const isPlaying = useIsPlaying();
   const playbackState = usePlaybackState();
   const open = useBottomSheetStore(state => state.open);
+  const { left, bottom } = useSafeAreaInsets();
 
   // 解决 placeholder 音频还没替换时不恰当的状态显示
   const isPlaceholderTrack = currentTrack?.uri === PLACEHOLDER_AUDIO;
@@ -107,7 +108,10 @@ function CurrentPlayingTablet() {
   }
 
   return (
-    <View className={"hidden absolute left-safe bottom-safe w-16 xl:w-64 items-center " + " sm:flex" + " xl:flex-row"}>
+    <View
+      className={"hidden absolute w-16 xl:w-64 items-center " + " sm:flex" + " xl:flex-row"}
+      style={{ left: left || 0, bottom: bottom || 0 }}
+    >
       <View className={"w-16 h-10 items-center xl:hidden"}>
         <ButtonOuter>
           <Pressable
@@ -231,6 +235,7 @@ export default function TabLayout() {
   const edgeInsetsTab = simpleCopy(edgeInsets);
   const windowDimensions = useWindowSize();
   const showYuruChara = useSettingsStore(state => state.showYuruChara);
+  const { colorValue } = useRawThemeValues();
   const isSideTabList = windowDimensions.width >= breakpoints.sm;
 
   if (windowDimensions.width < breakpoints.md) {
@@ -261,10 +266,10 @@ export default function TabLayout() {
         </View>
         <CurrentPlaying />
         <TabList
-          style={tabListSafeAreaStyle}
+          style={[tabListSafeAreaStyle, { backgroundColor: colorValue("--color-background-50") }]}
           className={
-            "flex-0 basis-auto pl-safe pr-safe pb-safe !flex-row !justify-around bg-background-50 " +
-            "max-sm:w-full sm:h-full sm:!flex-col sm:pl-safe sm:pr-0 sm:pt-safe sm:!justify-start " +
+            "flex-0 basis-auto !flex-row !justify-around " +
+            "max-sm:w-full sm:h-full sm:!flex-col sm:pr-0 sm:!justify-start " +
             "xl:w-64 xl:items-center"
           }
         >
