@@ -28,17 +28,15 @@
   "author": "tcdw <tcdw2011@gmail.com> (https://github.com/tcdw)",
   "license": "MIT",
   "homepage": "https://github.com/bilisound/player#readme",
-  "dependencies": {},
   "devDependencies": {
-    "@types/react": "~19.2.9",
+    "@types/react": "~19.2.14",
+    "expo": "~56.0.8",
     "expo-module-scripts": "^5.0.8",
-    "expo": "~55.0.4",
-    "expo-modules-core": "~55.0.13",
-    "react-native": "0.83.2"
+    "expo-modules-core": "~56.0.14",
+    "react-native": "0.85.3"
   },
   "peerDependencies": {
     "expo": "*",
-    "expo-modules-core": "*",
     "react": "*",
     "react-native": "*"
   },

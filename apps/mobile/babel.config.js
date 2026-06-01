@@ -15,7 +15,7 @@ module.exports = function (api) {
     ],
 
     plugins: [
-      ["react-native-worklets-core/plugin"],
+      ["react-native-worklets/plugin"],
       [
         "module-resolver",
         {

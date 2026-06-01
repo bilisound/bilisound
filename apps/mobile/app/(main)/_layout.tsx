@@ -231,6 +231,7 @@ export default function TabLayout() {
   const edgeInsetsTab = simpleCopy(edgeInsets);
   const windowDimensions = useWindowSize();
   const showYuruChara = useSettingsStore(state => state.showYuruChara);
+  const isSideTabList = windowDimensions.width >= breakpoints.sm;
 
   if (windowDimensions.width < breakpoints.md) {
     edgeInsetsTab.bottom = 0;
@@ -238,6 +239,19 @@ export default function TabLayout() {
   if (windowDimensions.width >= breakpoints.md) {
     edgeInsetsTab.left = 0;
   }
+
+  const tabListSafeAreaStyle = isSideTabList
+    ? {
+        paddingTop: edgeInsets.top,
+        paddingLeft: edgeInsets.left,
+        paddingRight: 0,
+        paddingBottom: edgeInsets.bottom,
+      }
+    : {
+        paddingLeft: edgeInsets.left,
+        paddingRight: edgeInsets.right,
+        paddingBottom: edgeInsets.bottom,
+      };
 
   return (
     <TabSafeAreaContext.Provider value={edgeInsetsTab}>
@@ -247,6 +261,7 @@ export default function TabLayout() {
         </View>
         <CurrentPlaying />
         <TabList
+          style={tabListSafeAreaStyle}
           className={
             "flex-0 basis-auto pl-safe pr-safe pb-safe !flex-row !justify-around bg-background-50 " +
             "max-sm:w-full sm:h-full sm:!flex-col sm:pl-safe sm:pr-0 sm:pt-safe sm:!justify-start " +

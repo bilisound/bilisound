@@ -4,7 +4,7 @@ import "~/global.css";
 import { GluestackUIProvider } from "~/components/ui/gluestack-ui-provider";
 import React, { useEffect, useRef, useState } from "react";
 import { Linking, Platform, useColorScheme } from "react-native";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router/react-navigation";
 import { SystemBars } from "react-native-edge-to-edge";
 import { useFonts } from "expo-font";
 import log from "~/utils/logger";

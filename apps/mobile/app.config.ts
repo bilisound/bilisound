@@ -92,6 +92,8 @@ const baseConfig: ExpoConfig = {
     "expo-font",
     "expo-asset",
     "expo-sqlite",
+    "expo-image",
+    "expo-sharing",
   ],
   experiments: {
     typedRoutes: true,
