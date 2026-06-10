@@ -36,9 +36,7 @@ function ThemeButton({ selected = false, name, onPress, yuruChara }: ThemeButton
     >
       <Text className={`font-semibold text-lg ${selected ? "text-white" : ""}`}>{name}</Text>
       {selected && <Text className={`font-semibold text-sm ${selected ? "text-white" : ""}`}>已启用</Text>}
-      {yuruChara != null && (
-        <Image source={yuruChara} className="absolute right-0 -top-16 w-64 h-64 opacity-30" />
-      )}
+      {yuruChara != null && <Image source={yuruChara} className="absolute right-0 -top-16 w-64 h-64 opacity-30" />}
     </Pressable>
   );
 }

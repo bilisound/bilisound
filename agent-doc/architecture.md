@@ -71,22 +71,23 @@ apps/server-netlify (独立，无 SDK 依赖)
 
 项目使用 Expo 的 `.web.ts` 后缀约定进行平台特定实现：
 
-| 文件 | 平台 |
-|------|------|
-| `download.ts` | iOS/Android |
-| `download.web.ts` | Web |
-| `init.ts` | iOS/Android |
-| `init.web.ts` | Web |
-| `playlist.ts` | iOS/Android (SQLite) |
-| `playlist.web.ts` | Web (IndexedDB) |
-| `logger.ts` | iOS/Android |
-| `logger.web.ts` | Web |
+| 文件              | 平台                 |
+| ----------------- | -------------------- |
+| `download.ts`     | iOS/Android          |
+| `download.web.ts` | Web                  |
+| `init.ts`         | iOS/Android          |
+| `init.web.ts`     | Web                  |
+| `playlist.ts`     | iOS/Android (SQLite) |
+| `playlist.web.ts` | Web (IndexedDB)      |
+| `logger.ts`       | iOS/Android          |
+| `logger.web.ts`   | Web                  |
 
 运行时也通过 `Platform.OS === "web"` 做分支判断。
 
 ## 技术栈速览
 
 ### apps/mobile
+
 - Expo SDK 55 + React Native 0.83
 - Expo Router (文件路由)
 - NativeWind 4 (Tailwind CSS) + GluestackUI (组件库)
@@ -96,16 +97,19 @@ apps/server-netlify (独立，无 SDK 依赖)
 - TanStack React Query
 
 ### packages/sdk
+
 - TypeScript + tsdown (构建)
 - axios (HTTP, peer dependency)
 - md5 (WBI 签名, peer dependency)
 
 ### packages/player
+
 - expo-modules-core (原生模块桥接)
 - iOS: Swift + Kotlin
 - Android: Kotlin
 
 ### apps/server-cf
+
 - Cloudflare Workers
 - itty-router
 - @bilisound/sdk (Direct 模式 + KV 缓存)

@@ -2,7 +2,7 @@
 
 本文件是所有 AI agent 的统一入口。**Compatible with**: Claude Code, opencode, OpenAI Codex, Gemini CLI。
 
-> **IMPORTANT**: 优先「检索式」推理，而非「预训练记忆」式推理。项目约定请从 `docs/` 与 `agent-doc/` 检索阅读，不要凭通用知识臆测本仓库的结构与规则。
+> **IMPORTANT**: 优先「检索式」推理，而非「预训练记忆」式推理。项目约定请从 `agent-doc/` 检索阅读，不要凭通用知识臆测本仓库的结构与规则。
 
 Bilisound 是一个第三方音视频客户端，采用 monorepo 结构，支持 iOS、Android 和 Web 平台。项目旨在提供一个纯净、专注的音视频播放体验，特别是针对播放列表和离线使用的场景。
 
@@ -26,7 +26,7 @@ bilisound/
 │   └── player/            ← @bilisound/player — Expo 原生音频播放模块
 ```
 
-- **apps/mobile**: Expo SDK 55 客户端。源文件按功能分目录：`app/`（路由页面）、`components/`、`business/`、`store/`、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。
+- **apps/mobile**: Expo SDK 56 客户端。源文件按功能分目录：`app/`（路由页面）、`components/`、`business/`、`store/`、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。
 - **apps/server-cf**: Cloudflare Worker，为 Web 端代理 B 站 API 请求。入口 `index.ts`，路由在 `route/bilisound.ts`。
 - **apps/server-netlify**: Netlify Functions，代理 GitHub Releases 用于版本检查与 APK 下载。
 - **packages/sdk**: 运行时无关的核心逻辑，发布为 `@bilisound/sdk`（TypeScript → `dist/`）。
@@ -40,16 +40,16 @@ bilisound/
 - **两个 Server 的区别**: `server-cf` 是 B 站 API 代理（核心后端），`server-netlify` 是 GitHub Release 代理（仅版本分发）。
 - **平台分叉**: `.web.ts` 后缀文件为 Web 专属实现，同名无后缀文件供原生端使用。
 
-架构细节参见 **[docs/architecture.md](docs/architecture.md)**。
+架构细节参见 **[agent-doc/architecture.md](agent-doc/architecture.md)**。
 
 ## Where to Look
 
 | 你想了解……                                | 去看……                                                 |
 | ----------------------------------------- | ------------------------------------------------------ |
-| 整体架构、数据流、SDK 双模式、Server 职责 | [docs/architecture.md](docs/architecture.md)           |
-| B 站术语 (bvid, cid, WBI, DASH 等)        | [docs/glossary.md](docs/glossary.md)                   |
-| 存储层 (SQLite/MMKV/Zustand)              | [docs/data-layer.md](docs/data-layer.md)               |
-| 页面路由结构                              | [docs/routes.md](docs/routes.md)                       |
+| 整体架构、数据流、SDK 双模式、Server 职责 | [agent-doc/architecture.md](agent-doc/architecture.md) |
+| B 站术语 (bvid, cid, WBI, DASH 等)        | [agent-doc/glossary.md](agent-doc/glossary.md)         |
+| 存储层 (SQLite/MMKV/Zustand)              | [agent-doc/data-layer.md](agent-doc/data-layer.md)     |
+| 页面路由结构                              | [agent-doc/routes.md](agent-doc/routes.md)             |
 | Player 模块 API                           | [packages/player/README.md](packages/player/README.md) |
 | CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)   |
 | 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)             |

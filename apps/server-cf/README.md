@@ -24,16 +24,16 @@ api.bilibili.com
 
 所有端点位于 `/api/internal/` 前缀下，需通过 Referer 白名单校验。
 
-| 方法 | 路径 | 参数 | 说明 |
-|------|------|------|------|
-| `GET` | `/api/internal/resolve-b23` | `id` | 解析 b23.tv 短链接 |
-| `GET` | `/api/internal/metadata` | `id` | 获取视频元数据 (标题/分P/UP主) |
-| `GET` | `/api/internal/resource` | `id`, `episode`, `dl?` | 获取音频资源 (支持 Range) |
-| `HEAD` | `/api/internal/resource` | `id`, `episode`, `dl?` | 获取资源头信息 |
-| `GET` | `/api/internal/user-list` | `userId`, `listId`, `page`, `mode` | 分页获取用户列表 |
-| `GET` | `/api/internal/user-list-all` | `userId`, `listId`, `mode` | 一次性获取完整列表 |
-| `GET` | `/api/internal/image` | `url`, `referer` | 图片代理 (域名白名单) |
-| `GET` | `/api/internal/app/update` | `arch`, `nightly?` | App 版本更新检查 |
+| 方法   | 路径                          | 参数                               | 说明                           |
+| ------ | ----------------------------- | ---------------------------------- | ------------------------------ |
+| `GET`  | `/api/internal/resolve-b23`   | `id`                               | 解析 b23.tv 短链接             |
+| `GET`  | `/api/internal/metadata`      | `id`                               | 获取视频元数据 (标题/分P/UP主) |
+| `GET`  | `/api/internal/resource`      | `id`, `episode`, `dl?`             | 获取音频资源 (支持 Range)      |
+| `HEAD` | `/api/internal/resource`      | `id`, `episode`, `dl?`             | 获取资源头信息                 |
+| `GET`  | `/api/internal/user-list`     | `userId`, `listId`, `page`, `mode` | 分页获取用户列表               |
+| `GET`  | `/api/internal/user-list-all` | `userId`, `listId`, `mode`         | 一次性获取完整列表             |
+| `GET`  | `/api/internal/image`         | `url`, `referer`                   | 图片代理 (域名白名单)          |
+| `GET`  | `/api/internal/app/update`    | `arch`, `nightly?`                 | App 版本更新检查               |
 
 ## SDK 工厂
 

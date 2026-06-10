@@ -16,46 +16,46 @@ SDK 获取音频 URL → Player.addTrack() → Player.play() → 音频输出
 
 ### 播放控制
 
-| 函数 | 说明 |
-|------|------|
-| `play()` | 开始/恢复播放 |
-| `pause()` | 暂停 |
-| `toggle()` | 切换播放/暂停 |
-| `prev()` / `next()` | 上/下一首 |
-| `seek(to)` | 跳转到指定位置 (ms) |
-| `jump(to)` | 跳到队列指定索引 |
-| `setSpeed(speed, retainPitch)` | 播放速度 (0.5-2.0) |
+| 函数                           | 说明                |
+| ------------------------------ | ------------------- |
+| `play()`                       | 开始/恢复播放       |
+| `pause()`                      | 暂停                |
+| `toggle()`                     | 切换播放/暂停       |
+| `prev()` / `next()`            | 上/下一首           |
+| `seek(to)`                     | 跳转到指定位置 (ms) |
+| `jump(to)`                     | 跳到队列指定索引    |
+| `setSpeed(speed, retainPitch)` | 播放速度 (0.5-2.0)  |
 
 ### 队列管理
 
-| 函数 | 说明 |
-|------|------|
-| `setQueue(tracks, startIndex)` | 设置完整队列 |
-| `addTrack(track)` / `addTracks(tracks)` | 添加曲目 |
-| `deleteTracks(indices)` | 删除指定曲目 |
-| `clearQueue()` | 清空队列 |
-| `replaceTrack(index, track)` | 替换曲目 |
+| 函数                                    | 说明         |
+| --------------------------------------- | ------------ |
+| `setQueue(tracks, startIndex)`          | 设置完整队列 |
+| `addTrack(track)` / `addTracks(tracks)` | 添加曲目     |
+| `deleteTracks(indices)`                 | 删除指定曲目 |
+| `clearQueue()`                          | 清空队列     |
+| `replaceTrack(index, track)`            | 替换曲目     |
 
 ### 下载管理
 
-| 函数 | 说明 |
-|------|------|
-| `addDownload(id, uri, metadata)` | 添加下载任务 |
-| `getDownloads(state?)` | 查询下载状态 |
+| 函数                                       | 说明          |
+| ------------------------------------------ | ------------- |
+| `addDownload(id, uri, metadata)`           | 添加下载任务  |
+| `getDownloads(state?)`                     | 查询下载状态  |
 | `pauseDownload(id)` / `resumeDownload(id)` | 暂停/恢复下载 |
-| `removeDownload(id)` | 移除下载 |
+| `removeDownload(id)`                       | 移除下载      |
 
 ### 状态查询
 
-| 函数/Hook | 说明 |
-|-----------|------|
-| `getCurrentTrack()` | 当前曲目 |
-| `getIsPlaying()` | 播放中? |
-| `getProgress()` | 当前进度 |
-| `getRepeatMode()` | 循环模式 |
-| `useProgress()` | 进度 Hook (0.5s 轮询) |
-| `useQueue()` | 队列 Hook |
-| `useIsPlaying()` | 播放状态 Hook |
+| 函数/Hook           | 说明                  |
+| ------------------- | --------------------- |
+| `getCurrentTrack()` | 当前曲目              |
+| `getIsPlaying()`    | 播放中?               |
+| `getProgress()`     | 当前进度              |
+| `getRepeatMode()`   | 循环模式              |
+| `useProgress()`     | 进度 Hook (0.5s 轮询) |
+| `useQueue()`        | 队列 Hook             |
+| `useIsPlaying()`    | 播放状态 Hook         |
 
 ## Hooks
 
@@ -67,9 +67,9 @@ import { useCurrentTrack, useIsPlaying, useProgress, useQueue } from "@bilisound
 
 ## 循环模式
 
-| 值 | 含义 |
-|----|------|
-| `0` | 不循环 (OFF) |
+| 值  | 含义           |
+| --- | -------------- |
+| `0` | 不循环 (OFF)   |
 | `1` | 单曲循环 (ONE) |
 | `2` | 列表循环 (ALL) |
 
