@@ -5,6 +5,8 @@ export * from "./hooks/useIsPlaying";
 export * from "./hooks/usePlaybackState";
 export * from "./hooks/useProgress";
 export * from "./hooks/useQueue";
+export * from "./hooks/useRepeatMode";
+export * from "./hooks/useShuffleMode";
 export * from "./player";
 export * from "./events";
 export * from "./types/index";

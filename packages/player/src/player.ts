@@ -12,6 +12,7 @@ import type {
 import {
   DownloadState,
   RepeatMode,
+  ShuffleMode,
 } from "./types";
 import { toTrackData, toTrackDataInternal } from "./utils";
 
@@ -145,6 +146,42 @@ export function getRepeatMode(): Promise<RepeatMode> {
  */
 export function setRepeatMode(mode: RepeatMode): Promise<void> {
   return BilisoundPlayerModule.setRepeatMode(mode);
+}
+
+/**
+ * 获取随机播放模式
+ *
+ * 随机播放改变的是「播放顺序」（next/prev 的走向），不会改变 `getTracks()` 返回的
+ * 规范队列顺序。
+ * @returns {Promise<ShuffleMode>} 随机播放模式
+ * - 0: 关闭
+ * - 1: 开启
+ */
+export function getShuffleMode(): Promise<ShuffleMode> {
+  return BilisoundPlayerModule.getShuffleMode();
+}
+
+/**
+ * 设置随机播放模式
+ *
+ * 开启时：当前曲目与播放进度保持不变，next/prev 按随机顺序走。
+ * 关闭时：当前曲目与播放进度保持不变，next/prev 按规范队列顺序走。
+ * @param mode 随机播放模式
+ * - 0: 关闭
+ * - 1: 开启
+ */
+export function setShuffleMode(mode: ShuffleMode): Promise<void> {
+  return BilisoundPlayerModule.setShuffleMode(mode);
+}
+
+/**
+ * 切换随机播放模式，并返回切换后的模式
+ */
+export async function toggleShuffleMode(): Promise<ShuffleMode> {
+  const current = await BilisoundPlayerModule.getShuffleMode();
+  const next = current === ShuffleMode.ON ? ShuffleMode.OFF : ShuffleMode.ON;
+  await BilisoundPlayerModule.setShuffleMode(next);
+  return next;
 }
 
 /**

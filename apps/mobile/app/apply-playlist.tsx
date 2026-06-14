@@ -11,7 +11,6 @@ import { PlaylistItem } from "~/components/playlist-item";
 import { VideoItem } from "~/components/video-item";
 import { Text } from "~/components/ui/text";
 import { usePlaylistOnQueue } from "~/storage/playlist";
-import { addToQueueListBackup, getQueuePlayingMode } from "~/storage/queue";
 import { addToPlaylist, getPlaylistMetas, quickCreatePlaylist, syncPlaylistAmount } from "~/storage/sqlite/playlist";
 import useApplyPlaylistStore from "~/store/apply-playlist";
 import { getImageProxyUrl } from "~/business/constant-helper";
@@ -51,10 +50,7 @@ export default function Page() {
     if (playlistOnQueue) {
       const convertedList = playlistToTracks(playlistDetail ?? []);
       await Player.addTracks(convertedList);
-      // 随机状态下还要加到备份队列中
-      if (getQueuePlayingMode() === "shuffle") {
-        addToQueueListBackup(convertedList);
-      }
+      // v3 起 player 内部管理随机顺序，新增曲目会被自动并入播放顺序，无需再维护 backup
     }
 
     await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });

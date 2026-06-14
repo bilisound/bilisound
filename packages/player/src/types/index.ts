@@ -99,6 +99,14 @@ export enum RepeatMode {
   ALL = 2,
 }
 
+export enum ShuffleMode {
+  /** Shuffle disabled. next/prev follow canonical queue order. */
+  OFF = 0,
+
+  /** Shuffle enabled. next/prev follow shuffle (playback) order. */
+  ON = 1,
+}
+
 /**
  * 下载项目
  */
@@ -145,6 +153,10 @@ export interface RepeatModeChangeEvent {
   mode: RepeatMode;
 }
 
+export interface ShuffleModeChangeEvent {
+  mode: ShuffleMode;
+}
+
 export interface EventList {
   onPlaybackStateChange: PlaybackStateChangeEvent;
   onPlaybackError: PlaybackErrorEvent;
@@ -153,6 +165,7 @@ export interface EventList {
   onIsPlayingChange: IsPlayingChangeEvent;
   onDownloadUpdate: DownloadUpdateEvent;
   onRepeatModeChange: RepeatModeChangeEvent;
+  onShuffleModeChange: ShuffleModeChangeEvent;
   [key: string]: any;
 }
 
@@ -164,6 +177,7 @@ export interface EventListFunc {
   onIsPlayingChange: (params: IsPlayingChangeEvent) => void;
   onDownloadUpdate: (params: DownloadUpdateEvent) => void;
   onRepeatModeChange: (params: RepeatModeChangeEvent) => void;
+  onShuffleModeChange: (params: ShuffleModeChangeEvent) => void;
   [key: string]: any;
 }
 

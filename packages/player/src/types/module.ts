@@ -1,4 +1,4 @@
-import type { DownloadState, PlaybackProgress, PlaybackState, RepeatMode, TrackData, TrackDataInternal } from "./index";
+import type { DownloadState, PlaybackProgress, PlaybackState, RepeatMode, ShuffleMode, TrackData, TrackDataInternal } from "./index";
 
 export interface BilisoundPlayerModuleInterface {
   // 播放器相关
@@ -18,6 +18,8 @@ export interface BilisoundPlayerModuleInterface {
   setSpeed(speed: number, retainPitch: boolean): Promise<void>;
   getRepeatMode(): Promise<RepeatMode>;
   setRepeatMode(mode: RepeatMode): Promise<void>;
+  getShuffleMode(): Promise<ShuffleMode>;
+  setShuffleMode(mode: ShuffleMode): Promise<void>;
 
   // 播放队列相关
   addTrack(trackDataJson: string | TrackData): Promise<void>;

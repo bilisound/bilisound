@@ -5,7 +5,7 @@ export type { TrackDataOld, TrackData } from "./types";
 export { processTrackDataForSave, processTrackDataForLoad, playlistToTracks } from "./track-data";
 
 // Persistence
-export { saveTrackData, loadTrackData, loadBackupTrackData } from "./persistence";
+export { saveTrackData, loadTrackData } from "./persistence";
 
 // Track operations
 export { addTrackFromDetail, refreshTrack, refreshCurrentTrack, replaceQueueWithPlaylist } from "./track-operations";

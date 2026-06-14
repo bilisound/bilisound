@@ -51,6 +51,11 @@ const val EVENT_PLAYBACK_RESUME = "onPlaybackResume"
  */
 const val EVENT_LOOP_MODE_CHANGE = "onRepeatModeChange"
 
+/**
+ * 随机播放状态变更
+ */
+const val EVENT_SHUFFLE_MODE_CHANGE = "onShuffleModeChange"
+
 // ============================================================================
 // 播放状态
 // ============================================================================

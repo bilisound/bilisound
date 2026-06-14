@@ -1,10 +1,12 @@
 import * as Player from "@bilisound/player";
+import { ShuffleMode } from "@bilisound/player";
 import { Platform } from "react-native";
 
 import type { TrackData } from "@bilisound/player/build/types";
 
-import { QUEUE_CURRENT_INDEX, QUEUE_LIST, QUEUE_LIST_BACKUP, QUEUE_LIST_VERSION, queueStorage } from "~/storage/queue";
+import { getQueuePlayingMode, QUEUE_CURRENT_INDEX, QUEUE_LIST, QUEUE_LIST_VERSION, queueStorage } from "~/storage/queue";
 import { handleLegacyQueue } from "~/utils/migration/legacy-queue";
+import { cleanupLegacyShuffleKeys } from "~/utils/migration/shuffle-queue";
 import { convertToHTTPS } from "~/utils/string";
 import log from "~/utils/logger";
 
@@ -85,15 +87,15 @@ export async function loadTrackData() {
   if (trackData.length > 0) {
     trackData[current] = await refreshTrack(trackData[current]);
     await Player.setQueue(trackData, current);
-  }
-}
 
-/**
- * 读取备份播放队列（随机模式用）
- */
-export async function loadBackupTrackData() {
-  const trackRawData = queueStorage.getString(QUEUE_LIST_BACKUP) || "[]";
-  const trackData = JSON.parse(trackRawData) as TrackData[];
-  processTrackDataForLoad(trackData);
-  return trackData;
+    // v3 起随机播放由 player 内部管理。根据持久化的偏好重新应用随机模式：
+    // 当前曲目会被 rebuildShuffleOrder 固定在首位，播放进度不受影响，但随机顺序
+    // 是重新生成的（player 无法持久化精确的随机顺序，这是有意的行为变更）。
+    if (getQueuePlayingMode() === "shuffle") {
+      await Player.setShuffleMode(ShuffleMode.ON);
+    }
+  }
+
+  // 清理旧版物理打乱遗留的持久化数据（QUEUE_LIST_BACKUP / QUEUE_IS_RANDOMIZED）
+  cleanupLegacyShuffleKeys();
 }

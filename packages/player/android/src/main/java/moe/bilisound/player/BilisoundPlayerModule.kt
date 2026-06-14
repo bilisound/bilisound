@@ -180,6 +180,7 @@ class BilisoundPlayerModule : Module() {
             EVENT_IS_PLAYING_CHANGE,
             EVENT_DOWNLOAD_UPDATE,
             EVENT_LOOP_MODE_CHANGE,
+            EVENT_SHUFFLE_MODE_CHANGE,
         )
 
         OnCreate {
@@ -698,6 +699,32 @@ class BilisoundPlayerModule : Module() {
             }
         }
 
+        AsyncFunction("getShuffleMode") { promise: Promise ->
+            mainHandler.post {
+                try {
+                    // Media3 原生 shuffle：开启时 0 -> OFF, 1 -> ON
+                    val shuffleMode = if (getController().shuffleModeEnabled) 1 else 0
+                    promise.resolve(shuffleMode)
+                } catch (e: Exception) {
+                    promise.reject("GET_SHUFFLE_MODE_ERROR", "无法获取随机播放模式（${e.message}）", e)
+                }
+            }
+        }
+
+        AsyncFunction("setShuffleMode") { mode: Int, promise: Promise ->
+            mainHandler.post {
+                try {
+                    // 使用 Media3 原生 shuffle：仅改变播放顺序，不物理打乱队列
+                    // getMediaItemAt / currentMediaItemIndex 仍返回 canonical 顺序
+                    getController().shuffleModeEnabled = mode == 1
+                    // 事件由 playerListener.onShuffleModeEnabledChanged 统一派发
+                    promise.resolve(null)
+                } catch (e: Exception) {
+                    promise.reject("SET_SHUFFLE_MODE_ERROR", "无法设置随机播放模式（${e.message}）", e)
+                }
+            }
+        }
+
         AsyncFunction("addDownload") { id: String, uri: String, metadata: String, promise: Promise ->
             mainHandler.post {
                 try {
@@ -945,6 +972,12 @@ class BilisoundPlayerModule : Module() {
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             this@BilisoundPlayerModule.sendEvent(EVENT_TRACK_CHANGE)
+        }
+
+        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+            this@BilisoundPlayerModule.sendEvent(EVENT_SHUFFLE_MODE_CHANGE, bundleOf(
+                "mode" to if (shuffleModeEnabled) 1 else 0,
+            ))
         }
     }
 

@@ -204,6 +204,216 @@ Manual test scenarios should cover iOS, Android, and Web:
 10. Replace queue while shuffle is enabled.
 11. Verify `useQueue`, `useCurrentTrack`, and queue-related events update correctly.
 
+## Implementation Status
+
+This epic is being delivered in slices so native code (which cannot be compiled/verified in every agent environment) does not block the TypeScript contract.
+
+### Slice A — TS contract + Web + hook exports (DONE)
+
+Verified with `pnpm -C packages/player build`.
+
+Changes:
+
+```txt
+types/index.ts
+  + enum ShuffleMode { OFF = 0, ON = 1 }
+  + interface ShuffleModeChangeEvent { mode: ShuffleMode }
+  + registered onShuffleModeChange in EventList / EventListFunc
+
+types/module.ts
+  + getShuffleMode(): Promise<ShuffleMode>
+  + setShuffleMode(mode: ShuffleMode): Promise<void>
+
+player.ts
+  + getShuffleMode / setShuffleMode / toggleShuffleMode
+
+hooks/useShuffleMode.ts (new)
+  + useShuffleMode subscription store (onShuffleModeChange)
+
+index.ts
+  + export useRepeatMode   (was previously missing from public API)
+  + export useShuffleMode
+
+BilisoundPlayerModule.web.ts
+  + shuffleMode + shuffleOrderIds state
+  + rebuildShuffleOrder / resolvePlaybackOrder / getNextIndex / getPrevIndex / getFirstIndex
+  + next/prev/ended now consult playback order when shuffle is ON
+  + getShuffleMode / setShuffleMode
+  ~ fixed addTrackAt: splice(index, 1, x) (replace) -> splice(index, 0, x) (insert)
+```
+
+Web design decisions:
+
+```txt
+playback order is stored as track ids (shuffleOrderIds), not canonical indices,
+so queue insert/delete self-heals without per-mutation bookkeeping.
+getTracks() / getCurrentTrackIndex() still return canonical order/index.
+Turning shuffle ON keeps the current track first; progress is untouched.
+id uniqueness assumption matches existing deleteTracks() behavior
+(mobile builds id as `${bvid}_${episode}` via getCacheStatusKey).
+```
+
+Coupling reduced by this slice:
+
+```txt
+missing public hook export (useRepeatMode) — now exported
+prepares removal of app-level physical-queue shuffle + @bilisound/player/build/* deep import
+```
+
+Not verifiable in this environment: native iOS/Android. Web shuffle still needs
+manual browser testing per the Test Matrix above.
+
+### Slice B — Android (Media3 native shuffle) (DONE, needs device verification)
+
+Native code; not compiled in this environment. Verify in Android Studio / on device.
+
+Changes:
+
+```txt
+Constants.kt
+  + EVENT_SHUFFLE_MODE_CHANGE = "onShuffleModeChange"
+
+BilisoundPlayerModule.kt
+  + registered EVENT_SHUFFLE_MODE_CHANGE in Events(...)
+  + getShuffleMode: returns controller.shuffleModeEnabled ? 1 : 0
+  + setShuffleMode: controller.shuffleModeEnabled = (mode == 1)
+  + playerListener.onShuffleModeEnabledChanged -> sendEvent("onShuffleModeChange", { mode })
+```
+
+Design:
+
+```txt
+uses Media3 native shuffle (shuffleModeEnabled).
+seekToNext/seekToPrevious follow shuffle order automatically.
+getMediaItemAt / currentMediaItemIndex still return canonical order/index.
+event is dispatched from the listener (single source), not from the setter.
+```
+
+### Slice C — iOS (AVQueuePlayer simulated shuffle order) (DONE, needs device verification)
+
+Native code; not compiled in this environment. Verify in Xcode / on device.
+
+Changes:
+
+```txt
+BilisoundPlayerModule.swift
+  + registered "onShuffleModeChange" in Events(...)
+  + state: shuffleMode (0/1) + shuffleOrderIds ([String], track ids)
+  + helpers: trackId(of:), rebuildShuffleOrder, resolvePlaybackOrder,
+    nextIndexInOrder, prevIndexInOrder, firstIndexInOrder
+  + skipToNext / skipToPrevious now consult playback order
+  + playerItemDidReachEnd (natural end) now consults playback order
+  + getShuffleMode / setShuffleMode AsyncFunction
+```
+
+Design (mirrors Web):
+
+```txt
+shuffleOrderIds stores track ids, not canonical indices -> self-heals on queue mutation.
+playerItems / currentIndex stay canonical; getTracks/getCurrentTrackIndex unchanged.
+turning shuffle ON keeps current track first; progress untouched.
+safety: actionAtItemEnd = .pause means AVQueuePlayer never auto-advances;
+all next/prev/end advancement is manual via jumpToTrack, so loading the
+canonical tail into the queue does not break shuffle order.
+```
+
+### Cross-platform contract (verified)
+
+```txt
+event name: onShuffleModeChange  (all three platforms)
+payload:    { mode: number }     (0 = OFF, 1 = ON)
+TS build:   pnpm -C packages/player build passes
+```
+
+### Slice D — Mobile integration (DONE, verified on Android and iOS Simulator)
+
+Mobile now calls player shuffle APIs and no longer physically reorders the queue.
+
+Changes:
+
+```txt
+business/playlist/shuffle.ts
+  ~ setMode() now toggles @bilisound/player getShuffleMode/setShuffleMode
+  ~ persists QUEUE_PLAYING_MODE only as a startup preference
+  - removed physical shuffle/restore logic and iOS queue workaround
+
+components/main-bottom-sheet/components/player-control-buttons.tsx
+  + uses public useRepeatMode/useShuffleMode exports from @bilisound/player
+  - removed @bilisound/player/build/hooks/useRepeatMode deep import
+  - removed useQueuePlayingMode UI state source
+  ~ random button aria-label now reflects ON/OFF state
+
+business/playlist/handler/track-operations.ts
+  - removed addToQueueListBackup writes when appending tracks
+  ~ replaceQueueWithPlaylist resets shuffle via Player.setShuffleMode(OFF)
+
+hooks/playlist-detail/usePlaylistPlayer.ts
+  - removed duplicate QUEUE_IS_RANDOMIZED / QUEUE_PLAYING_MODE writes
+
+app/apply-playlist.tsx
+  - removed shuffle backup writes when adding tracks to current queue
+
+storage/queue.ts
+  - removed active QUEUE_LIST_BACKUP / QUEUE_IS_RANDOMIZED exports and backup helpers
+  ~ QUEUE_PLAYING_MODE remains as persisted shuffle preference
+
+business/playlist/handler/persistence.ts
+  + re-applies Player.setShuffleMode(ON) on startup when QUEUE_PLAYING_MODE=shuffle
+  + invokes cleanupLegacyShuffleKeys()
+
+utils/migration/shuffle-queue.ts
+  + removes legacy queue_list_backup / queue_is_randomized keys once
+```
+
+Persisted-data decision:
+
+```txt
+If old users exited while physical shuffle was enabled, their QUEUE_LIST already
+contains the order they last saw. v3 preserves that order as the new canonical
+queue to avoid reordering under the user. The exact historical shuffle order is
+not preserved; when QUEUE_PLAYING_MODE=shuffle, player shuffle is re-applied on
+startup with a freshly generated playback order and the current track kept first.
+```
+
+Android verification (SM S9380):
+
+```txt
+Observed startup crash root cause: ExpoModulesPackageList existed as generated
+source but had not been compiled into the APK. Running
+  ./gradlew :expo:generatePackagesList :expo:compileDebugKotlin --rerun-tasks
+then rebuilding app-debug.apk fixed the dev-client startup crash.
+
+Verified via agent-device + logcat:
+  - app opens past splash and ReactNativeJS logs run
+  - random button toggles Media3 shuffle:
+      STATE_SHUFFLE_OFF -> STATE_SHUFFLE_ALL_TRACK
+      STATE_SHUFFLE_ALL_TRACK -> STATE_SHUFFLE_OFF
+  - while shuffle is ON, tapping next jumped #16 -> #22
+  - queue tab still displayed canonical order (#13, #14, #15, #16, ...)
+  - random button label updates between 开启随机播放 / 关闭随机播放
+```
+
+iOS Simulator verification (iPhone 17):
+
+```txt
+Build note:
+  - first iOS build failed because ios/.xcode.env.local pointed to the removed
+    /opt/homebrew/Cellar/node/26.0.0/bin/node
+  - updating NODE_BINARY to the active /Users/tcdw/.proto/shims/node allowed
+    EXPO_PUBLIC_ENV=development pnpm exec expo run:ios --device "iPhone 17" --no-bundler
+    to build, install, and open the dev client
+
+Verified via agent-device + iOS simulator app logs:
+  - app opens past dev launcher and audio playback works
+  - random button toggles UI state; snapshots exposed Toast text:
+      随机模式开启
+      随机模式关闭
+  - while shuffle is ON, tapping next jumped #13 明日地球が滅ぶなら -> #18 ダブルバインド
+  - after turning shuffle OFF, tapping next advanced #18 ダブルバインド -> #19 microser
+  - iOS accessibility currently collapses the bottom sheet into a single node,
+    so player controls were exercised by coordinates and verified through logs
+```
+
 ## Migration Impact on Mobile
 
 After player shuffle API exists, mobile should remove physical queue shuffle logic from:

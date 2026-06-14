@@ -5,12 +5,13 @@ import {
   prev,
   RepeatMode,
   setRepeatMode,
+  ShuffleMode,
   toggle,
   useCurrentTrack,
   useIsPlaying,
+  useRepeatMode,
+  useShuffleMode,
 } from "@bilisound/player";
-import { useRepeatMode } from "@bilisound/player/build/hooks/useRepeatMode";
-import { useQueuePlayingMode } from "~/storage/queue";
 import { usePlaylistRestoreLoopOnceFlag } from "~/storage/playlist";
 import React, { useState } from "react";
 import { isLoading } from "~/components/main-bottom-sheet/utils";
@@ -27,7 +28,7 @@ export function PlayerControlButtons() {
   const { colorValue } = useRawThemeValues();
   const isPlaying = useIsPlaying();
   const repeatModeRaw = useRepeatMode();
-  const [queuePlayingMode] = useQueuePlayingMode();
+  const shuffleMode = useShuffleMode();
   const [restoreLoopOnceFlag] = usePlaylistRestoreLoopOnceFlag();
   const repeatMode = restoreLoopOnceFlag ? RepeatMode.ONE : repeatModeRaw;
 
@@ -138,7 +139,7 @@ export function PlayerControlButtons() {
       {/* 右侧按钮（随机模式） */}
       <ButtonOuter className={`rounded-full ${buttonToolSize}`}>
         <Button
-          aria-label={"循环模式"}
+          aria-label={shuffleMode === ShuffleMode.ON ? "关闭随机播放" : "开启随机播放"}
           className={`rounded-full ${buttonToolSize}`}
           onPress={() => handleChangeShuffle()}
           variant={"ghost"}
@@ -146,7 +147,7 @@ export function PlayerControlButtons() {
         >
           <View className={"size-[44px] items-center justify-center"}>
             <Icon
-              name={queuePlayingMode === "shuffle" ? "tabler:arrows-shuffle" : "tabler:arrows-right"}
+              name={shuffleMode === ShuffleMode.ON ? "tabler:arrows-shuffle" : "tabler:arrows-right"}
               size={iconToolSize}
               color={colorValue("--color-primary-500")}
             />

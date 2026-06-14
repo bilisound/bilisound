@@ -10,6 +10,7 @@ import type {
 import {
   DownloadState,
   RepeatMode,
+  ShuffleMode,
 } from "./types";
 import type { BilisoundPlayerModuleInterface } from "./types/module";
 import { deleteItems } from "./utils";
@@ -42,6 +43,17 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   };
   private playbackState: PlaybackState = "STATE_IDLE";
   private repeatMode: RepeatMode = RepeatMode.OFF;
+  /**
+   * 随机播放模式
+   */
+  private shuffleMode: ShuffleMode = ShuffleMode.OFF;
+  /**
+   * 随机播放顺序，以 track id 表示。
+   *
+   * 这里刻意存 id 而非 canonical 索引：队列增删时索引会整体平移，存 id 可以让
+   * 播放顺序在不额外维护的情况下自愈（解析时按 id 映射回当前索引，已失效的 id 自动跳过）。
+   */
+  private shuffleOrderIds: string[] = [];
   private audioContext: AudioContext | null = null;
   private gainNode: GainNode | null = null;
   private sourceNode: MediaElementAudioSourceNode | null = null;
@@ -72,17 +84,21 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
           break;
         }
         case RepeatMode.ALL: {
-          if (this.index >= this.trackData.length - 1) {
-            await this.jump(0);
+          const nextIndex = this.getNextIndex();
+          if (nextIndex < 0) {
+            // 播放顺序已到末尾，循环回到第一首
+            const firstIndex = this.getFirstIndex();
+            await this.jump(firstIndex < 0 ? 0 : firstIndex);
           } else {
-            await this.next();
+            await this.jump(nextIndex);
           }
           await this.play();
           break;
         }
         case RepeatMode.OFF:
         default: {
-          if (this.index >= this.trackData.length - 1) {
+          const nextIndex = this.getNextIndex();
+          if (nextIndex < 0) {
             // 没有可以继续播放的内容了！
             this.playbackState = "STATE_ENDED";
             this.emit("onPlaybackStateChange", {
@@ -90,7 +106,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
             });
           } else {
             // 播放下一首
-            await this.next();
+            await this.jump(nextIndex);
             await this.play();
           }
           break;
@@ -168,6 +184,94 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     }
   }
 
+  /**
+   * 基于当前队列重建随机播放顺序。
+   *
+   * 当前曲目（若存在）固定排在第一位，其余曲目用 Fisher-Yates 洗牌，这样开启随机播放
+   * 时当前曲目与播放进度不受影响。
+   */
+  private rebuildShuffleOrder() {
+    const ids = this.trackData.map(e => e.id);
+    const currentId = this.trackData[this.index]?.id;
+    const rest = ids.filter(id => id !== currentId);
+    for (let i = rest.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [rest[i], rest[j]] = [rest[j], rest[i]];
+    }
+    this.shuffleOrderIds = currentId === undefined ? rest : [currentId, ...rest];
+  }
+
+  /**
+   * 将随机播放顺序解析为当前队列中的 canonical 索引列表，自动跳过已失效的 id。
+   */
+  private resolvePlaybackOrder(): number[] {
+    const idToIndex = new Map<string, number>();
+    this.trackData.forEach((track, index) => {
+      // 同 id 取首个出现位置，与 deleteTracks 的 id 唯一性假设一致
+      if (!idToIndex.has(track.id)) {
+        idToIndex.set(track.id, index);
+      }
+    });
+    const order: number[] = [];
+    for (const id of this.shuffleOrderIds) {
+      const index = idToIndex.get(id);
+      if (typeof index === "number") {
+        order.push(index);
+      }
+    }
+    // 兜底：队列中新增、但尚未进入随机顺序的曲目追加到末尾
+    if (order.length < this.trackData.length) {
+      const seen = new Set(order);
+      this.trackData.forEach((_, index) => {
+        if (!seen.has(index)) {
+          order.push(index);
+        }
+      });
+    }
+    return order;
+  }
+
+  /**
+   * 按当前播放模式获取下一首的 canonical 索引，没有则返回 -1。
+   */
+  private getNextIndex(): number {
+    if (this.shuffleMode === ShuffleMode.ON) {
+      const order = this.resolvePlaybackOrder();
+      const pos = order.indexOf(this.index);
+      if (pos < 0) {
+        return order[0] ?? -1;
+      }
+      return pos < order.length - 1 ? order[pos + 1] : -1;
+    }
+    return this.index < this.trackData.length - 1 ? this.index + 1 : -1;
+  }
+
+  /**
+   * 按当前播放模式获取上一首的 canonical 索引，没有则返回 -1。
+   */
+  private getPrevIndex(): number {
+    if (this.shuffleMode === ShuffleMode.ON) {
+      const order = this.resolvePlaybackOrder();
+      const pos = order.indexOf(this.index);
+      if (pos <= 0) {
+        return -1;
+      }
+      return order[pos - 1];
+    }
+    return this.index > 0 ? this.index - 1 : -1;
+  }
+
+  /**
+   * 当前播放模式下是否还有下一首（用于 RepeatMode.ALL 的循环判断）。
+   */
+  private getFirstIndex(): number {
+    if (this.shuffleMode === ShuffleMode.ON) {
+      const order = this.resolvePlaybackOrder();
+      return order[0] ?? -1;
+    }
+    return this.trackData.length > 0 ? 0 : -1;
+  }
+
   private ensureAudioContext() {
     if (this.audioContext) return;
     this.audioContext = new AudioContext();
@@ -224,14 +328,16 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
       await this.seek(0);
       return;
     }
-    if (this.index > 0) {
-      await this.jump(this.index - 1);
+    const target = this.getPrevIndex();
+    if (target >= 0) {
+      await this.jump(target);
     }
   }
 
   async next() {
-    if (this.index < this.trackData.length - 1) {
-      await this.jump(this.index + 1);
+    const target = this.getNextIndex();
+    if (target >= 0) {
+      await this.jump(target);
     }
   }
 
@@ -345,7 +451,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
 
   async addTrackAt(trackDataJson: TrackData, index: number) {
     this.assertInRange(index);
-    this.trackData.splice(index, 1, trackDataJson);
+    this.trackData.splice(index, 0, trackDataJson);
     if (this.index >= index) {
       this.index += 1;
     }
@@ -458,6 +564,24 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   async setRepeatMode(mode: number): Promise<void> {
     this.repeatMode = mode;
     this.emit("onRepeatModeChange", { mode });
+  }
+
+  async getShuffleMode(): Promise<ShuffleMode> {
+    return this.shuffleMode;
+  }
+
+  async setShuffleMode(mode: ShuffleMode): Promise<void> {
+    if (mode === this.shuffleMode) {
+      return;
+    }
+    this.shuffleMode = mode;
+    if (mode === ShuffleMode.ON) {
+      // 开启时重建随机顺序，当前曲目固定在首位，播放进度不受影响
+      this.rebuildShuffleOrder();
+    } else {
+      this.shuffleOrderIds = [];
+    }
+    this.emit("onShuffleModeChange", { mode });
   }
 
   async saveFile(path: string, mimeType: string, replaceName?: string | null) {}

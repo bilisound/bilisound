@@ -1,17 +1,10 @@
 import * as Player from "@bilisound/player";
-import { RepeatMode } from "@bilisound/player";
+import { RepeatMode, ShuffleMode } from "@bilisound/player";
 import { Platform } from "react-native";
 
 import type { TrackData } from "@bilisound/player/build/types";
 
-import {
-  addToQueueListBackup,
-  getQueuePlayingMode,
-  QUEUE_IS_RANDOMIZED,
-  QUEUE_LIST_BACKUP,
-  QUEUE_PLAYING_MODE,
-  queueStorage,
-} from "~/storage/queue";
+import { setQueuePlayingMode } from "~/storage/queue";
 import { getImageProxyUrl, getVideoUrl } from "~/business/constant-helper";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
@@ -24,7 +17,7 @@ import { invalidateOnQueueStatus, PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } 
 import useSettingsStore from "~/store/settings";
 import useErrorMessageStore from "~/store/error-message";
 
-import { playlistToTracks, processTrackDataForSave } from "./track-data";
+import { playlistToTracks } from "./track-data";
 
 /**
  * 从视频详情页添加曲目到队列
@@ -67,9 +60,7 @@ export async function addTrackFromDetail(id: string, episode: number) {
     title: data.pages.length === 1 ? data.title : currentEpisode.part,
   };
   await Player.addTrack(trackData);
-  if (getQueuePlayingMode() === "shuffle") {
-    addToQueueListBackup([trackData]);
-  }
+  // v3 起 player 内部管理随机顺序，新增曲目会被自动并入播放顺序，无需再维护 backup
   await Player.jump(existing.length); // existing.length - 1 + 1
   await Player.play();
   invalidateOnQueueStatus();
@@ -164,8 +155,7 @@ export async function replaceQueueWithPlaylist(id: number, index = 0) {
   await Player.setQueue(tracks, index);
   await Player.play();
 
-  // 恢复到非随机状态
-  queueStorage.set(QUEUE_PLAYING_MODE, "normal");
-  queueStorage.set(QUEUE_IS_RANDOMIZED, false);
-  queueStorage.set(QUEUE_LIST_BACKUP, JSON.stringify(processTrackDataForSave(tracks)));
+  // 替换队列时恢复到非随机状态（与旧版行为一致），随机顺序由 player 内部管理
+  await Player.setShuffleMode(ShuffleMode.OFF);
+  setQueuePlayingMode("normal");
 }
