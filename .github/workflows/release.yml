@@ -89,12 +89,10 @@ jobs:
         run: pnpm run build:web
 
       - name: 🚀 Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          packageManager: npm
-          command: pages deploy apps/mobile/dist --project-name=client-mobile --branch=${{ github.ref == 'refs/heads/preview' && 'preview' || 'main' }} --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm -C apps/server-cf exec wrangler pages deploy "$GITHUB_WORKSPACE/apps/mobile/dist" --project-name=client-mobile --branch=${{ github.ref == 'refs/heads/preview' && 'preview' || 'main' }} --commit-dirty=true
 
       - name: 📝 Extract Release Notes
         id: extract_release_notes
