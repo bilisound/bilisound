@@ -120,14 +120,14 @@ function LongPressActions({ showActionSheet, displayTrack, onAction, onClose }: 
       text: "导出",
       action: () => onAction("export"),
     },
-    {
-      show: true,
-      disabled: false,
-      icon: "fa6-solid:file-lines",
-      iconSize: 18,
-      text: "Export for LLM",
-      action: () => onAction("exportForLLM"),
-    },
+    // {
+    //   show: true,
+    //   disabled: false,
+    //   icon: "fa6-solid:file-lines",
+    //   iconSize: 18,
+    //   text: "Export for LLM",
+    //   action: () => onAction("exportForLLM"),
+    // },
     {
       show: true,
       disabled: false,
