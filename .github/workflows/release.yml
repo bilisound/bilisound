@@ -93,6 +93,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          packageManager: npm
           command: pages deploy apps/mobile/dist --project-name=client-mobile --branch=${{ github.ref == 'refs/heads/preview' && 'preview' || 'main' }} --commit-dirty=true
 
       - name: 📝 Extract Release Notes
