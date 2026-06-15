@@ -65,6 +65,11 @@ bilisound/
 
 ## Build, Test, and Development Commands
 
+- Android builds require **JDK 21**. This must be a full JDK with `java`, `javac`, and `jlink`; a JRE is not sufficient.
+- If multiple JDKs are installed locally, prefer `jenv`. If `jenv version` reports `21` is not installed, run `jenv add "$(/usr/libexec/java_home -v 21)"` first, then use `jenv local 21` from the repository root.
+- The committed `.java-version` records this project requirement for `jenv` and compatible version managers.
+- Before diagnosing Android Gradle failures, verify `java -version`, `javac -version`, `jlink --version`, and `pnpm -C apps/mobile exec ./android/gradlew --version` all resolve to JDK 21.
+
 - Root build: `pnpm build` — runs Turborepo builds (e.g., `packages/sdk`).
 - Lint all: `pnpm lint` — runs package lint tasks.
 - Format: `pnpm format` — Prettier write across repo.
