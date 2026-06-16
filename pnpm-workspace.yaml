@@ -1,3 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
+autoInstallPeers: true
+legacyPeerDeps: true
+verifyDepsBeforeRun: false
