@@ -2,9 +2,9 @@
   "name": "bilisound",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
+    "build": "turbo build --cache-dir .turbo/cache",
+    "dev": "turbo dev --cache-dir .turbo/cache",
+    "lint": "turbo lint --cache-dir .turbo/cache",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "postinstall": "pnpm run build",
