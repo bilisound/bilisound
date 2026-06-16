@@ -196,7 +196,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     const rest = ids.filter(id => id !== currentId);
     for (let i = rest.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [rest[i], rest[j]] = [rest[j], rest[i]];
+      [rest[i], rest[j]] = [rest[j]!, rest[i]!];
     }
     this.shuffleOrderIds = currentId === undefined ? rest : [currentId, ...rest];
   }
@@ -241,7 +241,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
       if (pos < 0) {
         return order[0] ?? -1;
       }
-      return pos < order.length - 1 ? order[pos + 1] : -1;
+      return pos < order.length - 1 ? (order[pos + 1] ?? -1) : -1;
     }
     return this.index < this.trackData.length - 1 ? this.index + 1 : -1;
   }
@@ -256,7 +256,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
       if (pos <= 0) {
         return -1;
       }
-      return order[pos - 1];
+      return order[pos - 1] ?? -1;
     }
     return this.index > 0 ? this.index - 1 : -1;
   }
