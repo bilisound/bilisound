@@ -1,4 +1,0 @@
-export \
-EXPO_PUBLIC_ENV=development \
-EXPO_PUBLIC_API_URL=http://localhost:8787/api \
-EXPO_PUBLIC_RELEASE_CHANNEL=unknown
