@@ -1,4 +1,4 @@
-import { DownloadState, PlaybackProgress, PlaybackState, RepeatMode, TrackData, TrackDataInternal } from "./index";
+import type { DownloadState, PlaybackProgress, PlaybackState, RepeatMode, TrackData, TrackDataInternal } from "./index";
 
 export interface BilisoundPlayerModuleInterface {
   // 播放器相关

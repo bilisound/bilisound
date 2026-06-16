@@ -1,7 +1,7 @@
 import { ExpoConfig } from "expo/config";
 import fs from "fs";
 import path from "path";
-import { withAppBuildGradle } from "@expo/config-plugins";
+import { withAppBuildGradle } from "expo/config-plugins";
 
 export default function withAndroidSignature(config: ExpoConfig) {
   return withAppBuildGradle(config, config => {

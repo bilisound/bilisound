@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 import { getProgress } from "../player";
-import { PlaybackProgress } from "../types";
+import type { PlaybackProgress } from "../types";
 
 const progressListeners: Set<() => void> = new Set();
 let previousProgress: PlaybackProgress = {

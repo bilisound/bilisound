@@ -1,4 +1,4 @@
-import { withGradleProperties } from "@expo/config-plugins";
+import { withGradleProperties } from "expo/config-plugins";
 import { ExpoConfig } from "expo/config";
 
 export default function withCustomGradleProperties(config: ExpoConfig) {

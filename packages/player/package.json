@@ -29,9 +29,10 @@
   "license": "MIT",
   "homepage": "https://github.com/bilisound/player#readme",
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/react": "~19.2.14",
     "expo": "~56.0.8",
-    "expo-module-scripts": "^5.0.8",
+    "expo-module-scripts": "56.0.3",
     "expo-modules-core": "~56.0.14",
     "react-native": "0.85.3",
     "typescript": "~5.9.3"
@@ -41,5 +42,5 @@
     "react": "*",
     "react-native": "*"
   },
-  "packageManager": "pnpm@10.28.1"
+  "packageManager": "pnpm@11.7.0+sha512.19cc852c120c7125760f2443ee6be0ca5b40f9f50598de1a09a1f177503e010e57c23c77646e01e761de59bf874fb22a3398c33ab9691fc13eb946b6f0f4d620"
 }

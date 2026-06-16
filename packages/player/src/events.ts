@@ -1,8 +1,8 @@
-import { EventSubscription } from "expo-modules-core";
+import type { EventSubscription } from "expo-modules-core";
 import { AppRegistry, Platform } from "react-native";
 
 import { BilisoundPlayerModule } from "./BilisoundPlayerModule";
-import { BackgroundEventListener, EventList } from "./types";
+import type { BackgroundEventListener, EventList } from "./types";
 
 /**
  * 添加播放器事件监听器的具体实现

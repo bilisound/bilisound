@@ -1,15 +1,17 @@
 import { Platform } from "react-native";
 
 import { BilisoundPlayerModule } from "./BilisoundPlayerModule";
-import {
+import type {
   DownloadData,
   DownloadItem,
-  DownloadState,
   PlaybackProgress,
   PlaybackState,
-  RepeatMode,
   TrackData,
   TrackDataInternal,
+} from "./types";
+import {
+  DownloadState,
+  RepeatMode,
 } from "./types";
 import { toTrackData, toTrackDataInternal } from "./utils";
 
@@ -180,7 +182,7 @@ export function addTracks(trackDatas: TrackData[], index?: number): Promise<void
 
   const processedData: TrackDataInternal[] = [];
   for (let i = 0; i < trackDatas.length; i++) {
-    const trackData = trackDatas[i];
+    const trackData = trackDatas[i]!;
     processedData.push(toTrackDataInternal(trackData));
   }
   if (typeof index === "number") {
@@ -255,7 +257,7 @@ export function setQueue(trackDatas: TrackData[], beginIndex = 0): Promise<void>
 
   const processedData: TrackDataInternal[] = [];
   for (let i = 0; i < trackDatas.length; i++) {
-    const trackData = trackDatas[i];
+    const trackData = trackDatas[i]!;
     processedData.push(toTrackDataInternal(trackData));
   }
   return BilisoundPlayerModule.setQueue(JSON.stringify(processedData), beginIndex);

@@ -3,7 +3,7 @@
 // https://github.com/expo/expo/issues/19563#issuecomment-1990897138
 // 对 res/styles 进行处理，调整主题色和删除多余属性
 
-import { withAndroidStyles } from "@expo/config-plugins";
+import { withAndroidStyles } from "expo/config-plugins";
 import { ExpoConfig } from "expo/config";
 
 export default function withCustomAppTheme(config: ExpoConfig) {

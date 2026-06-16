@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from "react";
 
 import { addListener } from "../events";
-import { EventList } from "../types";
+import type { EventList } from "../types";
 
 export function useEvents<T extends keyof EventList>(
   name: T,

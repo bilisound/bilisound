@@ -1,9 +1,9 @@
-import { EventSubscription } from "expo-modules-core";
+import type { EventSubscription } from "expo-modules-core";
 import { useSyncExternalStore } from "react";
 
 import { addListener } from "./events";
 import { Config } from "./player";
-import { EventList, TrackData, TrackDataInternal } from "./types";
+import type { EventList, TrackData, TrackDataInternal } from "./types";
 
 /**
  * TrackData 转 TrackDataInternal

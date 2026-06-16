@@ -1,15 +1,17 @@
 import { registerWebModule, NativeModule } from "expo";
 
-import {
-  DownloadState,
+import type {
   EventListFunc,
   PlaybackProgress,
   PlaybackState,
   TrackData,
   TrackDataInternal,
+} from "./types";
+import {
+  DownloadState,
   RepeatMode,
 } from "./types";
-import { BilisoundPlayerModuleInterface } from "./types/module";
+import type { BilisoundPlayerModuleInterface } from "./types/module";
 import { deleteItems } from "./utils";
 
 class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements BilisoundPlayerModuleInterface {
@@ -275,7 +277,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     if (prevPlayState && !options.noUpdateUri) {
       await this.fadeOut();
     }
-    const obj = this.trackData[to];
+    const obj = this.trackData[to]!;
     if (!options.noUpdateUri) {
       audioElement.src = obj.uri;
     }
@@ -375,7 +377,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async replaceTrack(index: number, trackDataJson: TrackData) {
-    const previousUri = this.trackData[this.index].uri;
+    const previousUri = this.trackData[this.index]?.uri;
     this.trackData[index] = structuredClone(trackDataJson);
     if (index === this.index) {
       await this.setCurrent(index, {
@@ -407,7 +409,10 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
         await this.setCurrent(this.index);
       }
     } else {
-      const targetId = this.trackData[this.index].id;
+      const targetId = this.trackData[this.index]?.id;
+      if (!targetId) {
+        return;
+      }
       this.trackData = deleteItems(this.trackData, indexesJson);
       this.index = this.trackData.findIndex(e => e.id === targetId);
     }
