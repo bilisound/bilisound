@@ -1,6 +1,15 @@
 packages:
   - "apps/*"
   - "packages/*"
-autoInstallPeers: true
-legacyPeerDeps: true
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  esbuild: true
+  msgpackr-extract: true
+  netlify-cli: true
+  react-native-nitro-modules: true
+  sharp: true
+  unix-dgram: true
+  unrs-resolver: true
+  workerd: true
 verifyDepsBeforeRun: false
