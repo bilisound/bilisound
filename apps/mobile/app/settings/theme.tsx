@@ -1,6 +1,6 @@
-import { Image } from "expo-image";
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import type { ImageSourcePropType } from "react-native";
 
 import { SettingMenuItem } from "~/components/setting-menu";
 import { HStack } from "~/components/ui/hstack";
@@ -20,7 +20,7 @@ interface ThemeButtonProps {
   selected?: boolean;
   name: string;
   onPress?: () => void;
-  yuruChara?: number;
+  yuruChara?: ImageSourcePropType;
 }
 
 const SM_BREAKPOINT = 640;
@@ -44,7 +44,11 @@ function ThemeButton({ selected = false, name, onPress, yuruChara }: ThemeButton
     >
       <Text style={[styles.themeName, selected && styles.themeTextSelected]}>{name}</Text>
       {selected && <Text style={[styles.themeStatus, styles.themeTextSelected]}>已启用</Text>}
-      {yuruChara != null && <Image source={yuruChara} style={styles.yuruChara} />}
+      {yuruChara ? (
+        <View pointerEvents="none" style={styles.yuruCharaContainer}>
+          <Image source={yuruChara} resizeMode="contain" style={styles.yuruChara} />
+        </View>
+      ) : null}
     </Pressable>
   );
 }
@@ -154,12 +158,16 @@ const styles = StyleSheet.create({
   themeTextSelected: {
     color: "#ffffff",
   },
-  yuruChara: {
+  yuruCharaContainer: {
     position: "absolute",
     right: 0,
     top: -64,
     width: 256,
     height: 256,
     opacity: 0.3,
+  },
+  yuruChara: {
+    width: "100%",
+    height: "100%",
   },
 });
