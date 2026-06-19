@@ -34,6 +34,7 @@ import { Heading } from "~/components/ui/heading";
 import { Input, InputField, InputSlot } from "~/components/ui/input";
 import { Menu, MenuItem, MenuItemLabel } from "~/components/ui/menu";
 import { Text } from "~/components/ui/text";
+import { breakpoints } from "~/constants/styles";
 import { useConfirm } from "~/hooks/useConfirm";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { useWindowSize } from "~/hooks/useWindowSize";
@@ -205,13 +206,13 @@ export default function Page() {
   // 布局管理
   const windowDimensions = useWindowSize();
   let windowWidth = windowDimensions.width;
-  if (windowDimensions.width >= 768) {
+  if (windowDimensions.width >= breakpoints.sm) {
     windowWidth = windowDimensions.width - 64;
   }
-  if (windowDimensions.width >= 1280) {
+  if (windowDimensions.width >= breakpoints.xl) {
     windowWidth = windowDimensions.width - 256;
   }
-  if (windowDimensions.width >= 1536) {
+  if (windowDimensions.width >= breakpoints["2xl"]) {
     windowWidth = 1280;
   }
   const { showPlaylistInGrid, toggle } = useSettingsStore(

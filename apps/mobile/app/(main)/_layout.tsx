@@ -142,15 +142,17 @@ function CurrentPlayingTablet() {
                 android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
                 onPress={() => toggle()}
               >
-                {playbackState === "STATE_BUFFERING" || isPlaceholderTrack ? (
-                  <ActivityIndicator color={colorValue("--color-accent-500")} size={22} />
-                ) : (
-                  <Icon
-                    name={isPlaying ? "fa6-solid:pause" : "fa6-solid:play"}
-                    size={isPlaying ? 22 : 18}
-                    color={colorValue("--color-accent-500")}
-                  />
-                )}
+                <View style={styles.playingIconContainer}>
+                  {playbackState === "STATE_BUFFERING" || isPlaceholderTrack ? (
+                    <ActivityIndicator color={colorValue("--color-accent-500")} size={22} />
+                  ) : (
+                    <Icon
+                      name={isPlaying ? "fa6-solid:pause" : "fa6-solid:play"}
+                      size={isPlaying ? 22 : 18}
+                      color={colorValue("--color-accent-500")}
+                    />
+                  )}
+                </View>
               </Pressable>
             </ButtonOuter>
           </View>
@@ -233,16 +235,12 @@ function CurrentPlaying() {
       ]}
     >
       <Pressable
-        style={({ pressed, hovered }) => [
-          styles.cpRow,
-          !IS_ANDROID_RIPPLE_ENABLED && hovered && { backgroundColor: colorValue("--color-background-100") },
-          !IS_ANDROID_RIPPLE_ENABLED && pressed && { backgroundColor: colorValue("--color-background-200") },
-        ]}
+        style={styles.cpRow}
         android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
         onPress={() => handleOpen()}
       >
         <Image source={currentTrack.artworkUri} style={styles.cpImage} />
-        <Text style={{ flex: 1 }} isTruncated>
+        <Text style={{ flex: 1, minWidth: 0 }} isTruncated>
           {currentTrack.title}
         </Text>
       </Pressable>
@@ -271,11 +269,12 @@ export default function TabLayout() {
   const { colorValue } = useRawThemeValues();
   const isSideTabList = windowDimensions.width >= breakpoints.sm;
   const isWide = windowDimensions.width >= breakpoints.xl;
+  const sideTabListWidth = isWide ? 256 : 64;
 
-  if (windowDimensions.width < breakpoints.md) {
+  if (!isSideTabList) {
     edgeInsetsTab.bottom = 0;
   }
-  if (windowDimensions.width >= breakpoints.md) {
+  if (isSideTabList) {
     edgeInsetsTab.left = 0;
   }
 
@@ -305,6 +304,7 @@ export default function TabLayout() {
             { backgroundColor: colorValue("--color-background-50") },
             isSideTabList ? styles.tabListSide : styles.tabListBottom,
             isWide && styles.tabListSideWide,
+            isSideTabList && { width: sideTabListWidth + edgeInsets.left },
           ]}
         >
           {isSideTabList && <View style={[styles.spacer, isWide && styles.spacerWide]} aria-hidden={true} />}
@@ -392,9 +392,10 @@ const styles = StyleSheet.create({
   playingIconContainer: {
     alignItems: "center",
     justifyContent: "center",
-    width: 24,
-    height: 24,
+    width: 40,
+    height: 40,
     flexGrow: 0,
+    flexShrink: 0,
   },
 
   // === CurrentPlayingTablet ===
@@ -489,6 +490,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 16,
     height: 64,
+    minWidth: 0,
   },
   cpImage: {
     height: 40,
@@ -501,6 +503,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flexGrow: 0,
     flexBasis: "auto",
+    flexShrink: 0,
   },
   cpPlayButton: {
     borderRadius: 8,
