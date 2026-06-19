@@ -1,0 +1,23 @@
+{
+  "skill_name": "migrate-to-plain-stylesheet",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In apps/mobile/app/(main)/_layout.tsx, migrate the NativeWind className styles in the bottom tab navigation and current playing bar to StyleSheet.create. Preserve the existing visual layout and use agent-device to compare portrait and landscape before/after screenshots on Android dev.",
+      "expected_output": "A minimal StyleSheet migration that preserves tab spacing, current-playing interaction grouping, safe-area behavior, and includes before/after screenshot evidence.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "The React Native tab labels look too far away from their icons after a className-to-StyleSheet migration. Diagnose and fix the styling regression without redesigning the tab bar. Verify with device snapshots.",
+      "expected_output": "The response should identify lineHeight/text box migration as a likely cause, apply a targeted fix, and verify with a coordinate snapshot or screenshot.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "After moving an Expo side navigation rail from NativeWind to plain StyleSheet, Android landscape has a safe-area/rail offset bug while portrait is fine. Fix the layout and prove that both orientations still work.",
+      "expected_output": "The response should inspect breakpoint and safe-area logic, keep portrait behavior intact, and provide landscape plus portrait verification evidence.",
+      "files": []
+    }
+  ]
+}

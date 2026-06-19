@@ -44,15 +44,16 @@ bilisound/
 
 ## Where to Look
 
-| 你想了解……                                | 去看……                                                 |
-| ----------------------------------------- | ------------------------------------------------------ |
-| 整体架构、数据流、SDK 双模式、Server 职责 | [agent-doc/architecture.md](agent-doc/architecture.md) |
-| B 站术语 (bvid, cid, WBI, DASH 等)        | [agent-doc/glossary.md](agent-doc/glossary.md)         |
-| 存储层 (SQLite/MMKV/Zustand)              | [agent-doc/data-layer.md](agent-doc/data-layer.md)     |
-| 页面路由结构                              | [agent-doc/routes.md](agent-doc/routes.md)             |
-| Player 模块 API                           | [packages/player/README.md](packages/player/README.md) |
-| CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)   |
-| 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)             |
+| 你想了解……                                | 去看……                                                                                                         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 整体架构、数据流、SDK 双模式、Server 职责 | [agent-doc/architecture.md](agent-doc/architecture.md)                                                         |
+| B 站术语 (bvid, cid, WBI, DASH 等)        | [agent-doc/glossary.md](agent-doc/glossary.md)                                                                 |
+| 存储层 (SQLite/MMKV/Zustand)              | [agent-doc/data-layer.md](agent-doc/data-layer.md)                                                             |
+| 页面路由结构                              | [agent-doc/routes.md](agent-doc/routes.md)                                                                     |
+| Player 模块 API                           | [packages/player/README.md](packages/player/README.md)                                                         |
+| CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)                                                           |
+| 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)                                                                     |
+| NativeWind / className 迁移到 StyleSheet  | [agent-doc/skills/migrate-to-plain-stylesheet/SKILL.md](agent-doc/skills/migrate-to-plain-stylesheet/SKILL.md) |
 
 ## What subproject user may want you to view
 
