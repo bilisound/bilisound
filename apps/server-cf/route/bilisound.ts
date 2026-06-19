@@ -19,11 +19,15 @@ function getHandleResource(method: string) {
       const sdk = getSDK(env);
       const range = request.headers.get("Range");
 
-      const { aid, bvid, episodeName, data, contentRange, contentLength } = await sdk.getResource(id, episode, {
-        method,
-        range,
-      });
-      const fileName = `[${dl === "av" ? `av${aid}` : bvid}] [P${episode}] ${episodeName}.m4a`;
+      const { aid, bvid, episodeName, data, contentRange, contentLength, contentType, isAudio } = await sdk.getResource(
+        id,
+        episode,
+        {
+          method,
+          range,
+        },
+      );
+      const fileName = `[${dl === "av" ? `av${aid}` : bvid}] [P${episode}] ${episodeName}.${isAudio ? "m4a" : "mp4"}`;
 
       return new Response(data, {
         status: range ? 206 : 200,
@@ -34,7 +38,7 @@ function getHandleResource(method: string) {
                 "Content-Disposition": `filename*=utf-8''${encodeURIComponent(fileName)}`,
               }
             : {}),
-          "Content-Type": dl ? "application/octet-stream" : "audio/mp4",
+          "Content-Type": dl ? "application/octet-stream" : contentType,
           "Accept-Ranges": "bytes",
           "Cache-Control": "max-age=604800",
           "Content-Length": contentLength,

@@ -285,21 +285,26 @@ export class BilisoundSDKDirect extends BilisoundSDK {
     // 获取视频
     const { playInfo, initialState, type } = await this.getVideo(id, episode);
     const dashAudio = playInfo?.data?.dash?.audio ?? [];
+    const legacyVideo = playInfo?.data?.durl ?? [];
 
-    if (dashAudio.length < 1) {
+    let resourceUrl = "";
+    let isAudio = true;
+    if (dashAudio.length > 0) {
+      const maxQualityIndex = findBestAudio(dashAudio);
+      resourceUrl = dashAudio[maxQualityIndex].baseUrl;
+    } else if (legacyVideo.length > 0) {
+      resourceUrl = legacyVideo[0].url;
+      isAudio = false;
+    } else {
       throw new Error("找不到视频资源");
     }
 
-    // 遍历获取最佳音质视频
-    const maxQualityIndex = findBestAudio(dashAudio);
-
-    // 将音频字节流进行转发
     const headers = {
       "User-Agent": this.userAgent,
       Referer: `https://www.bilibili.com/video/` + id + "/?p=" + episode,
       Range: options.range || "bytes=0-",
     };
-    const res = await fetch(dashAudio[maxQualityIndex].baseUrl, {
+    const res = await fetch(resourceUrl, {
       headers,
       method: options.method || "get",
     });
@@ -323,8 +328,9 @@ export class BilisoundSDKDirect extends BilisoundSDK {
     const data = await res.arrayBuffer();
     const contentRange = res.headers.get("Content-Range");
     const contentLength = res.headers.get("Content-Length");
+    const contentType = res.headers.get("Content-Type") || (isAudio ? "audio/mp4" : "video/mp4");
 
-    return { aid, bvid, episodeName, data, contentRange, contentLength };
+    return { aid, bvid, episodeName, data, contentRange, contentLength, contentType, isAudio };
   }
 
   // 工具部分
