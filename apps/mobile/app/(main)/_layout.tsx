@@ -174,16 +174,12 @@ function CurrentPlayingTablet() {
       {isWide && (
         <>
           <Pressable
-            style={({ pressed, hovered }) => [
-              styles.cptWideRow,
-              !IS_ANDROID_RIPPLE_ENABLED && hovered && { backgroundColor: colorValue("--color-background-100") },
-              !IS_ANDROID_RIPPLE_ENABLED && pressed && { backgroundColor: colorValue("--color-background-200") },
-            ]}
+            style={styles.cptWideRow}
             android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
             onPress={() => handleOpen()}
           >
             <Image source={currentTrack.artworkUri} style={styles.cptWideImage} />
-            <Text style={{ flex: 1 }} isTruncated>
+            <Text style={{ flex: 1, minWidth: 0 }} isTruncated>
               {currentTrack.title}
             </Text>
           </Pressable>
@@ -448,6 +444,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 12,
     height: 64,
+    minWidth: 0,
   },
   cptWideImage: {
     height: 40,
@@ -455,16 +452,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     flexGrow: 0,
     flexBasis: "auto",
+    flexShrink: 0,
   },
   cptWidePlayContainer: {
     flexGrow: 0,
     flexBasis: "auto",
+    flexShrink: 0,
     paddingHorizontal: 12,
   },
   cptWideButtonOuter: {
     borderRadius: 8,
     flexGrow: 0,
     flexBasis: "auto",
+    flexShrink: 0,
   },
   cptWidePlayButton: {
     borderRadius: 8,
