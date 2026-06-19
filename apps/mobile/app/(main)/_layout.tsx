@@ -61,6 +61,7 @@ const TabTriggerChild = ({
       <Text
         style={{
           fontSize: isWide ? 14 : 12,
+          lineHeight: isWide ? 20 : 16,
           color: isFocused ? colorValue("--color-accent-500") : undefined,
           fontWeight: isFocused ? "600" : undefined,
         }}
