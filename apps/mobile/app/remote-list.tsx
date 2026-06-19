@@ -53,10 +53,11 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
     setLoading(true);
     try {
       const list = await getUserListFull(mode, data.userId, data.seasonId);
-      const firstEpisode = await getBilisoundMetadata({ id: list[0].bvid });
+      const needsFallback = list.some(e => !e.author);
+      const firstEpisode = needsFallback ? await getBilisoundMetadata({ id: list[0].bvid }) : null;
       setPlaylistDetail(
         list.map(e => ({
-          author: firstEpisode.owner.name,
+          author: e.author?.name ?? firstEpisode?.owner.name ?? "",
           bvid: e.bvid ?? "",
           duration: e.duration,
           episode: 1,

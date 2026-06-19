@@ -68,6 +68,11 @@ export interface EpisodeItem {
   title: string;
   cover: string;
   duration: number;
+  author?: {
+    mid: number;
+    name: string;
+    face: string;
+  };
 }
 
 export interface GetEpisodeUserResponse {

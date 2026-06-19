@@ -16,9 +16,10 @@ export async function updatePlaylist(id: number, source: PlaylistSource, progres
       const list = await getUserListFull(source.subType, source.userId, source.listId, progress => {
         progressCallback?.(progress);
       });
-      const firstEpisode = await getBilisoundMetadata({ id: list[0].bvid });
+      const needsFallback = list.some(e => !e.author);
+      const firstEpisode = needsFallback ? await getBilisoundMetadata({ id: list[0].bvid }) : null;
       const builtList: PlaylistDetailInsert[] = list.map(e => ({
-        author: firstEpisode.owner.name,
+        author: e.author?.name ?? firstEpisode?.owner.name ?? "",
         bvid: e.bvid ?? "",
         duration: e.duration,
         episode: 1,

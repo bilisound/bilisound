@@ -224,6 +224,7 @@ export class BilisoundSDKDirect extends BilisoundSDK {
             title: e.title,
             cover: e.cover,
             duration: e.duration,
+            author: { mid: e.upper.mid, name: e.upper.name, face: e.upper.face },
           })),
           meta: {
             name: favResponse.data.info.title,
@@ -480,6 +481,7 @@ export class BilisoundSDKDirect extends BilisoundSDK {
       title: e.title,
       cover: e.arc.pic,
       duration: e.arc.duration,
+      author: { mid: e.arc.author.mid, name: e.arc.author.name, face: e.arc.author.face },
     }));
 
     this.logger.debug(`一次获取完整合集成功：${rows.length} 条记录`);
