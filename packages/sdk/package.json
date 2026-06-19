@@ -5,12 +5,12 @@
     "build": "tsdown ./src/index.ts --format esm --dts"
   },
   "devDependencies": {
-    "tsdown": "^0.19.0",
-    "typescript": "~5.9.3"
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
-    "axios": "^1.7.9",
-    "md5": "^2.3.0"
+    "axios": "catalog:",
+    "md5": "catalog:"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",

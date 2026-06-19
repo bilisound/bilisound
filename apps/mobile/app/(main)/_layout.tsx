@@ -1,6 +1,6 @@
 import { Tabs, TabList, TabTrigger, TabSlot, TabTriggerSlotProps } from "expo-router/ui";
 import { Text } from "~/components/ui/text";
-import { ActivityIndicator, View, Pressable, Platform } from "react-native";
+import { ActivityIndicator, View, Pressable, Platform, StyleSheet } from "react-native";
 import React from "react";
 import { twMerge } from "tailwind-merge";
 import { TabSafeAreaContext } from "~/hooks/useTabSafeAreaInsets";
@@ -260,13 +260,18 @@ export default function TabLayout() {
 
   return (
     <TabSafeAreaContext.Provider value={edgeInsetsTab}>
-      <Tabs className={"sm:flex-row-reverse"}>
+      <Tabs style={[styles.tabsRoot, isSideTabList && styles.tabsRootSide]}>
         <View className={"flex-1"}>
           <TabSlot />
         </View>
         <CurrentPlaying />
         <TabList
-          style={[tabListSafeAreaStyle, { backgroundColor: colorValue("--color-background-50") }]}
+          style={[
+            tabListSafeAreaStyle,
+            { backgroundColor: colorValue("--color-background-50") },
+            isSideTabList ? styles.tabListSide : styles.tabListBottom,
+            windowDimensions.width >= breakpoints.xl && styles.tabListSideWide,
+          ]}
           className={
             "flex-0 basis-auto !flex-row !justify-around " +
             "max-sm:w-full sm:h-full sm:!flex-col sm:pr-0 sm:!justify-start " +
@@ -290,3 +295,27 @@ export default function TabLayout() {
     </TabSafeAreaContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  tabsRoot: {
+    flex: 1,
+  },
+  tabsRootSide: {
+    flexDirection: "row-reverse",
+  },
+  tabListBottom: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  tabListSide: {
+    flexDirection: "column",
+    height: "100%",
+    justifyContent: "flex-start",
+    width: 64,
+  },
+  tabListSideWide: {
+    alignItems: "center",
+    width: 256,
+  },
+});

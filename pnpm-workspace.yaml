@@ -1,6 +1,26 @@
 packages:
   - "apps/*"
   - "packages/*"
+catalog:
+  '@cloudflare/workers-types': ^4.20260118.0
+  '@netlify/blobs': ^10.5.0
+  '@netlify/functions': ^5.1.2
+  '@types/jest': ^29.5.14
+  '@types/node': ^24.10.9
+  '@types/node-fetch': ^2.6.13
+  '@types/react': ~19.2.14
+  axios: ^1.7.9
+  expo: ~56.0.12
+  expo-module-scripts: 56.0.3
+  expo-modules-core: ~56.0.14
+  itty-router: ^5.0.22
+  md5: ^2.3.0
+  netlify-cli: ^23.13.4
+  node-fetch: ^3.3.2
+  react-native: 0.85.3
+  tsdown: ^0.19.0
+  typescript: ~5.9.3
+  wrangler: ^4.59.2
 allowBuilds:
   '@parcel/watcher': true
   core-js: true
