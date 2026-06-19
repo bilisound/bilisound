@@ -45,15 +45,18 @@ bilisound/
 ## Where to Look
 
 | 你想了解……                                | 去看……                                                                                                         |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --- |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | 整体架构、数据流、SDK 双模式、Server 职责 | [agent-doc/architecture.md](agent-doc/architecture.md)                                                         |
 | B 站术语 (bvid, cid, WBI, DASH 等)        | [agent-doc/glossary.md](agent-doc/glossary.md)                                                                 |
 | 存储层 (SQLite/MMKV/Zustand)              | [agent-doc/data-layer.md](agent-doc/data-layer.md)                                                             |
 | 页面路由结构                              | [agent-doc/routes.md](agent-doc/routes.md)                                                                     |
+| 进入 mobile 主界面、物理 Android 调试     | [agent-doc/mobile-debugging.md](agent-doc/mobile-debugging.md)                                                 |
+| 验证命令、既有 tsc / ESLint 失败          | [agent-doc/verification.md](agent-doc/verification.md)                                                         |
+| 图片资源、看板娘、PNG/SVG 渲染坑          | [agent-doc/assets-and-images.md](agent-doc/assets-and-images.md)                                               |
 | v3 分层改造计划、史诗任务、交接文档       | [agent-doc/v3-plan/README.md](agent-doc/v3-plan/README.md)                                                     |
 | Player 模块 API                           | [packages/player/README.md](packages/player/README.md)                                                         |
 | CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)                                                           |
-| 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)                                                                     |     |
+| 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)                                                                     |
 | NativeWind / className 迁移到 StyleSheet  | [agent-doc/skills/migrate-to-plain-stylesheet/SKILL.md](agent-doc/skills/migrate-to-plain-stylesheet/SKILL.md) |
 
 ## What subproject user may want you to view
