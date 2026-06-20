@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 
 import { BilisoundPlayerModule } from "./BilisoundPlayerModule";
+import { Config } from "./config";
 import type {
   DownloadData,
   DownloadItem,
@@ -12,11 +13,7 @@ import type {
 import { DownloadState, RepeatMode, ShuffleMode } from "./types";
 import { toTrackData, toTrackDataInternal } from "./utils";
 
-export class Config {
-  static instance: Config = new Config();
-
-  defaultHeaders: Record<string, string> = {};
-}
+export { Config } from "./config";
 
 /**
  * 设置默认请求 Headers，包括 `User-Agent`
