@@ -8,7 +8,13 @@ export { processTrackDataForSave, processTrackDataForLoad, playlistToTracks } fr
 export { saveTrackData, loadTrackData } from "./persistence";
 
 // Track operations
-export { addTrackFromDetail, refreshTrack, refreshCurrentTrack, replaceQueueWithPlaylist } from "./track-operations";
+export {
+  addTrackFromDetail,
+  refreshTrack,
+  refreshCurrentTrack,
+  playNextTrack,
+  replaceQueueWithPlaylist,
+} from "./track-operations";
 
 // Cache
 export { saveCurrentAndNextTrack, deleteCurrentTrackCache } from "./cache";

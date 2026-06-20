@@ -212,6 +212,10 @@ class BilisoundPlaybackService : MediaSessionService() {
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            if (BilisoundPlayerModule.isSuppressingCurrentItemReplacementTransition()) {
+                Log.d(TAG, "onMediaItemTransition: suppress current item replacement transition")
+                return
+            }
             if (mediaItem == null) {
                 emitJSEvent(
                     bundleOf(

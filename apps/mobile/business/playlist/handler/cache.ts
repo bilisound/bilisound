@@ -1,4 +1,4 @@
-import { getCurrentTrack, getCurrentTrackIndex, getTracks, RepeatMode } from "@bilisound/player";
+import { getCurrentTrack, getCurrentTrackIndex, getNextTrackIndex, getTracks, RepeatMode } from "@bilisound/player";
 import * as Player from "@bilisound/player";
 import { Platform } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
@@ -28,7 +28,7 @@ export async function saveCurrentAndNextTrack() {
   if (tracks.length <= 0 || trackIndex > tracks.length - 1) {
     return;
   }
-  const trackIndexNext = trackIndex + 1;
+  const trackIndexNext = await getNextTrackIndex();
   const tasks: Promise<void>[] = [];
   const currId = tracks[trackIndex].extendedData!.id;
   const currEpisode = tracks[trackIndex].extendedData!.episode;
@@ -36,10 +36,10 @@ export async function saveCurrentAndNextTrack() {
 
   log.info(`[${currId} / ${currEpisode}] 预先下载当前曲目`);
   tasks.push(downloadResourceNow(currId, currEpisode, currTitle ?? "未知曲目"));
-  if (trackIndexNext <= tracks.length - 1) {
+  if (trackIndexNext >= 0 && trackIndexNext <= tracks.length - 1) {
     const nextId = tracks[trackIndexNext].extendedData!.id;
     const nextEpisode = tracks[trackIndexNext].extendedData!.episode;
-    const nextTitle = tracks[trackIndex].title;
+    const nextTitle = tracks[trackIndexNext].title;
 
     log.info(`[${nextId} / ${nextEpisode}] 预先下载下一个曲目`);
     tasks.push(downloadResourceNow(nextId, nextEpisode, nextTitle ?? "未知曲目"));

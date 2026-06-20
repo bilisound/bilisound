@@ -175,6 +175,10 @@ public class BilisoundPlayerModule: Module {
             promise.resolve(self.currentIndex)
         }
 
+        AsyncFunction("getNextTrackIndex") { (promise: Promise) in
+            promise.resolve(self.nextIndexInOrder() ?? -1)
+        }
+
         AsyncFunction("getPlaybackState") { (promise: Promise) in
             guard let player = self.player,
                 let currentItem = player.currentItem

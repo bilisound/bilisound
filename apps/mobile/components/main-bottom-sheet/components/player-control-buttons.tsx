@@ -1,7 +1,6 @@
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import {
   getRepeatMode,
-  next,
   prev,
   RepeatMode,
   setRepeatMode,
@@ -23,6 +22,7 @@ import { View } from "react-native";
 import { Button, ButtonOuter } from "~/components/ui/button";
 import { Icon } from "~/components/icon";
 import { PlayButtonIcon } from "./play-button-icon";
+import { playNextTrack } from "~/business/playlist/handler";
 
 export function PlayerControlButtons() {
   const { colorValue } = useRawThemeValues();
@@ -126,7 +126,7 @@ export function PlayerControlButtons() {
           <Button
             aria-label={"下一首"}
             className={`rounded-full ${buttonSize}`}
-            onPress={() => next()}
+            onPress={() => playNextTrack()}
             variant={"ghost"}
           >
             <View className={"size-[44px] items-center justify-center rotate-180"}>

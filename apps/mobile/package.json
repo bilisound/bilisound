@@ -14,7 +14,7 @@
     "lint": "eslint --fix .",
     "generate-migration": "drizzle-kit generate",
     "generate-license": "generate-license-file --input package.json --output third-party-licenses.txt --overwrite --ci",
-    "clean": "node -e \"const opt = { recursive: true, force: true }; fs.rmSync('./ios', opt); fs.rmSync('./android', opt); fs.rmSync('./node_modules/.cache', opt)\"",
+    "clean": "tsx ./scripts/clean.mts",
     "open:ios": "xed ios",
     "open:android": "open -a \"Android Studio\" android",
     "prebuild": "cross-env NODE_ENV=development expo prebuild",

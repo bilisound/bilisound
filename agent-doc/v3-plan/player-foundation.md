@@ -73,6 +73,14 @@ export function setShuffleMode(mode: ShuffleMode): Promise<void>;
 export async function toggleShuffleMode(): Promise<ShuffleMode>;
 ```
 
+Playback order lookup:
+
+```ts
+export function getNextTrackIndex(): Promise<number>;
+```
+
+`getNextTrackIndex()` returns the canonical queue index that the player would use for the next item in the current playback order, or `-1` when there is no next item. Repeat wrapping is intentionally excluded so cache prefetch keeps the old “current and one following track” policy while no longer assuming canonical queue order equals playback order.
+
 Event:
 
 ```txt
@@ -412,6 +420,71 @@ Verified via agent-device + iOS simulator app logs:
   - after turning shuffle OFF, tapping next advanced #18 ダブルバインド -> #19 microser
   - iOS accessibility currently collapses the bottom sheet into a single node,
     so player controls were exercised by coordinates and verified through logs
+```
+
+### Slice E — Playback-order next index for cache prefetch (DONE, needs native device verification)
+
+Mobile cache prefetch previously used `currentIndex + 1`. That was valid when shuffle physically reordered the public queue, but it became wrong after player-managed shuffle because canonical queue order and playback order diverged.
+
+Changes:
+
+```txt
+types/module.ts
+  + getNextTrackIndex(): Promise<number>
+
+player.ts
+  + getNextTrackIndex public wrapper
+
+BilisoundPlayerModule.web.ts
+  + getNextTrackIndex delegates to existing playback-order getNextIndex()
+
+BilisoundPlayerModule.kt
+  + getNextTrackIndex uses Media3 Timeline.getNextWindowIndex(..., REPEAT_MODE_OFF, shuffleModeEnabled)
+
+BilisoundPlayerModule.swift
+  + getNextTrackIndex delegates to existing nextIndexInOrder()
+
+apps/mobile/business/playlist/handler/cache.ts
+  ~ saveCurrentAndNextTrack() prefetches the player-reported next index instead of canonical index + 1
+  ~ fixed next-track download title to use the next track rather than the current track
+```
+
+Design:
+
+```txt
+The public queue remains canonical. Playback-order lookup belongs in @bilisound/player
+because Android uses Media3 native shuffle while iOS/Web simulate shuffle internally.
+Mobile cache policy can still choose to prefetch current + next, but it no longer needs
+to know how next is computed on each platform.
+```
+
+### Slice F — Preserve current index after Android current-item refresh (DONE, needs large-queue verification)
+
+Large shuffle queues exposed a second Android-specific transition bug after Slice E: refreshing an uncached current track calls `replaceTrack(currentIndex, refreshedTrack)`, but Media3 may advance to the next shuffled media item when the currently playing item is replaced. In queues with many uncached items, every refresh could therefore trigger another transition and produce repeated random jumps.
+
+Changes:
+
+```txt
+track-operations.ts
+  + shouldRefreshTrack() centralizes the stale uncached-track predicate
+  + playNextTrack() records whether UI next was requested while playing, then delegates shuffle choice to player.next()
+  ~ refreshCurrentTrack() ignores stale replacements if the current track changed and lets Android repair current-item replacement before JS observes the transition
+
+player-control-buttons.tsx
+  ~ UI next button calls playNextTrack() so refresh can restore playback intent after Android reports isPlaying=false during the transition
+
+BilisoundPlayerModule.kt / BilisoundPlaybackService.kt
+  ~ replacing the current Android media item suppresses the transient replacement transition, seeks back to the same canonical index, and only then re-enables track-change events
+  ~ Android shuffle mode now uses the same stable internal playback order as Web/iOS for next/prev/getNextTrackIndex instead of Media3 native shuffle
+```
+
+Design:
+
+```txt
+The player remains responsible for deciding shuffle next. The app only repairs the Android
+current-item replacement side effect after refreshing the item that was already selected.
+Android keeps Media3 native shuffle disabled and owns shuffle order in @bilisound/player so
+previous/next remain reversible along one fixed shuffled sequence.
 ```
 
 ## Migration Impact on Mobile

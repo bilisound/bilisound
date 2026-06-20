@@ -23,6 +23,7 @@ export interface BilisoundPlayerModuleInterface {
   getCurrentTrack(): Promise<TrackDataInternal | null>;
   getCurrentTrackWeb(): Promise<TrackData | null>;
   getCurrentTrackIndex(): Promise<number>;
+  getNextTrackIndex(): Promise<number>;
   setSpeed(speed: number, retainPitch: boolean): Promise<void>;
   getRepeatMode(): Promise<RepeatMode>;
   setRepeatMode(mode: RepeatMode): Promise<void>;

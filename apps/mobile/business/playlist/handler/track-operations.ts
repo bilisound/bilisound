@@ -19,6 +19,29 @@ import useErrorMessageStore from "~/store/error-message";
 
 import { playlistToTracks } from "./track-data";
 
+let currentTrackRefresh: { key: string; promise: Promise<void> } | null = null;
+let resumeCurrentTrackAfterRefresh = false;
+
+function getTrackRefreshKey(trackIndex: number, trackData: TrackData | undefined) {
+  const extendedData = trackData?.extendedData;
+  return `${trackIndex}:${extendedData?.id ?? ""}:${extendedData?.episode ?? ""}`;
+}
+
+function isSameTrack(left: TrackData | undefined, right: TrackData | undefined) {
+  return (
+    left?.extendedData?.id === right?.extendedData?.id && left?.extendedData?.episode === right?.extendedData?.episode
+  );
+}
+
+function shouldRefreshTrack(trackData: TrackData | undefined) {
+  const extendedData = trackData?.extendedData;
+  if (!extendedData || extendedData.isLoaded) {
+    return false;
+  }
+
+  return (extendedData.expireAt ?? 0) <= Date.now() || isCacheExists(extendedData.id, extendedData.episode);
+}
+
 /**
  * 从视频详情页添加曲目到队列
  */
@@ -109,38 +132,74 @@ export async function refreshCurrentTrack() {
   log.debug("检查当前曲目是否可能需要替换");
   const trackData = await Player.getCurrentTrack();
   const trackIndex = await Player.getCurrentTrackIndex();
+  const refreshKey = getTrackRefreshKey(trackIndex, trackData);
+  if (currentTrackRefresh?.key === refreshKey) {
+    return currentTrackRefresh.promise;
+  }
 
-  // 未缓存音频 URL 刷新条件：trackData 有效、未加载、已过期
-  const updateCondition =
-    trackData && !trackData.extendedData?.isLoaded && (trackData.extendedData?.expireAt ?? 0) <= new Date().getTime();
+  const refreshPromise = refreshCurrentTrackOnce(trackData, trackIndex);
+  currentTrackRefresh = { key: refreshKey, promise: refreshPromise };
+  try {
+    await refreshPromise;
+  } finally {
+    if (currentTrackRefresh?.promise === refreshPromise) {
+      currentTrackRefresh = null;
+    }
+  }
+}
 
-  // 未缓存音频 URL 事后缓存刷新条件：trackData 有效、未加载、有缓存记录
-  const toPersistentCondition =
-    trackData?.extendedData &&
-    !trackData.extendedData.isLoaded &&
-    isCacheExists(trackData.extendedData.id, trackData.extendedData.episode);
+async function refreshCurrentTrackOnce(trackData: TrackData | undefined, trackIndex: number) {
+  let restoreLoopOnce = false;
+  let shouldResume = false;
 
-  if (toPersistentCondition || updateCondition) {
+  if (!trackData || !shouldRefreshTrack(trackData)) {
+    resumeCurrentTrackAfterRefresh = false;
+  } else {
     if ((await Player.getRepeatMode()) === RepeatMode.ONE) {
       // 缓解 Android 端特有的 bug：在单曲循环模式下切歌到会被触发替换操作的歌曲，会在歌曲被替换后自动跳转回第一首
       playlistStorage.set(PLAYLIST_RESTORE_LOOP_ONCE, true);
+      restoreLoopOnce = true;
       await Player.setRepeatMode(RepeatMode.OFF);
     }
 
     log.debug("进行曲目替换操作");
     try {
-      await Player.replaceTrack(trackIndex, await refreshTrack(trackData));
+      shouldResume = (await Player.getIsPlaying()) || resumeCurrentTrackAfterRefresh;
+      resumeCurrentTrackAfterRefresh = false;
+
+      const refreshedTrack = await refreshTrack(trackData);
+      const latestTrack = await Player.getCurrentTrack();
+      const latestTrackIndex = await Player.getCurrentTrackIndex();
+      if (latestTrackIndex !== trackIndex || !isSameTrack(latestTrack, trackData)) {
+        log.debug("当前曲目已变化，跳过过期的曲目替换操作");
+      } else {
+        if (shouldResume) {
+          await Player.pause();
+        }
+        await Player.replaceTrack(trackIndex, refreshedTrack);
+        if (shouldResume) {
+          await Player.play();
+        }
+      }
     } catch (e) {
       log.error("错误捕获：" + e);
       useErrorMessageStore.getState().setMessage(String((e as Error)?.message || e));
       await Player.next();
+      if (shouldResume) {
+        await Player.play();
+      }
     }
   }
 
-  if (playlistStorage.getBoolean(PLAYLIST_RESTORE_LOOP_ONCE)) {
+  if (restoreLoopOnce || playlistStorage.getBoolean(PLAYLIST_RESTORE_LOOP_ONCE)) {
     await Player.setRepeatMode(RepeatMode.ONE);
     playlistStorage.set(PLAYLIST_RESTORE_LOOP_ONCE, false);
   }
+}
+
+export async function playNextTrack() {
+  resumeCurrentTrackAfterRefresh = await Player.getIsPlaying();
+  await Player.next();
 }
 
 /**

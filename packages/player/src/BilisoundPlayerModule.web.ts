@@ -421,6 +421,10 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     return this.index;
   }
 
+  async getNextTrackIndex() {
+    return this.getNextIndex();
+  }
+
   async setSpeed(speed: number, retainPitch: boolean) {
     this.playbackSpeedOption = {
       speed,

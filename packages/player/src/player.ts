@@ -110,6 +110,10 @@ export async function getCurrentTrackIndex() {
   return BilisoundPlayerModule.getCurrentTrackIndex();
 }
 
+export async function getNextTrackIndex() {
+  return BilisoundPlayerModule.getNextTrackIndex();
+}
+
 /**
  * 调整播放速度
  * @param speed 播放速度
