@@ -142,6 +142,7 @@ export function TextFieldAction({
   textColor,
 }: TextFieldActionProps) {
   const { colorValue } = useUiNextColors();
+  const textAction = typeof children === "string";
 
   return (
     <Pressable
@@ -156,10 +157,10 @@ export function TextFieldAction({
         disabled ? styles.disabledAction : null,
       ]}
     >
-      {typeof children === "string" ? (
+      {textAction ? (
         <Text style={[styles.actionText, { color: textColor ?? colorValue("--color-primary-500") }]}>{children}</Text>
       ) : (
-        children
+        <View style={styles.iconActionContent}>{children}</View>
       )}
     </Pressable>
   );
@@ -193,9 +194,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   action: {
-    minWidth: 44,
     minHeight: 44,
-    paddingHorizontal: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconActionContent: {
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -206,5 +211,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontWeight: "500",
+    paddingHorizontal: 12,
   },
 });
