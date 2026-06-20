@@ -1,6 +1,6 @@
 import { Text } from "~/components/ui/text";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
-import { ScrollView, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Layout, LayoutButton } from "~/components/layout";
 import { useIsNarrowWidth } from "~/hooks/useIsNarrowWidth";
 import { useForm, Controller } from "react-hook-form";
@@ -10,20 +10,19 @@ import {
   FormControlErrorIcon,
   FormControlErrorText,
 } from "~/components/ui/form-control";
-import { Input, InputField, InputSlot } from "~/components/ui/input";
+import { TextField, TextFieldAction, useUiNextColors } from "~/components/ui-next";
 import log from "~/utils/logger";
 import { AlertCircleIcon } from "~/components/ui/icon";
 import React from "react";
 import { router } from "expo-router";
 import { resolveVideo, resolveVideoAndJump } from "~/business/format";
 import { Icon } from "~/components/icon";
-import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { BRAND } from "~/constants/branding";
 
 export default function MainScreen() {
   const edgeInsets = useTabSafeAreaInsets();
   const isNarrowWidth = useIsNarrowWidth();
-  const { colorValue } = useRawThemeValues();
+  const { colorValue } = useUiNextColors();
 
   const {
     control,
@@ -93,48 +92,60 @@ export default function MainScreen() {
             size="md"
             className="w-full sm:w-[560px] bg-transparent"
           >
-            <Input variant="outline" size="md" className="w-full h-12 rounded-lg">
-              <Controller
-                control={control}
-                name="videoUrl"
-                rules={{
-                  validate: async value => {
-                    try {
-                      await resolveVideo(value);
-                      return true;
-                    } catch {
-                      return false;
-                    }
-                  },
-                }}
-                render={({ field: { onChange, value, onBlur } }) => (
-                  <InputField
-                    placeholder="粘贴完整链接或带前缀 ID 至此"
-                    className="text-base"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    onSubmitEditing={handleSubmit(onSubmit)}
-                  />
-                )}
-              />
-              {!!videoUrl && (
-                <View className={"flex-row items-center"}>
-                  <InputSlot
-                    className="h-12 px-3 items-center justify-center"
-                    onPress={() => {
-                      setFormValue("videoUrl", "");
-                    }}
-                  >
-                    <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
-                  </InputSlot>
-                  <View className={"w-[1px] h-6 bg-background-100"}></View>
-                  <InputSlot className="h-12 px-3 items-center justify-center" onPress={handleSubmit(onSubmit)}>
-                    <Text className={"text-accent-500"}>查询</Text>
-                  </InputSlot>
-                </View>
+            <Controller
+              control={control}
+              name="videoUrl"
+              rules={{
+                validate: async value => {
+                  try {
+                    await resolveVideo(value);
+                    return true;
+                  } catch {
+                    return false;
+                  }
+                },
+              }}
+              render={({ field: { onChange, value, onBlur } }) => (
+                <TextField
+                  accessibilityHint="输入后点击查询按钮打开音视频详情"
+                  accessibilityLabel="视频链接或 ID"
+                  containerStyle={styles.videoInput}
+                  invalid={!!errors.videoUrl}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  onSubmitEditing={handleSubmit(onSubmit)}
+                  placeholder="粘贴完整链接或带前缀 ID 至此"
+                  returnKeyType="search"
+                  right={
+                    !!videoUrl && (
+                      <>
+                        <TextFieldAction
+                          accessibilityLabel="清空查询内容"
+                          onPress={() => {
+                            setFormValue("videoUrl", "");
+                          }}
+                        >
+                          <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
+                        </TextFieldAction>
+                        <View
+                          style={[styles.inputDivider, { backgroundColor: colorValue("--color-background-100") }]}
+                        />
+                        <TextFieldAction
+                          accessibilityHint="提交当前输入内容"
+                          accessibilityLabel="查询"
+                          onPress={handleSubmit(onSubmit)}
+                          textColor={colorValue("--color-accent-500")}
+                        >
+                          查询
+                        </TextFieldAction>
+                      </>
+                    )
+                  }
+                  size="md"
+                  value={value}
+                />
               )}
-            </Input>
+            />
             <FormControlError>
               <FormControlErrorIcon as={AlertCircleIcon} />
               <FormControlErrorText size="sm">请输入合法的地址或 ID</FormControlErrorText>
@@ -145,3 +156,14 @@ export default function MainScreen() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  videoInput: {
+    height: 48,
+    borderRadius: 8,
+  },
+  inputDivider: {
+    width: 1,
+    height: 24,
+  },
+});

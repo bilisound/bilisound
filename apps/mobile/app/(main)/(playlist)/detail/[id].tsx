@@ -4,7 +4,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { Platform, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { DualScrollView } from "~/components/dual-scroll-view";
 import { Layout, LayoutButton } from "~/components/layout";
 import { Header } from "~/components/playlist-detail/Header";
@@ -21,7 +21,7 @@ import {
 import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Heading } from "~/components/ui/heading";
-import { Input, InputField, InputSlot } from "~/components/ui/input";
+import { TextField, TextFieldAction } from "~/components/ui-next";
 import { Text } from "~/components/ui/text";
 import { usePlaylistEditor } from "~/hooks/playlist-detail/usePlaylistEditor";
 import { usePlaylistPlayer } from "~/hooks/playlist-detail/usePlaylistPlayer";
@@ -121,28 +121,29 @@ export default function Page() {
 
   const listArea = (playlistDetail?.length || 0) > 0 && (
     <View className="px-4 pb-2">
-      <Input className="rounded-xl">
-        <InputSlot className="pl-4">
-          <Icon name="fa6-solid:filter" size={16} color={colorValue("--color-primary-500")} />
-        </InputSlot>
-        <InputField
-          placeholder="过滤歌曲或作者……"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          className="flex-1 text-sm px-3"
-          placeholderTextColor="rgba(0,0,0,0.4)"
-        />
-        {searchQuery.length > 0 && (
-          <InputSlot
-            className="h-12 px-3 items-center justify-center"
-            onPress={() => {
-              setSearchQuery("");
-            }}
-          >
-            <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
-          </InputSlot>
-        )}
-      </Input>
+      <TextField
+        accessibilityHint="输入关键词后过滤当前歌单内的歌曲"
+        accessibilityLabel="过滤歌曲或作者"
+        containerStyle={styles.filterInput}
+        inputStyle={styles.filterInputText}
+        left={<Icon name="fa6-solid:filter" size={16} color={colorValue("--color-primary-500")} />}
+        onChangeText={setSearchQuery}
+        placeholder="过滤歌曲或作者……"
+        right={
+          searchQuery.length > 0 && (
+            <TextFieldAction
+              accessibilityLabel="清空歌曲过滤条件"
+              onPress={() => {
+                setSearchQuery("");
+              }}
+            >
+              <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
+            </TextFieldAction>
+          )
+        }
+        size="md"
+        value={searchQuery}
+      />
       {!!searchQuery.trim() && (
         <View className="flex-row items-center justify-between mt-3 px-1">
           <Text className="text-sm text-typography-500">过滤后有 {filteredPlaylistDetail.length} 首歌曲</Text>
@@ -346,3 +347,13 @@ export default function Page() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  filterInput: {
+    borderRadius: 12,
+  },
+  filterInputText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+});

@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import omit from "lodash/omit";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ScrollView, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import Toast from "react-native-toast-message";
 import * as Player from "@bilisound/player";
 
@@ -17,8 +17,7 @@ import {
   FormControlLabelText,
 } from "~/components/ui/form-control";
 import { AlertCircleIcon, CheckIcon } from "~/components/ui/icon";
-import { Input, InputField } from "~/components/ui/input";
-import { Textarea, TextareaInput } from "~/components/ui/textarea";
+import { TextareaField, TextField } from "~/components/ui-next";
 import {
   addToPlaylist,
   clonePlaylist,
@@ -177,15 +176,18 @@ export default function Page() {
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <View className="flex-row w-full gap-3">
-                  <Input className="flex-1">
-                    <InputField
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      value={value}
-                      placeholder="请输入名称"
-                      className="text-sm"
-                    />
-                  </Input>
+                  <TextField
+                    accessibilityHint="输入歌单显示名称"
+                    accessibilityLabel="歌单名称"
+                    containerStyle={styles.titleInput}
+                    inputStyle={styles.textInputSmall}
+                    invalid={"title" in errors}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    placeholder="请输入名称"
+                    size="md"
+                    value={value}
+                  />
                   {source ? (
                     <ButtonOuter className="flex-0 basis-auto">
                       <Button
@@ -216,16 +218,18 @@ export default function Page() {
             <Controller
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
-                <Textarea size="md" isReadOnly={false} isInvalid={false} isDisabled={false} className="h-48">
-                  <TextareaInput
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value ?? ""}
-                    placeholder="可以在这里设置歌单的备注"
-                    className="text-sm"
-                    textAlignVertical="top"
-                  />
-                </Textarea>
+                <TextareaField
+                  accessibilityHint="输入歌单备注信息"
+                  accessibilityLabel="备注"
+                  containerStyle={styles.descriptionInput}
+                  inputStyle={styles.textInputSmall}
+                  invalid={"description" in errors}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  placeholder="可以在这里设置歌单的备注"
+                  size="md"
+                  value={value ?? ""}
+                />
               )}
               name="description"
             />
@@ -241,9 +245,14 @@ export default function Page() {
                 <FormControlLabelText className="text-sm">绑定在线歌单</FormControlLabelText>
               </FormControlLabel>
               <View className="gap-4">
-                <Input isDisabled>
-                  <InputField value={source.originalTitle} className="text-sm text-typography-400" />
-                </Input>
+                <TextField
+                  accessibilityLabel="绑定在线歌单"
+                  containerStyle={styles.boundPlaylistInput}
+                  disabled
+                  inputStyle={styles.textInputSmall}
+                  size="md"
+                  value={source.originalTitle}
+                />
                 <ButtonOuter>
                   <Button onPress={() => handleClone()}>
                     <ButtonText>创建解绑副本</ButtonText>
@@ -285,3 +294,19 @@ export default function Page() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  titleInput: {
+    flex: 1,
+  },
+  boundPlaylistInput: {
+    borderRadius: 4,
+  },
+  descriptionInput: {
+    height: 192,
+  },
+  textInputSmall: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+});
