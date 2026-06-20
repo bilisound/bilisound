@@ -58,7 +58,15 @@ export function Layout({
               )}
             </View>
           ) : null}
-          <View>{typeof title === "string" ? <Text style={styles.title}>{title}</Text> : title}</View>
+          <View>
+            {typeof title === "string" ? (
+              <Text accessibilityRole="header" style={styles.title}>
+                {title}
+              </Text>
+            ) : (
+              title
+            )}
+          </View>
           {rightAccessories ? <View style={styles.rightAccessories}>{rightAccessories}</View> : null}
         </View>
       </View>

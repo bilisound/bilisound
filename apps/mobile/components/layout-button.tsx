@@ -14,13 +14,14 @@ export const LayoutButton = ({
   iconSize = 20,
   iconName,
   ref,
+  accessibilityRole = "button",
   ...props
 }: LayoutButtonProps & { ref?: React.Ref<React.ElementRef<typeof Button>> }) => {
   const { colorValue } = useRawThemeValues();
 
   return (
     <ButtonOuter>
-      <Pressable {...props} style={styles.pressable} ref={ref}>
+      <Pressable {...props} accessibilityRole={accessibilityRole} style={styles.pressable} ref={ref}>
         <Icon size={iconSize} color={colorValue("--color-primary-500")} name={iconName} />
       </Pressable>
     </ButtonOuter>

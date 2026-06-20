@@ -1,5 +1,6 @@
 import React from "react";
 import { ActivityIndicator, GestureResponderEvent, StyleSheet, View } from "react-native";
+import type { AccessibilityRole, AccessibilityState } from "react-native";
 
 import { Text } from "~/components/ui/text";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
@@ -14,6 +15,10 @@ export interface SettingMenuItemProps {
   rightAccessories?: React.ReactNode;
   onPress?: (event: GestureResponderEvent) => void;
   disabled?: boolean;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  accessibilityRole?: AccessibilityRole;
+  accessibilityState?: AccessibilityState;
 }
 
 export function SettingMenuItem({
@@ -24,8 +29,16 @@ export function SettingMenuItem({
   rightAccessories,
   onPress,
   disabled,
+  accessibilityLabel,
+  accessibilityHint,
+  accessibilityRole,
+  accessibilityState,
 }: SettingMenuItemProps) {
   const { colorValue } = useRawThemeValues();
+  const itemLabel =
+    accessibilityLabel ?? [title, typeof subTitle === "string" ? subTitle : undefined].filter(Boolean).join("，");
+  const itemRole = accessibilityRole ?? (onPress ? "button" : undefined);
+  const itemState = disabled ? { ...accessibilityState, disabled: true } : accessibilityState;
 
   const inner = (
     <View style={[styles.container, disabled && styles.disabled]}>
@@ -52,10 +65,30 @@ export function SettingMenuItem({
   );
 
   if (!onPress || disabled) {
-    return inner;
+    return (
+      <View
+        accessible={Boolean(itemLabel || itemRole)}
+        accessibilityHint={accessibilityHint}
+        accessibilityLabel={itemLabel || undefined}
+        accessibilityRole={itemRole}
+        accessibilityState={itemState}
+      >
+        {inner}
+      </View>
+    );
   }
 
-  return <Pressable onPress={onPress}>{inner}</Pressable>;
+  return (
+    <Pressable
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={itemLabel || undefined}
+      accessibilityRole={itemRole}
+      accessibilityState={itemState}
+      onPress={onPress}
+    >
+      {inner}
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -3,7 +3,6 @@ import React from "react";
 import { Platform, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { SettingMenuItem } from "~/components/setting-menu";
-import { Switch } from "~/components/ui/switch";
 import { VERSION } from "~/constants/releasing";
 import { useShallow } from "zustand/shallow";
 import useSettingsStore from "~/store/settings";
@@ -14,22 +13,46 @@ import { FEATURE_DOWNLOAD_MANAGER } from "~/constants/feature";
 import useDownloadStore, { DownloadItem } from "~/store/download";
 import { Text } from "~/components/ui/text";
 import { BRAND } from "~/constants/branding";
+import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 
-function DownloadDescription() {
+function SettingSwitch({ value }: { value: boolean }) {
+  const { colorValue, mode } = useRawThemeValues();
+  const dark = mode === "dark";
+  const trackColor = value
+    ? colorValue(dark ? "--color-primary-400" : "--color-primary-500")
+    : colorValue(dark ? "--color-primary-50" : "--color-primary-200");
+  const thumbColor = colorValue(dark ? "--color-primary-700" : "--color-primary-50");
+
+  return (
+    <View
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      pointerEvents="none"
+      style={[styles.settingSwitchTrack, { backgroundColor: trackColor }]}
+    >
+      <View
+        style={[styles.settingSwitchThumb, value && styles.settingSwitchThumbChecked, { backgroundColor: thumbColor }]}
+      />
+    </View>
+  );
+}
+
+function useDownloadDescriptionText() {
   const { downloadList } = useDownloadStore();
   const builtList: DownloadItem[] = Array.from(downloadList.values()).sort((a, b) => a.startTime - b.startTime);
   const displayList = builtList.filter(e => e.status === 1 || e.status === 0);
 
-  return (
-    <Text style={styles.downloadDescription}>
-      {displayList.length > 0 ? `${displayList.length} 个任务进行中` : "尚无任务正在进行"}
-    </Text>
-  );
+  return displayList.length > 0 ? `${displayList.length} 个任务进行中` : "尚无任务正在进行";
+}
+
+function DownloadDescription({ text }: { text: string }) {
+  return <Text style={styles.downloadDescription}>{text}</Text>;
 }
 
 export default function Page() {
   const edgeInsets = useTabSafeAreaInsets();
   const { width } = useWindowDimensions();
+  const downloadDescription = useDownloadDescriptionText();
   const { useLegacyID, downloadNextTrack, filterResourceURL, debugMode, toggle } = useSettingsStore(
     useShallow(state => ({
       useLegacyID: state.useLegacyID,
@@ -67,14 +90,9 @@ export default function Page() {
             icon={"fa6-solid:cloud"}
             title="只从云服务商 CDN 节点获取音频"
             subTitle="开启后可能会显著改善连接速度"
-            rightAccessories={
-              <Switch
-                value={filterResourceURL}
-                onChange={() => {
-                  toggle("filterResourceURL");
-                }}
-              />
-            }
+            rightAccessories={<SettingSwitch value={filterResourceURL} />}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: filterResourceURL }}
             onPress={() => toggle("filterResourceURL")}
           />
           <SettingMenuItem
@@ -106,14 +124,9 @@ export default function Page() {
           icon={"fa6-solid:link"}
           title="使用 av 号而非 bv 号"
           subTitle="开启该选项后，在保存的音频文件中，文件名前缀将以 av 号开头"
-          rightAccessories={
-            <Switch
-              value={useLegacyID}
-              onChange={() => {
-                toggle("useLegacyID");
-              }}
-            />
-          }
+          rightAccessories={<SettingSwitch value={useLegacyID} />}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: useLegacyID }}
           onPress={() => toggle("useLegacyID")}
         />
         {Platform.OS === "web" ? null : (
@@ -122,14 +135,9 @@ export default function Page() {
             icon={"fa6-solid:cloud-arrow-down"}
             title="自动缓存队列中的曲目"
             subTitle="可以显著改善持续听歌的体验"
-            rightAccessories={
-              <Switch
-                value={downloadNextTrack}
-                onChange={() => {
-                  toggle("downloadNextTrack");
-                }}
-              />
-            }
+            rightAccessories={<SettingSwitch value={downloadNextTrack} />}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: downloadNextTrack }}
             onPress={() => toggle("downloadNextTrack")}
           />
         )}
@@ -156,7 +164,8 @@ export default function Page() {
             key="settings_10041"
             icon={"fa6-solid:download"}
             title="下载管理"
-            subTitle={<DownloadDescription />}
+            subTitle={<DownloadDescription text={downloadDescription} />}
+            accessibilityLabel={`下载管理，${downloadDescription}`}
             onPress={async () => {
               router.navigate("/download");
             }}
@@ -176,15 +185,9 @@ export default function Page() {
           icon={"fa6-solid:code"}
           title="开发者模式"
           subTitle="开启后可显示高级选项"
-          rightAccessories={
-            <Switch
-              value={debugMode}
-              onChange={() => {
-                const result = toggle("debugMode");
-                log.setSeverity(result ? "debug" : "info");
-              }}
-            />
-          }
+          rightAccessories={<SettingSwitch value={debugMode} />}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: debugMode }}
           onPress={() => {
             const result = toggle("debugMode");
             log.setSeverity(result ? "debug" : "info");
@@ -206,5 +209,20 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     fontSize: 15,
     lineHeight: 22.5,
+  },
+  settingSwitchTrack: {
+    width: 46,
+    height: 28,
+    borderRadius: 9999,
+    padding: 2,
+    justifyContent: "center",
+  },
+  settingSwitchThumb: {
+    width: 24,
+    height: 24,
+    borderRadius: 9999,
+  },
+  settingSwitchThumbChecked: {
+    transform: [{ translateX: 18 }],
   },
 });

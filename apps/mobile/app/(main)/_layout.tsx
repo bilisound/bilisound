@@ -51,6 +51,9 @@ const TabTriggerChild = ({
       ]}
       android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
       {...props}
+      accessibilityLabel={`${title}标签`}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: isFocused }}
       ref={ref}
     >
       <Icon
@@ -141,6 +144,9 @@ function CurrentPlayingTablet() {
                   !IS_ANDROID_RIPPLE_ENABLED && pressed && { backgroundColor: colorValue("--color-background-200") },
                 ]}
                 android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
+                accessibilityLabel={isPlaying ? "暂停当前播放" : "播放当前曲目"}
+                accessibilityRole="button"
+                accessibilityState={{ busy: playbackState === "STATE_BUFFERING" }}
                 onPress={() => toggle()}
               >
                 <View style={styles.playingIconContainer}>
@@ -164,6 +170,9 @@ function CurrentPlayingTablet() {
                 hovered && { backgroundColor: colorValue("--color-background-0", 0.5) },
                 pressed && { backgroundColor: colorValue("--color-background-0") },
               ]}
+              accessibilityHint="打开当前播放详情"
+              accessibilityLabel={currentTrack.title ? `当前播放，${currentTrack.title}` : "当前播放"}
+              accessibilityRole="button"
               onPress={() => handleOpen()}
             >
               <Image source={convertToHTTPS(currentTrack.artworkUri!)} style={styles.cptArtworkImage} />
@@ -176,6 +185,9 @@ function CurrentPlayingTablet() {
           <Pressable
             style={styles.cptWideRow}
             android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
+            accessibilityHint="打开当前播放详情"
+            accessibilityLabel={currentTrack.title ? `当前播放，${currentTrack.title}` : "当前播放"}
+            accessibilityRole="button"
             onPress={() => handleOpen()}
           >
             <Image source={currentTrack.artworkUri} style={styles.cptWideImage} />
@@ -192,6 +204,9 @@ function CurrentPlayingTablet() {
                   !IS_ANDROID_RIPPLE_ENABLED && pressed && { backgroundColor: colorValue("--color-background-200") },
                 ]}
                 android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
+                accessibilityLabel={isPlaying ? "暂停当前播放" : "播放当前曲目"}
+                accessibilityRole="button"
+                accessibilityState={{ busy: playbackState === "STATE_BUFFERING" }}
                 onPress={() => toggle()}
               >
                 <PlayingIcon />
@@ -207,6 +222,8 @@ function CurrentPlayingTablet() {
 function CurrentPlaying() {
   const { colorValue } = useRawThemeValues();
   const currentTrack = useCurrentTrack();
+  const isPlaying = useIsPlaying();
+  const playbackState = usePlaybackState();
   const open = useBottomSheetStore(state => state.open);
 
   function handleOpen() {
@@ -234,6 +251,9 @@ function CurrentPlaying() {
       <Pressable
         style={styles.cpRow}
         android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
+        accessibilityHint="打开当前播放详情"
+        accessibilityLabel={currentTrack.title ? `当前播放，${currentTrack.title}` : "当前播放"}
+        accessibilityRole="button"
         onPress={() => handleOpen()}
       >
         <Image source={currentTrack.artworkUri} style={styles.cpImage} />
@@ -249,6 +269,9 @@ function CurrentPlaying() {
             !IS_ANDROID_RIPPLE_ENABLED && pressed && { backgroundColor: colorValue("--color-background-200") },
           ]}
           android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
+          accessibilityLabel={isPlaying ? "暂停当前播放" : "播放当前曲目"}
+          accessibilityRole="button"
+          accessibilityState={{ busy: playbackState === "STATE_BUFFERING" }}
           onPress={() => toggle()}
         >
           <PlayingIcon />
@@ -296,6 +319,7 @@ export default function TabLayout() {
         </View>
         {!isSideTabList && <CurrentPlaying />}
         <TabList
+          accessibilityRole="tablist"
           style={[
             tabListSafeAreaStyle,
             { backgroundColor: colorValue("--color-background-50") },
