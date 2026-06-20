@@ -1,17 +1,7 @@
 import { registerWebModule, NativeModule } from "expo";
 
-import type {
-  EventListFunc,
-  PlaybackProgress,
-  PlaybackState,
-  TrackData,
-  TrackDataInternal,
-} from "./types";
-import {
-  DownloadState,
-  RepeatMode,
-  ShuffleMode,
-} from "./types";
+import type { EventListFunc, PlaybackProgress, PlaybackState, TrackData, TrackDataInternal } from "./types";
+import { DownloadState, RepeatMode, ShuffleMode } from "./types";
 import type { BilisoundPlayerModuleInterface } from "./types/module";
 import { deleteItems } from "./utils";
 

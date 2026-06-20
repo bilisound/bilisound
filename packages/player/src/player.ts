@@ -9,11 +9,7 @@ import type {
   TrackData,
   TrackDataInternal,
 } from "./types";
-import {
-  DownloadState,
-  RepeatMode,
-  ShuffleMode,
-} from "./types";
+import { DownloadState, RepeatMode, ShuffleMode } from "./types";
 import { toTrackData, toTrackDataInternal } from "./utils";
 
 export class Config {

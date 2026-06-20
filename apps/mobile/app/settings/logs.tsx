@@ -5,7 +5,7 @@ import { Pressable } from "~/components/ui/pressable";
 import { useQuery } from "@tanstack/react-query";
 import { deleteLogContent, getLogList } from "~/utils/logger";
 import { Text } from "~/components/ui/text";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Icon } from "~/components/icon";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { router } from "expo-router";
@@ -26,7 +26,7 @@ import { matchOldRegex, matchRegex } from "~/utils/logger-common";
 
 export default function Page() {
   const edgeInsets = useSafeAreaInsets();
-  const { data, refetch } = useQuery({
+  const { data, refetch } = useQuery<string[]>({
     queryKey: ["log_list"],
     queryFn: getLogList,
   });
@@ -62,13 +62,11 @@ export default function Page() {
       <FlashList
         contentContainerStyle={{ paddingBottom: edgeInsets.bottom }}
         ListFooterComponent={
-          <Text className="text-sm px-5 opacity-60 pt-4 text-center" style={{ paddingBottom: edgeInsets.bottom + 16 }}>
-            超过 14 天的日志会被自动删除
-          </Text>
+          <Text style={[styles.footer, { paddingBottom: edgeInsets.bottom + 16 }]}>超过 14 天的日志会被自动删除</Text>
         }
         renderItem={e => {
-          const info = matchRegex.exec(e.item);
-          const infoOld = matchOldRegex.exec(e.item);
+          const info = matchRegex.exec(e.item) as RegExpExecArray | null;
+          const infoOld = matchOldRegex.exec(e.item) as RegExpExecArray | null;
 
           let text = "未知日志";
           if (info) {
@@ -79,19 +77,16 @@ export default function Page() {
           }
 
           return (
-            <Pressable
-              className={"h-[72px] px-4 gap-1.5 justify-center"}
-              onPress={() => router.navigate(`/settings/log/${e.item}`)}
-            >
-              <View className={"flex-row gap-3"}>
-                <View className={"items-center justify-center size-6 flex-0 basis-auto"}>
+            <Pressable style={styles.row} onPress={() => router.navigate(`/settings/log/${e.item}`)}>
+              <View style={styles.rowHeader}>
+                <View style={styles.iconWrapper}>
                   <Icon name={"fa6-solid:file-lines"} size={20} color={colorValue("--color-typography-700")} />
                 </View>
-                <Text className={"font-semibold"} isTruncated>
+                <Text style={styles.rowTitle} isTruncated>
                   {text}
                 </Text>
               </View>
-              <Text className={"text-typography-500 text-sm pl-9"} isTruncated>
+              <Text style={[styles.rowSubtitle, { color: colorValue("--color-typography-500") }]} isTruncated>
                 {e.item}
               </Text>
             </Pressable>
@@ -105,12 +100,12 @@ export default function Page() {
         <AlertDialogBackdrop />
         <AlertDialogContent>
           <AlertDialogHeader>
-            <Heading className="text-typography-950 font-semibold" size="md">
+            <Heading style={[styles.dialogHeading, { color: colorValue("--color-typography-950") }]} size="md">
               {dialogInfo.title}
             </Heading>
           </AlertDialogHeader>
           <AlertDialogBody>
-            <Text size="sm" className="leading-normal">
+            <Text size="sm" style={styles.dialogDescription}>
               {dialogInfo.description}
             </Text>
           </AlertDialogBody>
@@ -131,3 +126,44 @@ export default function Page() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  footer: {
+    fontSize: 14,
+    lineHeight: 20,
+    paddingHorizontal: 20,
+    opacity: 0.6,
+    paddingTop: 16,
+    textAlign: "center",
+  },
+  row: {
+    height: 72,
+    paddingHorizontal: 16,
+    gap: 6,
+    justifyContent: "center",
+  },
+  rowHeader: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  iconWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 24,
+    height: 24,
+  },
+  rowTitle: {
+    fontWeight: "600",
+  },
+  rowSubtitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    paddingLeft: 36,
+  },
+  dialogHeading: {
+    fontWeight: "600",
+  },
+  dialogDescription: {
+    lineHeight: 22,
+  },
+});

@@ -4,7 +4,13 @@ import { Platform } from "react-native";
 
 import type { TrackData } from "@bilisound/player/build/types";
 
-import { getQueuePlayingMode, QUEUE_CURRENT_INDEX, QUEUE_LIST, QUEUE_LIST_VERSION, queueStorage } from "~/storage/queue";
+import {
+  getQueuePlayingMode,
+  QUEUE_CURRENT_INDEX,
+  QUEUE_LIST,
+  QUEUE_LIST_VERSION,
+  queueStorage,
+} from "~/storage/queue";
 import { handleLegacyQueue } from "~/utils/migration/legacy-queue";
 import { cleanupLegacyShuffleKeys } from "~/utils/migration/shuffle-queue";
 import { convertToHTTPS } from "~/utils/string";

@@ -1,4 +1,4 @@
-import { Linking, Platform, ScrollView, View } from "react-native";
+import { Linking, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { Layout } from "~/components/layout";
 import { RELEASE_CHANNEL, ReleaseChannel, VERSION } from "~/constants/releasing";
 import React, { useState } from "react";
@@ -73,10 +73,10 @@ export default function Page() {
   return (
     <Layout title={"关于"} leftAccessories={"BACK_BUTTON"}>
       <ScrollView>
-        <View className="items-center p-6">
-          <Image className="w-[4.5rem] h-[4.5rem] rounded-xl" source={require("../../assets/images/icon.png")} />
-          <Text className="text-2xl leading-normal font-semibold mt-2 mb-1">{BRAND}</Text>
-          <Text className="text-sm leading-normal opacity-50 text-center">{`版本 ${VERSION} ・ ${releaseChannelDict[RELEASE_CHANNEL ?? "unknown"]}`}</Text>
+        <View style={styles.hero}>
+          <Image style={styles.icon} source={require("../../assets/images/icon.png")} />
+          <Text style={styles.brand}>{BRAND}</Text>
+          <Text style={styles.version}>{`版本 ${VERSION} ・ ${releaseChannelDict[RELEASE_CHANNEL ?? "unknown"]}`}</Text>
         </View>
         {Platform.OS !== "web" && (
           <SettingMenuItem
@@ -101,3 +101,28 @@ export default function Page() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  hero: {
+    alignItems: "center",
+    padding: 24,
+  },
+  icon: {
+    width: 72,
+    height: 72,
+    borderRadius: 12,
+  },
+  brand: {
+    fontSize: 24,
+    lineHeight: 36,
+    fontWeight: "600",
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  version: {
+    fontSize: 14,
+    lineHeight: 21,
+    opacity: 0.5,
+    textAlign: "center",
+  },
+});

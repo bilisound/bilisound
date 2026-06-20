@@ -1,9 +1,10 @@
 import React from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Layout } from "~/components/layout";
 import { Text } from "~/components/ui/text";
+import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 
 interface CreditItem {
   category: string;
@@ -96,18 +97,25 @@ const credits: CreditItem[] = [
 ];
 
 function CreditSection({ category, items }: CreditItem) {
+  const { colorValue } = useRawThemeValues();
   return (
-    <View className="mb-6">
-      <Text className="text-lg font-semibold px-4 mb-3 opacity-80">{category}</Text>
-      <View className="bg-background-50 rounded-xl mx-4">
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>{category}</Text>
+      <View style={[styles.card, { backgroundColor: colorValue("--color-background-50") }]}>
         {items.map((item, index) => (
           <View
             key={item.name}
-            className={`px-4 py-3 ${index !== items.length - 1 ? "border-b border-background-200" : ""}`}
+            style={[
+              styles.item,
+              index !== items.length - 1 && {
+                borderBottomWidth: 1,
+                borderBottomColor: colorValue("--color-background-200"),
+              },
+            ]}
           >
-            <Text className="text-base font-medium">{item.name}</Text>
-            <Text className="text-sm opacity-60 mt-0.5">{item.author}</Text>
-            {item.description && <Text className="text-sm opacity-50 mt-1">{item.description}</Text>}
+            <Text style={styles.itemName}>{item.name}</Text>
+            <Text style={styles.itemAuthor}>{item.author}</Text>
+            {item.description && <Text style={styles.itemDescription}>{item.description}</Text>}
           </View>
         ))}
       </View>
@@ -120,9 +128,9 @@ export default function Page() {
 
   return (
     <Layout title="致谢" leftAccessories="BACK_BUTTON" edgeInsets={{ ...edgeInsets, bottom: 0 }}>
-      <ScrollView className="flex-1">
-        <View className="py-4">
-          <Text className="text-center text-sm opacity-50 px-4 mb-6">感谢以下开源项目和贡献者，使本应用成为可能</Text>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container}>
+          <Text style={styles.intro}>感谢以下开源项目和贡献者，使本应用成为可能</Text>
           {credits.map(credit => (
             <CreditSection key={credit.category} {...credit} />
           ))}
@@ -131,3 +139,56 @@ export default function Page() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  container: {
+    paddingVertical: 16,
+  },
+  intro: {
+    textAlign: "center",
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.5,
+    paddingHorizontal: 16,
+    marginBottom: 24,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    lineHeight: 28,
+    fontWeight: "600",
+    paddingHorizontal: 16,
+    marginBottom: 12,
+    opacity: 0.8,
+  },
+  card: {
+    borderRadius: 12,
+    marginHorizontal: 16,
+  },
+  item: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  itemName: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: "500",
+  },
+  itemAuthor: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.6,
+    marginTop: 2,
+  },
+  itemDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.5,
+    marginTop: 4,
+  },
+});

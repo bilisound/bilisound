@@ -1,7 +1,6 @@
 import { Image } from "expo-image";
 import React from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import { twMerge } from "tailwind-merge";
+import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { SettingMenuItem } from "~/components/setting-menu";
 import { HStack } from "~/components/ui/hstack";
@@ -24,25 +23,36 @@ interface ThemeButtonProps {
   yuruChara?: number;
 }
 
+const SM_BREAKPOINT = 640;
+
 function ThemeButton({ selected = false, name, onPress, yuruChara }: ThemeButtonProps) {
+  const { colorValue, mode } = useRawThemeValues();
+  const { width } = useWindowDimensions();
+  const isWide = width >= SM_BREAKPOINT;
+
   return (
     <Pressable
       onPress={onPress}
-      className={twMerge(
-        "sm:flex-1 flex px-5 py-5 h-24 justify-between rounded-lg cursor-pointer overflow-hidden focus:ring-0.125rem focus:ring-primary-500 dark:focus:ring-primary-900",
-        selected ? "bg-primary-700 dark:bg-primary-200" : "bg-background-50",
-      )}
-      style={{ boxShadow: selected ? shadow.md : undefined }}
+      style={[
+        styles.themeButton,
+        isWide && styles.themeButtonWide,
+        selected
+          ? { backgroundColor: colorValue(mode === "dark" ? "--color-primary-200" : "--color-primary-700") }
+          : { backgroundColor: colorValue("--color-background-50") },
+        { boxShadow: selected ? shadow.md : undefined },
+      ]}
     >
-      <Text className={`font-semibold text-lg ${selected ? "text-white" : ""}`}>{name}</Text>
-      {selected && <Text className={`font-semibold text-sm ${selected ? "text-white" : ""}`}>已启用</Text>}
-      {yuruChara != null && <Image source={yuruChara} className="absolute right-0 -top-16 w-64 h-64 opacity-30" />}
+      <Text style={[styles.themeName, selected && styles.themeTextSelected]}>{name}</Text>
+      {selected && <Text style={[styles.themeStatus, styles.themeTextSelected]}>已启用</Text>}
+      {yuruChara != null && <Image source={yuruChara} style={styles.yuruChara} />}
     </Pressable>
   );
 }
 
 export default function Page() {
   const { colorValue } = useRawThemeValues();
+  const { width } = useWindowDimensions();
+  const isWide = width >= SM_BREAKPOINT;
   const { theme, update, showYuruChara, toggle } = useSettingsStore(
     useShallow(state => ({
       theme: state.theme,
@@ -55,14 +65,14 @@ export default function Page() {
   return (
     <Layout title="外观设置" leftAccessories="BACK_BUTTON">
       <ScrollView>
-        <VStack space="xl" className="p-4">
-          <HStack space="md" className="items-center">
-            <View className="justify-center items-center size-[1.5rem]">
+        <VStack space="xl" style={styles.section}>
+          <HStack space="md" style={styles.sectionHeader}>
+            <View style={styles.sectionIcon}>
               <Icon name={"fa6-solid:paintbrush"} size={20} color={colorValue("--color-typography-700")} />
             </View>
-            <Text className="text-[0.9375rem] font-semibold">App 界面主题</Text>
+            <Text style={styles.sectionTitle}>App 界面主题</Text>
           </HStack>
-          <VStack space="lg" className="sm:flex-row">
+          <VStack space="lg" style={[styles.themeRow, isWide && styles.themeRowWide]}>
             <ThemeButton
               name="默认主题"
               yuruChara={BgCornerClassic}
@@ -95,3 +105,61 @@ export default function Page() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  section: {
+    padding: 16,
+  },
+  sectionHeader: {
+    alignItems: "center",
+  },
+  sectionIcon: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 24,
+    height: 24,
+  },
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  themeRow: {
+    flexDirection: "column",
+  },
+  themeRowWide: {
+    flexDirection: "row",
+  },
+  themeButton: {
+    flex: 0,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    height: 96,
+    justifyContent: "space-between",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  themeButtonWide: {
+    flex: 1,
+  },
+  themeName: {
+    fontWeight: "600",
+    fontSize: 18,
+    lineHeight: 28,
+  },
+  themeStatus: {
+    fontWeight: "600",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  themeTextSelected: {
+    color: "#ffffff",
+  },
+  yuruChara: {
+    position: "absolute",
+    right: 0,
+    top: -64,
+    width: 256,
+    height: 256,
+    opacity: 0.3,
+  },
+});

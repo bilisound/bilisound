@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React from "react";
-import { Platform, ScrollView, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { SettingMenuItem } from "~/components/setting-menu";
 import { Switch } from "~/components/ui/switch";
@@ -21,7 +21,7 @@ function DownloadDescription() {
   const displayList = builtList.filter(e => e.status === 1 || e.status === 0);
 
   return (
-    <Text className="mt-1 ml-9 opacity-60 text-[15px] leading-normal">
+    <Text style={styles.downloadDescription}>
       {displayList.length > 0 ? `${displayList.length} 个任务进行中` : "尚无任务正在进行"}
     </Text>
   );
@@ -29,6 +29,7 @@ function DownloadDescription() {
 
 export default function Page() {
   const edgeInsets = useTabSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const { useLegacyID, downloadNextTrack, filterResourceURL, debugMode, toggle } = useSettingsStore(
     useShallow(state => ({
       useLegacyID: state.useLegacyID,
@@ -92,7 +93,14 @@ export default function Page() {
 
   return (
     <Layout title="设置" edgeInsets={{ ...edgeInsets, bottom: 0 }}>
-      <ScrollView className={"flex-1 web:max-h-[calc(100dvh-192px)] md:web:max-h-[calc(100dvh-64px)]"}>
+      <ScrollView
+        style={[
+          styles.scrollView,
+          Platform.OS === "web" && {
+            maxHeight: (width >= 768 ? "calc(100dvh - 64px)" : "calc(100dvh - 192px)") as unknown as number,
+          },
+        ]}
+      >
         <SettingMenuItem
           key="settings_10010"
           icon={"fa6-solid:link"}
@@ -187,3 +195,16 @@ export default function Page() {
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  downloadDescription: {
+    marginTop: 4,
+    marginLeft: 36,
+    opacity: 0.6,
+    fontSize: 15,
+    lineHeight: 22.5,
+  },
+});
