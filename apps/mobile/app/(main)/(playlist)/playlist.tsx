@@ -339,6 +339,7 @@ export default function Page() {
                       onPress={() => {
                         setSearchQuery("");
                       }}
+                      size="md"
                     >
                       <Icon name="fa6-solid:xmark" size={20} color={colorValue("--color-typography-700")} />
                     </TextFieldAction>
@@ -468,6 +469,7 @@ export default function Page() {
 const styles = StyleSheet.create({
   filterInput: {
     borderRadius: 12,
+    height: 44,
   },
   filterInputText: {
     fontSize: 14,

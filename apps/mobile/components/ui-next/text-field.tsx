@@ -32,6 +32,7 @@ export interface TextFieldActionProps {
   children?: ReactNode;
   disabled?: boolean;
   onPress?: () => void;
+  size?: TextFieldSize;
   textColor?: string;
 }
 
@@ -139,6 +140,7 @@ export function TextFieldAction({
   children,
   disabled,
   onPress,
+  size = "lg",
   textColor,
 }: TextFieldActionProps) {
   const { colorValue } = useUiNextColors();
@@ -153,6 +155,7 @@ export function TextFieldAction({
       onPress={onPress}
       style={({ pressed }) => [
         styles.action,
+        actionSizeStyles[size],
         pressed && !disabled ? { backgroundColor: colorValue("--color-background-100") } : null,
         disabled ? styles.disabledAction : null,
       ]}
@@ -160,11 +163,45 @@ export function TextFieldAction({
       {textAction ? (
         <Text style={[styles.actionText, { color: textColor ?? colorValue("--color-primary-500") }]}>{children}</Text>
       ) : (
-        <View style={styles.iconActionContent}>{children}</View>
+        <View style={[styles.iconActionContent, iconActionContentSizeStyles[size]]}>{children}</View>
       )}
     </Pressable>
   );
 }
+
+const actionSizeStyles = StyleSheet.create({
+  sm: {
+    minHeight: 36,
+  },
+  md: {
+    minHeight: 40,
+  },
+  lg: {
+    minHeight: 44,
+  },
+  xl: {
+    minHeight: 48,
+  },
+});
+
+const iconActionContentSizeStyles = StyleSheet.create({
+  sm: {
+    width: 36,
+    height: 36,
+  },
+  md: {
+    width: 40,
+    height: 40,
+  },
+  lg: {
+    width: 44,
+    height: 44,
+  },
+  xl: {
+    width: 48,
+    height: 48,
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -194,13 +231,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   action: {
-    minHeight: 44,
     alignItems: "center",
     justifyContent: "center",
   },
   iconActionContent: {
-    width: 44,
-    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
