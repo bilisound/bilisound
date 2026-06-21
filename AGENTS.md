@@ -105,6 +105,12 @@ bilisound/
 
 **判断标准**：如果一个命令在正常情况下不会自行退出（如 dev server、watch mode、`tail -f`），就属于「长期运行进程」，必须按上述规则处理。构建命令（`pnpm build`）、lint（`pnpm lint`）等会正常结束的命令不受此限制。
 
+## Agent Temporary Files
+
+- Agent 运行过程中产生的临时截图、快照、日志、pid 文件等统一写入仓库根目录的 `.temp/`。
+- 不要把临时文件写入 `/tmp`，避免 OpenCode 反复请求外部目录访问权限。
+- 使用 `agent-device` 调试移动端时，优先使用项目的 Expo Dev Client（`moe.bilisound.app.dev`），不要使用 Expo Go。Expo Go 不是本项目运行目标，容易出现 SDK / bundle 不匹配，导致验证结论失真。
+
 ## Coding Style & Naming Conventions
 
 - Prettier: 2‑space indent, semicolons, double quotes, trailing commas, width 120.

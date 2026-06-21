@@ -6,27 +6,29 @@
 
 1. 使用 `agent-device` 前，先按 skill 要求确认版本并读取工作流帮助。
 2. 设备可能已被 `bilisound-tablet` 会话占用。遇到 `DEVICE_IN_USE` 时，复用提示中的 session，不要强行抢设备。
-3. 启动 Metro 前先配置端口反向代理：
+3. 不要使用 Expo Go。使用已安装的 Bilisound Expo Dev Client（`moe.bilisound.app.dev`），否则 SDK / bundle 版本可能不匹配。
+4. `agent-device` 产生的临时截图、快照、日志、pid 文件写入仓库根目录 `.temp/`，不要写到 `/tmp`。
+5. 启动 Metro 前先配置端口反向代理：
 
 ```bash
 adb reverse tcp:8081 tcp:8081
 ```
 
-4. 使用 `agent-device metro prepare` 启动或复用 Expo Metro。不要裸跑长期运行的 `expo start`：
+6. 使用 `agent-device metro prepare` 启动或复用 Expo Metro。不要裸跑长期运行的 `expo start`：
 
 ```bash
 EXPO_PUBLIC_ENV=development agent-device metro prepare --project-root apps/mobile --kind expo --public-base-url http://127.0.0.1:8081 --port 8081
 ```
 
-5. 打开 dev app：
+7. 打开 dev app：
 
 ```bash
 agent-device open moe.bilisound.app.dev --platform android --session bilisound-tablet --relaunch
 ```
 
-6. 首屏通常是 Expo Dev Client 服务器列表，不是业务主界面。选择 `http://127.0.0.1:8081` 对应的 `Bilisound Dev`。
-7. 看到 `歌单`、`查询`、`设置` 后，才算进入业务主界面。
-8. 调试结束后停止 `metro prepare` 输出里的 `pid`，并删除它生成的 `apps/mobile/.agent-device/` 临时日志目录。
+8. 首屏通常是 Expo Dev Client 服务器列表，不是业务主界面。选择 `http://127.0.0.1:8081` 对应的 `Bilisound Dev`。
+9. 看到 `歌单`、`查询`、`设置` 后，才算进入业务主界面。
+10. 调试结束后停止 `metro prepare` 输出里的 `pid`，并删除它生成的 `apps/mobile/.agent-device/` 临时日志目录。
 
 ## 常见判断
 

@@ -31,3 +31,5 @@ yarn-error.*
 skills-lock.json
 # npm 包内置 skill 的软链（由 skills-npm 生成）
 **/skills/npm-*
+
+.temp/
