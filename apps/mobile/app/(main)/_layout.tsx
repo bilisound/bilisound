@@ -40,8 +40,8 @@ const TabTriggerChild = ({
   const isSide = width >= breakpoints.sm;
   const isWide = width >= breakpoints.xl;
   const selected = Boolean(isFocused);
-  // HACK: Android does not expose RN's tab role reliably; button stays discoverable.
-  const accessibilityRole = Platform.OS === "android" ? "button" : "tab";
+  // HACK: Native providers do not expose RN's tab role reliably; button stays discoverable.
+  const accessibilityRole = Platform.OS === "web" ? "tab" : "button";
 
   return (
     <Pressable
