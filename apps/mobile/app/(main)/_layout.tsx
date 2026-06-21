@@ -39,6 +39,9 @@ const TabTriggerChild = ({
   const { width } = useWindowSize();
   const isSide = width >= breakpoints.sm;
   const isWide = width >= breakpoints.xl;
+  const selected = Boolean(isFocused);
+  // HACK: Android does not expose RN's tab role reliably; button stays discoverable.
+  const accessibilityRole = Platform.OS === "android" ? "button" : "tab";
 
   return (
     <Pressable
@@ -52,8 +55,9 @@ const TabTriggerChild = ({
       android_ripple={IS_ANDROID_RIPPLE_ENABLED ? { color: colorValue("--color-background-200") } : undefined}
       {...props}
       accessibilityLabel={`${title}标签`}
-      accessibilityRole="tab"
-      accessibilityState={{ selected: isFocused }}
+      accessibilityHint={selected ? "当前标签页" : `切换到${title}标签页`}
+      accessibilityRole={accessibilityRole}
+      accessibilityState={{ selected }}
       ref={ref}
     >
       <Icon
