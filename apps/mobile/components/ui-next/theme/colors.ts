@@ -85,7 +85,10 @@ function rgba(rgb: string, opacity = 1) {
 
 export function useUiNextColors() {
   const themeSetting = useSettingsStore(state => state.theme);
-  const colorScheme = useColorScheme() ?? "light";
+  let colorScheme = useColorScheme() ?? "light";
+  if (colorScheme === "unspecified") {
+    colorScheme = "light";
+  }
   const theme = themeSetting === "red" ? "red" : "classic";
   const palette = textFieldColors[`${theme}_${colorScheme}`];
 
