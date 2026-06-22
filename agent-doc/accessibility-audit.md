@@ -1,12 +1,50 @@
 # Bilisound 移动端可访问性（a11y）审计报告
 
 > 生成时间：2026-06-20
+> 最近复核：2026-06-22（Android 物理设备）
 > 审计范围：`apps/mobile` 设置相关页面、底部导航、通用布局组件
 > 审计方式：基于 agent-device 自动化操作与 React Native accessibility tree 快照的实操验证
 
 ## 总体结论
 
-Bilisound 移动端的可访问性目前**较差**。在自动化验证过程中，大量核心交互无法通过语义化元素定位完成，不得不依赖坐标点击、adb shell 输入以及 deep link 跳转等“旁门左道”。这表明应用对屏幕阅读器、自动化测试工具和辅助技术都不够友好。
+初始审计时，Bilisound 移动端的可访问性**较差**。在自动化验证过程中，大量核心交互无法通过语义化元素定位完成，不得不依赖坐标点击、adb shell 输入以及 deep link 跳转等“旁门左道”。这表明应用当时对屏幕阅读器、自动化测试工具和辅助技术都不够友好。
+
+2026-06-22 在 Android 物理设备上复核后，P0 项已经有明显改善：底部导航、设置列表行、设置开关行都能被 accessibility tree 识别并操作。P1 项仍未完全达标：页面标题/header 语义、页面切换焦点迁移、toast/live region 语义仍需要继续整改。
+
+## 2026-06-22 Android 实机复核
+
+复核环境：
+
+- 设备：Android 物理设备 `23113RKC6C`。
+- App：`moe.bilisound.app.dev`。
+- 工具：`agent-device 0.15.2`。
+- 启动方式：重装当前源码构建的 debug APK 后，通过 Expo Dev Client URL `exp+bilisound-client-mobile://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A8081` 进入业务 UI。
+
+复核前置问题：
+
+- 设备上原有 dev client 打开后出现 RN 红屏：`Exception in native call from JS / requireNonNull`。
+- 日志定位到缺少 `expo.modules.ExpoModulesPackageList`，属于旧 APK / 原生构建状态问题。
+- 使用 JDK 21 环境执行 `./gradlew installDebug` 重新安装 debug APK 后恢复验证。
+
+复核结果：
+
+| 整改项 | 当前状态 | Android 实机证据 |
+| --- | --- | --- |
+| 底部导航可发现性 | 已改善 | 首页 snapshot 能看到 `歌单标签`、`查询标签`、`设置标签` 三个可点节点。 |
+| 底部导航 role / selected | 部分整改 | Android tree 中三项均为 `android.widget.Button`，不是 `tab`；`get attrs` 未暴露 selected 状态。 |
+| 设置列表行 | 已整改 | 设置页 `外观设置，切换应用主题和看板娘显示`、`数据管理，管理离线缓存和数据备份`、`关于 Bilisound，版本 2.3.0` 等行均暴露为 `button`。 |
+| 设置开关行 | 已整改 | `使用 av 号而非 bv 号...`、`自动缓存队列中的曲目...`、`开发者模式...` 等条目暴露为 `android.widget.Switch`。 |
+| 文本输入框直接输入 | 已整改 | 首页查询输入框暴露为 `android.widget.EditText`，可通过 `agent-device fill` 直接输入。 |
+| 文本输入框 label | 部分整改 | 首页查询输入框实际暴露 label/value 为 placeholder `粘贴完整链接或带前缀 ID 至此`，未暴露代码中设置的 `accessibilityLabel="视频链接或 ID"`。 |
+| 页面标题/header | 未完全达标 | 设置页顶部标题未在 snapshot 中出现；关于页可找到 `关于`，但类型为 `android.view.View`，未体现 header 语义。 |
+| 页面切换焦点迁移 | 未发现整改证据 | 从设置页进入关于页后，snapshot 未显示标题 focused，也未观察到页面切换宣告。 |
+| Toast / 动态提示 | 部分可感知但语义弱 | 播放器循环模式 toast 文本如 `使用列表循环` 可被 `wait text` / `find` 捕获，但 attrs 显示为普通 `android.view.View`，未体现 alert/live region 语义。 |
+
+当前优先级判断：
+
+- P0：设置列表和开关语义已基本完成；底部导航仍需决定是否继续追求 Android 上的 `tab` role / selected state，或将 `button` 作为平台折中写入规范。
+- P1：文本输入可直接操作，但 label 暴露不符合预期；页面标题/header、焦点迁移、动态提示语义仍需继续整改。
+- P2：仍未看到 testID / accessibilityLabel 编码规范和自动化 a11y 检测落地。
 
 ## 操作过程中暴露的具体问题
 
