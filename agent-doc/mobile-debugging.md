@@ -8,36 +8,48 @@
 2. 设备可能已被 `bilisound-tablet` 会话占用。遇到 `DEVICE_IN_USE` 时，复用提示中的 session，不要强行抢设备。
 3. 不要使用 Expo Go。使用已安装的 Bilisound Expo Dev Client（`moe.bilisound.app.dev`），否则 SDK / bundle 版本可能不匹配。
 4. `agent-device` 产生的临时截图、快照、日志、pid 文件写入仓库根目录 `.temp/`，不要写到 `/tmp`。
-5. 可用 agent 专用脚本固化 Metro / app 打开流程：
+5. 先检查 Android dev client 是否可能落后于 native 相关提交：
+
+```bash
+pnpm -C apps/mobile run agent:android:doctor
+```
+
+该脚本只读取 adb / git 状态，不会重装 app。若它提示 stale 或 native-sensitive working tree changes，先重装 dev client：
+
+```bash
+pnpm -C apps/mobile exec expo run:android --no-bundler
+```
+
+6. 可用 agent 专用脚本固化 Metro / app 打开流程：
 
 ```bash
 pnpm -C apps/mobile run agent:android:metro
 pnpm -C apps/mobile run agent:android:open
 ```
 
-6. 若手动执行，启动 Metro 前先配置端口反向代理：
+7. 若手动执行，启动 Metro 前先配置端口反向代理：
 
 ```bash
 adb reverse tcp:8081 tcp:8081
 ```
 
-7. 使用 `agent-device metro prepare` 启动或复用 Expo Metro。不要裸跑长期运行的 `expo start`：
+8. 使用 `agent-device metro prepare` 启动或复用 Expo Metro。不要裸跑长期运行的 `expo start`：
 
 ```bash
 EXPO_PUBLIC_ENV=development agent-device metro prepare --project-root apps/mobile --kind expo --public-base-url http://127.0.0.1:8081 --port 8081
 ```
 
-8. 打开 dev app：
+9. 打开 dev app：
 
 ```bash
 agent-device open moe.bilisound.app.dev --platform android --session bilisound-tablet --relaunch
 ```
 
-9. 首屏通常是 Expo Dev Client 服务器列表，不是业务主界面。选择 `http://127.0.0.1:8081` 对应的 `Bilisound Dev`。
-10. 看到 `歌单`、`查询`、`设置` 后，才算进入业务主界面。
-11. 若 `snapshot -i` 为空，或 raw tree 只看到 `ComposeView` / `Tools`，通常是 Expo Dev Client 右上角 `Tools button` 浮层污染了 accessibility tree。打开 Expo dev menu，关闭 `Tools button` 开关，再重新抓 snapshot。
-12. 当前未发现项目级 npm / Expo 配置能在启动时强制关闭 `Tools button`。不要用固定坐标脚本假装自动关闭；该开关属于设备本地 dev menu 状态，先手动关闭一次更可靠。
-13. 调试结束后停止 `metro prepare` 输出里的 `pid`，并删除它生成的 `apps/mobile/.agent-device/` 临时日志目录。
+10. 首屏通常是 Expo Dev Client 服务器列表，不是业务主界面。选择 `http://127.0.0.1:8081` 对应的 `Bilisound Dev`。
+11. 看到 `歌单`、`查询`、`设置` 后，才算进入业务主界面。
+12. 若 `snapshot -i` 为空，或 raw tree 只看到 `ComposeView` / `Tools`，通常是 Expo Dev Client 右上角 `Tools button` 浮层污染了 accessibility tree。打开 Expo dev menu，关闭 `Tools button` 开关，再重新抓 snapshot。
+13. 当前未发现项目级 npm / Expo 配置能在启动时强制关闭 `Tools button`。不要用固定坐标脚本假装自动关闭；该开关属于设备本地 dev menu 状态，先手动关闭一次更可靠。
+14. 调试结束后停止 `metro prepare` 输出里的 `pid`，并删除它生成的 `apps/mobile/.agent-device/` 临时日志目录。
 
 ## 常见判断
 
