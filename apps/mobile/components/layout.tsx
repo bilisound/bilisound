@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { PropsWithChildren, ReactNode, useEffect, useRef } from "react";
+import { AccessibilityInfo, findNodeHandle, InteractionManager, Platform, StyleSheet, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -22,10 +22,42 @@ export function Layout({
   edgeInsets,
   disableContentPadding,
 }: PropsWithChildren<LayoutProps>) {
+  const titleRef = useRef<React.ElementRef<typeof Text>>(null);
+  const titleText = typeof title === "string" ? title : undefined;
   let resultEdgeInsets = useSafeAreaInsets();
   if (edgeInsets) {
     resultEdgeInsets = edgeInsets;
   }
+
+  useEffect(() => {
+    if (!titleText || Platform.OS === "web") {
+      return;
+    }
+
+    let active = true;
+    let interaction: { cancel?: () => void } | undefined;
+    const timeout = setTimeout(() => {
+      interaction = InteractionManager.runAfterInteractions(() => {
+        if (!active) {
+          return;
+        }
+
+        const titleNode = findNodeHandle(titleRef.current);
+        if (!titleNode) {
+          return;
+        }
+
+        AccessibilityInfo.setAccessibilityFocus(titleNode);
+      });
+    }, 300);
+
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+      interaction?.cancel?.();
+    };
+  }, [titleText]);
+
   return (
     <View style={styles.root}>
       <View
@@ -60,7 +92,14 @@ export function Layout({
           ) : null}
           <View>
             {typeof title === "string" ? (
-              <Text accessibilityRole="header" style={styles.title}>
+              <Text
+                ref={titleRef}
+                accessible
+                accessibilityRole="header"
+                accessibilityLabel={title}
+                role="heading"
+                style={styles.title}
+              >
                 {title}
               </Text>
             ) : (
