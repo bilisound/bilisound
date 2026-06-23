@@ -1,7 +1,7 @@
 # Bilisound 移动端可访问性（a11y）审计报告
 
 > 生成时间：2026-06-20
-> 最近复核：2026-06-22（Android 物理设备）
+> 最近复核：2026-06-23（iOS Simulator）
 > 审计范围：`apps/mobile` 设置相关页面、底部导航、通用布局组件
 > 审计方式：基于 agent-device 自动化操作与 React Native accessibility tree 快照的实操验证
 
@@ -9,7 +9,44 @@
 
 初始审计时，Bilisound 移动端的可访问性**较差**。在自动化验证过程中，大量核心交互无法通过语义化元素定位完成，不得不依赖坐标点击、adb shell 输入以及 deep link 跳转等“旁门左道”。这表明应用当时对屏幕阅读器、自动化测试工具和辅助技术都不够友好。
 
-2026-06-22 在 Android 物理设备上复核后，P0 项已经有明显改善：底部导航、设置列表行、设置开关行都能被 accessibility tree 识别并操作。P1 项仍未完全达标：页面标题/header 语义、页面切换焦点迁移、toast/live region 语义仍需要继续整改。
+2026-06-22 在 Android 物理设备上复核后，P0 项已经有明显改善：底部导航、设置列表行、设置开关行都能被 accessibility tree 识别并操作。2026-06-23 在 iOS Simulator 上复核后，P0 项同样基本可用，且 iOS 能暴露底部导航 selected 状态和输入框显式 label。P1 项仍未完全达标：页面标题/header 语义、页面切换焦点迁移、toast/live region 语义仍需要继续整改或补充稳定验证。
+
+## 2026-06-23 iOS Simulator 复核
+
+复核环境：
+
+- 设备：iPhone 17 Pro Simulator，iOS 26.3 runtime。
+- App：`Bilisound Dev` / `moe.bilisound.app.dev`。
+- 工具：`agent-device 0.17.6`。
+- Xcode：Xcode 26.2 (17C52)。
+- 启动方式：本机原无可用 iOS Simulator runtime，通过 `xcodebuild -downloadPlatform iOS` 下载并登记 iOS 26.3.1 Simulator 后，执行 `pnpm -C apps/mobile exec expo run:ios --device "iPhone 17 Pro" --no-bundler` 构建并安装 dev client，再用 Expo Dev Client URL 进入业务 UI。
+
+复核前置问题：
+
+- 初始 `xcrun simctl list runtimes available` / `devices available` 为空，需要下载新的 iOS Simulator runtime。
+- `expo run:ios` 构建、安装成功，但最后激活 Simulator 窗口时触发 `osascript` 权限/进程检查错误；该错误发生在安装后，不影响已安装 app 的后续验证。
+- 使用 `--host localhost` 启动 Metro 时，宿主机 `localhost:8081` 可访问但 `127.0.0.1:8081` 不可访问，iOS dev client 拉取 bundle 时红屏 `Could not connect to development server`。改用 `--host lan` 并通过 `http://192.168.24.214:8081` 打开后进入业务 UI。
+- 进入业务 UI 后出现一次 RN warning overlay：`Uncaught (in promise, id: 0) Error: No track is currently playing`，通过 `agent-device react-native dismiss-overlay` 清理后继续验证。
+
+复核结果：
+
+| 整改项 | 当前状态 | iOS Simulator 证据 |
+| --- | --- | --- |
+| 底部导航可发现性 | 已改善 | 首页 snapshot 能看到 `歌单标签`、`查询标签`、`设置标签` 三个节点，均为 `Button`。 |
+| 底部导航 role / selected | 部分整改 | iOS tree 中三项仍是 `Button`，不是 `tab`；当前项 attrs 可暴露 `selected: true`，如 `查询标签`、`设置标签`。 |
+| 设置列表行 | 已整改 | 设置页 `外观设置，切换应用主题和看板娘显示`、`数据管理，管理离线缓存和数据备份`、`下载管理，尚无任务正在进行`、`关于 Bilisound，版本 2.3.0` 均暴露为 `Button`。 |
+| 设置开关行 | 已整改 | `使用 av 号而非 bv 号...`、`自动缓存队列中的曲目...`、`开发者模式...` 暴露为 `Switch`，attrs 通过 `value` 暴露开关状态。 |
+| 文本输入框直接输入 | 已整改 | 首页查询输入框暴露为 `TextField`，`agent-device fill @e7 "av123"` 可直接输入。 |
+| 文本输入框 label | 已整改（iOS） | 输入前 label 为 `视频链接或 ID`；输入后 attrs 同时暴露 `label: "视频链接或 ID"` 和 `value: "av123"`。这优于 Android 复核时只暴露 placeholder 的情况。 |
+| 页面标题/header | 未完全达标 | 设置页标题 `设置` 暴露为 `Other`；关于页标题 `关于` 暴露为 `StaticText`，未体现 header 语义。 |
+| 页面切换焦点迁移 | 未发现整改证据 | 从设置页进入关于页后，snapshot 未显示标题 focused，也未观察到页面切换宣告。 |
+| Toast / 动态提示 | 未充分验证 | `components/notify-toast.tsx` 中 `Text` 已设置 `role="alert"`、`aria-live="assertive"`、`aria-atomic="true"`，但本次 iOS 实操未稳定触发可观测 toast；不能据此判定已达标。 |
+
+当前优先级判断：
+
+- P0：iOS 上设置列表、开关、底部导航均可被 accessibility tree 识别和操作；底部导航仍需决定是否继续追求跨平台 `tab` role，或将 `Button + selected` 作为平台折中写入规范。
+- P1：iOS 文本输入 label 已达标；页面标题/header、焦点迁移仍未达标；toast/live region 需要补一个稳定可复现路径后再复核。
+- P2：仍未看到 testID / accessibilityLabel 编码规范和自动化 a11y 检测落地。
 
 ## 2026-06-22 Android 实机复核
 
