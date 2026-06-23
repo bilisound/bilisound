@@ -12,6 +12,8 @@
     "build:android": "cross-env NODE_ENV=production tsx ./scripts/run-gradle.mts assembleRelease",
     "build:web": "cross-env NODE_ENV=production expo export --platform web",
     "lint": "eslint --fix .",
+    "agent:android:metro": "adb reverse tcp:8081 tcp:8081 && EXPO_PUBLIC_ENV=development agent-device metro prepare --project-root . --kind expo --public-base-url http://127.0.0.1:8081 --port 8081",
+    "agent:android:open": "agent-device open moe.bilisound.app.dev --platform android --session bilisound-tablet --relaunch",
     "generate-migration": "drizzle-kit generate",
     "generate-license": "generate-license-file --input package.json --output third-party-licenses.txt --overwrite --ci",
     "clean": "tsx ./scripts/clean.mts",

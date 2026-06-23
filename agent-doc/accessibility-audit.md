@@ -1,7 +1,7 @@
 # Bilisound 移动端可访问性（a11y）审计报告
 
 > 生成时间：2026-06-20
-> 最近复核：2026-06-23（iOS Simulator）
+> 最近复核：2026-06-23（Android 真机）
 > 审计范围：`apps/mobile` 设置相关页面、底部导航、通用布局组件
 > 审计方式：基于 agent-device 自动化操作与 React Native accessibility tree 快照的实操验证
 
@@ -9,7 +9,40 @@
 
 初始审计时，Bilisound 移动端的可访问性**较差**。在自动化验证过程中，大量核心交互无法通过语义化元素定位完成，不得不依赖坐标点击、adb shell 输入以及 deep link 跳转等“旁门左道”。这表明应用当时对屏幕阅读器、自动化测试工具和辅助技术都不够友好。
 
-2026-06-22 在 Android 物理设备上复核后，P0 项已经有明显改善：底部导航、设置列表行、设置开关行都能被 accessibility tree 识别并操作。2026-06-23 在 iOS Simulator 上复核后，P0 项同样基本可用，且 iOS 能暴露底部导航 selected 状态和输入框显式 label。P1 项仍未完全达标：页面标题/header 语义、页面切换焦点迁移、toast/live region 语义仍需要继续整改或补充稳定验证。
+2026-06-22 在 Android 物理设备上复核后，P0 项已经有明显改善：底部导航、设置列表行、设置开关行都能被 accessibility tree 识别并操作。2026-06-23 在 iOS Simulator 上复核后，P0 项同样基本可用，且 iOS 能暴露底部导航 selected 状态和输入框显式 label。同日再次用 Android 真机复核后，确认 Expo Dev Client 的 `Tools button` 浮层会导致 accessibility tree 只暴露 dev menu 根节点；关闭该浮层后业务 tree 恢复。P1 项仍未完全达标：页面标题/header 语义、页面切换焦点迁移、toast/live region 语义仍需要继续整改。
+
+## 2026-06-23 Android 真机复核
+
+复核环境：
+
+- 设备：Redmi K30 5G Android 物理设备。
+- App：`moe.bilisound.app.dev`。
+- 工具：`agent-device 0.17.6`。
+- 启动方式：`adb reverse tcp:8081 tcp:8081` 后，使用 `agent-device metro prepare --project-root apps/mobile --kind expo --public-base-url http://127.0.0.1:8081 --port 8081` 启动 Metro，再打开已安装的 Expo Dev Client。
+
+复核前置问题：
+
+- 进入业务 UI 后，Expo Dev Client 右上角的 `Tools button` 浮层会让 Android accessibility tree 只暴露 `ComposeView` / `Tools`，业务内容视觉可见但 snapshot 为空或只剩系统节点。
+- 打开 Expo dev menu，关闭 `Tools button` 后，业务 accessibility tree 恢复可读。后续 Android agent 验证应把关闭该开关作为前置步骤。
+- 页面上出现过 `TypeError: undefined is not a function` 的 RN warning/toast；可 dismiss，但该运行时错误仍建议另行排查，避免干扰后续 a11y 复核。
+
+复核结果：
+
+| 整改项 | 当前状态 | Android 真机证据 |
+| --- | --- | --- |
+| 底部导航可发现性 | 已改善 | 关闭 `Tools button` 后，设置页 snapshot 可见 `歌单标签`、`查询标签`、`设置标签`。 |
+| 底部导航 role / selected | 部分整改 | 三项仍为 `android.widget.Button`；本次 `get attrs` 未看到 selected 状态。 |
+| 设置列表行 | 已整改 | `关于 Bilisound，版本 2.3.0` 等设置行暴露为 `android.widget.Button`，可直接按 label/ref 操作。 |
+| 设置开关行 | 已整改 | `使用 av 号而非 bv 号...` 暴露为 `android.widget.Switch`。 |
+| 页面标题/header | 未完全达标 | 关于页 raw tree 中标题 `关于` 存在，但类型为 `android.view.View`，未体现 header 语义；设置页标题视觉可见但普通 snapshot 不列出标题节点。 |
+| 页面切换焦点迁移 | 未发现整改证据 | 从设置页进入关于页后，未看到标题 focused，也未观察到页面切换宣告。 |
+| Toast / 动态提示 | 部分可感知但语义弱 | 播放器循环按钮可触发 toast，raw tree 捕获到 `使用列表循环`，但类型是普通 `android.view.View`，父容器为 `toastAnimatedContainer`，未体现 alert/live region 语义。 |
+
+当前优先级判断：
+
+- P0：关闭 Expo `Tools button` 后，Android 真机上的底部导航、设置行、开关仍可被 accessibility tree 识别和操作。
+- P1：页面标题/header、页面切换焦点迁移、toast/live region 仍未达标。
+- 工具前置：Android agent 验证必须先关闭 Expo Dev Client 的 `Tools button`，否则会得到误导性的空 snapshot。
 
 ## 2026-06-23 iOS Simulator 复核
 
