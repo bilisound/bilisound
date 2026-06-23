@@ -33,3 +33,4 @@ skills-lock.json
 **/skills/npm-*
 
 .temp/
+.agent-device/
