@@ -8,11 +8,17 @@
 // 安装产物（.claude/skills、.agents/skills、skills-lock.json）均被 gitignore。
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// skills CLI（截至 1.5.12）的缺陷：多 agent「软链接模式」下，它会把 .claude/skills/<name>
+// 软链到 .agents/skills/<name>，但若 .claude 父目录尚不存在则静默跳过——CLI 仍打印
+// “symlink → Claude Code”，实际却什么都没装。fresh checkout / git worktree 里没有 .claude，
+// 于是 Claude Code 一个项目 skill 都拿不到。这里提前把目录建好，绕过该缺陷。
+mkdirSync(join(repoRoot, ".claude", "skills"), { recursive: true });
 
 // 覆盖的 agent。换工具时改这里即可。
 const AGENTS = ["claude-code", "opencode", "codex", "gemini-cli"];
