@@ -84,6 +84,23 @@ apps/server-netlify (独立，无 SDK 依赖)
 
 运行时也通过 `Platform.OS === "web"` 做分支判断。
 
+## Feature 模块 (v3 进行中)
+
+v3 重构正在将耦合的 store/api/business 代码收拢到 `features/` 目录下，以语义边界替代直接 store import。
+
+### features/config (已完成)
+
+`store/settings.ts` 的 facade。UI 通过响应式 hooks 读取配置，business 代码通过 policy readers 读取。只有 `features/config/store.ts` 内部保留对 `~/store/settings` 的直接引用。
+
+```
+features/config/
+  types.ts      — AppearanceConfig, DownloadConfig, ResourceConfig, DiagnosticsConfig
+  store.ts      — wraps useSettingsStore
+  selectors.ts  — useThemeConfig, useShowYuruChara, useSettingsManagement, etc.
+  policies.ts   — shouldFilterResourceURL, isDebugMode, shouldDownloadNextTrack, etc.
+  index.ts      — public API
+```
+
 ## 技术栈速览
 
 ### apps/mobile

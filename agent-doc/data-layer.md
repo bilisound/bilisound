@@ -103,3 +103,16 @@ MMKV 是微信团队开源的高性能 KV 存储，用于简单状态的快速�
 | playback-speed | `playback-speed.ts` | 播放速度偏好                |
 
 Zustand store 可通过 `storage/zustand.ts` 的 MMKV 中间件持久化（需要显式配置）。
+
+### Config Facade (features/config)
+
+`store/settings.ts` 已通过 `features/config/` 提供语义化访问边界。消费者不应直接 import `useSettingsStore`，应使用 config 模块：
+
+| 层级         | 用途             | API 示例                                                 |
+| ------------ | ---------------- | -------------------------------------------------------- |
+| 类型         | 语义化 config    | `AppearanceConfig`, `DownloadConfig`, `ResourceConfig`   |
+| Reactive hook | UI 响应式读取   | `useThemeConfig()`, `useShowYuruChara()`, `useSettingsManagement()` |
+| Policy reader | Business 非响应式读取 | `shouldFilterResourceURL()`, `isDebugMode()`, `shouldDownloadNextTrack()` |
+| Store helper  | 初始化/写入     | `rehydrateConfig()`, `toggleConfig()`, `updateConfig()`  |
+
+持久化 key 仍为 `settings-store`，底层仍为 `store/settings.ts` 的 Zustand persist。

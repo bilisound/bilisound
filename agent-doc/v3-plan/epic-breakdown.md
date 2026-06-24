@@ -68,6 +68,13 @@ DiagnosticsConfig:
   debugMode
 ```
 
+Status:
+
+- [x] `features/config/` facade created with types, selectors, policies
+- [x] All 16 consumers migrated from `useSettingsStore` to `features/config`
+- [x] Persisted key `settings-store` unchanged, no data migration needed
+- [ ] Future: consider moving `store/settings.ts` into `features/config/` internals
+
 ## Epic 3: Bilibili Data Boundary
 
 Scope:
