@@ -133,27 +133,48 @@ Recommended staged approach:
 
 If storage keys are split later, add an explicit migration from `settings-store` into new keys.
 
-## Consumers to Migrate
+## Implementation Status
 
-Known direct consumers include:
+**Facade created (Phase 1 complete):**
 
 ```txt
-apps/mobile/app/(main)/settings.tsx
-apps/mobile/app/settings/theme.tsx
-apps/mobile/app/(main)/_layout.tsx
-apps/mobile/app/(main)/(playlist)/playlist.tsx
-apps/mobile/app/download-web.tsx
-apps/mobile/components/ui/gluestack-ui-provider/index.tsx
-apps/mobile/components/ui/gluestack-ui-provider/index.web.tsx
-apps/mobile/components/yuru-chara.tsx
-apps/mobile/components/video-detail/MetaData.tsx
-apps/mobile/components/video-detail/PageMenu.tsx
-apps/mobile/business/download.ts
-apps/mobile/business/playlist/handler/cache.ts
-apps/mobile/business/playlist/handler/track-operations.ts
-apps/mobile/hooks/useDownloadMenuItem.ts
-apps/mobile/utils/init.ts
-apps/mobile/utils/init.web.ts
+features/config/
+  types.ts      — AppearanceConfig, DownloadConfig, ResourceConfig, DiagnosticsConfig
+  store.ts      — wraps useSettingsStore, exposes getConfigState/updateConfig/toggleConfig/rehydrateConfig
+  selectors.ts  — reactive hooks: useSettingsManagement, useAppearanceConfig, useThemeConfig, etc.
+  policies.ts   — non-reactive readers: shouldFilterResourceURL, shouldUseLegacyID, isDebugMode, etc.
+  index.ts      — public API barrel
+```
+
+**Consumers migrated (Phase 2 complete):**
+
+All 16 known consumers now import from `~/features/config` instead of `~/store/settings`.
+Only `features/config/store.ts` retains the direct `~/store/settings` import.
+
+Persisted key `settings-store` is unchanged. No data migration needed.
+
+## Consumers to Migrate
+
+All consumers below have been migrated to `~/features/config`:
+
+```txt
+apps/mobile/app/(main)/settings.tsx          → useSettingsManagement
+apps/mobile/app/settings/theme.tsx           → useThemeConfig
+apps/mobile/app/(main)/_layout.tsx           → useShowYuruChara
+apps/mobile/app/(main)/(playlist)/playlist.tsx → usePlaylistViewConfig
+apps/mobile/app/download-web.tsx             → shouldUseLegacyID (policy)
+apps/mobile/components/ui/gluestack-ui-provider/index.tsx → useThemeName
+apps/mobile/components/ui/gluestack-ui-provider/index.web.tsx → useThemeName
+apps/mobile/components/yuru-chara.tsx        → useThemeName
+apps/mobile/components/video-detail/MetaData.tsx → shouldUseLegacyID (policy)
+apps/mobile/components/video-detail/PageMenu.tsx → shouldUseLegacyID (policy)
+apps/mobile/components/ui-next/theme/colors.ts → useThemeName
+apps/mobile/business/download.ts             → shouldFilterResourceURL (policy)
+apps/mobile/business/playlist/handler/cache.ts → shouldDownloadNextTrack (policy)
+apps/mobile/business/playlist/handler/track-operations.ts → shouldFilterResourceURL (policy)
+apps/mobile/hooks/useDownloadMenuItem.ts     → shouldUseLegacyID (policy)
+apps/mobile/utils/init.ts                    → rehydrateConfig, isDebugMode
+apps/mobile/utils/init.web.ts                → rehydrateConfig, isDebugMode
 ```
 
 ## Open Questions

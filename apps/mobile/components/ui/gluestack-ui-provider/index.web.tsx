@@ -6,10 +6,10 @@ import React from "react";
 import { config, ConfigName, parsedConfig } from "./config";
 import { ThemeValueProvider } from "./theme";
 
-import useSettingsStore from "~/store/settings";
+import { useThemeName } from "~/features/config";
 
 export function GluestackUIProvider({ mode = "light", ...props }: { mode?: "light" | "dark"; children?: any }) {
-  const theme = useSettingsStore(state => state.theme);
+  const theme = useThemeName();
 
   const themeName = theme + "_" + mode;
 

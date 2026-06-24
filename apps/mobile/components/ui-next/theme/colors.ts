@@ -1,6 +1,6 @@
 import { useColorScheme } from "react-native";
 
-import useSettingsStore from "~/store/settings";
+import { useThemeName } from "~/features/config";
 
 type ThemeName = "classic" | "red";
 type ColorSchemeName = "light" | "dark";
@@ -84,7 +84,7 @@ function rgba(rgb: string, opacity = 1) {
 }
 
 export function useUiNextColors() {
-  const themeSetting = useSettingsStore(state => state.theme);
+  const themeSetting = useThemeName();
   let colorScheme = useColorScheme() ?? "light";
   if (colorScheme === "unspecified") {
     colorScheme = "light";

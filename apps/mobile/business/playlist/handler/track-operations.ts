@@ -14,7 +14,7 @@ import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
 import { getPlaylistDetail } from "~/storage/sqlite/playlist";
 import { invalidateOnQueueStatus, PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
-import useSettingsStore from "~/store/settings";
+import { shouldFilterResourceURL } from "~/features/config";
 import useErrorMessageStore from "~/store/error-message";
 
 import { playlistToTracks } from "./track-data";
@@ -56,7 +56,7 @@ export async function addTrackFromDetail(id: string, episode: number) {
   }
 
   const data = await getBilisoundMetadata({ id });
-  const url = await getBilisoundResourceUrl(id, episode, useSettingsStore.getState().filterResourceURL);
+  const url = await getBilisoundResourceUrl(id, episode, shouldFilterResourceURL());
   const currentEpisode = data.pages.find(e => e.page === episode);
   if (!currentEpisode) {
     throw new Error("指定视频没有指定的分 P 信息");
@@ -115,7 +115,7 @@ export async function refreshTrack(trackData: TrackData) {
 
   // 拉取最新的 URL
   log.info("开始拉取最新的 URL");
-  const url = await getBilisoundResourceUrl(id, episode, useSettingsStore.getState().filterResourceURL);
+  const url = await getBilisoundResourceUrl(id, episode, shouldFilterResourceURL());
   trackData.uri = url.url;
   trackData.extendedData!.expireAt = new Date().getTime() + URI_EXPIRE_DURATION;
   trackData.mimeType = "video/mp4";

@@ -20,7 +20,7 @@ import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
 import { formatDate } from "~/utils/datetime";
 import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
 import { useWindowSize } from "~/hooks/useWindowSize";
-import useSettingsStore from "~/store/settings";
+import { shouldUseLegacyID } from "~/features/config";
 import log from "~/utils/logger";
 import { handleAddPlaylist } from "./helpers";
 
@@ -61,7 +61,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
     }
     if (data.pages.length === 1) {
       globalThis.window.open(
-        getBilisoundResourceUrlOnline(data.bvid, 1, useSettingsStore.getState().useLegacyID ? "av" : "bv").url,
+        getBilisoundResourceUrlOnline(data.bvid, 1, shouldUseLegacyID() ? "av" : "bv").url,
       );
       return;
     }

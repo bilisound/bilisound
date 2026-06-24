@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { breakpoints } from "~/constants/styles";
 import { simpleCopy } from "~/utils/misc";
 import { YuruChara } from "~/components/yuru-chara";
-import useSettingsStore from "~/store/settings";
+import { useShowYuruChara } from "~/features/config";
 import { toggle, useCurrentTrack, useIsPlaying, usePlaybackState } from "@bilisound/player";
 import { Image } from "expo-image";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
@@ -289,7 +289,7 @@ export default function TabLayout() {
   const edgeInsets = useSafeAreaInsets();
   const edgeInsetsTab = simpleCopy(edgeInsets);
   const windowDimensions = useWindowSize();
-  const showYuruChara = useSettingsStore(state => state.showYuruChara);
+  const showYuruChara = useShowYuruChara();
   const { colorValue } = useRawThemeValues();
   const isSideTabList = windowDimensions.width >= breakpoints.sm;
   const isWide = windowDimensions.width >= breakpoints.xl;

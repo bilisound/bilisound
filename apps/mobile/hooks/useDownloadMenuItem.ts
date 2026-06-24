@@ -6,7 +6,7 @@ import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import Toast from "react-native-toast-message";
 import { useCacheExists } from "~/storage/cache-status";
 import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
-import useSettingsStore from "~/store/settings";
+import { shouldUseLegacyID } from "~/features/config";
 import { bv2av } from "~/utils/vendors/av-bv";
 import { getCacheAudioPath, saveAudioFile, uriToPath } from "~/utils/file";
 import log from "~/utils/logger";
@@ -71,7 +71,7 @@ export function useDownloadMenuItem(
           getBilisoundResourceUrlOnline(
             currentTrack.extendedData.id,
             currentTrack.extendedData.episode,
-            useSettingsStore.getState().useLegacyID ? "av" : "bv",
+            shouldUseLegacyID() ? "av" : "bv",
           ).url,
         );
         closeCallback();
@@ -108,7 +108,7 @@ export function useDownloadMenuItem(
         closeCallback();
 
         const { id, episode } = currentTrack.extendedData;
-        const { useLegacyID } = useSettingsStore.getState();
+        const { useLegacyID } = { useLegacyID: shouldUseLegacyID() };
         const fileName = `[${useLegacyID ? "av" + bv2av(id) : id}] [P${episode}] ${currentTrack.title}.m4a`;
         try {
           await saveAudioFile(uriToPath(getCacheAudioPath(id, episode, false)), fileName);

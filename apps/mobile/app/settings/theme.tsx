@@ -7,8 +7,7 @@ import { HStack } from "~/components/ui/hstack";
 import { Switch } from "~/components/ui/switch";
 import { Text } from "~/components/ui/text";
 import { VStack } from "~/components/ui/vstack";
-import { useShallow } from "zustand/shallow";
-import useSettingsStore from "~/store/settings";
+import { useThemeConfig } from "~/features/config";
 import { Layout } from "~/components/layout";
 import { Icon } from "~/components/icon";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
@@ -57,14 +56,7 @@ export default function Page() {
   const { colorValue } = useRawThemeValues();
   const { width } = useWindowDimensions();
   const isWide = width >= SM_BREAKPOINT;
-  const { theme, update, showYuruChara, toggle } = useSettingsStore(
-    useShallow(state => ({
-      theme: state.theme,
-      update: state.update,
-      showYuruChara: state.showYuruChara,
-      toggle: state.toggle,
-    })),
-  );
+  const { theme, update, showYuruChara, toggle } = useThemeConfig();
 
   return (
     <Layout title="外观设置" leftAccessories="BACK_BUTTON">

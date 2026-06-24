@@ -6,7 +6,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { deleteCacheStatus } from "~/storage/cache-status";
 import { PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
-import useSettingsStore from "~/store/settings";
+import { shouldDownloadNextTrack } from "~/features/config";
 import useErrorMessageStore from "~/store/error-message";
 import log from "~/utils/logger";
 import { downloadResourceNow } from "~/business/download";
@@ -20,7 +20,7 @@ export async function saveCurrentAndNextTrack() {
   if (Platform.OS === "web") {
     return;
   }
-  if (!useSettingsStore.getState().downloadNextTrack) {
+  if (!shouldDownloadNextTrack()) {
     return;
   }
   const tracks = await getTracks();

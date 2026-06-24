@@ -18,7 +18,7 @@ import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu";
 import { getImageProxyUrl } from "~/business/constant-helper";
 import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
-import useSettingsStore from "~/store/settings";
+import { shouldUseLegacyID } from "~/features/config";
 
 export type PageMenuAction = "addPlaylist";
 
@@ -57,7 +57,7 @@ export function PageMenu({ data, onAction }: PageMenuProps) {
         }
         if (data.pages.length === 1) {
           globalThis.window.open(
-            getBilisoundResourceUrlOnline(data.bvid, 1, useSettingsStore.getState().useLegacyID ? "av" : "bv").url,
+            getBilisoundResourceUrlOnline(data.bvid, 1, shouldUseLegacyID() ? "av" : "bv").url,
           );
           return;
         }
