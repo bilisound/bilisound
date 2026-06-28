@@ -2,7 +2,6 @@
 
 /**
  * Extract SVG icons from @iconify-json packages
- * Run with: bun scripts/extract-icons.ts
  */
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
@@ -57,6 +56,8 @@ const iconsToExtract = [
   "fa6-solid:award",
   "fa6-solid:circle-stop",
   "fa6-solid:face-kiss-wink-heart",
+  "fa6-solid:arrows-up-down-left-right",
+  "fa6-solid:rotate-left",
 
   // ion icons
   "ion:checkmark-circle",

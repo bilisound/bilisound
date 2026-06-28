@@ -21,8 +21,10 @@ import Toast from "react-native-toast-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { refreshCurrentTrack, saveCurrentAndNextTrack, saveTrackData } from "~/business/playlist/handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { PortalHost } from "@gorhom/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ErrorToastHost } from "~/components/error-toast-host";
+import { EDITOR_MASCOT_PORTAL_HOST } from "~/features/theme/components/editor-mascot-background";
 import CheckUpdateDialog from "~/components/check-update-dialog";
 import { checkLatestVersion, downloadApk } from "~/business/check-release";
 import { VERSION } from "~/constants/releasing";
@@ -150,6 +152,7 @@ export default function RootLayout() {
               <ErrorToastHost />
               <CheckUpdate />
               <Toast config={toastConfig} topOffset={edgeInsets.top} />
+              <PortalHost name={EDITOR_MASCOT_PORTAL_HOST} />
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
         </ThemeProvider>

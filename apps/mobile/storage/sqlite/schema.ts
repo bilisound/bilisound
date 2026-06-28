@@ -31,6 +31,16 @@ export const playlistDetail = sqliteTable("playlist_detail", {
   extendedData: text("extended_data"),
 });
 
+export const themeProfile = sqliteTable("theme_profile", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  createdAt: integer("created_at").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+  paletteJson: text("palette_json").notNull(),
+  yuruCharaJson: text("yuru_chara_json"),
+  imageAssetId: text("image_asset_id"),
+});
+
 export const playlistMetaInsertSchema = createInsertSchema(playlistMeta);
 
 export const playlistDetailInsertSchema = createInsertSchema(playlistDetail, {
@@ -52,5 +62,9 @@ export type PlaylistDetail = InferSelectModel<typeof playlistDetail>;
 export type PlaylistMetaInsert = InferInsertModel<typeof playlistMeta>;
 
 export type PlaylistDetailInsert = InferInsertModel<typeof playlistDetail>;
+
+export type ThemeProfile = InferSelectModel<typeof themeProfile>;
+
+export type ThemeProfileInsert = InferInsertModel<typeof themeProfile>;
 
 export type PlaylistImport = z.infer<typeof playlistImportSchema>;
