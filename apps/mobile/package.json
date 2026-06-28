@@ -1,7 +1,7 @@
 {
   "name": "@bilisound/mobile",
   "main": "expo-router/entry",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "scripts": {
     "start": "cross-env NODE_ENV=development expo start -c --dev-client",
     "android": "cross-env NODE_ENV=development expo run:android",
