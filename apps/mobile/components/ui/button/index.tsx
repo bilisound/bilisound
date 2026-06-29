@@ -17,6 +17,8 @@ import {
   buttonMonIconInternalStyle,
 } from "./styles";
 import { Icon } from "~/components/icon";
+import { createAndroidRipple, getButtonAndroidRippleColor } from "~/components/ui/android-ripple";
+import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
 const SCOPE = "BUTTON";
@@ -49,14 +51,26 @@ type IButtonProps = Omit<React.ComponentPropsWithoutRef<typeof UIButton>, "conte
 
 const Button = React.forwardRef<React.ElementRef<typeof UIButton>, IButtonProps>(
   (
-    { className, variant = "solid", size = "md", action = "primary", icon = false, disabled = false, ...props },
+    {
+      className,
+      variant = "solid",
+      size = "md",
+      action = "primary",
+      icon = false,
+      disabled = false,
+      android_ripple,
+      ...props
+    },
     ref,
   ) => {
+    const { colorValue } = useRawThemeValues();
+
     return (
       <UIButton
         ref={ref}
         {...props}
         disabled={disabled}
+        android_ripple={android_ripple ?? createAndroidRipple(colorValue, getButtonAndroidRippleColor(variant, action))}
         className={buttonStyle({ variant, size, action, icon, disabled, class: className })}
         context={{ variant, size, action }}
       />

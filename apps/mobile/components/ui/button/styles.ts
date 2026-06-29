@@ -2,50 +2,51 @@ import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
 const cx = (...classes: string[]) => classes.filter(Boolean).join(" ");
-
-const baseRippleClass = "{}-[android_ripple.color]/color:color-background-100";
-const solidRippleClasses = {
-  primary: "{}-[android_ripple.color]/color:color-primary-700",
-  secondary: "{}-[android_ripple.color]/color:color-secondary-700",
-  positive: "{}-[android_ripple.color]/color:color-success-700",
-  negative: "{}-[android_ripple.color]/color:color-error-700",
-};
-const surfaceRippleClasses = {
-  primary: "{}-[android_ripple.color]/color:color-primary-100",
-  secondary: "{}-[android_ripple.color]/color:color-secondary-100",
-  positive: "{}-[android_ripple.color]/color:color-positive-100",
-  negative: "{}-[android_ripple.color]/color:color-negative-100",
-};
+const pressFeedback = (classes: string) => (!IS_ANDROID_RIPPLE_ENABLED ? classes : "");
 
 export const buttonStyle = tva({
-  base: cx(
-    "group/button rounded-lg bg-primary-500 flex-row items-center justify-center data-[focus-visible=true]:web:outline-none data-[focus-visible=true]:web:ring-2 data-[disabled=true]:opacity-40 gap-2",
-    IS_ANDROID_RIPPLE_ENABLED ? baseRippleClass : "",
-  ),
+  base: "group/button rounded-lg bg-primary-500 flex-row items-center justify-center data-[focus-visible=true]:web:outline-none data-[focus-visible=true]:web:ring-2 data-[disabled=true]:opacity-40 gap-2",
   variants: {
     action: {
-      primary:
-        "bg-primary-500 data-[hover=true]:bg-primary-600 data-[active=true]:bg-primary-700 border-primary-300 data-[hover=true]:border-primary-400 data-[active=true]:border-primary-500 data-[focus-visible=true]:web:ring-indicator-info",
-      secondary:
-        "bg-secondary-500 border-secondary-300 data-[hover=true]:bg-secondary-600 data-[hover=true]:border-secondary-400 data-[active=true]:bg-secondary-700 data-[active=true]:border-secondary-700 data-[focus-visible=true]:web:ring-indicator-info",
-      positive:
-        "bg-success-500 border-success-300 data-[hover=true]:bg-success-600 data-[hover=true]:border-success-400 data-[active=true]:bg-success-700 data-[active=true]:border-success-500 data-[focus-visible=true]:web:ring-indicator-info",
-      negative:
-        "bg-error-500 border-error-300 data-[hover=true]:bg-error-600 data-[hover=true]:border-error-400 data-[active=true]:bg-error-700 data-[active=true]:border-error-500 data-[focus-visible=true]:web:ring-indicator-info",
-      default: "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
+      primary: cx(
+        "bg-primary-500 border-primary-300 data-[focus-visible=true]:web:ring-indicator-info",
+        pressFeedback(
+          "data-[hover=true]:bg-primary-600 data-[active=true]:bg-primary-700 data-[hover=true]:border-primary-400 data-[active=true]:border-primary-500",
+        ),
+      ),
+      secondary: cx(
+        "bg-secondary-500 border-secondary-300 data-[focus-visible=true]:web:ring-indicator-info",
+        pressFeedback(
+          "data-[hover=true]:bg-secondary-600 data-[hover=true]:border-secondary-400 data-[active=true]:bg-secondary-700 data-[active=true]:border-secondary-700",
+        ),
+      ),
+      positive: cx(
+        "bg-success-500 border-success-300 data-[focus-visible=true]:web:ring-indicator-info",
+        pressFeedback(
+          "data-[hover=true]:bg-success-600 data-[hover=true]:border-success-400 data-[active=true]:bg-success-700 data-[active=true]:border-success-500",
+        ),
+      ),
+      negative: cx(
+        "bg-error-500 border-error-300 data-[focus-visible=true]:web:ring-indicator-info",
+        pressFeedback(
+          "data-[hover=true]:bg-error-600 data-[hover=true]:border-error-400 data-[active=true]:bg-error-700 data-[active=true]:border-error-500",
+        ),
+      ),
+      default: cx(
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent"),
+      ),
     },
     variant: {
       link: "px-0",
       outline: cx(
         "bg-transparent border",
-        !IS_ANDROID_RIPPLE_ENABLED ? "data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent" : "",
-        IS_ANDROID_RIPPLE_ENABLED ? baseRippleClass : "",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent"),
       ),
       solid: "",
       ghost: cx(
         "bg-transparent",
-        !IS_ANDROID_RIPPLE_ENABLED ? "data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent" : "",
-        IS_ANDROID_RIPPLE_ENABLED ? baseRippleClass : "",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent"),
       ),
     },
     size: {
@@ -93,106 +94,98 @@ export const buttonStyle = tva({
     {
       action: "primary",
       variant: "link",
-      class: "px-0 bg-transparent data-[hover=true]:bg-transparent data-[active=true]:bg-transparent",
+      class: cx(
+        "px-0 bg-transparent",
+        pressFeedback("data-[hover=true]:bg-transparent data-[active=true]:bg-transparent"),
+      ),
     },
     {
       action: "secondary",
       variant: "link",
-      class: "px-0 bg-transparent data-[hover=true]:bg-transparent data-[active=true]:bg-transparent",
+      class: cx(
+        "px-0 bg-transparent",
+        pressFeedback("data-[hover=true]:bg-transparent data-[active=true]:bg-transparent"),
+      ),
     },
     {
       action: "positive",
       variant: "link",
-      class: "px-0 bg-transparent data-[hover=true]:bg-transparent data-[active=true]:bg-transparent",
+      class: cx(
+        "px-0 bg-transparent",
+        pressFeedback("data-[hover=true]:bg-transparent data-[active=true]:bg-transparent"),
+      ),
     },
     {
       action: "negative",
       variant: "link",
-      class: "px-0 bg-transparent data-[hover=true]:bg-transparent data-[active=true]:bg-transparent",
+      class: cx(
+        "px-0 bg-transparent",
+        pressFeedback("data-[hover=true]:bg-transparent data-[active=true]:bg-transparent"),
+      ),
     },
     {
       action: "primary",
       variant: "outline",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.primary : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent"),
       ),
     },
     {
       action: "secondary",
       variant: "outline",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.secondary : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent"),
       ),
     },
     {
       action: "positive",
       variant: "outline",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.positive : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent"),
       ),
     },
     {
       action: "negative",
       variant: "outline",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.negative : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-transparent"),
       ),
     },
     {
       action: "primary",
       variant: "ghost",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.primary : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100"),
       ),
     },
     {
       action: "secondary",
       variant: "ghost",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.secondary : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100"),
       ),
     },
     {
       action: "positive",
       variant: "ghost",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.positive : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100"),
       ),
     },
     {
       action: "negative",
       variant: "ghost",
       class: cx(
-        "bg-transparent data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100",
-        IS_ANDROID_RIPPLE_ENABLED ? surfaceRippleClasses.negative : "",
+        "bg-transparent",
+        pressFeedback("data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100"),
       ),
-    },
-    {
-      action: "primary",
-      variant: "solid",
-      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.primary : "",
-    },
-    {
-      action: "secondary",
-      variant: "solid",
-      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.secondary : "",
-    },
-    {
-      action: "positive",
-      variant: "solid",
-      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.positive : "",
-    },
-    {
-      action: "negative",
-      variant: "solid",
-      class: IS_ANDROID_RIPPLE_ENABLED ? solidRippleClasses.negative : "",
     },
   ],
 });
