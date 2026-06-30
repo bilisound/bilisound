@@ -1,10 +1,13 @@
-import { Platform } from "react-native";
-
-export function rem2px(value: number) {
-  // > React Native's <Text /> renders with a fontSize: 14, while the web's default is 16px.
-  // > For consistency, NativeWind uses an rem value of 16 on web and 14 on native.
-  if (Platform.OS === "web") {
-    return value * 16;
+export function cleanObject<T extends object>(value: T | undefined | null): T | undefined | null {
+  if (!value) {
+    return value;
   }
-  return value * 14;
+
+  const result = { ...value };
+  for (const key in result) {
+    if (result[key] === null || result[key] === undefined) {
+      delete (result as Record<string, unknown>)[key];
+    }
+  }
+  return result;
 }

@@ -6,7 +6,7 @@ type ThemeName = "classic" | "red";
 type ColorSchemeName = "light" | "dark";
 type ThemeKey = `${ThemeName}_${ColorSchemeName}`;
 
-type TextFieldColorKey =
+type UiNextColorKey =
   | "--color-accent-500"
   | "--color-error-700"
   | "--color-primary-500"
@@ -20,7 +20,7 @@ type TextFieldColorKey =
   | "--color-background-100"
   | "--color-background-300";
 
-const textFieldColors: Record<ThemeKey, Record<TextFieldColorKey, string>> = {
+const textFieldColors: Record<ThemeKey, Record<UiNextColorKey, string>> = {
   classic_light: {
     "--color-accent-500": "59 130 246",
     "--color-error-700": "185 28 28",
@@ -93,6 +93,6 @@ export function useUiNextColors() {
   const palette = textFieldColors[`${theme}_${colorScheme}`];
 
   return {
-    colorValue: (color: TextFieldColorKey, opacity = 1) => rgba(palette[color], opacity),
+    colorValue: (color: UiNextColorKey, opacity = 1) => rgba(palette[color], opacity),
   };
 }
