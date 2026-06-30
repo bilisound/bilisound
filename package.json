@@ -5,7 +5,7 @@
     "build": "turbo build --cache-dir .turbo/cache",
     "dev": "turbo dev --cache-dir .turbo/cache",
     "lint": "turbo lint --cache-dir .turbo/cache",
-    "clean": "turbo clean",
+    "cleanup": "turbo cleanup",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "postinstall": "pnpm run build",
     "prepare": "node ./scripts/install-skills.mjs",

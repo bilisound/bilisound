@@ -17,7 +17,7 @@
     "agent:android:open": "agent-device open moe.bilisound.app.dev --platform android --session bilisound-tablet --relaunch",
     "generate-migration": "drizzle-kit generate",
     "generate-license": "generate-license-file --input package.json --output third-party-licenses.txt --overwrite --ci",
-    "clean": "tsx ./scripts/clean.mts",
+    "cleanup": "tsx ./scripts/clean.mts",
     "open:ios": "xed ios",
     "open:android": "open -a \"Android Studio\" android",
     "prebuild": "cross-env NODE_ENV=development expo prebuild",
