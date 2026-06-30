@@ -2,13 +2,13 @@ packages:
   - "apps/*"
   - "packages/*"
 catalog:
-  '@cloudflare/workers-types': ^4.20260118.0
-  '@netlify/blobs': ^10.5.0
-  '@netlify/functions': ^5.1.2
-  '@types/jest': ^29.5.14
-  '@types/node': ^24.10.9
-  '@types/node-fetch': ^2.6.13
-  '@types/react': ~19.2.14
+  "@cloudflare/workers-types": ^4.20260118.0
+  "@netlify/blobs": ^10.5.0
+  "@netlify/functions": ^5.1.2
+  "@types/jest": ^29.5.14
+  "@types/node": ^24.10.9
+  "@types/node-fetch": ^2.6.13
+  "@types/react": ~19.2.14
   axios: ^1.7.9
   expo: ~56.0.12
   expo-module-scripts: 56.0.3
@@ -22,7 +22,7 @@ catalog:
   typescript: ~5.9.3
   wrangler: ^4.59.2
 allowBuilds:
-  '@parcel/watcher': true
+  "@parcel/watcher": true
   core-js: true
   esbuild: true
   msgpackr-extract: true

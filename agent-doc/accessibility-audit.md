@@ -28,15 +28,15 @@
 
 复核结果：
 
-| 整改项 | 当前状态 | Android 真机证据 |
-| --- | --- | --- |
-| 底部导航可发现性 | 已改善 | 关闭 `Tools button` 后，设置页 snapshot 可见 `歌单标签`、`查询标签`、`设置标签`。 |
-| 底部导航 role / selected | 部分整改 | 三项仍为 `android.widget.Button`；本次 `get attrs` 未看到 selected 状态。 |
-| 设置列表行 | 已整改 | `关于 Bilisound，版本 2.3.0` 等设置行暴露为 `android.widget.Button`，可直接按 label/ref 操作。 |
-| 设置开关行 | 已整改 | `使用 av 号而非 bv 号...` 暴露为 `android.widget.Switch`。 |
-| 页面标题/header | 未完全达标 | 关于页 raw tree 中标题 `关于` 存在，但类型为 `android.view.View`，未体现 header 语义；设置页标题视觉可见但普通 snapshot 不列出标题节点。 |
-| 页面切换焦点迁移 | 未发现整改证据 | 从设置页进入关于页后，未看到标题 focused，也未观察到页面切换宣告。 |
-| Toast / 动态提示 | 部分可感知但语义弱 | 播放器循环按钮可触发 toast，raw tree 捕获到 `使用列表循环`，但类型是普通 `android.view.View`，父容器为 `toastAnimatedContainer`，未体现 alert/live region 语义。 |
+| 整改项                   | 当前状态           | Android 真机证据                                                                                                                                                 |
+| ------------------------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 底部导航可发现性         | 已改善             | 关闭 `Tools button` 后，设置页 snapshot 可见 `歌单标签`、`查询标签`、`设置标签`。                                                                                |
+| 底部导航 role / selected | 部分整改           | 三项仍为 `android.widget.Button`；本次 `get attrs` 未看到 selected 状态。                                                                                        |
+| 设置列表行               | 已整改             | `关于 Bilisound，版本 2.3.0` 等设置行暴露为 `android.widget.Button`，可直接按 label/ref 操作。                                                                   |
+| 设置开关行               | 已整改             | `使用 av 号而非 bv 号...` 暴露为 `android.widget.Switch`。                                                                                                       |
+| 页面标题/header          | 未完全达标         | 关于页 raw tree 中标题 `关于` 存在，但类型为 `android.view.View`，未体现 header 语义；设置页标题视觉可见但普通 snapshot 不列出标题节点。                         |
+| 页面切换焦点迁移         | 未发现整改证据     | 从设置页进入关于页后，未看到标题 focused，也未观察到页面切换宣告。                                                                                               |
+| Toast / 动态提示         | 部分可感知但语义弱 | 播放器循环按钮可触发 toast，raw tree 捕获到 `使用列表循环`，但类型是普通 `android.view.View`，父容器为 `toastAnimatedContainer`，未体现 alert/live region 语义。 |
 
 当前优先级判断：
 
@@ -63,17 +63,17 @@
 
 复核结果：
 
-| 整改项 | 当前状态 | iOS Simulator 证据 |
-| --- | --- | --- |
-| 底部导航可发现性 | 已改善 | 首页 snapshot 能看到 `歌单标签`、`查询标签`、`设置标签` 三个节点，均为 `Button`。 |
-| 底部导航 role / selected | 部分整改 | iOS tree 中三项仍是 `Button`，不是 `tab`；当前项 attrs 可暴露 `selected: true`，如 `查询标签`、`设置标签`。 |
-| 设置列表行 | 已整改 | 设置页 `外观设置，切换应用主题和看板娘显示`、`数据管理，管理离线缓存和数据备份`、`下载管理，尚无任务正在进行`、`关于 Bilisound，版本 2.3.0` 均暴露为 `Button`。 |
-| 设置开关行 | 已整改 | `使用 av 号而非 bv 号...`、`自动缓存队列中的曲目...`、`开发者模式...` 暴露为 `Switch`，attrs 通过 `value` 暴露开关状态。 |
-| 文本输入框直接输入 | 已整改 | 首页查询输入框暴露为 `TextField`，`agent-device fill @e7 "av123"` 可直接输入。 |
-| 文本输入框 label | 已整改（iOS） | 输入前 label 为 `视频链接或 ID`；输入后 attrs 同时暴露 `label: "视频链接或 ID"` 和 `value: "av123"`。这优于 Android 复核时只暴露 placeholder 的情况。 |
-| 页面标题/header | 未完全达标 | 设置页标题 `设置` 暴露为 `Other`；关于页标题 `关于` 暴露为 `StaticText`，未体现 header 语义。 |
-| 页面切换焦点迁移 | 未发现整改证据 | 从设置页进入关于页后，snapshot 未显示标题 focused，也未观察到页面切换宣告。 |
-| Toast / 动态提示 | 未充分验证 | `components/notify-toast.tsx` 中 `Text` 已设置 `role="alert"`、`aria-live="assertive"`、`aria-atomic="true"`，但本次 iOS 实操未稳定触发可观测 toast；不能据此判定已达标。 |
+| 整改项                   | 当前状态       | iOS Simulator 证据                                                                                                                                                        |
+| ------------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 底部导航可发现性         | 已改善         | 首页 snapshot 能看到 `歌单标签`、`查询标签`、`设置标签` 三个节点，均为 `Button`。                                                                                         |
+| 底部导航 role / selected | 部分整改       | iOS tree 中三项仍是 `Button`，不是 `tab`；当前项 attrs 可暴露 `selected: true`，如 `查询标签`、`设置标签`。                                                               |
+| 设置列表行               | 已整改         | 设置页 `外观设置，切换应用主题和看板娘显示`、`数据管理，管理离线缓存和数据备份`、`下载管理，尚无任务正在进行`、`关于 Bilisound，版本 2.3.0` 均暴露为 `Button`。           |
+| 设置开关行               | 已整改         | `使用 av 号而非 bv 号...`、`自动缓存队列中的曲目...`、`开发者模式...` 暴露为 `Switch`，attrs 通过 `value` 暴露开关状态。                                                  |
+| 文本输入框直接输入       | 已整改         | 首页查询输入框暴露为 `TextField`，`agent-device fill @e7 "av123"` 可直接输入。                                                                                            |
+| 文本输入框 label         | 已整改（iOS）  | 输入前 label 为 `视频链接或 ID`；输入后 attrs 同时暴露 `label: "视频链接或 ID"` 和 `value: "av123"`。这优于 Android 复核时只暴露 placeholder 的情况。                     |
+| 页面标题/header          | 未完全达标     | 设置页标题 `设置` 暴露为 `Other`；关于页标题 `关于` 暴露为 `StaticText`，未体现 header 语义。                                                                             |
+| 页面切换焦点迁移         | 未发现整改证据 | 从设置页进入关于页后，snapshot 未显示标题 focused，也未观察到页面切换宣告。                                                                                               |
+| Toast / 动态提示         | 未充分验证     | `components/notify-toast.tsx` 中 `Text` 已设置 `role="alert"`、`aria-live="assertive"`、`aria-atomic="true"`，但本次 iOS 实操未稳定触发可观测 toast；不能据此判定已达标。 |
 
 当前优先级判断：
 
@@ -98,17 +98,17 @@
 
 复核结果：
 
-| 整改项 | 当前状态 | Android 实机证据 |
-| --- | --- | --- |
-| 底部导航可发现性 | 已改善 | 首页 snapshot 能看到 `歌单标签`、`查询标签`、`设置标签` 三个可点节点。 |
-| 底部导航 role / selected | 部分整改 | Android tree 中三项均为 `android.widget.Button`，不是 `tab`；`get attrs` 未暴露 selected 状态。 |
-| 设置列表行 | 已整改 | 设置页 `外观设置，切换应用主题和看板娘显示`、`数据管理，管理离线缓存和数据备份`、`关于 Bilisound，版本 2.3.0` 等行均暴露为 `button`。 |
-| 设置开关行 | 已整改 | `使用 av 号而非 bv 号...`、`自动缓存队列中的曲目...`、`开发者模式...` 等条目暴露为 `android.widget.Switch`。 |
-| 文本输入框直接输入 | 已整改 | 首页查询输入框暴露为 `android.widget.EditText`，可通过 `agent-device fill` 直接输入。 |
-| 文本输入框 label | 部分整改 | 首页查询输入框实际暴露 label/value 为 placeholder `粘贴完整链接或带前缀 ID 至此`，未暴露代码中设置的 `accessibilityLabel="视频链接或 ID"`。 |
-| 页面标题/header | 未完全达标 | 设置页顶部标题未在 snapshot 中出现；关于页可找到 `关于`，但类型为 `android.view.View`，未体现 header 语义。 |
-| 页面切换焦点迁移 | 未发现整改证据 | 从设置页进入关于页后，snapshot 未显示标题 focused，也未观察到页面切换宣告。 |
-| Toast / 动态提示 | 部分可感知但语义弱 | 播放器循环模式 toast 文本如 `使用列表循环` 可被 `wait text` / `find` 捕获，但 attrs 显示为普通 `android.view.View`，未体现 alert/live region 语义。 |
+| 整改项                   | 当前状态           | Android 实机证据                                                                                                                                    |
+| ------------------------ | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 底部导航可发现性         | 已改善             | 首页 snapshot 能看到 `歌单标签`、`查询标签`、`设置标签` 三个可点节点。                                                                              |
+| 底部导航 role / selected | 部分整改           | Android tree 中三项均为 `android.widget.Button`，不是 `tab`；`get attrs` 未暴露 selected 状态。                                                     |
+| 设置列表行               | 已整改             | 设置页 `外观设置，切换应用主题和看板娘显示`、`数据管理，管理离线缓存和数据备份`、`关于 Bilisound，版本 2.3.0` 等行均暴露为 `button`。               |
+| 设置开关行               | 已整改             | `使用 av 号而非 bv 号...`、`自动缓存队列中的曲目...`、`开发者模式...` 等条目暴露为 `android.widget.Switch`。                                        |
+| 文本输入框直接输入       | 已整改             | 首页查询输入框暴露为 `android.widget.EditText`，可通过 `agent-device fill` 直接输入。                                                               |
+| 文本输入框 label         | 部分整改           | 首页查询输入框实际暴露 label/value 为 placeholder `粘贴完整链接或带前缀 ID 至此`，未暴露代码中设置的 `accessibilityLabel="视频链接或 ID"`。         |
+| 页面标题/header          | 未完全达标         | 设置页顶部标题未在 snapshot 中出现；关于页可找到 `关于`，但类型为 `android.view.View`，未体现 header 语义。                                         |
+| 页面切换焦点迁移         | 未发现整改证据     | 从设置页进入关于页后，snapshot 未显示标题 focused，也未观察到页面切换宣告。                                                                         |
+| Toast / 动态提示         | 部分可感知但语义弱 | 播放器循环模式 toast 文本如 `使用列表循环` 可被 `wait text` / `find` 捕获，但 attrs 显示为普通 `android.view.View`，未体现 alert/live region 语义。 |
 
 当前优先级判断：
 
@@ -180,7 +180,7 @@
 
 5. **建立 testID / accessibilityLabel 编码规范**
    - 在 `AGENTS.md` 或相关规范中约定：所有可交互元素必须提供稳定的 `testID` 或 `accessibilityLabel`。
-   - 新功能在 PR  review 中检查 a11y 标识。
+   - 新功能在 PR review 中检查 a11y 标识。
 
 6. **引入自动化 a11y 检测**
    - 可考虑集成 `@react-native-community/eslint-plugin` 的 a11y 规则，或使用 axe / accessibility-insights 等工具进行回归检测。
