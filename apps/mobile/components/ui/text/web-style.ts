@@ -2,7 +2,9 @@ import type { CSSProperties } from "react";
 import { StyleSheet } from "react-native";
 import type { StyleProp, TextStyle } from "react-native";
 
-export function normalizeWebTextStyle(style: CSSProperties | StyleProp<TextStyle> | undefined): CSSProperties | undefined {
+export function normalizeWebTextStyle(
+  style: CSSProperties | StyleProp<TextStyle> | undefined,
+): CSSProperties | undefined {
   const flattened = StyleSheet.flatten(style as StyleProp<TextStyle>);
 
   if (!flattened) {

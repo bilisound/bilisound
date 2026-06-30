@@ -201,7 +201,7 @@ export default function Page() {
               renderItem={({ item, index }) => (
                 <SongItem
                   data={item}
-                  index={index + 1}
+                  index={item.originalIndex + 1}
                   onRequestPlay={() => handlePlay(index)}
                   onToggle={() => toggle(index)}
                   onLongPress={() => handleLongPress(index)}

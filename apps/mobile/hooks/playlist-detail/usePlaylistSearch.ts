@@ -21,12 +21,15 @@ export function usePlaylistSearch(playlistDetail: PlaylistDetail[] | undefined) 
   }, [playlistDetail]);
 
   // 过滤后的播放列表数据
-  const filteredPlaylistDetail = useMemo(() => {
+  const filteredPlaylistDetail = useMemo((): (PlaylistDetail & {
+    originalIndex: number;
+  })[] => {
     if (!playlistDetail) return [];
-    if (!searchQuery.trim() || !fuse) return playlistDetail;
+    if (!searchQuery.trim() || !fuse)
+      return playlistDetail.map((result, originalIndex) => ({ ...result, originalIndex }));
 
     const results = fuse.search(searchQuery.trim());
-    return results.map(result => result.item);
+    return results.map((result) => ({ ...result.item, originalIndex: result.refIndex }));
   }, [playlistDetail, searchQuery, fuse]);
 
   // 获取原始索引（用于播放时定位）
