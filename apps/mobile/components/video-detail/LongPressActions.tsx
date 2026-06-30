@@ -67,9 +67,9 @@ export function LongPressActions({ showActionSheet, displayTrack, onAction, onCl
   ];
 
   return (
-    <Actionsheet isOpen={showActionSheet} onClose={onClose} style={{ zIndex: 999 }}>
+    <Actionsheet isOpen={showActionSheet} onClose={onClose}>
       <ActionsheetBackdrop />
-      <ActionsheetContent style={{ zIndex: 999 }}>
+      <ActionsheetContent>
         <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator />
         </ActionsheetDragIndicatorWrapper>

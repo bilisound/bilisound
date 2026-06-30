@@ -102,9 +102,9 @@ export function PageMenu({ data, onAction }: PageMenuProps) {
   return (
     <>
       <LayoutButton iconName={"fa6-solid:ellipsis-vertical"} onPress={() => setShowActionSheet(true)} />
-      <Actionsheet isOpen={showActionSheet} onClose={onClose} style={{ zIndex: 999 }}>
+      <Actionsheet isOpen={showActionSheet} onClose={onClose}>
         <ActionsheetBackdrop />
-        <ActionsheetContent style={{ zIndex: 999 }}>
+        <ActionsheetContent>
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
