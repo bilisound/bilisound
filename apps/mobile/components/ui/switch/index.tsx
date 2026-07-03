@@ -14,9 +14,12 @@ const SwitchWrapper = React.forwardRef<React.ElementRef<typeof RNSwitch>, React.
     return <RNSwitch {...props} ref={ref} />;
   },
 );
+const SwitchRoot = (
+  Platform.OS === "web" ? withStyleContext(SwitchWrapper) : withStyleContextAndStates(SwitchWrapper)
+) as React.ComponentType<any>;
 
 const UISwitch = createSwitch({
-  Root: Platform.OS === "web" ? withStyleContext(SwitchWrapper) : withStyleContextAndStates(SwitchWrapper),
+  Root: SwitchRoot,
 });
 
 cssInterop(SwitchWrapper, { className: "style" });

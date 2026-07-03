@@ -25,7 +25,8 @@
     "prebuild:local": "watchman watch-del-all && cross-env NODE_ENV=development expo prebuild"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "testMatch": ["**/__tests__/**/*.[jt]s?(x)"]
   },
   "dependencies": {
     "@animatereactnative/marquee": "^0.5.2",
@@ -85,6 +86,7 @@
     "expo-dev-client": "~57.0.4",
     "expo-device": "~57.0.0",
     "expo-document-picker": "~57.0.0",
+    "expo-file-system": "~57.0.0",
     "expo-font": "~57.0.0",
     "expo-haptics": "~57.0.0",
     "expo-image": "~57.0.0",

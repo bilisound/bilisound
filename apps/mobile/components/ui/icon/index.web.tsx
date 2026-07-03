@@ -22,7 +22,7 @@ const iconStyle = tva({
 });
 
 export const Icon = React.forwardRef<
-  React.ElementRef<typeof UIIcon>,
+  any,
   React.ComponentPropsWithoutRef<typeof UIIcon> &
     VariantProps<typeof iconStyle> & {
       height?: number | string;
@@ -48,7 +48,7 @@ const accessClassName = (style: any) => {
 const createIconUI = ({ ...props }: ParameterTypes) => {
   const NewUIIcon = createIcon({ Root: Svg, ...props });
   return React.forwardRef<
-    React.ElementRef<typeof UIIcon>,
+    any,
     React.ComponentPropsWithoutRef<typeof UIIcon> &
       VariantProps<typeof iconStyle> & {
         height?: number | string;

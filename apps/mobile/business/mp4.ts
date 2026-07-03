@@ -2,12 +2,12 @@ import { File } from "expo-file-system";
 import { Mp4 } from "mp4.js/dist";
 import log from "~/utils/logger";
 
-export function extractAudioFile(input: File, output: File) {
+export async function extractAudioFile(input: File, output: File) {
   log.debug("提取操作开始");
 
   const from = new Date().getTime();
 
-  const stream = input.bytes();
+  const stream = await input.bytes();
   const m4aBytes = Mp4.extractAudio(stream);
 
   output.write(m4aBytes);

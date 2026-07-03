@@ -22,18 +22,20 @@ import { playlistToTracks } from "./track-data";
 let currentTrackRefresh: { key: string; promise: Promise<void> } | null = null;
 let resumeCurrentTrackAfterRefresh = false;
 
-function getTrackRefreshKey(trackIndex: number, trackData: TrackData | undefined) {
+type OptionalTrackData = TrackData | null | undefined;
+
+function getTrackRefreshKey(trackIndex: number, trackData: OptionalTrackData) {
   const extendedData = trackData?.extendedData;
   return `${trackIndex}:${extendedData?.id ?? ""}:${extendedData?.episode ?? ""}`;
 }
 
-function isSameTrack(left: TrackData | undefined, right: TrackData | undefined) {
+function isSameTrack(left: OptionalTrackData, right: OptionalTrackData) {
   return (
     left?.extendedData?.id === right?.extendedData?.id && left?.extendedData?.episode === right?.extendedData?.episode
   );
 }
 
-function shouldRefreshTrack(trackData: TrackData | undefined) {
+function shouldRefreshTrack(trackData: OptionalTrackData) {
   const extendedData = trackData?.extendedData;
   if (!extendedData || extendedData.isLoaded) {
     return false;
@@ -148,7 +150,7 @@ export async function refreshCurrentTrack() {
   }
 }
 
-async function refreshCurrentTrackOnce(trackData: TrackData | undefined, trackIndex: number) {
+async function refreshCurrentTrackOnce(trackData: OptionalTrackData, trackIndex: number) {
   let restoreLoopOnce = false;
   let shouldResume = false;
 

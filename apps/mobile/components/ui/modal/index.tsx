@@ -11,9 +11,12 @@ import { Pressable, View, ScrollView, Platform } from "react-native";
 const AnimatedPressable = createMotionAnimatedComponent(Pressable);
 
 const SCOPE = "MODAL";
+const ModalRoot = (
+  Platform.OS === "web" ? withStyleContext(View, SCOPE) : withStyleContextAndStates(View, SCOPE)
+) as React.ComponentType<any>;
 
 const UIModal = createModal({
-  Root: Platform.OS === "web" ? withStyleContext(View, SCOPE) : withStyleContextAndStates(View, SCOPE),
+  Root: ModalRoot,
   Backdrop: AnimatedPressable,
   Content: Motion.View,
   Body: ScrollView,

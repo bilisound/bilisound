@@ -55,16 +55,15 @@ const extractDataClassName = (className: ClassNameValue, states: Record<string, 
 };
 
 export const withStyleContextAndStates = <T extends React.ComponentType<any>>(Component: T, scope = "Global") => {
-  const ComponentWithStates = React.forwardRef<
-    React.ElementRef<T>,
-    React.ComponentPropsWithoutRef<T> & WithStatesProps
-  >(({ className, states, ...props }, ref) => {
-    const classNamesFinal = React.useMemo(() => {
-      if (!className) return;
-      return extractDataClassName(className, states ?? {});
-    }, [className, states]);
-    return <Component ref={ref} {...props} className={classNamesFinal} />;
-  });
+  const ComponentWithStates = React.forwardRef<any, React.ComponentPropsWithoutRef<T> & WithStatesProps>(
+    ({ className, states, ...props }, ref) => {
+      const classNamesFinal = React.useMemo(() => {
+        if (!className) return;
+        return extractDataClassName(className, states ?? {});
+      }, [className, states]);
+      return React.createElement(Component as React.ComponentType<any>, { ...props, ref, className: classNamesFinal });
+    },
+  );
 
   return withStyleContext(ComponentWithStates as React.ComponentType<any>, scope);
 };

@@ -16,7 +16,7 @@ export function useConfirm(initialConformInfo: Partial<ConfirmInfo> = {}) {
     ok: "确定",
     cancel: "取消",
   });
-  const dialogCallback = useRef<() => void>();
+  const dialogCallback = useRef<(() => void) | undefined>(undefined);
   const [modalVisible, setModalVisible] = useState(false);
 
   function handleClose(ok: boolean) {

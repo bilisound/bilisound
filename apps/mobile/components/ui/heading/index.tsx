@@ -17,7 +17,7 @@ cssInterop(H5, { className: "style" });
 cssInterop(H6, { className: "style" });
 
 const MappedHeading = memo(
-  forwardRef<React.ElementRef<typeof H1>, IHeadingProps>(
+  forwardRef<any, IHeadingProps>(
     ({ size, className, isTruncated, bold, underline, strikeThrough, sub, italic, highlight, ...props }, ref) => {
       switch (size) {
         case "5xl":
@@ -37,7 +37,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error
               ref={ref}
             />
           );
@@ -56,7 +55,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error
               ref={ref}
             />
           );
@@ -75,7 +73,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error
               ref={ref}
             />
           );
@@ -94,7 +91,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error
               ref={ref}
             />
           );
@@ -113,7 +109,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error
               ref={ref}
             />
           );
@@ -133,7 +128,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error
               ref={ref}
             />
           );
@@ -152,7 +146,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error
               ref={ref}
             />
           );
@@ -162,7 +155,7 @@ const MappedHeading = memo(
 );
 
 const Heading = memo(
-  forwardRef<React.ElementRef<typeof H1>, IHeadingProps>(({ className, size = "lg", as: AsComp, ...props }, ref) => {
+  forwardRef<any, IHeadingProps>(({ className, size = "lg", as: AsComp, ...props }, ref) => {
     const { isTruncated, bold, underline, strikeThrough, sub, italic, highlight } = props;
 
     if (AsComp) {

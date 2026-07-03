@@ -257,6 +257,9 @@ importers:
       expo-document-picker:
         specifier: ~57.0.0
         version: 57.0.0(expo@57.0.1)
+      expo-file-system:
+        specifier: ~57.0.0
+        version: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.28.6)(@react-native/metro-config@0.86.0(@babel/core@7.28.6))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))
       expo-font:
         specifier: ~57.0.0
         version: 57.0.0(expo@57.0.1)(react-native@0.86.0(@babel/core@7.28.6)(@react-native/metro-config@0.86.0(@babel/core@7.28.6))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3)

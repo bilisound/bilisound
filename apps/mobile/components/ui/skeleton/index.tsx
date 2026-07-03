@@ -16,7 +16,7 @@ type ISkeletonTextProps = React.ComponentProps<typeof View> &
     startColor?: string;
   };
 
-const Skeleton = forwardRef<React.ElementRef<typeof Animated.View>, ISkeletonProps>(
+const Skeleton = forwardRef<any, ISkeletonProps>(
   ({ className, variant, children, startColor = "bg-background-200", isLoaded = false, speed = 2, ...props }, ref) => {
     const pulseAnim = new Animated.Value(1);
     const customTimingFunction = Easing.bezier(0.4, 0, 0.6, 1);

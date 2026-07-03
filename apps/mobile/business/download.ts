@@ -158,7 +158,7 @@ export async function downloadResource(bvid: string, episode: number) {
 
   // 提取 m4a
   try {
-    extractAudioFile(new File(downloadTargetFileUrl), new File(checkUrl));
+    await extractAudioFile(new File(downloadTargetFileUrl), new File(checkUrl));
   } catch (e) {
     log.error(prefix + "视频转码失败！");
     log.error(`result：${e}`);

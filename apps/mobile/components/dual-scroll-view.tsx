@@ -1,13 +1,12 @@
 import { EdgeInsets } from "react-native-safe-area-context";
-import { ScrollView, View, ViewStyle } from "react-native";
-import { ContentStyle } from "@shopify/flash-list";
+import { ScrollView, StyleProp, View, ViewStyle } from "react-native";
 import React from "react";
 
 export interface DualScrollViewProps {
   edgeInsets: EdgeInsets;
   header: React.ReactNode;
   headerContainerStyle?: ViewStyle;
-  list: (props: { contentContainerStyle: ContentStyle }) => React.ReactNode;
+  list: (props: { contentContainerStyle: StyleProp<ViewStyle> }) => React.ReactNode;
 }
 
 export function DualScrollView({ edgeInsets, header, list, headerContainerStyle }: DualScrollViewProps) {
