@@ -441,6 +441,9 @@ importers:
         specifier: ^5.0.12
         version: 5.0.12(@types/react@19.2.14)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.9
       react-native-svg-transformer:
         specifier: ^1.5.3
         version: 1.5.3(react-native-svg@15.15.4(react-native@0.86.0(@babel/core@7.28.6)(@react-native/metro-config@0.86.0(@babel/core@7.28.6))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3))(react-native@0.86.0(@babel/core@7.28.6)(@react-native/metro-config@0.86.0(@babel/core@7.28.6))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(typescript@6.0.3)

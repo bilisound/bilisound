@@ -1,10 +1,13 @@
+/// <reference types="node" />
+
 /**
  * Extract SVG icons from @iconify-json packages
  * Run with: bun scripts/extract-icons.ts
  */
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
-import { join } from "path";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 // All icons used in the project (from metro.config.js + code search)
 const iconsToExtract = [
@@ -82,7 +85,8 @@ const iconsToExtract = [
   "material-symbols:speed-rounded",
 ];
 
-const outputDir = join(import.meta.dir, "../assets/icons");
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+const outputDir = join(scriptDir, "../assets/icons");
 
 // Cache for loaded icon collections
 const collectionCache: Record<string, any> = {};
@@ -92,7 +96,7 @@ function loadCollection(prefix: string) {
     return collectionCache[prefix];
   }
 
-  const packagePath = join(import.meta.dir, `../node_modules/@iconify-json/${prefix}/icons.json`);
+  const packagePath = join(scriptDir, `../node_modules/@iconify-json/${prefix}/icons.json`);
 
   if (!existsSync(packagePath)) {
     console.error(`Collection not found: ${prefix}`);

@@ -101,7 +101,7 @@ export async function downloadResource(bvid: string, episode: number) {
   const downloadTargetFileUrl = getCacheAudioPath(playingRequest.id, playingRequest.episode, true);
 
   // 下载处理
-  const beginTime = global.performance.now();
+  const beginTime = globalThis.performance.now();
   const downloadResumable = FileSystem.createDownloadResumable(
     url,
     downloadTargetFileUrl,
@@ -134,7 +134,7 @@ export async function downloadResource(bvid: string, episode: number) {
     return;
   }
 
-  const endTime = global.performance.now();
+  const endTime = globalThis.performance.now();
   const info = await FileSystem.getInfoAsync(downloadTargetFileUrl);
   const fileSize = info?.exists ? info.size : 0;
   const runTime = (endTime - beginTime) / 1000;

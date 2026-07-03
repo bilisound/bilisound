@@ -26,7 +26,9 @@
   },
   "jest": {
     "preset": "jest-expo",
-    "testMatch": ["**/__tests__/**/*.[jt]s?(x)"]
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)"
+    ]
   },
   "dependencies": {
     "@animatereactnative/marquee": "^0.5.2",
@@ -150,6 +152,7 @@
   },
   "private": true,
   "devDependencies": {
+    "@types/node": "catalog:",
     "expo": "~57.0.1",
     "react-native-svg-transformer": "^1.5.3"
   }
