@@ -7,8 +7,6 @@ module.exports = function (api) {
         "babel-preset-expo",
         {
           jsxImportSource: "nativewind",
-          // 临时方案：解决 Web 端 Cannot use 'import.meta' outside a module 错误
-          unstable_transformImportMeta: true,
         },
       ],
       "nativewind/babel",

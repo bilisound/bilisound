@@ -7,7 +7,7 @@
     "lint": "turbo lint --cache-dir .turbo/cache",
     "cleanup": "turbo cleanup",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "postinstall": "pnpm run build",
+
     "prepare": "node ./scripts/install-skills.mjs",
     "prettier:fix": "prettier -w --ignore-unknown .",
     "spell": "cspell lint .",
