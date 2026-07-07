@@ -14,6 +14,7 @@ export interface SettingMenuItemProps {
   iconSize?: number;
   rightAccessories?: React.ReactNode;
   onPress?: (event: GestureResponderEvent) => void;
+  onLongPress?: (event: GestureResponderEvent) => void;
   disabled?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
@@ -28,6 +29,7 @@ export function SettingMenuItem({
   iconSize,
   rightAccessories,
   onPress,
+  onLongPress,
   disabled,
   accessibilityLabel,
   accessibilityHint,
@@ -85,6 +87,7 @@ export function SettingMenuItem({
       accessibilityRole={itemRole}
       accessibilityState={itemState}
       onPress={onPress}
+      onLongPress={onLongPress}
     >
       {inner}
     </Pressable>

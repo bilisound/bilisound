@@ -1,8 +1,8 @@
-import { withGradleProperties } from "expo/config-plugins";
+import { withGradleProperties, withProjectBuildGradle } from "expo/config-plugins";
 import { ExpoConfig } from "expo/config";
 
 export default function withCustomGradleProperties(config: ExpoConfig) {
-  return withGradleProperties(config, gradlePropertiesConfig => {
+  config = withGradleProperties(config, gradlePropertiesConfig => {
     const properties = gradlePropertiesConfig.modResults;
 
     // 查找并更新 org.gradle.jvmargs
@@ -26,4 +26,30 @@ export default function withCustomGradleProperties(config: ExpoConfig) {
 
     return gradlePropertiesConfig;
   });
+
+  return withProjectBuildGradle(config, gradleConfig => {
+    if (gradleConfig.modResults.language !== "groovy") {
+      throw new Error("如果不是 groovy，则无法设置 Android Kotlin JVM target");
+    }
+    gradleConfig.modResults.contents = setKotlinJvmTarget(gradleConfig.modResults.contents);
+    return gradleConfig;
+  });
+}
+
+function setKotlinJvmTarget(projectBuildGradle: string) {
+  const block = `
+subprojects { subproject ->
+  subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+      jvmTarget = "17"
+    }
+  }
+}
+`;
+
+  if (projectBuildGradle.includes("jvmTarget = \"17\"")) {
+    return projectBuildGradle;
+  }
+
+  return `${projectBuildGradle.trimEnd()}\n${block}`;
 }

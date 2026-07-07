@@ -10,6 +10,8 @@ export const BILISOUND_LOG_URI = `${FileSystem.cacheDirectory}logs`;
  */
 export const BILISOUND_OFFLINE_URI = `${FileSystem.documentDirectory}sounds`;
 
+export const BILISOUND_THEME_URI = `${FileSystem.documentDirectory}themes`;
+
 /**
  * 离线待处理文件夹路径
  */

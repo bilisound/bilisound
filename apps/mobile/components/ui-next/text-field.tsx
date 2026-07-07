@@ -122,6 +122,7 @@ export function TextField({
         }}
         style={[
           styles.input,
+          sizeStyles[size],
           inputSizeStyles[size],
           {
             color: disabled ? colorValue("--color-typography-400") : colorValue("--color-typography-900"),

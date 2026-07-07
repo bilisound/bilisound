@@ -30,6 +30,15 @@ export async function saveTextFile(name: string, content: string, mimeType = "te
   log.debug("分享文件流程结束");
 }
 
+export async function saveBinaryFile(uri: string, mimeType: string, name: string) {
+  if (Platform.OS === "android") {
+    await Player.saveFile(uriToPath(uri), mimeType, name);
+    return;
+  }
+
+  await Sharing.shareAsync(uri, { mimeType });
+}
+
 /**
  * 保存文件到「本地」
  * @param location

@@ -24,8 +24,10 @@ import MusicIcon from "~/assets/icons/music.svg";
 import DownloadIcon from "~/assets/icons/download.svg";
 import TrashIcon from "~/assets/icons/trash.svg";
 import PenIcon from "~/assets/icons/pen.svg";
+import RotateLeftIcon from "~/assets/icons/rotate-left.svg";
 import CircleInfoIcon from "~/assets/icons/circle-info.svg";
 import ArrowUpFromBracketIcon from "~/assets/icons/arrow-up-from-bracket.svg";
+import ArrowsUpDownLeftRightIcon from "~/assets/icons/arrows-up-down-left-right.svg";
 import MagnifyingGlassIcon from "~/assets/icons/magnifying-glass.svg";
 import ImagesIcon from "~/assets/icons/images.svg";
 import FileExportIcon from "~/assets/icons/file-export.svg";
@@ -87,8 +89,10 @@ const iconMap: Record<string, React.FC<SvgProps>> = {
   "fa6-solid:download": DownloadIcon,
   "fa6-solid:trash": TrashIcon,
   "fa6-solid:pen": PenIcon,
+  "fa6-solid:rotate-left": RotateLeftIcon,
   "fa6-solid:circle-info": CircleInfoIcon,
   "fa6-solid:arrow-up-from-bracket": ArrowUpFromBracketIcon,
+  "fa6-solid:arrows-up-down-left-right": ArrowsUpDownLeftRightIcon,
   "fa6-solid:magnifying-glass": MagnifyingGlassIcon,
   "fa6-solid:images": ImagesIcon,
   "fa6-solid:file-export": FileExportIcon,

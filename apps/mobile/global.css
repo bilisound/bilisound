@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Reset the native color input chrome so the swatch fills our styled box.
+   Pseudo-elements can't be reached via inline styles, so they live here. */
+input[type="color"].theme-color-swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"].theme-color-swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: 3px;
+}
+input[type="color"].theme-color-swatch::-moz-color-swatch {
+  border: none;
+  border-radius: 3px;
+}

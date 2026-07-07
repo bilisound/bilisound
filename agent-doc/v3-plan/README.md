@@ -12,6 +12,8 @@ The current mobile UI is tightly coupled to player mechanics, SQLite rows, SDK D
 
 After the business refactor epics are complete, the project can rebuild the app UI from scratch. That later phase may re-evaluate Nativewind and gluestack-ui, including dropping them if they no longer fit the desired v3 UI architecture. UI technology replacement is intentionally a later decision, not part of the foundation refactor unless a small change is required to reduce business coupling.
 
+Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 styling direction. Keep v2 styling changes narrow and pragmatic: use native styles when a concrete technical constraint requires it, such as `expo-router/ui` native tab layout, safe-area calculations, or image rendering paths that do not work reliably through `className`. Broad UI styling decisions belong to the later v3 redesign phase.
+
 ## Reading Order
 
 1. [Context and Findings](./context-and-findings.md)

@@ -123,7 +123,7 @@ const formControlHelperTextStyle = tva({
 });
 
 const formControlLabelStyle = tva({
-  base: "flex flex-row justify-start items-center mb-1",
+  base: "flex flex-row justify-start items-center mb-2",
 });
 
 const formControlLabelTextStyle = tva({

@@ -221,7 +221,7 @@ export const buttonTextStyle = tva({
     {
       variant: "solid",
       action: "secondary",
-      class: "text-typography-800 data-[hover=true]:text-typography-800 data-[active=true]:text-typography-800",
+      class: "text-typography-0 data-[hover=true]:text-typography-0 data-[active=true]:text-typography-0",
     },
     {
       variant: "solid",

@@ -701,3 +701,11 @@ export const parsedConfig: Record<string, ReturnType<typeof vars>> = {
   red_light: vars(config.red_light),
   red_dark: vars(config.red_dark),
 };
+
+export function getBuiltInConfig(theme: ThemeName, mode: ColorSchemeName): ConfigDetail {
+  return config[`${theme}_${mode}`];
+}
+
+export function getParsedBuiltInConfig(theme: ThemeName, mode: ColorSchemeName) {
+  return parsedConfig[`${theme}_${mode}`];
+}
