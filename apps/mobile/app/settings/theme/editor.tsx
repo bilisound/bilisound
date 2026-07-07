@@ -434,55 +434,56 @@ export default function ThemeEditorPage() {
                 </View>
 
                 {assetUri ? (
-                  <View className="mb-4 gap-4">
-                    <ButtonOuter>
-                      <Button action="primary" onPress={enterMascotEditMode}>
-                        <ButtonMonIcon name="fa6-solid:arrows-up-down-left-right" />
-                        <ButtonText>调整位置和大小</ButtonText>
-                      </Button>
-                    </ButtonOuter>
-                    <ButtonOuter>
-                      <Button action="negative" onPress={deleteYuruCharaImage}>
-                        <ButtonMonIcon name="fa6-solid:trash" />
-                        <ButtonText>删除看板娘图片</ButtonText>
-                      </Button>
-                    </ButtonOuter>
-                  </View>
-                ) : null}
-
-                <Controller
-                  control={form.control}
-                  name="align"
-                  render={({ field: { value: align } }) => (
-                    <View className="mb-4">
-                      <Controller
-                        control={form.control}
-                        name="verticalAlign"
-                        render={({ field: { value: verticalAlign } }) => (
-                          <FormControl>
-                            <FormControlLabel>
-                              <FormControlLabelText className="text-sm">图片位置锚点</FormControlLabelText>
-                            </FormControlLabel>
-                            <AnchorGrid
-                              align={align}
-                              verticalAlign={verticalAlign}
-                              onSelect={(newAlign, newVerticalAlign) => {
-                                form.setValue("align", newAlign);
-                                form.setValue("verticalAlign", newVerticalAlign);
-                              }}
-                            />
-                          </FormControl>
-                        )}
-                      />
+                  <>
+                    <View className="mb-4 gap-4">
+                      <ButtonOuter>
+                        <Button action="primary" onPress={enterMascotEditMode}>
+                          <ButtonMonIcon name="fa6-solid:arrows-up-down-left-right" />
+                          <ButtonText>调整位置和大小</ButtonText>
+                        </Button>
+                      </ButtonOuter>
+                      <ButtonOuter>
+                        <Button action="negative" onPress={deleteYuruCharaImage}>
+                          <ButtonMonIcon name="fa6-solid:trash" />
+                          <ButtonText>删除看板娘图片</ButtonText>
+                        </Button>
+                      </ButtonOuter>
                     </View>
-                  )}
-                />
+                    <Controller
+                      control={form.control}
+                      name="align"
+                      render={({ field: { value: align } }) => (
+                        <View className="mb-4">
+                          <Controller
+                            control={form.control}
+                            name="verticalAlign"
+                            render={({ field: { value: verticalAlign } }) => (
+                              <FormControl>
+                                <FormControlLabel>
+                                  <FormControlLabelText className="text-sm">图片位置锚点</FormControlLabelText>
+                                </FormControlLabel>
+                                <AnchorGrid
+                                  align={align}
+                                  verticalAlign={verticalAlign}
+                                  onSelect={(newAlign, newVerticalAlign) => {
+                                    form.setValue("align", newAlign);
+                                    form.setValue("verticalAlign", newVerticalAlign);
+                                  }}
+                                />
+                              </FormControl>
+                            )}
+                          />
+                        </View>
+                      )}
+                    />
 
-                <Controller
-                  control={form.control}
-                  name="opacity"
-                  render={({ field: { value, onChange } }) => <OpacitySlider value={value} onChange={onChange} />}
-                />
+                    <Controller
+                      control={form.control}
+                      name="opacity"
+                      render={({ field: { value, onChange } }) => <OpacitySlider value={value} onChange={onChange} />}
+                    />
+                  </>
+                ) : null}
               </View>
             </View>
           </ScrollView>
