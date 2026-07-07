@@ -227,7 +227,7 @@ export default function Page() {
         <SettingMenuItem
           icon="fa6-solid:file-import"
           title="导入主题"
-          subTitle="支持 Bilisound theme zip"
+          subTitle="支持已打包的 Bilisound 主题"
           onPress={importTheme}
         />
         {themes.map(item => (
