@@ -244,6 +244,13 @@ export default function ThemeEditorPage() {
 
   const extractedColorCandidates = extractedColors;
 
+  function swapBaseColors() {
+    const primaryBase = form.getValues("primaryBase");
+    const accentBase = form.getValues("accentBase");
+    form.setValue("primaryBase", accentBase, { shouldDirty: true });
+    form.setValue("accentBase", primaryBase, { shouldDirty: true });
+  }
+
   async function pickImage() {
     const pickResult = await DocumentPicker.getDocumentAsync({ type: ["image/jpeg", "image/png", "image/webp"] });
     const asset = pickResult.assets?.[0];
@@ -404,6 +411,15 @@ export default function ThemeEditorPage() {
                     </View>
                   )}
                 />
+
+                <View className="mb-4">
+                  <ButtonOuter>
+                    <Button action="secondary" onPress={swapBaseColors}>
+                      <ButtonMonIcon name="tabler:repeat" />
+                      <ButtonText>交换主色与强调色</ButtonText>
+                    </Button>
+                  </ButtonOuter>
+                </View>
 
                 <Controller
                   control={form.control}
