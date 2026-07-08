@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import ColorPicker, { HueSlider, Panel1, Preview } from "reanimated-color-picker";
+import ColorPicker, { HueSlider, Panel1 } from "reanimated-color-picker";
 
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { Modal, ModalBackdrop, ModalContent, ModalFooter, ModalHeader } from "~/components/ui/modal";
@@ -33,7 +33,7 @@ export function NativeColorPickerModal({
           onChangeJS={({ hex }) => onChange(hex)}
           onCompleteJS={({ hex }) => onChange(hex)}
         >
-          <Preview />
+          {/*<Preview />*/}
           <Panel1 />
           <HueSlider />
         </ColorPicker>

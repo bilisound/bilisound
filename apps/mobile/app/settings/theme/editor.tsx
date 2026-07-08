@@ -2,7 +2,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Image as ReactNativeImage, Platform, ScrollView, View } from "react-native";
+import { Image as ReactNativeImage, Platform, ScrollView, View, Pressable } from "react-native";
 import Toast from "react-native-toast-message";
 import Color from "colorjs.io";
 
@@ -18,7 +18,6 @@ import {
   FormControlLabelText,
 } from "~/components/ui/form-control";
 import { AlertCircleIcon } from "~/components/ui/icon";
-import { Pressable } from "~/components/ui/pressable";
 import { Slider, SliderFilledTrack, SliderThumb, SliderTrack } from "~/components/ui/slider";
 import { Text } from "~/components/ui/text";
 import { TextField } from "~/components/ui-next";
@@ -565,7 +564,7 @@ function ColorPickerField({
           size="md"
           value={value}
           onChangeText={onChange}
-          containerStyle={{ flex: 1 }}
+          containerStyle={{ flex: 0, width: 120 }}
         />
       </View>
       <ExtractedColorGrid colors={colorCandidates} value={parsed.hex} onSelect={onChange} />
@@ -633,13 +632,12 @@ function ExtractedColorGrid({
             <Pressable
               key={color}
               accessibilityLabel={`选择颜色 ${color}`}
-              className={`min-h-[34px] flex-row items-center gap-1.5 px-2 py-1.5 border rounded-full ${
-                selected ? "border-primary-500 bg-primary-100" : "border-background-300 bg-background-100"
+              className={`size-12 flex-row items-center justify-center border rounded-[16px] ${
+                selected ? "border-primary-500 bg-primary-100" : "border-background-200"
               }`}
               onPress={() => onSelect(color)}
             >
-              <View className="size-[18px] rounded-full border border-black/10" style={{ backgroundColor: color }} />
-              <Text className="text-[11px]">{color}</Text>
+              <View className="size-8 rounded-[8px]" style={{ backgroundColor: color }} />
             </Pressable>
           );
         })}
