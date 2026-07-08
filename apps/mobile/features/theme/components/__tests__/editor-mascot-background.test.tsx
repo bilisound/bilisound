@@ -1,3 +1,12 @@
+import React from "react";
+import { StyleSheet } from "react-native";
+import TestRenderer, { act } from "react-test-renderer";
+
+import { withYuruCharaDefaults } from "~/features/theme/editor";
+import type { UserTheme } from "~/features/theme/types";
+
+import { EDITOR_MASCOT_PORTAL_HOST, EditorMascotBackground } from "../editor-mascot-background";
+
 const mockWindowSize = { width: 390, height: 844 };
 
 jest.mock(
@@ -49,9 +58,7 @@ jest.mock("react-native-gesture-handler", () => {
       Pinch: createGestureMock,
       Simultaneous: () => ({}),
     },
-    GestureDetector: ({ children }: { children: React.ReactNode }) => (
-      <View testID="gesture-detector">{children}</View>
-    ),
+    GestureDetector: ({ children }: { children: React.ReactNode }) => <View testID="gesture-detector">{children}</View>,
   };
 });
 jest.mock("react-native-reanimated", () => ({
@@ -87,15 +94,6 @@ jest.mock("~/components/ui/text", () => {
   const { Text } = require("react-native");
   return { Text: ({ children }: { children: React.ReactNode }) => <Text>{children}</Text> };
 });
-
-import React from "react";
-import { StyleSheet } from "react-native";
-import TestRenderer, { act } from "react-test-renderer";
-
-import { withYuruCharaDefaults } from "~/features/theme/editor";
-import type { UserTheme } from "~/features/theme/types";
-
-import { EDITOR_MASCOT_PORTAL_HOST, EditorMascotBackground } from "../editor-mascot-background";
 
 describe("EditorMascotBackground", () => {
   it("renders above the editor through a portal using original image dimensions", async () => {

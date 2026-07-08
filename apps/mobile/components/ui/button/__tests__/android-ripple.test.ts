@@ -107,7 +107,7 @@ function loadAndroidRipple(isAndroidRippleEnabled: boolean) {
 function createTva(config: {
   base?: string;
   variants?: Record<string, Record<string, string>>;
-  compoundVariants?: Array<Record<string, unknown> & { class?: string }>;
+  compoundVariants?: (Record<string, unknown> & { class?: string })[];
 }) {
   return (options: Record<string, unknown> = {}) => {
     const classes = [config.base];

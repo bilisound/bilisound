@@ -5,7 +5,17 @@ const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommen
 module.exports = defineConfig([
   expoConfig,
   eslintPluginPrettierRecommended,
+
   {
-    ignores: ["dist/*"],
+    ignores: ["dist/*", ".expo/**/*"],
+  },
+  {
+    rules: {
+      "react/display-name": "off",
+      "react-hooks/immutability": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/purity": "off",
+    },
   },
 ]);

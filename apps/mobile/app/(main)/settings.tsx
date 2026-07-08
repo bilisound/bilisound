@@ -1,6 +1,5 @@
 import { router } from "expo-router";
-import React from "react";
-import { Animated, Easing, Platform, ScrollView, StyleSheet, useWindowDimensions } from "react-native";
+import { Platform, ScrollView, StyleSheet, useWindowDimensions } from "react-native";
 
 import { SettingMenuItem } from "~/components/setting-menu";
 import { VERSION } from "~/constants/releasing";
@@ -13,8 +12,6 @@ import { FEATURE_DOWNLOAD_MANAGER } from "~/constants/feature";
 import useDownloadStore, { DownloadItem } from "~/store/download";
 import { Text } from "~/components/ui/text";
 import { BRAND } from "~/constants/branding";
-import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
-import { shadow } from "~/constants/styles";
 import { SettingSwitch } from "~/components/settings-switch";
 
 function useDownloadDescriptionText() {

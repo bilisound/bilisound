@@ -1,3 +1,5 @@
+import { findUserTheme, getUserThemeSettingId, resolveThemeConfig } from "../registry";
+
 jest.mock("../storage", () => ({
   themeStorage: {
     listThemes: jest.fn(),
@@ -5,8 +7,6 @@ jest.mock("../storage", () => ({
     deleteTheme: jest.fn(),
   },
 }));
-
-import { findUserTheme, getUserThemeSettingId, resolveThemeConfig } from "../registry";
 
 const palette = {
   primary: {

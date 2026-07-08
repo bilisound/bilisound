@@ -1,3 +1,11 @@
+import React from "react";
+import { StyleSheet } from "react-native";
+import TestRenderer, { act } from "react-test-renderer";
+
+import { UserTheme } from "~/features/theme/types";
+
+import { YuruChara } from "../yuru-chara";
+
 const mockGetThemeAsset = jest.fn();
 const mockCreateObjectURL = jest.fn();
 const mockRevokeObjectURL = jest.fn();
@@ -47,14 +55,6 @@ jest.mock("~/store/settings", () => ({
 jest.mock("~/hooks/useWindowSize", () => ({
   useWindowSize: () => mockWindowSize,
 }));
-
-import React from "react";
-import { StyleSheet } from "react-native";
-import TestRenderer, { act } from "react-test-renderer";
-
-import { UserTheme } from "~/features/theme/types";
-
-import { YuruChara } from "../yuru-chara";
 
 const palette: UserTheme["palette"] = {
   primary: {

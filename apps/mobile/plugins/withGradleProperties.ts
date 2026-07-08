@@ -47,7 +47,7 @@ subprojects { subproject ->
 }
 `;
 
-  if (projectBuildGradle.includes("jvmTarget = \"17\"")) {
+  if (projectBuildGradle.includes('jvmTarget = "17"')) {
     return projectBuildGradle;
   }
 

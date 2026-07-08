@@ -51,10 +51,7 @@ export async function exportThemePackage(theme: UserTheme, asset?: ThemeAsset): 
     yuruChara:
       theme.yuruChara && asset ? { ...theme.yuruChara, image: asset.fileName, imageAssetId: undefined } : undefined,
   });
-  zip.file(
-    "theme.json",
-    JSON.stringify(manifest, null, 2),
-  );
+  zip.file("theme.json", JSON.stringify(manifest, null, 2));
   if (asset?.blob) {
     zip.file(asset.fileName, asset.blob);
   }

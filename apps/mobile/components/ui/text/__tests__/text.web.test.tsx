@@ -1,12 +1,12 @@
 /// <reference types="jest" />
 import React from "react";
 
+import { Text } from "../index.web";
+import { normalizeWebTextStyle } from "../web-style";
+
 jest.mock("../styles", () => ({
   textStyle: () => "text-class",
 }));
-
-import { Text } from "../index.web";
-import { normalizeWebTextStyle } from "../web-style";
 
 function renderTextElement(props: React.ComponentProps<typeof Text>) {
   return (

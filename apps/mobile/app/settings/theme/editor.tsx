@@ -65,11 +65,11 @@ type YuruCharaFormValues = {
 };
 
 const opacityRange = { min: 0, max: 1, step: 0.005 };
-const anchorGrid: Array<{
+const anchorGrid: {
   label: string;
   align: YuruCharaAlign;
   verticalAlign: YuruCharaVerticalAlign;
-}> = [
+}[] = [
   { label: "左上", align: "left", verticalAlign: "top" },
   { label: "上方", align: "center", verticalAlign: "top" },
   { label: "右上", align: "right", verticalAlign: "top" },

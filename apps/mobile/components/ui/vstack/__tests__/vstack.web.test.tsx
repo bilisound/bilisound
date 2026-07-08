@@ -1,11 +1,11 @@
 /// <reference types="jest" />
 import React from "react";
 
+import { VStack } from "../index.web";
+
 jest.mock("../styles", () => ({
   vstackStyle: () => "vstack-class",
 }));
-
-import { VStack } from "../index.web";
 
 function renderVStackElement(props: React.ComponentProps<typeof VStack>) {
   return (

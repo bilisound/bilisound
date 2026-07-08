@@ -4,8 +4,8 @@
     "strict": true,
     "paths": {
       "~/*": ["./*"],
-      "tailwind.config": ["./tailwind.config.js"],
-    },
+      "tailwind.config": ["./tailwind.config.js"]
+    }
   },
   "include": [
     "**/*.ts",
@@ -13,6 +13,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts",
-    "scripts/extract-icons.mts",
-  ],
+    "scripts/extract-icons.mts"
+  ]
 }

@@ -29,7 +29,7 @@ export function usePlaylistSearch(playlistDetail: PlaylistDetail[] | undefined) 
       return playlistDetail.map((result, originalIndex) => ({ ...result, originalIndex }));
 
     const results = fuse.search(searchQuery.trim());
-    return results.map((result) => ({ ...result.item, originalIndex: result.refIndex }));
+    return results.map(result => ({ ...result.item, originalIndex: result.refIndex }));
   }, [playlistDetail, searchQuery, fuse]);
 
   // 获取原始索引（用于播放时定位）
