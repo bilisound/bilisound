@@ -43,6 +43,7 @@ import { themeStorage } from "~/features/theme/storage";
 import type { UserTheme } from "~/features/theme/types";
 import useSettingsStore from "~/store/settings";
 import { saveBinaryFile } from "~/utils/file";
+import { SettingSwitch } from "~/components/settings-switch";
 
 type ThemeArchiveOutput =
   | Awaited<ReturnType<typeof exportThemePackage>>
@@ -200,7 +201,7 @@ export default function Page() {
           icon="fa6-solid:image"
           title="在首页右下角展示看板娘"
           subTitle="如果看板娘干扰内容显示，可以关闭此功能"
-          rightAccessories={<Switch value={showYuruChara} onChange={() => toggle("showYuruChara")} />}
+          rightAccessories={<SettingSwitch value={showYuruChara} />}
           onPress={() => toggle("showYuruChara")}
         />
 
@@ -250,7 +251,7 @@ export default function Page() {
           show={showThemeActions}
         />
       </ScrollView>
-      <YuruChara style={Platform.OS === "web" ? styles.pageYuruChara : undefined} />
+      {showYuruChara && <YuruChara style={Platform.OS === "web" ? styles.pageYuruChara : undefined} />}
       <DeleteThemeDialog
         item={deleteTarget}
         onCancel={() => setShowDeleteConfirm(false)}
