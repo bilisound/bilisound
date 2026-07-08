@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React from "react";
-import { Platform, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Animated, Easing, Platform, ScrollView, StyleSheet, useWindowDimensions } from "react-native";
 
 import { SettingMenuItem } from "~/components/setting-menu";
 import { VERSION } from "~/constants/releasing";
@@ -14,26 +14,48 @@ import useDownloadStore, { DownloadItem } from "~/store/download";
 import { Text } from "~/components/ui/text";
 import { BRAND } from "~/constants/branding";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
+import { shadow } from "~/constants/styles";
 
 function SettingSwitch({ value }: { value: boolean }) {
   const { colorValue, mode } = useRawThemeValues();
   const dark = mode === "dark";
-  const trackColor = value
-    ? colorValue(dark ? "--color-primary-400" : "--color-primary-500")
-    : colorValue(dark ? "--color-primary-50" : "--color-primary-200");
+  const progress = React.useRef(new Animated.Value(value ? 1 : 0)).current;
+  const trackColor = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [
+      colorValue(dark ? "--color-primary-50" : "--color-primary-200"),
+      colorValue(dark ? "--color-primary-400" : "--color-primary-500"),
+    ],
+  });
+  const thumbTranslateX = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 18],
+  });
   const thumbColor = colorValue(dark ? "--color-primary-700" : "--color-primary-50");
 
+  React.useEffect(() => {
+    Animated.timing(progress, {
+      toValue: value ? 1 : 0,
+      duration: 150,
+      easing: Easing.cubic,
+      useNativeDriver: false,
+    }).start();
+  }, [progress, value]);
+
   return (
-    <View
+    <Animated.View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
       pointerEvents="none"
       style={[styles.settingSwitchTrack, { backgroundColor: trackColor }]}
     >
-      <View
-        style={[styles.settingSwitchThumb, value && styles.settingSwitchThumbChecked, { backgroundColor: thumbColor }]}
+      <Animated.View
+        style={[
+          styles.settingSwitchThumb,
+          { backgroundColor: thumbColor, transform: [{ translateX: thumbTranslateX }] },
+        ]}
       />
-    </View>
+    </Animated.View>
   );
 }
 
@@ -214,15 +236,13 @@ const styles = StyleSheet.create({
     width: 46,
     height: 28,
     borderRadius: 9999,
-    padding: 2,
+    padding: 3,
     justifyContent: "center",
   },
   settingSwitchThumb: {
-    width: 24,
-    height: 24,
+    width: 22,
+    height: 22,
     borderRadius: 9999,
-  },
-  settingSwitchThumbChecked: {
-    transform: [{ translateX: 18 }],
+    boxShadow: shadow.md,
   },
 });
