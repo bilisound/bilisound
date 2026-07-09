@@ -1,0 +1,30 @@
+{
+  "name": "@bilisound/tamagui-evaluation",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start -c --port 8082",
+    "android": "expo run:android --port 8082",
+    "ios": "expo run:ios --port 8082",
+    "web": "expo start -c --web --port 8082",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~57.0.2",
+    "@tamagui/config": "^2.4.2",
+    "@tamagui/theme": "^2.4.2",
+    "expo": "catalog:",
+    "expo-status-bar": "~57.0.0",
+    "expo-system-ui": "~57.0.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "catalog:",
+    "react-native-web": "~0.21.2",
+    "tamagui": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
+  }
+}
