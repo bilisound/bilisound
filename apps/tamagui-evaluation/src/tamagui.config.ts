@@ -4,14 +4,92 @@ import { createTamagui } from "tamagui";
 type SchemeName = "light" | "dark";
 export type UserThemeName = "bilisound" | "tailwindRose" | "tailwindSky";
 
-const bilisoundLight = ["#f0fdfa", "#ccfbf1", "#99f6e4", "#5eead4", "#2dd4bf", "#14b8a6", "#0d9488", "#0f766e", "#115e59", "#134e4a", "#042f2e", "#0f172a"];
-const bilisoundDark = ["#020617", "#0f172a", "#134e4a", "#115e59", "#0f766e", "#0d9488", "#14b8a6", "#2dd4bf", "#5eead4", "#99f6e4", "#ccfbf1", "#f0fdfa"];
+const bilisoundLight = [
+  "#f0fdfa",
+  "#ccfbf1",
+  "#99f6e4",
+  "#5eead4",
+  "#2dd4bf",
+  "#14b8a6",
+  "#0d9488",
+  "#0f766e",
+  "#115e59",
+  "#134e4a",
+  "#042f2e",
+  "#0f172a",
+];
+const bilisoundDark = [
+  "#020617",
+  "#0f172a",
+  "#134e4a",
+  "#115e59",
+  "#0f766e",
+  "#0d9488",
+  "#14b8a6",
+  "#2dd4bf",
+  "#5eead4",
+  "#99f6e4",
+  "#ccfbf1",
+  "#f0fdfa",
+];
 
-const roseLight = ["#fff1f2", "#ffe4e6", "#fecdd3", "#fda4af", "#fb7185", "#f43f5e", "#e11d48", "#be123c", "#9f1239", "#881337", "#4c0519", "#0f172a"];
-const roseDark = ["#020617", "#4c0519", "#881337", "#9f1239", "#be123c", "#e11d48", "#f43f5e", "#fb7185", "#fda4af", "#fecdd3", "#ffe4e6", "#fff1f2"];
+const roseLight = [
+  "#fff1f2",
+  "#ffe4e6",
+  "#fecdd3",
+  "#fda4af",
+  "#fb7185",
+  "#f43f5e",
+  "#e11d48",
+  "#be123c",
+  "#9f1239",
+  "#881337",
+  "#4c0519",
+  "#0f172a",
+];
+const roseDark = [
+  "#020617",
+  "#4c0519",
+  "#881337",
+  "#9f1239",
+  "#be123c",
+  "#e11d48",
+  "#f43f5e",
+  "#fb7185",
+  "#fda4af",
+  "#fecdd3",
+  "#ffe4e6",
+  "#fff1f2",
+];
 
-const skyLight = ["#f0f9ff", "#e0f2fe", "#bae6fd", "#7dd3fc", "#38bdf8", "#0ea5e9", "#0284c7", "#0369a1", "#075985", "#0c4a6e", "#082f49", "#0f172a"];
-const skyDark = ["#020617", "#082f49", "#0c4a6e", "#075985", "#0369a1", "#0284c7", "#0ea5e9", "#38bdf8", "#7dd3fc", "#bae6fd", "#e0f2fe", "#f0f9ff"];
+const skyLight = [
+  "#f0f9ff",
+  "#e0f2fe",
+  "#bae6fd",
+  "#7dd3fc",
+  "#38bdf8",
+  "#0ea5e9",
+  "#0284c7",
+  "#0369a1",
+  "#075985",
+  "#0c4a6e",
+  "#082f49",
+  "#0f172a",
+];
+const skyDark = [
+  "#020617",
+  "#082f49",
+  "#0c4a6e",
+  "#075985",
+  "#0369a1",
+  "#0284c7",
+  "#0ea5e9",
+  "#38bdf8",
+  "#7dd3fc",
+  "#bae6fd",
+  "#e0f2fe",
+  "#f0f9ff",
+];
 
 export const paletteScales: Record<UserThemeName, Record<SchemeName, string[]>> = {
   bilisound: {
@@ -71,7 +149,7 @@ declare module "tamagui" {
   interface TamaguiCustomConfig extends TamaguiAppConfig {}
 }
 
-function createPaletteTheme(scale: string[], scheme: SchemeName) {
+export function createPaletteTheme(scale: string[], scheme: SchemeName) {
   const isDark = scheme === "dark";
   const background = scale[0];
   const mutedBackground = scale[1];

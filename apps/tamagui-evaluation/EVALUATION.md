@@ -55,6 +55,7 @@ Dynamic theme notes:
 
 - `updateTheme` is suitable for live preview after the user edits colors.
 - In Tamagui 2.4.2, `updateTheme` uses an object signature: `updateTheme({ name, theme })`.
+- The random full-theme demo ports the OKLCH Tailwind scale generation from `develop:apps/mobile/features/theme/color-scale.ts`, derives Bilisound's extra `975` stop from `950`, then maps the generated 50-975 scale into Tamagui's 12-step palette shape.
 - Dynamic themes are client-side only and ignored on the server, so SSR web output cannot depend on user-generated runtime themes being present during server render.
 - For persisted custom themes, Bilisound should load saved theme data before or during app bootstrap and register a stable `light_user` / `dark_user` theme before the first meaningful UI render.
 - For Expo native, runtime theme mutation is acceptable for settings previews, but the app should avoid putting business configuration reads directly inside presentational components.

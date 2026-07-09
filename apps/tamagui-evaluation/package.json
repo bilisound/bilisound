@@ -14,6 +14,7 @@
     "@expo/metro-runtime": "~57.0.2",
     "@tamagui/config": "^2.4.2",
     "@tamagui/theme": "^2.4.2",
+    "colorjs.io": "^0.6.1",
     "expo": "catalog:",
     "expo-status-bar": "~57.0.0",
     "expo-system-ui": "~57.0.0",
