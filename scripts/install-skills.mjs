@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const isWindows = process.platform === "win32";
 
 // skills CLI（截至 1.5.12）的缺陷：多 agent「软链接模式」下，它会把 .claude/skills/<name>
 // 软链到 .agents/skills/<name>，但若 .claude 父目录尚不存在则静默跳过——CLI 仍打印
@@ -36,11 +37,16 @@ if (process.env.CI) {
 }
 
 function run(bin, args) {
-  const result = spawnSync("pnpm", ["exec", bin, ...args], {
-    cwd: repoRoot,
-    stdio: "inherit",
-    env: { ...process.env, DISABLE_TELEMETRY: "1" },
-  });
+  const command = ["pnpm", "exec", bin, ...args].join(" ");
+  const result = spawnSync(
+    isWindows ? "cmd.exe" : "pnpm",
+    isWindows ? ["/d", "/s", "/c", command] : ["exec", bin, ...args],
+    {
+      cwd: repoRoot,
+      stdio: "inherit",
+      env: { ...process.env, DISABLE_TELEMETRY: "1" },
+    },
+  );
   // skill 只是增强项，安装失败不应阻断整个 pnpm install。
   if (result.status !== 0) {
     console.warn(`[install-skills] 安装失败（已忽略）: ${bin} ${args.join(" ")}`);
