@@ -2,8 +2,6 @@ import Color from "colorjs.io";
 
 export type TailwindShade = "50" | "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800" | "900" | "950";
 export type TailwindScale = Record<TailwindShade, string>;
-export type BilisoundShade = TailwindShade | "975";
-export type BilisoundScale = Record<BilisoundShade, string>;
 
 export const TAILWIND_SHADES: TailwindShade[] = [
   "50",
@@ -18,7 +16,6 @@ export const TAILWIND_SHADES: TailwindShade[] = [
   "900",
   "950",
 ];
-export const BILISOUND_SHADES: BilisoundShade[] = [...TAILWIND_SHADES, "975"];
 
 const lightEndLightness = 0.97;
 const darkEndLightness = 0.18;
@@ -59,26 +56,6 @@ export function generateTailwindScale(baseColor: string): TailwindScale {
   ) as TailwindScale;
 }
 
-export function generateBilisoundScale(baseColor: string): BilisoundScale {
-  const tailwindScale = generateTailwindScale(baseColor);
-  return {
-    ...tailwindScale,
-    "975": deriveShade975(tailwindScale),
-  };
-}
-
-export function reverseTailwindScale(scale: TailwindScale): TailwindScale {
-  const reversed = [...TAILWIND_SHADES].reverse();
-  return Object.fromEntries(
-    TAILWIND_SHADES.map((shade, index) => [shade, scale[reversed[index] as TailwindShade]]),
-  ) as TailwindScale;
-}
-
-export function bilisoundScaleToTamaguiPalette(scale: BilisoundScale, scheme: "light" | "dark") {
-  const values = BILISOUND_SHADES.map(shade => scale[shade]);
-  return scheme === "dark" ? [...values].reverse() : values;
-}
-
 export function hexFromCssColor(value: string) {
   const color = new Color(value).to("srgb");
   const [r, g, b] = color.coords.map(channel => Math.max(0, Math.min(255, Math.round((channel ?? 0) * 255))));
@@ -93,15 +70,6 @@ function getClosestSourceShade(lightness: number): TailwindShade {
   if (lightness >= 0.36) return "700";
   if (lightness >= 0.28) return "800";
   return "900";
-}
-
-function deriveShade975(scale: TailwindScale) {
-  const color = new Color(scale[950]).to("oklch");
-  const lightness = Math.max(0.08, (color.coords[0] ?? 0.18) * 0.72);
-  const chroma = Math.max(0, (color.coords[1] ?? 0) * 0.7);
-  const hue = Number.isFinite(color.coords[2]) ? color.coords[2] : 0;
-  const srgb = new Color("oklch", [lightness, chroma, hue]).to("srgb" as never);
-  return hexFromSrgbCoords(Array.from(srgb.coords).map(channel => channel ?? 0));
 }
 
 function getSegmentProgress(index: number, startIndex: number, endIndex: number) {

@@ -41,6 +41,10 @@ The current UI should not be treated as the long-term shape. During the business
 
 Nativewind and gluestack-ui are implementation details of the current UI. Their replacement should be evaluated during the UI rewrite phase after feature APIs are stable. Business refactor tasks should avoid depending on either library unless they are touching existing UI call sites only to remove coupling.
 
+The UI rewrite is not intended to discard the existing Bilisound design system wholesale. Product-level semantics, component concepts, and interaction patterns should be retained where they remain useful, while implementation-specific Nativewind/Gluestack structures and visual styling may be replaced. The target is a refreshed 2026 visual language built on a recognizable Bilisound design system.
+
+Appearance themes should be modeled through semantic roles. The current implementation's mechanically reversed dark palette is not a target constraint: light and dark appearances may map the same semantic roles to independently selected values. This keeps contrast and visual hierarchy intentional instead of assuming that numeric palette stops are symmetrical between appearances.
+
 Target UI dependency rule:
 
 ```txt

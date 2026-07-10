@@ -4,85 +4,66 @@
 
 This evaluation is intentionally isolated in `apps/tamagui-evaluation`. It is a UI technology spike for the later Bilisound v3 UI rewrite phase, not a migration of the current `apps/mobile` screens.
 
-Relevant v3 constraint: the current UI is still coupled to player, SDK DTOs, SQLite rows, storage keys, and settings internals. Tamagui should not drive the business-boundary refactor. The useful migration point is after feature hooks, use cases, and view models exist.
+The intended v3 direction is to retain useful Bilisound design-system semantics, component contracts, and interaction patterns while refreshing their visual implementation. Tamagui remains an implementation detail below that app-owned boundary.
 
-## Documentation Findings
+## Package Boundary
 
-- `tamagui` is the full UI-kit package and is a superset of `@tamagui/core`.
-- Tamagui UI requires a root `TamaguiProvider`; the UI kit uses it for portals such as dialogs and popovers.
-- Current docs recommend `@tamagui/config/v5` as the starting config. It includes sensible defaults, Tailwind-aligned shorthands, and a complete theme system.
-- Tamagui 2 requires React Native 0.81+ with New Architecture for native apps, React 19+, and TypeScript 5+. The current Bilisound mobile baseline, Expo 57 / RN 0.86 / React 19, satisfies that requirement.
-- Expo integration can work without custom bundler setup at first. The compiler and Babel plugin are optional performance optimizations, not required for this spike.
-- `TamaguiProvider` should receive `defaultTheme` directly instead of wrapping the whole app with `<Theme>` only; this supports faster native light/dark changes.
+- `@tamagui/core` provides typed styling, tokens, themes, responsive props, and core layout/text primitives.
+- `@tamagui/button` is used with `unstyled` so its behavior and web element handling remain available without adopting Tamagui's default component skin.
+- `@tamagui/config` and the aggregate `tamagui` UI package are intentionally not used by this spike.
+- Components rendered by the app come from `src/design-system.tsx` or directly from Core primitives. Screens should not depend on Tamagui's default visual conventions.
 
-## Tailwind Palette Compatibility
+## Color Architecture
 
-Tailwind palettes map reasonably well into Tamagui, but they are not shape-identical.
+The revised spike has two explicit layers:
 
-Tailwind has 11 named stops (`50` through `950`). Tamagui theme-builder and v5-style themes commonly expect a 12-step palette (`color1` through `color12`) plus semantic UI keys used by `tamagui/ui` components.
+1. Primitive palettes use canonical Tailwind CSS names and values with exactly 11 stops: `50`, `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, `900`, and `950`.
+2. Themes expose Bilisound semantic values such as `canvas`, `surface`, `text`, `textMuted`, `border`, `buttonBackground`, `buttonBorder`, and `buttonText`.
 
-This spike uses a direct adapter:
+There are no `color1` through `color12` theme values and no synthetic `975` stop. The application does not adapt its palettes to Tamagui's default theme-builder shape.
 
-- Tailwind-like stops are represented as a 12-item scale by adding an explicit foreground endpoint.
-- `color1` to `color12` expose the raw scale for component-level usage.
-- Semantic keys map onto the same scale: `background`, `backgroundHover`, `backgroundPress`, `color`, `borderColor`, `placeholderColor`, `outlineColor`, and `shadowColor`.
-- `light_*` and `dark_*` sub-themes make `theme="tailwindRose"` resolve under the active base scheme.
+## Light And Dark Themes
 
-Compatibility conclusion: Tailwind color data can be reused, but Bilisound should own a small palette adapter instead of treating Tailwind tokens as Tamagui themes directly. The adapter needs contrast rules, dark-scale reversal rules, and semantic-key assignment.
+Light and dark themes consume the same unchanged primitive accent scale, but each appearance owns an independent semantic mapping.
 
-Practical integration note: Tamagui theme objects must contain theme values such as strings, numbers, or Tamagui variables. Raw palette arrays should stay outside `themes`; this spike keeps them in `paletteScales` and generates separate Tamagui-compatible theme objects.
+For example:
 
-## `tamagui/ui` Theme Shape
+- Light primary buttons use accent `600` for the background and accent `700` for the border.
+- Dark primary buttons use accent `400` for the background and accent `300` for the border.
+- Surface, typography, border, hover, press, and focus values are selected independently for each appearance.
 
-The full `tamagui` UI kit expects conventional theme keys for default component styling:
-
-- `background`, `backgroundHover`, `backgroundPress`, `backgroundFocus`
-- `borderColor`, `borderColorHover`, `borderColorPress`, `borderColorFocus`
-- `color`, `colorHover`, `colorPress`, `colorFocus`
-- `shadowColor`, `placeholderColor`, `outlineColor`
-
-If Bilisound adopts Tamagui UI components, the design-system layer should generate these keys for every app theme. Otherwise, components will need excessive per-instance style overrides.
+Dark mode never reverses the palette. Numeric stops preserve the same meaning in both appearances, making semantic intent and contrast explicit.
 
 ## User Themes And Dynamic Skinning
 
-Tamagui supports three useful levels for Bilisound's custom-theme needs:
+User-defined themes remain supported:
 
-1. Static built-in themes in `tamagui.config.ts`, such as `light_bilisound` and `dark_tailwindSky`.
-2. Contextual theme switching with `<Theme name="...">` and component `theme` props.
-3. Client-side dynamic mutation through `@tamagui/theme` helpers: `addTheme`, `updateTheme`, and `replaceTheme`.
+- A seed color generates one OKLCH-based scale with the standard Tailwind shade names.
+- `createSemanticTheme(scale, "light")` and `createSemanticTheme(scale, "dark")` independently map that same scale into semantic values.
+- `updateTheme` replaces `light_user` and `dark_user` at runtime for live preview.
+- Button foreground colors are selected by comparing contrast against light and dark text candidates.
 
-Dynamic theme notes:
+Dynamic themes are client-side only and ignored on the server. A persisted custom theme should therefore be registered under stable `light_user` and `dark_user` names during application bootstrap before the first meaningful UI render.
 
-- `updateTheme` is suitable for live preview after the user edits colors.
-- In Tamagui 2.4.2, `updateTheme` uses an object signature: `updateTheme({ name, theme })`.
-- The random full-theme demo ports the OKLCH Tailwind scale generation from `develop:apps/mobile/features/theme/color-scale.ts`, derives Bilisound's extra `975` stop from `950`, then maps the generated 50-975 scale into Tamagui's 12-step palette shape.
-- Dynamic themes are client-side only and ignored on the server, so SSR web output cannot depend on user-generated runtime themes being present during server render.
-- For persisted custom themes, Bilisound should load saved theme data before or during app bootstrap and register a stable `light_user` / `dark_user` theme before the first meaningful UI render.
-- For Expo native, runtime theme mutation is acceptable for settings previews, but the app should avoid putting business configuration reads directly inside presentational components.
+## Design-System Fit
 
-Compatibility conclusion: Tamagui is compatible with user-defined themes and dynamic skinning, but the robust architecture is `features/config` owns persisted appearance preferences, while a UI design-system boundary translates them into Tamagui themes.
+This approach is compatible with Bilisound retaining most of its existing design system:
 
-## Migration Risk
+- Product-facing component names and variants can remain app-owned.
+- Primitive Tailwind scales can be retained without exposing numeric stops to screens.
+- Visual styling can change for the intended 2026 direction without changing feature APIs.
+- `unstyled` Tamagui UI components can supply behavior where useful, while Bilisound semantic values control every visual state.
 
-- Do not start by porting current `apps/mobile` screens. That would preserve existing coupling in a different UI library.
-- Tamagui's component theme system is powerful but opinionated. If Bilisound wants arbitrary user themes, the palette adapter and contrast algorithm should be treated as product code, not incidental styling.
-- `@tamagui/config/v5` defaults `onlyAllowShorthands` to `true`. This is good for new Tamagui code, but it makes incremental migration from existing React Native style names noisier. This spike sets it to `false` to evaluate Tamagui with long-form style props.
-- Compiler setup should be evaluated separately after base runtime integration. It can improve web/native performance but adds Metro/Babel complexity.
-- Existing NativeWind utility classes and Tamagui shorthands are conceptually close, but not mechanically equivalent. A migration would still be a component rewrite.
+Complex component variants, animations, safe-area behavior, and platform adaptations still require component-by-component migration. This is a design-system implementation rewrite, not a mechanical `className` conversion.
 
 ## Verification
 
 - `pnpm -C apps/tamagui-evaluation typecheck`
 - `pnpm -C apps/tamagui-evaluation exec expo export --platform web`
-- `pnpm -C apps/tamagui-evaluation android` builds and installs successfully with JDK 21. The script pins Expo to port `8082` to avoid colliding with `apps/mobile` on `8081`.
+- Desktop and mobile-width browser checks of palette switching, runtime user themes, and responsive semantic-theme previews
 
 ## Recommendation
 
-Tamagui is viable for a Bilisound v3 UI rewrite candidate.
+Tamagui Core plus selectively unstyled Tamagui UI components is a viable foundation for the Bilisound v3 design-system implementation.
 
-Recommended next steps:
-
-1. Keep this evaluation app isolated while v3 business boundaries continue.
-2. Build a small Bilisound design-system package or folder around Tamagui tokens, palette adapters, and theme generation before porting screens.
-3. Prototype one future v3 screen using only view models and feature hooks, not SQLite rows, SDK DTOs, or player native APIs.
-4. Evaluate Tamagui compiler and CSS extraction after the runtime API shape is accepted.
+The next useful evaluation step is to wrap one behavior-heavy component such as Dialog or AlertDialog in Bilisound-owned semantic styling, then verify its focus management, accessibility, animation, and native/web adaptations.
