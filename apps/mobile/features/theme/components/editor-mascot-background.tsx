@@ -43,7 +43,6 @@ const anchorLabels: Record<string, string> = {
 };
 
 const mascotClassName = "absolute z-10";
-const imageClassName = "h-full w-full";
 
 export function EditorMascotBackground({
   layout,
@@ -376,8 +375,7 @@ export function EditorMascotBackground({
               <ExpoImage
                 source={{ uri }}
                 contentFit={imageStyle.contentFit}
-                className={imageClassName}
-                style={{ opacity: imageStyle.opacity }}
+                style={{ width: "100%", height: "100%", opacity: imageStyle.opacity }}
                 onLoad={event => setLoadedImageSize(getLoadedImageSize(event))}
               />
             </Animated.View>
@@ -387,8 +385,7 @@ export function EditorMascotBackground({
             <ExpoImage
               source={{ uri }}
               contentFit={imageStyle.contentFit}
-              className={imageClassName}
-              style={{ opacity: imageStyle.opacity }}
+              style={{ width: "100%", height: "100%", opacity: imageStyle.opacity }}
               onLoad={event => setLoadedImageSize(getLoadedImageSize(event))}
             />
           </View>

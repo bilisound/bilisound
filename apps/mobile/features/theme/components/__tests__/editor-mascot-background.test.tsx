@@ -124,8 +124,7 @@ describe("EditorMascotBackground", () => {
       width: 800,
       height: 600,
     });
-    expect(image.props.className).toBe("h-full w-full");
-    expect(StyleSheet.flatten(image.props.style)).toMatchObject({ opacity: 0.625 });
+    expect(StyleSheet.flatten(image.props.style)).toMatchObject({ width: "100%", height: "100%", opacity: 0.625 });
     expect(renderer.root.findAllByProps({ testID: "editor-mascot-edit-hint" })).toHaveLength(0);
   });
 
