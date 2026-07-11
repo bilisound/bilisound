@@ -54,7 +54,7 @@ type ThemeArchiveOutput =
       fileName: string;
     };
 
-type UserThemeAction = "apply" | "edit" | "export" | "delete" | "close";
+type UserThemeAction = "apply" | "edit" | "copy" | "export" | "delete" | "close";
 
 export default function Page() {
   const { width } = useWindowDimensions();
@@ -153,6 +153,38 @@ export default function Page() {
     }
   }
 
+  async function copyTheme(item: UserTheme) {
+    try {
+      const now = Date.now();
+      const id = `${now}`;
+      const sourceAsset = await themeStorage.getThemeAsset(item);
+      const assetId = getYuruCharaAssetId(id);
+      const copiedTheme: UserTheme = {
+        ...item,
+        id,
+        name: `${item.name} 副本`,
+        yuruChara: item.yuruChara ? { ...item.yuruChara, imageAssetId: sourceAsset ? assetId : undefined } : undefined,
+        createdAt: now,
+        updatedAt: now,
+      };
+      const copiedAsset = sourceAsset
+        ? {
+            id: assetId,
+            fileName: sourceAsset.fileName,
+            mimeType: sourceAsset.mimeType,
+            uri: sourceAsset.uri,
+            blob: sourceAsset.blob,
+          }
+        : undefined;
+
+      await saveTheme(copiedTheme, copiedAsset);
+      Toast.show({ type: "success", text1: "主题已复制", text2: copiedTheme.name });
+    } catch (e) {
+      log.error("主题复制失败！错误：" + e);
+      Toast.show({ type: "error", text1: "主题复制失败", text2: "无法复制主题数据" });
+    }
+  }
+
   async function removeTheme(item: UserTheme) {
     await deleteTheme(item.id);
     if (findUserTheme([item], theme)) {
@@ -183,6 +215,9 @@ export default function Page() {
         break;
       case "edit":
         router.navigate(`/settings/theme/editor?id=${item.id}`);
+        break;
+      case "copy":
+        void copyTheme(item);
         break;
       case "export":
         void exportTheme(item);
@@ -331,6 +366,12 @@ function UserThemeActions({
       icon: "fa6-solid:pen",
       text: "编辑",
       action: () => onAction("edit"),
+    },
+    {
+      show: true,
+      icon: "fa6-solid:copy",
+      text: "复制",
+      action: () => onAction("copy"),
     },
     {
       show: true,
