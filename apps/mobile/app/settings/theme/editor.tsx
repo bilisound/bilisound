@@ -580,7 +580,7 @@ function ColorPickerField({
           size="md"
           value={value}
           onChangeText={onChange}
-          containerStyle={{ flex: 0, width: 120 }}
+          containerStyle={{ width: 120, flexShrink: 0 }}
         />
       </View>
       <ExtractedColorGrid colors={colorCandidates} value={parsed.hex} onSelect={onChange} />
