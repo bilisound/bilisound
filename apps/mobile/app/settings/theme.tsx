@@ -6,6 +6,7 @@ import type { ImageSourcePropType } from "react-native";
 import Toast from "react-native-toast-message";
 import { useShallow } from "zustand/shallow";
 
+import log from "~/utils/logger";
 import { ActionMenu } from "~/components/action-menu";
 import type { ActionMenuItem } from "~/components/action-menu";
 import BgCornerClassic from "~/assets/images/bg-corner-classic.png";
@@ -106,7 +107,8 @@ export default function Page() {
       };
       await saveTheme(userTheme);
       Toast.show({ type: "success", text1: "主题导入成功", text2: imported.manifest.name });
-    } catch {
+    } catch (e) {
+      log.error("主题导入失败！错误：" + e);
       Toast.show({ type: "error", text1: "主题导入失败", text2: "无法读取选择的主题包" });
     }
   }
