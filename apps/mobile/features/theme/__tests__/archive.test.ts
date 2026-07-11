@@ -123,6 +123,29 @@ describe("theme archive native", () => {
     });
   });
 
+  it("converts an Android extraction path to a file URI", async () => {
+    const { importThemePackage } = require("../archive") as typeof import("../archive");
+    mockZipArchive.unzip.mockResolvedValueOnce("/data/user/0/moe.bilisound.app.dev/cache/theme-import-1");
+    files.set(
+      "file:///data/user/0/moe.bilisound.app.dev/cache/theme-import-1/theme.json",
+      JSON.stringify({
+        kind: "moe.bilisound.app.theme",
+        version: 1,
+        name: "Android Imported",
+        baseTheme: "classic",
+        palette: sampleTheme.palette,
+      }),
+    );
+
+    const imported = await importThemePackage({ uri: "content://theme.zip" });
+
+    expect(mockFileSystem.readAsStringAsync).toHaveBeenCalledWith(
+      "file:///data/user/0/moe.bilisound.app.dev/cache/theme-import-1/theme.json",
+      { encoding: "utf8" },
+    );
+    expect(imported.manifest.name).toBe("Android Imported");
+  });
+
   it("exports a work directory as a zip package", async () => {
     const { exportThemePackage } = require("../archive") as typeof import("../archive");
     const asset: ThemeAsset = {

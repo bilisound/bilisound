@@ -18,7 +18,7 @@ export interface NativeThemeArchiveOutput {
 export async function importThemePackage(input: NativeThemeArchiveInput): Promise<ImportedThemePackage> {
   const workDir = `${FileSystem.cacheDirectory}theme-import-${Date.now()}`;
   await FileSystem.makeDirectoryAsync(workDir, { intermediates: true });
-  const extractedDir = await unzip(input.uri, workDir);
+  const extractedDir = toFileUri(await unzip(input.uri, workDir));
   const manifestUri = `${extractedDir}/theme.json`;
   const manifest = normalizeThemeManifest(
     JSON.parse(await FileSystem.readAsStringAsync(manifestUri, { encoding: "utf8" })),
@@ -63,6 +63,10 @@ export async function exportThemePackage(theme: UserTheme, asset?: ThemeAsset): 
   const outputUri = `${FileSystem.cacheDirectory}${theme.id}.zip`;
   await zip(workDir, outputUri);
   return { uri: outputUri, mimeType: "application/zip", fileName: `${manifest.name}.zip` };
+}
+
+function toFileUri(uri: string) {
+  return uri.startsWith("/") ? `file://${uri}` : uri;
 }
 
 function mimeTypeFromFileName(fileName: string): ThemeAsset["mimeType"] | null {
