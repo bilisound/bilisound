@@ -5,7 +5,7 @@ import { merge } from "lodash";
 import packageJson from "./package.json";
 import { BRAND } from "./constants/branding";
 
-type Env = "development" | "production";
+type Env = "development" | "production" | "staging";
 
 const env: Env = process.env.EXPO_PUBLIC_ENV as Env;
 
@@ -122,6 +122,21 @@ export default (): ExpoConfig => {
         adaptiveIcon: {
           foregroundImage: "./assets/images/adaptive-icon-dev.png",
           backgroundColor: "#e79797",
+        },
+      },
+    };
+  } else if (env === "staging") {
+    dynamicConfig = {
+      name: "Bilisound Stg",
+      icon: "./assets/images/icon-stg.png",
+      ios: {
+        bundleIdentifier: "moe.bilisound.app.stg",
+      },
+      android: {
+        package: "moe.bilisound.app.stg",
+        adaptiveIcon: {
+          foregroundImage: "./assets/images/adaptive-icon-stg.png",
+          backgroundColor: "#e7d4b8",
         },
       },
     };

@@ -20,11 +20,13 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "version=v0.0.0-next-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
-            echo "channel=android_github_beta" >> $GITHUB_OUTPUT
+            echo "expo_env=staging" >> $GITHUB_OUTPUT
+            echo "channel=android_github_stg" >> $GITHUB_OUTPUT
             echo "channel_web=web_beta" >> $GITHUB_OUTPUT
             echo "is_prerelease=--prerelease" >> $GITHUB_OUTPUT
           else
             echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "expo_env=production" >> $GITHUB_OUTPUT
             echo "channel=android_github" >> $GITHUB_OUTPUT
             echo "channel_web=web" >> $GITHUB_OUTPUT
             echo "is_prerelease=" >> $GITHUB_OUTPUT
@@ -57,7 +59,7 @@ jobs:
 
       - name: 📦 Install dependencies
         env:
-          EXPO_PUBLIC_ENV: production
+          EXPO_PUBLIC_ENV: ${{ steps.build_version.outputs.expo_env }}
         run: |
           pnpm install
           cd apps/mobile
@@ -76,12 +78,13 @@ jobs:
       - name: 🚀 Build Android app
         working-directory: apps/mobile
         env:
-          EXPO_PUBLIC_ENV: production
+          EXPO_PUBLIC_ENV: ${{ steps.build_version.outputs.expo_env }}
           EXPO_PUBLIC_API_URL: https://api.bilisound.com/api
           EXPO_PUBLIC_RELEASE_CHANNEL: ${{ steps.build_version.outputs.channel }}
         run: pnpm run build:android
 
       - name: 🚀 Build Web app
+        if: github.ref != 'refs/heads/main'
         working-directory: apps/mobile
         env:
           EXPO_PUBLIC_ENV: production
@@ -90,10 +93,11 @@ jobs:
         run: pnpm run build:web
 
       - name: 🚀 Deploy to Cloudflare Pages
+        if: github.ref != 'refs/heads/main'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: pnpm -C apps/server-cf exec wrangler pages deploy "$GITHUB_WORKSPACE/apps/mobile/dist" --project-name=client-mobile --branch=${{ github.ref == 'refs/heads/main' && 'preview' || 'main' }} --commit-dirty=true
+        run: pnpm -C apps/server-cf exec wrangler pages deploy "$GITHUB_WORKSPACE/apps/mobile/dist" --project-name=client-mobile --branch=main --commit-dirty=true
 
       - name: 📝 Extract Release Notes
         id: extract_release_notes

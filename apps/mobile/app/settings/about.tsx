@@ -17,6 +17,7 @@ const releaseChannelDict: Record<ReleaseChannel, string> = {
   unknown: "未知",
   android_github: "安卓 GitHub 正式版",
   android_github_beta: "安卓 GitHub 测试版",
+  android_github_stg: "安卓 GitHub Staging 版",
   web: "Web 正式版",
   web_beta: "Web 测试版",
 };

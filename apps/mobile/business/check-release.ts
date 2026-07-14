@@ -15,7 +15,8 @@ export interface CheckLatestVersionReturns {
 export async function checkLatestVersion(currentVersion: string) {
   switch (RELEASE_CHANNEL) {
     case "android_github":
-    case "android_github_beta": {
+    case "android_github_beta":
+    case "android_github_stg": {
       const { data: result } = await getUpdate();
       return {
         isLatest: currentVersion === result.version,
