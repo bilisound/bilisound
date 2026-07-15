@@ -25,8 +25,9 @@ export function buildSavedUserTheme(
   };
 }
 
-export function getYuruCharaAssetId(themeId: string): string {
-  return `${themeId}-yuru-chara`;
+export function getYuruCharaAssetId(themeId: string, revision?: number): string {
+  const assetId = `${themeId}-yuru-chara`;
+  return revision === undefined ? assetId : `${assetId}-${revision}`;
 }
 
 export function createYuruCharaRemovalDraft(theme: UserTheme): UserTheme {

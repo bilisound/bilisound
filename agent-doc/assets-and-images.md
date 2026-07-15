@@ -19,6 +19,7 @@
 
 - `components/yuru-chara.tsx` 仍使用 SVG 组件渲染首页右下角看板娘。
 - 首页看板娘和设置页主题按钮预览不是同一性能场景，不要默认合并实现。
+- Expo Image 57 的 Android 实现不会对本地 `file://` 图片应用 `source.cacheKey`。替换用户看板娘时必须生成新的资源 ID 和文件 URI，不能覆盖同一路径后只修改 `cacheKey`。
 
 ## 验证方式
 

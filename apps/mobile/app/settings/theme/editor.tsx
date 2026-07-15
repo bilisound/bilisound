@@ -263,7 +263,8 @@ export default function ThemeEditorPage() {
       const imageSize = await getPickedImageSize(asset);
       const nextExtractedColors = getUniqueDebugColorValues(colors.debugColors ?? []);
       const nextAsset: Omit<ThemeAsset, "themeId"> = {
-        id: getYuruCharaAssetId(theme.id),
+        // Expo Image ignores custom cache keys for local Android files, so replacements need a new URI.
+        id: getYuruCharaAssetId(theme.id, Date.now()),
         fileName: asset.name ?? "yuru-chara.png",
         mimeType: (asset.mimeType as "image/jpeg" | "image/png" | "image/webp") ?? "image/png",
         uri: asset.uri,

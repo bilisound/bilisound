@@ -85,13 +85,10 @@ export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
 
   if (userTheme && userLayout && assetUri && userImageStyle) {
     const contentFit = getYuruCharaRenderMetrics(userLayout, frame, loadedImageSize).contentFit;
-    // 用户替换图片后，文件会写回同一路径（例如 png → png），expo-image 会按 URI 缓存已解码的图片，
-    // 导致首页继续显示旧图。以 updatedAt 作为 cacheKey，让每次保存都失效旧缓存并重新读取文件。
-    const cacheKey = userLayout.imageAssetId ? `${userLayout.imageAssetId}-${userTheme.updatedAt}` : undefined;
     return (
       <View {...props} ref={ref} pointerEvents="none" style={[userImageStyle, props.style]}>
         <Image
-          source={{ uri: assetUri, cacheKey }}
+          source={{ uri: assetUri }}
           contentFit={contentFit}
           style={[styles.userImage, { opacity: userLayout.opacity }]}
           onLoad={event => setLoadedImageSize(getLoadedImageSize(event))}

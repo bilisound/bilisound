@@ -83,6 +83,10 @@ describe("theme editor helpers", () => {
     expect(getYuruCharaAssetId("user:mint")).toBe("user:mint-yuru-chara");
   });
 
+  it("adds a revision to replacement yuru-chara asset ids", () => {
+    expect(getYuruCharaAssetId("mint", 123)).toBe("mint-yuru-chara-123");
+  });
+
   it("removes yuru-chara layout and extracted colors without changing the palette", () => {
     const themeWithYuruChara: UserTheme = {
       ...baseTheme,
