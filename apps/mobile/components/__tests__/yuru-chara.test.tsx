@@ -178,7 +178,7 @@ describe("YuruChara", () => {
     const image = renderer.root.findByProps({ testID: "theme-yuru-image" });
     expect(mockGetThemeAsset).toHaveBeenCalledWith(userTheme);
     expect(image.props).toMatchObject({
-      source: { uri: "file://theme/yuru-chara.png" },
+      source: { uri: "file://theme/yuru-chara.png", cacheKey: "asset-1-1" },
       contentFit: "fill",
     });
     expect(StyleSheet.flatten(image.props.style)).toMatchObject({ opacity: 0.625 });
@@ -316,7 +316,10 @@ describe("YuruChara", () => {
     });
 
     expect(mockCreateObjectURL).toHaveBeenCalledWith(blob);
-    expect(renderer.root.findByProps({ testID: "theme-yuru-image" }).props.source).toEqual({ uri: "blob:theme-yuru" });
+    expect(renderer.root.findByProps({ testID: "theme-yuru-image" }).props.source).toEqual({
+      uri: "blob:theme-yuru",
+      cacheKey: "asset-1-1",
+    });
 
     await act(async () => {
       renderer.unmount();
