@@ -1,4 +1,5 @@
 import { generateTailwindScale } from "./color-scale";
+import { hexFromCssColor } from "./package-schema";
 import type { ThemeAsset, UserTheme, YuruCharaLayout } from "./types";
 
 export interface YuruCharaRenderMetrics {
@@ -13,13 +14,17 @@ export function buildSavedUserTheme(
   input: { name: string; primaryBase: string; accentBase: string; updatedAt: number },
 ): UserTheme {
   const name = normalizeThemeName(input.name);
+  const primaryBase = hexFromCssColor(input.primaryBase);
+  const accentBase = hexFromCssColor(input.accentBase);
 
   return {
     ...theme,
     name,
     palette: {
-      primary: generateTailwindScale(input.primaryBase),
-      accent: generateTailwindScale(input.accentBase),
+      primary: generateTailwindScale(primaryBase),
+      accent: generateTailwindScale(accentBase),
+      primaryBase,
+      accentBase,
     },
     updatedAt: input.updatedAt,
   };

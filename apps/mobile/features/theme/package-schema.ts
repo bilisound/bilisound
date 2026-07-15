@@ -20,6 +20,8 @@ export const themePackageManifestSchema = z.object({
   palette: z.object({
     primary: tailwindScaleSchema,
     accent: tailwindScaleSchema,
+    primaryBase: colorValueSchema.optional(),
+    accentBase: colorValueSchema.optional(),
   }),
   yuruChara: z
     .object({

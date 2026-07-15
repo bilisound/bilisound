@@ -39,6 +39,8 @@ export interface YuruCharaLayout {
 export interface UserThemePalette {
   primary: TailwindScale;
   accent: TailwindScale;
+  primaryBase?: string;
+  accentBase?: string;
 }
 
 export interface UserTheme {

@@ -116,14 +116,18 @@ export default function Page() {
   async function createBlankTheme() {
     const now = Date.now();
     const id = `${now}`;
+    const primaryBase = "#14b8a6";
+    const accentBase = "#3b82f6";
     await saveTheme({
       id,
       name: "未命名主题",
       version: 1,
       baseTheme: "classic",
       palette: {
-        primary: generateTailwindScale("#14b8a6"),
-        accent: generateTailwindScale("#3b82f6"),
+        primary: generateTailwindScale(primaryBase),
+        accent: generateTailwindScale(accentBase),
+        primaryBase,
+        accentBase,
       },
       createdAt: now,
       updatedAt: now,

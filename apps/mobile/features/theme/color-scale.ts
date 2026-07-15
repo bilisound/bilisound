@@ -23,7 +23,7 @@ export function generateTailwindScale(baseColor: string): TailwindScale {
   const lightChroma = baseChroma * lightEndChromaMultiplier;
   const darkChroma = baseChroma * darkEndChromaMultiplier;
 
-  return Object.fromEntries(
+  const scale = Object.fromEntries(
     TAILWIND_SHADES.map((shade, index) => {
       const beforeSource = index <= sourceIndex;
       const progress = beforeSource
@@ -40,6 +40,8 @@ export function generateTailwindScale(baseColor: string): TailwindScale {
       return [shade, hexFromSrgbCoords(Array.from(color.coords).map(channel => channel ?? 0))];
     }),
   ) as TailwindScale;
+  scale[sourceShade] = normalizedBase;
+  return scale;
 }
 
 function getClosestSourceShade(lightness: number): TailwindShade {

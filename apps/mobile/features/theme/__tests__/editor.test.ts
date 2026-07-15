@@ -45,6 +45,20 @@ describe("theme editor helpers", () => {
     });
     expect(saved.palette.primary["500"]).toBe("#ef4444");
     expect(saved.palette.accent["500"]).toBe("#a855f7");
+    expect(saved.palette.primaryBase).toBe("#ef4444");
+    expect(saved.palette.accentBase).toBe("#a855f7");
+  });
+
+  it("keeps bright and dark base colors unchanged at their generated anchor shades", () => {
+    const saved = buildSavedUserTheme(baseTheme, {
+      name: "Anchored",
+      primaryBase: "#fde047",
+      accentBase: "#334155",
+      updatedAt: 300,
+    });
+
+    expect(saved.palette.primary["300"]).toBe("#fde047");
+    expect(saved.palette.accent["700"]).toBe("#334155");
   });
 
   it("trims theme names before saving", () => {

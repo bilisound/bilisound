@@ -26,6 +26,8 @@ describe("theme package schema", () => {
       palette: {
         primary: fullScale,
         accent: fullScale,
+        primaryBase: "rgb(20 184 166)",
+        accentBase: "#0fa",
       },
       yuruChara: {
         image: "yuru-chara.png",
@@ -43,6 +45,8 @@ describe("theme package schema", () => {
     expect(manifest.name).toBe("Mint Test");
     expect(manifest.baseTheme).toBe("classic");
     expect(manifest.palette.primary["500"]).toBe("#14b8a6");
+    expect(manifest.palette.primaryBase).toBe("#14b8a6");
+    expect(manifest.palette.accentBase).toBe("#00ffaa");
     expect(manifest.yuruChara?.image).toBe("yuru-chara.png");
     expect(manifest.yuruChara?.imageWidth).toBe(800);
     expect(manifest.yuruChara?.imageHeight).toBe(600);

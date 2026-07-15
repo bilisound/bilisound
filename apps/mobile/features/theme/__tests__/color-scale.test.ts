@@ -12,6 +12,7 @@ describe("generateTailwindScale", () => {
   it("keeps medium colors closest to shade 500", () => {
     const scale = generateTailwindScale("#14b8a6");
     expect(getClosestShade(scale, "#14b8a6")).toBe("500");
+    expect(scale["500"]).toBe("#14b8a6");
   });
 
   it("accepts rgb input", () => {
@@ -22,6 +23,7 @@ describe("generateTailwindScale", () => {
   it("places bright source colors on a lighter shade", () => {
     const scale = generateTailwindScale("#fde047");
     expect(getClosestShade(scale, "#fde047")).toBe("300");
+    expect(scale["300"]).toBe("#fde047");
   });
 
   it("does not turn generated middle shades black when source shade is not 500", () => {

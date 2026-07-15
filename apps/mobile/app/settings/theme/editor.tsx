@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Controller, useForm } from "react-hook-form";
 import { Image as ReactNativeImage, Platform, ScrollView, View, Pressable } from "react-native";
 import Toast from "react-native-toast-message";
-import Color from "colorjs.io";
 
 import { Layout } from "~/components/layout";
 import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/button";
@@ -37,6 +36,7 @@ import {
 } from "~/features/theme/editor";
 import { extractThemeBaseColors } from "~/features/theme/image-colors";
 import type { ExtractedThemeDebugColor } from "~/features/theme/image-colors";
+import { hexFromCssColor } from "~/features/theme/package-schema";
 import { findUserTheme, useThemeRegistry } from "~/features/theme/registry";
 import { themeStorage } from "~/features/theme/storage";
 import type {
@@ -202,8 +202,8 @@ export default function ThemeEditorPage() {
       setPendingYuruCharaAsset(null);
       form.reset({
         name: existing.name,
-        primaryBase: existing.palette.primary["500"],
-        accentBase: existing.palette.accent["500"],
+        primaryBase: existing.palette.primaryBase ?? existing.palette.primary["500"],
+        accentBase: existing.palette.accentBase ?? existing.palette.accent["500"],
         align: existing.yuruChara?.align ?? defaultYuruCharas.align,
         verticalAlign: existing.yuruChara?.verticalAlign ?? defaultYuruCharas.verticalAlign,
         originalScale: existing.yuruChara?.originalScale ?? defaultYuruCharas.originalScale,
@@ -795,7 +795,7 @@ function parseColorForPicker(value: string, fallback: string) {
 
 function normalizeHex(value: string, fallback: string) {
   try {
-    return new Color(value).to("srgb").toString({ format: "hex" });
+    return hexFromCssColor(value);
   } catch {
     return fallback;
   }
