@@ -47,19 +47,32 @@ export function createYuruCharaUploadDraft(
   input: {
     assetId: string;
     imageSize: { width: number; height: number };
+    viewportSize: { width: number; height: number };
     extractedColors: string[];
   },
 ): UserTheme {
+  const originalScale = getYuruCharaContainScale(input.imageSize, input.viewportSize);
+
   return {
     ...theme,
     yuruChara: withYuruCharaDefaults(theme, {
       imageAssetId: input.assetId,
       imageWidth: input.imageSize.width,
       imageHeight: input.imageSize.height,
-      originalScale: 100,
+      originalScale,
       extractedColors: input.extractedColors,
     }),
   };
+}
+
+export function getYuruCharaContainScale(
+  imageSize: { width: number; height: number },
+  viewportSize: { width: number; height: number },
+): number {
+  const dimensions = [imageSize.width, imageSize.height, viewportSize.width, viewportSize.height];
+  if (dimensions.some(dimension => !Number.isFinite(dimension) || dimension <= 0)) return 100;
+
+  return Math.min(100, (viewportSize.width / imageSize.width) * 100, (viewportSize.height / imageSize.height) * 100);
 }
 
 export function removeYuruCharaFromTheme(theme: UserTheme, updatedAt: number): UserTheme {

@@ -169,6 +169,7 @@ describe("theme editor helpers", () => {
       {
         assetId: "asset-2",
         imageSize: { width: 1200, height: 900 },
+        viewportSize: { width: 1200, height: 900 },
         extractedColors: ["#111111", "#222222"],
       },
     );
@@ -187,6 +188,24 @@ describe("theme editor helpers", () => {
       offsetY: -8,
       extractedColors: ["#111111", "#222222"],
     });
+  });
+
+  it("scales an oversized yuru-chara image to fit the viewport without enlarging smaller images", () => {
+    const oversized = createYuruCharaUploadDraft(baseTheme, {
+      assetId: "asset-large",
+      imageSize: { width: 2000, height: 1000 },
+      viewportSize: { width: 400, height: 800 },
+      extractedColors: [],
+    });
+    const smaller = createYuruCharaUploadDraft(baseTheme, {
+      assetId: "asset-small",
+      imageSize: { width: 300, height: 600 },
+      viewportSize: { width: 400, height: 800 },
+      extractedColors: [],
+    });
+
+    expect(oversized.yuruChara?.originalScale).toBe(20);
+    expect(smaller.yuruChara?.originalScale).toBe(100);
   });
 
   it("preserves existing yuru-chara values while filling missing layout defaults", () => {

@@ -47,6 +47,7 @@ import type {
   YuruCharaLayout,
   YuruCharaVerticalAlign,
 } from "~/features/theme/types";
+import { useWindowSize } from "~/hooks/useWindowSize";
 import { saveBinaryFile } from "~/utils/file";
 
 type FormValues = {
@@ -91,6 +92,7 @@ type ThemeArchiveOutput =
 
 export default function ThemeEditorPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const viewportSize = useWindowSize();
   const saveTheme = useThemeRegistry(state => state.saveTheme);
   const themes = useThemeRegistry(state => state.themes);
   const loaded = useThemeRegistry(state => state.loaded);
@@ -272,18 +274,18 @@ export default function ThemeEditorPage() {
       };
       form.setValue("primaryBase", colors.primaryBase);
       form.setValue("accentBase", colors.accentBase);
-      form.setValue("originalScale", 100);
       setExtractedColors(nextExtractedColors);
       setPendingYuruCharaAssetDeletion(false);
       setPendingYuruCharaAsset(nextAsset);
       setAssetUri(asset.uri);
-      setTheme(
-        createYuruCharaUploadDraft(theme, {
-          assetId: nextAsset.id,
-          imageSize,
-          extractedColors: nextExtractedColors,
-        }),
-      );
+      const draft = createYuruCharaUploadDraft(theme, {
+        assetId: nextAsset.id,
+        imageSize,
+        viewportSize,
+        extractedColors: nextExtractedColors,
+      });
+      form.setValue("originalScale", draft.yuruChara?.originalScale ?? 100);
+      setTheme(draft);
     } catch {
       Toast.show({ type: "error", text1: "图片处理失败", text2: "无法读取图片颜色或处理图片" });
     }
