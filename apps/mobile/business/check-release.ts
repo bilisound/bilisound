@@ -17,7 +17,20 @@ export async function checkLatestVersion(currentVersion: string) {
     case "android_github":
     case "android_github_beta":
     case "android_github_stg": {
-      const { data: result } = await getUpdate();
+      // stg 走 pre-release channel，其余走正式版
+      const nightly = RELEASE_CHANNEL === "android_github_stg";
+      const { data: result } = await getUpdate(nightly);
+      // 服务端在「无可用发布」时返回 data: null，此时视为已是最新，不提示更新
+      if (!result) {
+        return {
+          isLatest: true,
+          currentVersion,
+          latestVersion: currentVersion,
+          extraInfo: "",
+          downloadPage: "",
+          downloadUrl: "",
+        };
+      }
       return {
         isLatest: currentVersion === result.version,
         currentVersion,

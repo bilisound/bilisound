@@ -105,8 +105,9 @@ export interface GetUpdateResponse {
   downloadUrl: string;
 }
 
-export async function getUpdate() {
-  const response = await fetch(`${BILISOUND_API_PREFIX}/internal/app/update`, {
+export async function getUpdate(nightly = false) {
+  const query = nightly ? "?nightly=1" : "";
+  const response = await fetch(`${BILISOUND_API_PREFIX}/internal/app/update${query}`, {
     headers: {
       "user-agent": USER_AGENT_BILISOUND,
     },

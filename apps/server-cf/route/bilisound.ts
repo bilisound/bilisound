@@ -205,7 +205,14 @@ export default function bilisound(router: RouterType) {
         "User-Agent": "Bilisound Server",
       },
     }).then(e => e.json())) as any;
-    const latestRelease = nightly ? response.find((r: any) => r.prerelease) || response[0] : response;
+    // nightly 只认 pre-release，不 fallback 到正式版；正式版直接取 releases/latest
+    const latestRelease = nightly ? (Array.isArray(response) ? response.find((r: any) => r.prerelease) : undefined) : response;
+
+    // 没有可用发布（从未发布、无 pre-release、或 GitHub 返回异常结构）时，兜底为「无更新」
+    if (!latestRelease?.tag_name || !latestRelease.assets?.[0]?.browser_download_url) {
+      return ajaxError("no available release", 404);
+    }
+
     const version = latestRelease.tag_name.replace("v", "");
 
     return ajaxSuccess({
