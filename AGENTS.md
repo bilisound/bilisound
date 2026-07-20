@@ -23,7 +23,8 @@ bilisound/
 │   └── server-netlify/    ← Netlify Functions 版本分发代理
 ├── packages/
 │   ├── sdk/               ← @bilisound/sdk — B 站 API 封装 (运行时无关)
-│   └── player/            ← @bilisound/player — Expo 原生音频播放模块
+│   ├── player/            ← @bilisound/player — Expo 原生音频播放模块
+│   └── ui/                ← @bilisound/ui — v3 Tamagui 组件库与独立 Expo 展示项目
 ```
 
 - **apps/mobile**: Expo SDK 56 客户端。源文件按功能分目录：`app/`（路由页面）、`components/`、`business/`、`store/`、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。
@@ -31,6 +32,7 @@ bilisound/
 - **apps/server-netlify**: Netlify Functions，代理 GitHub Releases 用于版本检查与 APK 下载。
 - **packages/sdk**: 运行时无关的核心逻辑，发布为 `@bilisound/sdk`（TypeScript → `dist/`）。
 - **packages/player**: Expo 原生音频播放模块（iOS/Android/Kotlin + Swift + Web shim），发布为 `@bilisound/player`。
+- **packages/ui**: v3 跨平台组件库，按 design token、recipe、component 分层，并可作为独立 Expo 项目运行。
 
 ## Architecture Overview
 
@@ -82,6 +84,7 @@ bilisound/
 - Mobile release: `pnpm -C apps/mobile build:android`, `pnpm -C apps/mobile build:web`.
 - SDK build: `pnpm -C packages/sdk build` (tsdown → `dist/`).
 - Player build: `pnpm -C packages/player build` (expo-module build).
+- UI build: `pnpm -C packages/ui build`; showcase: `pnpm -C packages/ui web`.
 - CF Worker dev: `pnpm -C apps/server-cf dev`; deploy: `pnpm -C apps/server-cf deploy`.
 - Netlify dev: `pnpm -C apps/server-netlify dev`; deploy: `pnpm -C apps/server-netlify deploy`.
 

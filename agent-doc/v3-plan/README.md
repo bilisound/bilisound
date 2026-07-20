@@ -21,13 +21,16 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 3. [Epic Breakdown](./epic-breakdown.md)
 4. [Player Foundation](./player-foundation.md)
 5. [Config Architecture](./config-architecture.md)
-6. [Agent Handoff Guide](./agent-handoff-guide.md)
+6. [UI Foundation](./ui-foundation.md)
+7. [Agent Handoff Guide](./agent-handoff-guide.md)
 
 ## Current Working Assumption
 
 The first implementation priority is `packages/player`, not `apps/mobile`.
 
 The mobile app currently compensates for player-level limitations in shuffle and queue operations. Moving those workarounds into a new `features/playback` directory would improve file organization, but it would not remove the underlying coupling. The player package should first expose a stable cross-platform abstraction for shuffle mode and queue transactions.
+
+The isolated `packages/ui` design-system foundation may be developed in parallel because it does not consume current mobile business modules. Integrating it into screens remains part of the later UI rewrite and must wait for stable feature-facing APIs.
 
 ## Suggested Phases
 

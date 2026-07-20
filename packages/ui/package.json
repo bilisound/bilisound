@@ -1,0 +1,49 @@
+{
+  "name": "@bilisound/ui",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start -c --port 8082",
+    "android": "expo run:android --port 8082",
+    "ios": "expo run:ios --port 8082",
+    "web": "expo start -c --web --port 8082",
+    "build": "tsdown ./src/index.ts --format esm --dts",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.mts",
+  "peerDependencies": {
+    "@tamagui/button": ">=2.4.2 <2.5.0",
+    "@tamagui/core": ">=2.4.2 <2.5.0",
+    "@tamagui/input": ">=2.4.2 <2.5.0",
+    "@tamagui/slider": ">=2.4.2 <2.5.0",
+    "@tamagui/theme": ">=2.4.2 <2.5.0",
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@expo/metro-runtime": "~57.0.2",
+    "@tamagui/button": "2.4.2",
+    "@tamagui/core": "2.4.2",
+    "@tamagui/input": "2.4.2",
+    "@tamagui/slider": "2.4.2",
+    "@tamagui/theme": "2.4.2",
+    "@types/react": "catalog:",
+    "expo": "catalog:",
+    "expo-status-bar": "~57.0.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "catalog:",
+    "react-native-web": "~0.21.2",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
+  }
+}

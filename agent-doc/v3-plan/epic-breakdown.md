@@ -155,6 +155,7 @@ Goals:
 Scope:
 
 ```txt
+packages/ui
 apps/mobile/app/*
 apps/mobile/components/*
 feature-facing UI wrappers and view models
@@ -176,6 +177,14 @@ Goals:
 3. Re-evaluate Nativewind and gluestack-ui after business boundaries are stable.
 4. Preserve user-visible playback, playlist, settings, cache, and import/export behavior.
 5. Use the rewrite to improve accessibility instead of carrying forward the current collapsed control tree.
+
+Parallel preparation:
+
+```txt
+packages/ui may establish design tokens, recipes, public component contracts, and
+an isolated Expo showcase before Epics 1-6 finish. It must not use that work as a
+reason to migrate v2 screens before their feature-facing APIs are stable.
+```
 
 Non-goals for earlier epics:
 
