@@ -12,6 +12,16 @@ src/component/     Bilisound-owned public component contracts
 
 Dependencies must only point downward: `component -> recipe -> design-token`.
 
+## Consumption
+
+`@bilisound/ui` is a source-only workspace package. Consumers import the package name instead of reaching into its directory:
+
+```ts
+import { Button, Slider, TextInput } from "@bilisound/ui";
+```
+
+The package exports `src/index.ts`, so the consuming Expo application's Metro and Babel pipeline transpiles Tamagui and application code together. There is no package build step or `dist` contract. The package-level `main` field remains reserved for the standalone Expo showcase entry.
+
 ## Theme Contract
 
 Primitive color palettes use the 11 Tailwind shades from `50` through `950`. The same primitive palette is used in light and dark appearances; `createSemanticTheme` selects different shades instead of reversing the palette.
@@ -30,5 +40,4 @@ For live editor previews, call `updateUserTheme(userTheme.palette)` before selec
 pnpm -C packages/ui start
 pnpm -C packages/ui web
 pnpm -C packages/ui typecheck
-pnpm -C packages/ui build
 ```

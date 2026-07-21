@@ -3,22 +3,23 @@
   "version": "0.0.0",
   "private": true,
   "main": "index.ts",
+  "react-native": "./src/index.ts",
+  "types": "./src/index.ts",
   "scripts": {
     "start": "expo start -c --port 8082",
     "android": "expo run:android --port 8082",
     "ios": "expo run:ios --port 8082",
     "web": "expo start -c --web --port 8082",
-    "build": "tsdown ./src/index.ts --format esm --dts",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit"
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "react-native": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "types": "./dist/index.d.mts",
   "peerDependencies": {
     "@tamagui/button": ">=2.4.2 <2.5.0",
     "@tamagui/core": ">=2.4.2 <2.5.0",
@@ -43,7 +44,6 @@
     "react-dom": "19.2.3",
     "react-native": "catalog:",
     "react-native-web": "~0.21.2",
-    "tsdown": "catalog:",
     "typescript": "catalog:"
   }
 }

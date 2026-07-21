@@ -3,8 +3,16 @@ import { ScrollView, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Text, View } from "@tamagui/core";
 
-import { BilisoundProvider, Button, Slider, TextInput, classicPalette, redPalette, updateUserTheme } from "./src";
-import type { Appearance, ThemeName } from "./src";
+import {
+  BilisoundProvider,
+  Button,
+  Slider,
+  TextInput,
+  classicPalette,
+  redPalette,
+  updateUserTheme,
+} from "@bilisound/ui";
+import type { Appearance, ThemeName } from "@bilisound/ui";
 
 const previewUserPalette = {
   primary: redPalette.primary,

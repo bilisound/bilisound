@@ -1,11 +1,18 @@
 import { classicPalette, neutralPalette, redPalette } from "./palettes";
+import { colorTokens } from "./tokens";
 import type { Appearance, ThemePalette } from "./types";
+
+const fixedThemeTokens = {
+  white: colorTokens.white,
+  black: colorTokens.black,
+} as const;
 
 export function createSemanticTheme(palette: ThemePalette, appearance: Appearance) {
   const { primary, accent } = palette;
 
   if (appearance === "dark") {
     return {
+      ...fixedThemeTokens,
       canvas: neutralPalette[950],
       surface: neutralPalette[900],
       surfaceMuted: neutralPalette[800],
@@ -38,8 +45,9 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
   }
 
   return {
+    ...fixedThemeTokens,
     canvas: neutralPalette[50],
-    surface: "#ffffff",
+    surface: fixedThemeTokens.white,
     surfaceMuted: neutralPalette[100],
     text: neutralPalette[950],
     textMuted: neutralPalette[600],
@@ -54,7 +62,7 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
     primaryBackgroundPress: primary[800],
     primaryBorder: primary[700],
     primaryBorderHover: primary[800],
-    primaryForeground: getReadableForeground(primary[600]),
+    primaryForeground: fixedThemeTokens.white,
     secondaryBackground: "transparent",
     secondaryBackgroundHover: accent[50],
     secondaryBackgroundPress: accent[100],
@@ -64,7 +72,7 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
     danger: "#dc2626",
     sliderTrack: neutralPalette[300],
     sliderRange: primary[600],
-    sliderThumb: "#ffffff",
+    sliderThumb: fixedThemeTokens.white,
     sliderThumbBorder: primary[700],
   };
 }
@@ -85,8 +93,8 @@ export function createThemes(userPalette: ThemePalette = classicPalette) {
 }
 
 export function getReadableForeground(background: string) {
-  const light = "#ffffff";
-  const dark = neutralPalette[950];
+  const light = fixedThemeTokens.white;
+  const dark = fixedThemeTokens.black;
   return contrast(background, light) >= contrast(background, dark) ? light : dark;
 }
 

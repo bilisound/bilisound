@@ -7,8 +7,7 @@ import { ButtonFrame, ButtonLabel } from "../recipe";
 export type ButtonVariant = "primary" | "secondary";
 export type ControlSize = "sm" | "md" | "lg";
 
-export interface ButtonProps
-  extends Omit<TamaguiButtonProps, "children" | "ref" | "size" | "unstyled" | "variant"> {
+export interface ButtonProps extends Omit<TamaguiButtonProps, "children" | "ref" | "size" | "unstyled" | "variant"> {
   children: ReactNode;
   ref?: Ref<View>;
   size?: ControlSize;

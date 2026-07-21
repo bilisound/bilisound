@@ -32,6 +32,14 @@ packages/ui -/-> apps/mobile
 
 Tamagui is an implementation detail below the Bilisound component contract. The package uses `@tamagui/core` and selected component packages without `@tamagui/config` or the aggregate `tamagui` package. Components explicitly opt into unstyled primitives.
 
+## Consumption And Transpilation
+
+`packages/ui` is source-only inside the monorepo. Applications import `@bilisound/ui`; package exports resolve that name to `src/index.ts`. Do not import `packages/ui/src/*` through relative paths.
+
+The consuming Expo application's Metro and Babel pipeline must transpile the source. This keeps Tamagui runtime/compiler analysis and React Native platform resolution in the application build instead of hiding them behind a generic library bundler. `packages/ui` has no `dist` contract and mobile development has no package build prerequisite.
+
+The package-level `main` field points to the standalone Expo showcase entry. The `react-native`, `types`, and package `exports` fields point to the library source entry, so consumers do not execute showcase registration.
+
 ## Token And Theme Contract
 
 Primitive color palettes use exactly the canonical Tailwind shade names:
@@ -78,7 +86,6 @@ The Slider keeps Tamagui's keyboard and accessibility behavior. A host using a v
 
 ```sh
 pnpm -C packages/ui typecheck
-pnpm -C packages/ui build
 pnpm -C packages/ui exec expo export --platform web --clear --output-dir ../../.temp/ui-web-export
 pnpm -C packages/ui exec expo export --platform android --clear --output-dir ../../.temp/ui-android-export
 ```
