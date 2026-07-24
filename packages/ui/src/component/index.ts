@@ -6,6 +6,8 @@ export { Label } from "./label";
 export type { LabelProps } from "./label";
 export { Slider } from "./slider";
 export type { SliderProps } from "./slider";
+export { Switch, SwitchVisual } from "./switch";
+export type { SwitchProps, SwitchVisualProps } from "./switch";
 export { TextArea } from "./text-area";
 export type { TextAreaProps } from "./text-area";
 export { TextInput } from "./text-input";

@@ -41,6 +41,9 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
       sliderRange: primary[400],
       sliderThumb: neutralPalette[50],
       sliderThumbBorder: primary[300],
+      switchTrack: primary[50],
+      switchTrackChecked: primary[400],
+      switchThumb: primary[700],
     };
   }
 
@@ -74,6 +77,9 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
     sliderRange: primary[600],
     sliderThumb: fixedThemeTokens.white,
     sliderThumbBorder: primary[700],
+    switchTrack: primary[200],
+    switchTrackChecked: primary[500],
+    switchThumb: primary[50],
   };
 }
 
