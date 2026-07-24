@@ -36,10 +36,7 @@ export const ButtonFrame = styled(TamaguiButton, {
       },
       secondary: {
         backgroundColor: "$secondaryBackground",
-        borderWidth: 1,
         borderColor: "$secondaryBorder",
-        // keep outer box aligned with borderless primary (36px)
-        height: 36,
         shadowOpacity: 0,
         elevation: 0,
         hoverStyle: {
@@ -96,19 +93,19 @@ export const ButtonFrame = styled(TamaguiButton, {
     },
     controlSize: {
       sm: {
-        minHeight: 32,
+        borderWidth: 1,
+        height: 32,
         paddingHorizontal: 12,
-        paddingVertical: 4,
       },
       md: {
-        minHeight: 36,
+        borderWidth: 1,
+        height: 36,
         paddingHorizontal: 16,
-        paddingVertical: 8,
       },
       lg: {
-        minHeight: 40,
+        borderWidth: 1,
+        height: 40,
         paddingHorizontal: 20,
-        paddingVertical: 10,
       },
     },
     visuallyDisabled: {
