@@ -1,6 +1,12 @@
 export { Button } from "./button";
 export type { ButtonProps, ButtonVariant, ControlSize } from "./button";
+export { Checkbox } from "./checkbox";
+export type { CheckboxProps } from "./checkbox";
+export { Label } from "./label";
+export type { LabelProps } from "./label";
 export { Slider } from "./slider";
 export type { SliderProps } from "./slider";
+export { TextArea } from "./text-area";
+export type { TextAreaProps } from "./text-area";
 export { TextInput } from "./text-input";
 export type { TextInputProps } from "./text-input";

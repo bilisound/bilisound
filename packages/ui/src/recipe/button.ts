@@ -6,30 +6,42 @@ export const ButtonFrame = styled(TamaguiButton, {
   alignItems: "center",
   justifyContent: "center",
   flexDirection: "row",
-  borderWidth: 1,
-  borderRadius: "$2",
+  borderWidth: 0,
+  borderRadius: 6,
   cursor: "pointer",
   focusVisibleStyle: {
     outlineColor: "$focusRing",
     outlineStyle: "solid",
-    outlineWidth: 3,
+    outlineWidth: 2,
+    outlineOffset: 2,
   },
   variants: {
     tone: {
       primary: {
         backgroundColor: "$primaryBackground",
-        borderColor: "$primaryBorder",
+        borderColor: "$primaryBackground",
+        shadowColor: "#000000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
         hoverStyle: {
           backgroundColor: "$primaryBackgroundHover",
-          borderColor: "$primaryBorderHover",
+          borderColor: "$primaryBackgroundHover",
         },
         pressStyle: {
           backgroundColor: "$primaryBackgroundPress",
+          borderColor: "$primaryBackgroundPress",
         },
       },
       secondary: {
         backgroundColor: "$secondaryBackground",
+        borderWidth: 1,
         borderColor: "$secondaryBorder",
+        // keep outer box aligned with borderless primary (36px)
+        height: 36,
+        shadowOpacity: 0,
+        elevation: 0,
         hoverStyle: {
           backgroundColor: "$secondaryBackgroundHover",
           borderColor: "$secondaryBorderHover",
@@ -38,25 +50,71 @@ export const ButtonFrame = styled(TamaguiButton, {
           backgroundColor: "$secondaryBackgroundPress",
         },
       },
+      // same footprint as solid buttons; fill only appears on hover/focus/press
+      ghost: {
+        backgroundColor: "transparent",
+        borderWidth: 0,
+        borderColor: "transparent",
+        shadowOpacity: 0,
+        elevation: 0,
+        hoverStyle: {
+          backgroundColor: "$surfaceMuted",
+        },
+        pressStyle: {
+          backgroundColor: "$surfaceMuted",
+          opacity: 0.92,
+        },
+        focusVisibleStyle: {
+          backgroundColor: "$surfaceMuted",
+          outlineColor: "$focusRing",
+          outlineStyle: "solid",
+          outlineWidth: 2,
+          outlineOffset: 2,
+        },
+      },
+      // inline text action (guestbook 「回复」)
+      link: {
+        backgroundColor: "transparent",
+        borderWidth: 0,
+        borderColor: "transparent",
+        alignSelf: "flex-start",
+        justifyContent: "flex-start",
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        minHeight: 0,
+        height: "auto",
+        shadowOpacity: 0,
+        elevation: 0,
+        hoverStyle: {
+          backgroundColor: "transparent",
+        },
+        pressStyle: {
+          backgroundColor: "transparent",
+          opacity: 0.7,
+        },
+      },
     },
     controlSize: {
       sm: {
-        minHeight: "$8",
-        paddingHorizontal: "$3",
+        minHeight: 32,
+        paddingHorizontal: 12,
+        paddingVertical: 4,
       },
       md: {
-        minHeight: "$10",
-        paddingHorizontal: "$4",
+        minHeight: 36,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
       },
       lg: {
-        minHeight: "$12",
-        paddingHorizontal: "$5",
+        minHeight: 40,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
       },
     },
     visuallyDisabled: {
       true: {
         cursor: "not-allowed",
-        opacity: 0.45,
+        opacity: 0.5,
       },
     },
   } as const,
@@ -79,6 +137,16 @@ export const ButtonLabel = styled(TamaguiButton.Text, {
       secondary: {
         color: "$secondaryForeground",
       },
+      ghost: {
+        color: "$text",
+      },
+      link: {
+        color: "$primaryBackground",
+        fontWeight: "400",
+        hoverStyle: {
+          textDecorationLine: "underline",
+        },
+      },
     },
     controlSize: {
       sm: {
@@ -86,12 +154,12 @@ export const ButtonLabel = styled(TamaguiButton.Text, {
         lineHeight: "$sm",
       },
       md: {
-        fontSize: "$base",
-        lineHeight: "$base",
+        fontSize: "$sm",
+        lineHeight: "$sm",
       },
       lg: {
-        fontSize: "$lg",
-        lineHeight: "$lg",
+        fontSize: "$base",
+        lineHeight: "$base",
       },
     },
   } as const,

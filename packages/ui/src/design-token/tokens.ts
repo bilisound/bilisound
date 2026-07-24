@@ -9,11 +9,13 @@ export const spaceTokens = {
   1: 4,
   2: 8,
   3: 12,
+  3.5: 14,
   4: 16,
   5: 20,
   6: 24,
   7: 28,
   8: 32,
+  9: 36,
   10: 40,
   12: 48,
   14: 56,
@@ -23,17 +25,18 @@ export const spaceTokens = {
 
 export const sizeTokens = {
   ...spaceTokens,
-  true: 40,
+  true: 36,
 } as const;
 
 export const radiusTokens = {
   0: 0,
   1: 4,
+  1.5: 6,
   2: 8,
   3: 12,
   4: 16,
   full: 9999,
-  true: 8,
+  true: 6,
 } as const;
 
 export const colorTokens = {
