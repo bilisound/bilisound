@@ -18,6 +18,10 @@ Stories are colocated with their public components as `src/component/*.stories.t
 
 Storybook renders through React Native Web for fast documentation and accessibility review. It does not replace iOS or Android verification; use the Expo showcase for native fidelity.
 
+## Android Theme Plugin
+
+`plugins/withAndroidTheme.ts` is shared by the Expo showcase and `apps/mobile`. It installs the `Widget.App.TextView` and `Widget.App.EditText` Android styles used to keep text input content vertically centered on HyperOS 2 / Android 15.
+
 ## Consumption
 
 `@bilisound/ui` is a source-only workspace package. Consumers import the package name instead of reaching into its directory:

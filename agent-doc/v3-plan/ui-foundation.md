@@ -17,6 +17,7 @@ packages/ui/
   .storybook/          # React Native Web documentation configuration
   App.tsx              # isolated native smoke showcase
   index.ts             # Expo showcase entry
+  plugins/            # shared Expo config plugins for native UI behavior
   src/
     design-token/      # primitive and semantic tokens, themes, Tamagui config
     recipe/            # headless Tamagui styling and visual states

@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { styled } from "@tamagui/core";
 import { Input as TamaguiInput } from "@tamagui/input";
 
@@ -33,6 +34,8 @@ export const TextInputFrame = styled(TamaguiInput, {
   name: "BilisoundTextInputFrame",
   minWidth: 0,
   width: "100%",
+  // Native EditText padding clips compact fields after the shared Android theme is applied.
+  ...(Platform.OS === "android" ? { paddingVertical: 0 } : {}),
   variants: {
     fieldSize: {
       sm: {

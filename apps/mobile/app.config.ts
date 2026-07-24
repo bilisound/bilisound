@@ -44,7 +44,7 @@ const baseConfig: ExpoConfig = {
   },
   plugins: [
     "./plugins/withAndroidSignature",
-    "./plugins/withAndroidTheme",
+    "../../packages/ui/plugins/withAndroidTheme",
     "./plugins/withGradleProperties",
     [
       "react-native-edge-to-edge",

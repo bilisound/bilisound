@@ -7,6 +7,7 @@ const config: ExpoConfig = {
   orientation: "default",
   userInterfaceStyle: "automatic",
   plugins: [
+    "./plugins/withAndroidTheme",
     [
       "expo-build-properties",
       {
