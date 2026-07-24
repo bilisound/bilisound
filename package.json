@@ -7,7 +7,6 @@
     "lint": "turbo lint --cache-dir .turbo/cache",
     "cleanup": "turbo cleanup",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-
     "postinstall": "pnpm build",
     "prepare": "node ./scripts/install-skills.mjs",
     "prettier:fix": "prettier -w --ignore-unknown .",
@@ -19,7 +18,7 @@
     "prettier": "^3.8.0",
     "skills": "^1.5.9",
     "skills-npm": "^1.1.1",
-    "turbo": "^2.7.5"
+    "turbo": "^2.10.6"
   },
   "engines": {
     "node": ">=22.0.0"

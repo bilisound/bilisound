@@ -10,16 +10,17 @@ Screen migration is still Epic 7 work. Current v2 screens should not adopt `pack
 
 ## Package Shape
 
-`packages/ui` is both a workspace library and an Expo showcase project.
+`packages/ui` is a workspace library with Storybook documentation and an Expo native showcase.
 
 ```txt
 packages/ui/
-  App.tsx              # isolated component showcase
-  index.ts             # Expo entry
+  .storybook/          # React Native Web documentation configuration
+  App.tsx              # isolated native smoke showcase
+  index.ts             # Expo showcase entry
   src/
     design-token/      # primitive and semantic tokens, themes, Tamagui config
     recipe/            # headless Tamagui styling and visual states
-    component/         # Bilisound-owned public component contracts
+    component/         # public contracts with colocated *.stories.tsx documentation
 ```
 
 Dependency direction:
@@ -31,6 +32,12 @@ packages/ui -/-> apps/mobile
 ```
 
 Tamagui is an implementation detail below the Bilisound component contract. The package uses `@tamagui/core` and selected component packages without `@tamagui/config` or the aggregate `tamagui` package. Components explicitly opt into unstyled primitives.
+
+## Component Documentation
+
+Web Storybook is the canonical component catalog. Stories are colocated with public components and document variants, states, controls, and generated prop tables. Global toolbar controls exercise light/dark appearances and built-in semantic themes through `BilisoundProvider`.
+
+Storybook uses `@storybook/react-native-web-vite` because documentation, sharing, addons, and accessibility review are the immediate goal. The Expo showcase remains separate for native smoke testing; React Native Web rendering is not evidence of iOS or Android fidelity.
 
 ## Consumption And Transpilation
 
@@ -86,6 +93,7 @@ The Slider keeps Tamagui's keyboard and accessibility behavior. A host using a v
 
 ```sh
 pnpm -C packages/ui typecheck
+pnpm -C packages/ui build:storybook
 pnpm -C packages/ui exec expo export --platform web --clear --output-dir ../../.temp/ui-web-export
 pnpm -C packages/ui exec expo export --platform android --clear --output-dir ../../.temp/ui-android-export
 ```

@@ -6,6 +6,23 @@ const config: ExpoConfig = {
   version: "0.0.0",
   orientation: "default",
   userInterfaceStyle: "automatic",
+  plugins: [
+    [
+      "expo-build-properties",
+      {
+        ios: {
+          usePrecompiledModules: true,
+        },
+      },
+    ],
+    "@react-native-community/datetimepicker",
+  ],
+  ios: {
+    bundleIdentifier: "moe.bilisound.ui",
+  },
+  android: {
+    package: "moe.bilisound.ui",
+  },
   web: {
     bundler: "metro",
   },

@@ -1,6 +1,6 @@
 # @bilisound/ui
 
-Bilisound v3 component library. The package is also an isolated Expo project so components can be developed and verified without coupling them to current mobile screens.
+Bilisound v3 component library. Storybook is the canonical component documentation surface; the isolated Expo showcase remains available for native smoke testing without coupling components to current mobile screens.
 
 ## Layers
 
@@ -11,6 +11,12 @@ src/component/     Bilisound-owned public component contracts
 ```
 
 Dependencies must only point downward: `component -> recipe -> design-token`.
+
+## Component Documentation
+
+Stories are colocated with their public components as `src/component/*.stories.tsx`. Each component owns its variants, states, controls, and generated API documentation. The global Storybook toolbar switches Bilisound appearance and semantic theme.
+
+Storybook renders through React Native Web for fast documentation and accessibility review. It does not replace iOS or Android verification; use the Expo showcase for native fidelity.
 
 ## Consumption
 
@@ -37,7 +43,9 @@ For live editor previews, call `updateUserTheme(userTheme.palette)` before selec
 ## Commands
 
 ```sh
-pnpm -C packages/ui start
-pnpm -C packages/ui web
+pnpm -C packages/ui web              # Storybook documentation
+pnpm -C packages/ui build:storybook  # Static Storybook build
+pnpm -C packages/ui start            # Expo native showcase
+pnpm -C packages/ui showcase:web     # Expo Web showcase
 pnpm -C packages/ui typecheck
 ```

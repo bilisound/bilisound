@@ -1,5 +1,6 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
+const { withStorybook } = require("@storybook/react-native/withStorybook");
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, "../..");
@@ -12,4 +13,6 @@ config.resolver.nodeModulesPaths = [
 ];
 config.watchFolders = [workspaceRoot];
 
-module.exports = config;
+module.exports = withStorybook(config, {
+  configPath: path.resolve(projectRoot, ".rnstorybook"),
+});
