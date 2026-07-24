@@ -572,6 +572,27 @@ importers:
       '@gorhom/bottom-sheet':
         specifier: 5.2.14
         version: 5.2.14(@types/react@19.2.14)(react-native-gesture-handler@2.32.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3))(react-native-reanimated@4.5.0(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3)
+      '@iconify-json/fa6-solid':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify-json/ion':
+        specifier: ^1.2.7
+        version: 1.2.7
+      '@iconify-json/material-symbols':
+        specifier: ^1.2.69
+        version: 1.2.69
+      '@iconify-json/mingcute':
+        specifier: ^1.2.7
+        version: 1.2.7
+      '@iconify-json/ri':
+        specifier: ^1.2.10
+        version: 1.2.10
+      '@iconify-json/tabler':
+        specifier: ^1.2.33
+        version: 1.2.33
+      '@iconify-json/uil':
+        specifier: ^1.2.3
+        version: 1.2.3
       '@react-native-async-storage/async-storage':
         specifier: 2.2.0
         version: 2.2.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))
@@ -602,6 +623,9 @@ importers:
       '@storybook/react-native-web-vite':
         specifier: 10.5.4
         version: 10.5.4(@types/react@19.2.14)(esbuild@0.28.1)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3)(rollup@4.62.2)(storybook@10.5.4(@types/react@19.2.14)(prettier@3.8.0)(react@19.2.3))(supports-color@10.0.0)(typescript@5.9.3)(vite@7.3.6(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.8.3))
+      '@tamagui/animations-react-native':
+        specifier: 2.4.2
+        version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/button':
         specifier: 2.4.2
         version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -609,6 +633,9 @@ importers:
         specifier: 2.4.2
         version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/input':
+        specifier: 2.4.2
+        version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/sheet':
         specifier: 2.4.2
         version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/slider':
@@ -650,18 +677,27 @@ importers:
       react-native-svg:
         specifier: 15.15.4
         version: 15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3)
+      react-native-svg-transformer:
+        specifier: ^1.5.3
+        version: 1.5.3(react-native-svg@15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(typescript@5.9.3)
       react-native-web:
         specifier: ~0.21.2
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       storybook:
         specifier: 10.5.4
         version: 10.5.4(@types/react@19.2.14)(prettier@3.8.0)(react@19.2.3)
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
       vite:
         specifier: ^7.3.6
         version: 7.3.6(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.8.3)
+      vite-plugin-svgr:
+        specifier: ^4.5.0
+        version: 4.5.0(rollup@4.62.2)(typescript@5.9.3)(vite@7.3.6(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.8.3))
 
 packages:
 
@@ -5559,6 +5595,16 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.2.0'
 
+  '@tamagui/adapt@2.4.2':
+    resolution: {integrity: sha512-rJEszU9Z2OkWF5+Ih3t+25mGLiAp/t1NztE9/LOWCS6MmHTvwQTWrpxS//UBQvpQr5KzhfXDsJjO+Ss0JDw6Qw==}
+    peerDependencies:
+      react: '>=19'
+
+  '@tamagui/animate-presence@2.4.2':
+    resolution: {integrity: sha512-MHu4A8skqtmubf91YanHYwieFR6/t1fnC/LIDqkYq0EhOW3T73ytCZXiByh8SzTP4alEn/OWYrhnX3gNqHc7og==}
+    peerDependencies:
+      react: '>=19'
+
   '@tamagui/animation-helpers@2.4.2':
     resolution: {integrity: sha512-tIr69SwP+8tAvWQ26rAPveVDpkSQe4dOmtduPfGwDKK9W564RH3NpxIWPSVpTkc5v4NWBx1jkPig6dgWTLP7tQ==}
 
@@ -5667,11 +5713,32 @@ packages:
   '@tamagui/normalize-css-color@2.4.2':
     resolution: {integrity: sha512-a+2DgzihKKjCVh7XWTCE8zPyzxMVimRq72gN/SJE5NU4kgv532WjU8qfn2IZqROd/HLY/uqGWRRO5AOk02heGQ==}
 
+  '@tamagui/portal@2.4.2':
+    resolution: {integrity: sha512-PDmtOG5B7SEHWgn8lr3mFx+zvpAWtPjdXl1hWWCiv2SFuPEGkvsiqlHJ3av63+fzAyvdv9mIFqVrERNeVdTJZg==}
+    peerDependencies:
+      react: '>=19'
+      react-dom: '*'
+
   '@tamagui/react-native-media-driver@2.4.2':
     resolution: {integrity: sha512-fbAwG/DKDamXx18L5Z418XIpqelNruuiS5j6bGQbg2SduV0xYX5jHJ+wPpy1h1TfNjd6ytPKPJeyCWxgY4e2tg==}
 
   '@tamagui/react-native-use-pressable@2.4.2':
     resolution: {integrity: sha512-B3F3nkK+gdhk/lYh2HSj7OelfnprHCj8ogSVnHu9ctGk1M9KJ4TtIjRnXkBYsTYCtrB4aXOMUu5R3ce1lSZg7A==}
+    peerDependencies:
+      react: '>=19'
+
+  '@tamagui/remove-scroll@2.4.2':
+    resolution: {integrity: sha512-J6I5I/8zheFHCKccDKBzbrViV93L9JUKg+joQ+UtLvF+UJltOD8dF313t68Yt5p9jDJ1cTA3LXDVIzThnNaC8Q==}
+    peerDependencies:
+      react: '>=19'
+
+  '@tamagui/scroll-view@2.4.2':
+    resolution: {integrity: sha512-KFjp11BQtOwnI8/QeON19SGnBTR4dGoKMLrG2siEiCwS+a3uITCxlz1qW7d+2S/XOKVGsZfK7io3tHiL1kFrDg==}
+    peerDependencies:
+      react: '>=19'
+
+  '@tamagui/sheet@2.4.2':
+    resolution: {integrity: sha512-fF4HOEqY2nRzZOUfWfCFvt8I1l0/85Bg/Mb5uo9024mO+/0BOiJdDLFkAE5KRSDDchLx+FBoOyw40fnoh36drg==}
     peerDependencies:
       react: '>=19'
 
@@ -5722,6 +5789,11 @@ packages:
   '@tamagui/types@2.4.2':
     resolution: {integrity: sha512-MElN5ilnrwhH0i1aQG/Q3p065JNRDzT7TmJRTd8DME7cimh67QJQln2cCLdV/p6aHEf2FBy269bN0XvY01c/6Q==}
 
+  '@tamagui/use-constant@2.4.2':
+    resolution: {integrity: sha512-iRSfMkvmg9c74bne8mIOY5Wh0j3dQNirNVw40isuA6suJimhj+F0EwHyiypvCvqrqOjA9Ch2Q8R84vD8Ox+YZA==}
+    peerDependencies:
+      react: '>=19'
+
   '@tamagui/use-controllable-state@2.4.2':
     resolution: {integrity: sha512-NCxztk7WrAFlani5LKeDKez7JE8lDdao7/I9pVDL1qEMu4fz4mQB0GMEEo6/Ao4G5Gw6dzWm9RoinTwuQlZa7g==}
     peerDependencies:
@@ -5757,6 +5829,11 @@ packages:
     peerDependencies:
       react: '>=19'
 
+  '@tamagui/use-keyboard-visible@2.4.2':
+    resolution: {integrity: sha512-phCeEdH3ah9tG+B0mFtm0oXrTpdH9lxTElnJBpMbRGXIWLixugE42EcHwC+6DZg0tFrBLqfRTksEo1+IwS1igg==}
+    peerDependencies:
+      react: '>=19'
+
   '@tamagui/use-presence@2.4.2':
     resolution: {integrity: sha512-nqo+p8/PLe1TI4z0DWcpri+M5CGH2AhKttQ5D0izIZmEJogHLEic0KNBRlD40fIsD6j7VzS73XcFwRG+UmTfiQ==}
     peerDependencies:
@@ -5772,6 +5849,11 @@ packages:
     peerDependencies:
       react: '>=19'
       react-dom: '*'
+
+  '@tamagui/z-index-stack@2.4.2':
+    resolution: {integrity: sha512-t6LlAlmzn+5BZ4a+6LeV5onr2XX8bQBlEX9hiuz3mjAoFmxZRC0QmLOQt3xXQsUZC842omgNjIKaveSGr3Gwqg==}
+    peerDependencies:
+      react: '>=19'
 
   '@tanstack/query-core@5.100.4':
     resolution: {integrity: sha512-LdW/DDImiw9g4ukyndlrifIXPFpoQjNybCAIDBcPvdYu9iUIhAKwhznfAATe2dJBonhm0O3ksoCMmVTUxN89uA==}
@@ -5835,10 +5917,6 @@ packages:
   '@tootallnate/once@2.0.1':
     resolution: {integrity: sha512-HqmEUIGRJ5fSXchkVgR5F7qn48bDBzv0kWj/Kfu5e6uci4UlEeng4331LnBkWffb++Ei3FOVLxo8JJWMFBDMeQ==}
     engines: {node: '>= 10'}
-
-  '@trysound/sax@0.2.0':
-    resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
-    engines: {node: '>=10.13.0'}
 
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
@@ -12808,8 +12886,8 @@ packages:
   svg-parser@2.0.4:
     resolution: {integrity: sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==}
 
-  svgo@3.3.2:
-    resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
+  svgo@3.3.4:
+    resolution: {integrity: sha512-GsNRis4e8jxn2Y9ENz/8lbJ93CstG8svtMnuRaHbiF2LTJ5tK0/q3t/URPq9Zc7zVWBJnNnJMIp6bevK7bSmNg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -13510,6 +13588,11 @@ packages:
       react-native-web: '*'
       typescript: ^5
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+
+  vite-plugin-svgr@4.5.0:
+    resolution: {integrity: sha512-W+uoSpmVkSmNOGPSsDCWVW/DDAyv+9fap9AZXBvWiQqrboJ08j2vh0tFxTD/LjwqwAd3yYSVJgm54S/1GhbdnA==}
+    peerDependencies:
+      vite: '>=2.6.0'
 
   vite-tsconfig-paths@6.1.1:
     resolution: {integrity: sha512-2cihq7zliibCCZ8P9cKJrQBkfgdvcFkOOc3Y02o3GWUDLgqjWsZudaoiuOwO/gzTzy17cS5F7ZPo4bsnS4DGkg==}
@@ -20407,54 +20490,65 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@svgr/babel-plugin-add-jsx-attribute@8.0.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-add-jsx-attribute@8.0.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-plugin-remove-jsx-attribute@8.0.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-remove-jsx-attribute@8.0.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-plugin-remove-jsx-empty-expression@8.0.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-remove-jsx-empty-expression@8.0.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-plugin-replace-jsx-attribute-value@8.0.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-replace-jsx-attribute-value@8.0.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-plugin-svg-dynamic-title@8.0.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-svg-dynamic-title@8.0.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-plugin-svg-em-dimensions@8.0.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-svg-em-dimensions@8.0.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-plugin-transform-react-native-svg@8.1.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-transform-react-native-svg@8.1.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-plugin-transform-svg-component@8.0.0(@babel/core@7.28.6)':
+  '@svgr/babel-plugin-transform-svg-component@8.0.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
+      '@babel/core': 7.29.7
 
-  '@svgr/babel-preset@8.1.0(@babel/core@7.28.6)':
+  '@svgr/babel-preset@8.1.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/core': 7.28.6
-      '@svgr/babel-plugin-add-jsx-attribute': 8.0.0(@babel/core@7.28.6)
-      '@svgr/babel-plugin-remove-jsx-attribute': 8.0.0(@babel/core@7.28.6)
-      '@svgr/babel-plugin-remove-jsx-empty-expression': 8.0.0(@babel/core@7.28.6)
-      '@svgr/babel-plugin-replace-jsx-attribute-value': 8.0.0(@babel/core@7.28.6)
-      '@svgr/babel-plugin-svg-dynamic-title': 8.0.0(@babel/core@7.28.6)
-      '@svgr/babel-plugin-svg-em-dimensions': 8.0.0(@babel/core@7.28.6)
-      '@svgr/babel-plugin-transform-react-native-svg': 8.1.0(@babel/core@7.28.6)
-      '@svgr/babel-plugin-transform-svg-component': 8.0.0(@babel/core@7.28.6)
+      '@babel/core': 7.29.7
+      '@svgr/babel-plugin-add-jsx-attribute': 8.0.0(@babel/core@7.29.7)
+      '@svgr/babel-plugin-remove-jsx-attribute': 8.0.0(@babel/core@7.29.7)
+      '@svgr/babel-plugin-remove-jsx-empty-expression': 8.0.0(@babel/core@7.29.7)
+      '@svgr/babel-plugin-replace-jsx-attribute-value': 8.0.0(@babel/core@7.29.7)
+      '@svgr/babel-plugin-svg-dynamic-title': 8.0.0(@babel/core@7.29.7)
+      '@svgr/babel-plugin-svg-em-dimensions': 8.0.0(@babel/core@7.29.7)
+      '@svgr/babel-plugin-transform-react-native-svg': 8.1.0(@babel/core@7.29.7)
+      '@svgr/babel-plugin-transform-svg-component': 8.0.0(@babel/core@7.29.7)
+
+  '@svgr/core@8.1.0(typescript@5.9.3)':
+    dependencies:
+      '@babel/core': 7.29.7
+      '@svgr/babel-preset': 8.1.0(@babel/core@7.29.7)
+      camelcase: 6.3.0
+      cosmiconfig: 8.3.6(typescript@5.9.3)
+      snake-case: 3.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
 
   '@svgr/core@8.1.0(typescript@6.0.3)':
     dependencies:
-      '@babel/core': 7.28.6
-      '@svgr/babel-preset': 8.1.0(@babel/core@7.28.6)
+      '@babel/core': 7.29.7
+      '@svgr/babel-preset': 8.1.0(@babel/core@7.29.7)
       camelcase: 6.3.0
       cosmiconfig: 8.3.6(typescript@6.0.3)
       snake-case: 3.0.4
@@ -20467,22 +20561,41 @@ snapshots:
       '@babel/types': 7.29.7
       entities: 4.5.0
 
+  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.9.3))':
+    dependencies:
+      '@babel/core': 7.29.7
+      '@svgr/babel-preset': 8.1.0(@babel/core@7.29.7)
+      '@svgr/core': 8.1.0(typescript@5.9.3)
+      '@svgr/hast-util-to-babel-ast': 8.0.0
+      svg-parser: 2.0.4
+    transitivePeerDependencies:
+      - supports-color
+
   '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@6.0.3))':
     dependencies:
-      '@babel/core': 7.28.6
-      '@svgr/babel-preset': 8.1.0(@babel/core@7.28.6)
+      '@babel/core': 7.29.7
+      '@svgr/babel-preset': 8.1.0(@babel/core@7.29.7)
       '@svgr/core': 8.1.0(typescript@6.0.3)
       '@svgr/hast-util-to-babel-ast': 8.0.0
       svg-parser: 2.0.4
     transitivePeerDependencies:
       - supports-color
 
+  '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.9.3))(typescript@5.9.3)':
+    dependencies:
+      '@svgr/core': 8.1.0(typescript@5.9.3)
+      cosmiconfig: 8.3.6(typescript@5.9.3)
+      deepmerge: 4.3.1
+      svgo: 3.3.4
+    transitivePeerDependencies:
+      - typescript
+
   '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@6.0.3))(typescript@6.0.3)':
     dependencies:
       '@svgr/core': 8.1.0(typescript@6.0.3)
       cosmiconfig: 8.3.6(typescript@6.0.3)
       deepmerge: 4.3.1
-      svgo: 3.3.2
+      svgo: 3.3.4
     transitivePeerDependencies:
       - typescript
 
@@ -20497,6 +20610,29 @@ snapshots:
   '@tailwindcss/container-queries@0.1.1(tailwindcss@3.4.19(tsx@4.22.4)(yaml@2.8.3))':
     dependencies:
       tailwindcss: 3.4.19(tsx@4.22.4)(yaml@2.8.3)
+
+  '@tamagui/adapt@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@tamagui/constants': 2.4.2(react@19.2.3)
+      '@tamagui/core': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/helpers': 2.4.2(react@19.2.3)
+      '@tamagui/portal': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/z-index-stack': 2.4.2(react@19.2.3)
+      react: 19.2.3
+    transitivePeerDependencies:
+      - react-dom
+
+  '@tamagui/animate-presence@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@tamagui/constants': 2.4.2(react@19.2.3)
+      '@tamagui/helpers': 2.4.2(react@19.2.3)
+      '@tamagui/use-constant': 2.4.2(react@19.2.3)
+      '@tamagui/use-force-update': 2.4.2(react@19.2.3)
+      '@tamagui/use-presence': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/web': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+    transitivePeerDependencies:
+      - react-dom
 
   '@tamagui/animation-helpers@2.4.2': {}
 
@@ -20674,6 +20810,18 @@ snapshots:
     dependencies:
       '@react-native/normalize-color': 2.1.0
 
+  '@tamagui/portal@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@tamagui/constants': 2.4.2(react@19.2.3)
+      '@tamagui/core': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/native': 2.4.2(react@19.2.3)
+      '@tamagui/start-transition': 2.4.2(react@19.2.3)
+      '@tamagui/use-event': 2.4.2(react@19.2.3)
+      '@tamagui/web': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/z-index-stack': 2.4.2(react@19.2.3)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+
   '@tamagui/react-native-media-driver@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/web': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -20684,6 +20832,42 @@ snapshots:
   '@tamagui/react-native-use-pressable@2.4.2(react@19.2.3)':
     dependencies:
       react: 19.2.3
+
+  '@tamagui/remove-scroll@2.4.2(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
+
+  '@tamagui/scroll-view@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@tamagui/stacks': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/web': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+    transitivePeerDependencies:
+      - react-dom
+
+  '@tamagui/sheet@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@tamagui/adapt': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/animate-presence': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/animations-react-native': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/compose-refs': 2.4.2(react@19.2.3)
+      '@tamagui/constants': 2.4.2(react@19.2.3)
+      '@tamagui/core': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/create-context': 2.4.2(react@19.2.3)
+      '@tamagui/helpers': 2.4.2(react@19.2.3)
+      '@tamagui/native': 2.4.2(react@19.2.3)
+      '@tamagui/portal': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/remove-scroll': 2.4.2(react@19.2.3)
+      '@tamagui/scroll-view': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/stacks': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/use-constant': 2.4.2(react@19.2.3)
+      '@tamagui/use-controllable-state': 2.4.2(react@19.2.3)
+      '@tamagui/use-did-finish-ssr': 2.4.2(react@19.2.3)
+      '@tamagui/use-keyboard-visible': 2.4.2(react@19.2.3)
+      '@tamagui/z-index-stack': 2.4.2(react@19.2.3)
+      react: 19.2.3
+    transitivePeerDependencies:
+      - react-dom
 
   '@tamagui/shorthands@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -20763,6 +20947,10 @@ snapshots:
 
   '@tamagui/types@2.4.2': {}
 
+  '@tamagui/use-constant@2.4.2(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
+
   '@tamagui/use-controllable-state@2.4.2(react@19.2.3)':
     dependencies:
       '@tamagui/start-transition': 2.4.2(react@19.2.3)
@@ -20795,6 +20983,10 @@ snapshots:
     dependencies:
       react: 19.2.3
 
+  '@tamagui/use-keyboard-visible@2.4.2(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
+
   '@tamagui/use-presence@2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/web': 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -20821,6 +21013,10 @@ snapshots:
       '@tamagui/use-force-update': 2.4.2(react@19.2.3)
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
+
+  '@tamagui/z-index-stack@2.4.2(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
 
   '@tanstack/query-core@5.100.4': {}
 
@@ -20919,8 +21115,6 @@ snapshots:
   '@tokenizer/token@0.3.0': {}
 
   '@tootallnate/once@2.0.1': {}
-
-  '@trysound/sax@0.2.0': {}
 
   '@tsconfig/node10@1.0.11': {}
 
@@ -22753,6 +22947,15 @@ snapshots:
   core-js@3.49.0: {}
 
   core-util-is@1.0.3: {}
+
+  cosmiconfig@8.3.6(typescript@5.9.3):
+    dependencies:
+      import-fresh: 3.3.1
+      js-yaml: 4.2.0
+      parse-json: 5.2.0
+      path-type: 4.0.0
+    optionalDependencies:
+      typescript: 5.9.3
 
   cosmiconfig@8.3.6(typescript@6.0.3):
     dependencies:
@@ -29055,6 +29258,18 @@ snapshots:
       react-native: 0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
       warn-once: 0.1.1
 
+  react-native-svg-transformer@1.5.3(react-native-svg@15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(typescript@5.9.3):
+    dependencies:
+      '@svgr/core': 8.1.0(typescript@5.9.3)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))
+      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))(typescript@5.9.3)
+      path-dirname: 1.0.2
+      react-native: 0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0)
+      react-native-svg: 15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)(supports-color@10.0.0))(react@19.2.3)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   react-native-svg-transformer@1.5.3(react-native-svg@15.15.4(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(typescript@6.0.3):
     dependencies:
       '@svgr/core': 8.1.0(typescript@6.0.3)
@@ -30335,15 +30550,15 @@ snapshots:
 
   svg-parser@2.0.4: {}
 
-  svgo@3.3.2:
+  svgo@3.3.4:
     dependencies:
-      '@trysound/sax': 0.2.0
       commander: 7.2.0
       css-select: 5.1.0
       css-tree: 2.3.1
       css-what: 6.1.0
       csso: 5.0.5
       picocolors: 1.1.1
+      sax: 1.6.0
 
   svgo@4.0.0:
     dependencies:
@@ -31061,6 +31276,17 @@ snapshots:
       vite-plugin-commonjs: 0.10.4
     transitivePeerDependencies:
       - supports-color
+
+  vite-plugin-svgr@4.5.0(rollup@4.62.2)(typescript@5.9.3)(vite@7.3.6(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.8.3)):
+    dependencies:
+      '@rollup/pluginutils': 5.4.0(rollup@4.62.2)
+      '@svgr/core': 8.1.0(typescript@5.9.3)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))
+      vite: 7.3.6(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.8.3)
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+      - typescript
 
   vite-tsconfig-paths@6.1.1(supports-color@10.0.0)(typescript@5.9.3)(vite@7.3.6(@types/node@24.10.9)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.8.3)):
     dependencies:

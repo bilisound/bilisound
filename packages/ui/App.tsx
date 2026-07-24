@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { Text, View } from "@tamagui/core";
 
 import {
+  ActionMenu,
   BilisoundProvider,
   Button,
   Checkbox,
@@ -35,6 +36,7 @@ export default function App() {
   const [comment, setComment] = useState("");
   const [notify, setNotify] = useState(true);
   const [autoplay, setAutoplay] = useState(true);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
 
   const showUserTheme = () => {
     updateUserTheme(previewUserPalette);
@@ -154,6 +156,55 @@ export default function App() {
                 Link
               </Button>
             </View>
+          </View>
+
+          <View gap="$4">
+            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+              Action menu
+            </Text>
+            <View alignItems="flex-start">
+              <Button onPress={() => setActionMenuOpen(true)}>Open action menu</Button>
+            </View>
+            <ActionMenu
+              open={actionMenuOpen}
+              onOpenChange={setActionMenuOpen}
+              menuItems={[
+                {
+                  id: "add",
+                  text: "添加到歌单",
+                  icon: "fa6-solid:plus",
+                  iconSize: 16,
+                  action: () => setActionMenuOpen(false),
+                },
+                {
+                  id: "edit",
+                  text: "编辑信息",
+                  icon: "fa6-solid:pen",
+                  iconSize: 16,
+                  action: () => setActionMenuOpen(false),
+                },
+                {
+                  id: "download",
+                  text: "下载",
+                  icon: "fa6-solid:download",
+                  action: () => setActionMenuOpen(false),
+                },
+                {
+                  id: "delete",
+                  text: "删除",
+                  icon: "fa6-solid:trash-can",
+                  disabled: true,
+                  action: () => undefined,
+                },
+                {
+                  id: "cancel",
+                  text: "取消",
+                  icon: "fa6-solid:xmark",
+                  iconSize: 20,
+                  action: () => setActionMenuOpen(false),
+                },
+              ]}
+            />
           </View>
 
           <View gap="$4">

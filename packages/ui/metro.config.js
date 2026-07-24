@@ -13,6 +13,15 @@ config.resolver.nodeModulesPaths = [
 ];
 config.watchFolders = [workspaceRoot];
 
+const defaultAssetExts = config.resolver.assetExts || [];
+const defaultSourceExts = config.resolver.sourceExts || [];
+config.resolver.assetExts = defaultAssetExts.filter(ext => ext !== "svg");
+config.resolver.sourceExts = [...defaultSourceExts, "svg"];
+config.transformer = {
+  ...config.transformer,
+  babelTransformerPath: require.resolve("react-native-svg-transformer"),
+};
+
 module.exports = withStorybook(config, {
   configPath: path.resolve(projectRoot, ".rnstorybook"),
 });

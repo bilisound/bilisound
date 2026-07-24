@@ -87,10 +87,13 @@ Button      primary/secondary variants, sm/md/lg sizes, disabled states
 TextInput   sm/md/lg sizes, invalid and disabled states
 Slider      controlled/uncontrolled values, multiple thumbs, disabled states
 Switch      semantic controlled/uncontrolled control plus non-semantic SwitchVisual
+Icon        locally bundled SVG registry generated from selected `@iconify-json` packages
+ActionMenu  Tamagui Sheet presentation, responsive one/two-column items, hidden and disabled states
 ```
 
 The Slider keeps Tamagui's keyboard and accessibility behavior. A host using a vertical Slider on iOS must pass complete safe-area `insets` to `BilisoundProvider`.
 The Switch uses `@tamagui/switch-headless` for state and accessibility behavior. `SwitchVisual` is pointer-disabled and accessibility-hidden so a shaped parent control can own the only interaction target and semantic role.
+The ActionMenu owns the Sheet presentation but leaves action-driven dismissal to the caller. Its Icon names are a typed, generated registry; `packages/ui/scripts/extract-icons.mts` refreshes committed local SVGs without runtime network access.
 
 ## Verification
 

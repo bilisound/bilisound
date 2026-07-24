@@ -1,3 +1,4 @@
+import { createAnimations } from "@tamagui/animations-react-native";
 import { createTamagui } from "@tamagui/core";
 
 import { classicPalette } from "./palettes";
@@ -5,12 +6,25 @@ import { createThemes } from "./themes";
 import { bodyFont, tokens } from "./tokens";
 import type { ThemePalette } from "./types";
 
+const animations = createAnimations({
+  fade: {
+    type: "timing",
+    duration: 180,
+  },
+  quick: {
+    damping: 26,
+    mass: 1,
+    stiffness: 250,
+  },
+});
+
 export interface CreateBilisoundConfigOptions {
   userPalette?: ThemePalette;
 }
 
 export function createBilisoundConfig({ userPalette = classicPalette }: CreateBilisoundConfigOptions = {}) {
   return createTamagui({
+    animations,
     tokens,
     themes: createThemes(userPalette),
     fonts: {

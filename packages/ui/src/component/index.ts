@@ -1,9 +1,13 @@
+export { ActionMenu } from "./action-menu";
+export type { ActionMenuItem, ActionMenuProps } from "./action-menu";
 export { Button } from "./button";
 export type { ButtonProps, ButtonVariant, ControlSize } from "./button";
 export { Checkbox } from "./checkbox";
 export type { CheckboxProps } from "./checkbox";
 export { Label } from "./label";
 export type { LabelProps } from "./label";
+export { Icon } from "./icon";
+export type { IconName, IconProps } from "./icon";
 export { Slider } from "./slider";
 export type { SliderProps } from "./slider";
 export { Switch, SwitchVisual } from "./switch";
