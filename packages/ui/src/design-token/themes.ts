@@ -46,7 +46,7 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
 
   return {
     ...fixedThemeTokens,
-    canvas: neutralPalette[50],
+    canvas: fixedThemeTokens.white,
     surface: fixedThemeTokens.white,
     surfaceMuted: neutralPalette[100],
     text: neutralPalette[950],
