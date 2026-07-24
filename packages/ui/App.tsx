@@ -69,18 +69,32 @@ export default function App() {
 
           <View gap="$3">
             <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Buttons
+              Button variants
             </Text>
-            <View flexDirection="row" flexWrap="wrap" gap="$2">
-              <Button size="sm" onPress={() => undefined}>
-                Small
-              </Button>
+            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
               <Button onPress={() => undefined}>Primary</Button>
-              <Button size="lg" variant="secondary" onPress={() => undefined}>
+              <Button variant="secondary" onPress={() => undefined}>
                 Secondary
               </Button>
               <Button disabled onPress={() => undefined}>
                 Disabled
+              </Button>
+            </View>
+          </View>
+
+          <View gap="$3">
+            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+              Button sizes
+            </Text>
+            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+              <Button size="sm" onPress={() => undefined}>
+                Small
+              </Button>
+              <Button size="md" onPress={() => undefined}>
+                Medium
+              </Button>
+              <Button size="lg" onPress={() => undefined}>
+                Large
               </Button>
             </View>
           </View>
