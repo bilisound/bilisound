@@ -8,7 +8,7 @@ export {
   ActionMenuList,
   ActionMenuOverlay,
 } from "./action-menu";
-export { ButtonFrame, ButtonLabel } from "./button";
+export { ButtonFrame, ButtonLabel, buttonIconSize, useButtonIconColor } from "./button";
 export { CheckboxBox, CheckboxCheck, CheckboxLabel, CheckboxRoot } from "./checkbox";
 export { LabelFrame, LabelRequiredMark } from "./label";
 export { SliderRange, SliderThumb, SliderTrack, sliderRootRecipe, sliderThumbSize } from "./slider";

@@ -225,6 +225,25 @@ export default function App() {
           </View>
 
           <View gap="$4">
+            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+              Button icons and shapes
+            </Text>
+            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+              <Button icon="fa6-solid:play" onPress={() => undefined}>
+                Play
+              </Button>
+              <Button icon="fa6-solid:arrow-up-from-bracket" iconPosition="end" onPress={() => undefined}>
+                Share
+              </Button>
+              <Button accessibilityLabel="Pause" icon="fa6-solid:pause" onPress={() => undefined} />
+              <Button accessibilityLabel="Add" icon="fa6-solid:plus" shape="rounded" onPress={() => undefined} />
+              <Button icon="fa6-solid:play" shape="rounded" onPress={() => undefined}>
+                Rounded
+              </Button>
+            </View>
+          </View>
+
+          <View gap="$4">
             <View flexDirection="row" justifyContent="space-between">
               <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
                 Slider

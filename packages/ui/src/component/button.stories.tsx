@@ -11,16 +11,31 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: "Triggers an action using Bilisound's semantic variants and control sizes.",
+        component:
+          "Triggers an action using semantic variants, control sizes, optional icons, and default or rounded shapes.",
       },
     },
   },
-  decorators: [Story => <View alignItems="flex-start"><Story /></View>],
+  decorators: [
+    Story => (
+      <View alignItems="flex-start">
+        <Story />
+      </View>
+    ),
+  ],
   args: {
     children: "Play",
     onPress: fn(),
   },
   argTypes: {
+    icon: {
+      control: "select",
+      options: ["fa6-solid:play", "fa6-solid:plus", "fa6-solid:arrow-up-from-bracket"],
+    },
+    iconPosition: {
+      control: "select",
+      options: ["start", "end"],
+    },
     size: {
       control: "select",
       options: ["sm", "md", "lg"],
@@ -28,6 +43,10 @@ const meta = {
     variant: {
       control: "select",
       options: ["primary", "secondary", "ghost", "link"],
+    },
+    shape: {
+      control: "select",
+      options: ["default", "rounded"],
     },
   },
 } satisfies Meta<typeof Button>;
@@ -73,6 +92,47 @@ export const Sizes: Story = {
       <Button {...args} size="lg">
         Large
       </Button>
+    </View>
+  ),
+};
+
+export const WithIcons: Story = {
+  render: args => (
+    <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$3">
+      <Button {...args} icon="fa6-solid:play">
+        Icon first
+      </Button>
+      <Button {...args} icon="fa6-solid:arrow-up-from-bracket" iconPosition="end">
+        Text first
+      </Button>
+    </View>
+  ),
+};
+
+export const IconOnly: Story = {
+  args: {
+    accessibilityLabel: "Play",
+    children: undefined,
+    icon: "fa6-solid:play",
+  },
+  render: args => (
+    <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$3">
+      <Button {...args} size="sm" />
+      <Button {...args} size="md" />
+      <Button {...args} size="lg" />
+    </View>
+  ),
+};
+
+export const Rounded: Story = {
+  args: {
+    icon: "fa6-solid:play",
+    shape: "rounded",
+  },
+  render: args => (
+    <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$3">
+      <Button {...args} />
+      <Button {...args} accessibilityLabel="Play" children={undefined} />
     </View>
   ),
 };

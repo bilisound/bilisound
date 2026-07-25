@@ -1,5 +1,26 @@
 import { Button as TamaguiButton } from "@tamagui/button";
-import { styled } from "@tamagui/core";
+import { getVariableValue, styled, useTheme } from "@tamagui/core";
+
+export const buttonIconSize = {
+  sm: 14,
+  md: 16,
+  lg: 18,
+} as const;
+
+export function useButtonIconColor(tone: "primary" | "secondary" | "ghost" | "link") {
+  const theme = useTheme();
+
+  switch (tone) {
+    case "primary":
+      return String(getVariableValue(theme.primaryForeground));
+    case "secondary":
+      return String(getVariableValue(theme.secondaryForeground));
+    case "link":
+      return String(getVariableValue(theme.primaryBackground));
+    default:
+      return String(getVariableValue(theme.text));
+  }
+}
 
 export const ButtonFrame = styled(TamaguiButton, {
   name: "BilisoundButtonFrame",
@@ -7,7 +28,6 @@ export const ButtonFrame = styled(TamaguiButton, {
   justifyContent: "center",
   flexDirection: "row",
   borderWidth: 0,
-  borderRadius: 6,
   cursor: "pointer",
   focusVisibleStyle: {
     outlineColor: "$focusRing",
@@ -108,6 +128,25 @@ export const ButtonFrame = styled(TamaguiButton, {
         paddingHorizontal: 20,
       },
     },
+    shape: {
+      default: {
+        borderRadius: "$1.5",
+      },
+      rounded: {
+        borderRadius: "$full",
+      },
+    },
+    hasIconAndLabel: {
+      true: {
+        gap: "$2",
+      },
+    },
+    iconOnly: {
+      true: {
+        aspectRatio: 1,
+        paddingHorizontal: 0,
+      },
+    },
     visuallyDisabled: {
       true: {
         cursor: "not-allowed",
@@ -118,6 +157,7 @@ export const ButtonFrame = styled(TamaguiButton, {
   defaultVariants: {
     tone: "primary",
     controlSize: "md",
+    shape: "default",
   },
 });
 

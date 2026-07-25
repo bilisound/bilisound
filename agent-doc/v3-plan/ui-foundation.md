@@ -83,7 +83,7 @@ The current v2 NativeWind/Gluestack registry may retain its shipped reversal beh
 The first public components are:
 
 ```txt
-Button      primary/secondary variants, sm/md/lg sizes, disabled states
+Button      primary/secondary/ghost/link variants, sm/md/lg sizes, icon/text forms, default/rounded shapes, disabled states
 TextInput   sm/md/lg sizes, invalid and disabled states
 Slider      controlled/uncontrolled values, multiple thumbs, disabled states
 Switch      semantic controlled/uncontrolled control plus non-semantic SwitchVisual
