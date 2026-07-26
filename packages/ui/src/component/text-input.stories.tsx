@@ -15,7 +15,13 @@ const meta = {
       },
     },
   },
-  decorators: [Story => <View width={320}><Story /></View>],
+  decorators: [
+    Story => (
+      <View width={320}>
+        <Story />
+      </View>
+    ),
+  ],
   args: {
     onChangeText: fn(),
     placeholder: "Paste a Bilibili URL",

@@ -1,4 +1,31 @@
-apps/mobile/ios
-apps/mobile/android
-apps/mobile/dist
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/build/
+**/dist/
+
+# Native platforms (ios/android contain build artifacts, generated code, Pods, etc.)
+**/ios/
+**/android/
+
+# Expo
+**/.expo/
+
+# Package managers
 pnpm-lock.yaml
+*-lock.*
+*.lock
+
+**/*.generated.*
+
+# IDE
+**/.idea/
+
+# Turbo cache
+**/.turbo/
+
+# Misc
+.DS_Store
+*.tsbuildinfo
+*.log

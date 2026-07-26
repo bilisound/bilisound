@@ -23,7 +23,13 @@ const meta = {
     onValueChange: fn(),
     step: 1,
   },
-  decorators: [Story => <View width={360}><Story /></View>],
+  decorators: [
+    Story => (
+      <View width={360}>
+        <Story />
+      </View>
+    ),
+  ],
 } satisfies Meta<typeof Slider>;
 
 export default meta;

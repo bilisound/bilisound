@@ -7,6 +7,6 @@
     },
     "lint": {},
     "test": {},
-    "cleanup": {},
+    "cleanup": {}
   }
 }

@@ -13,14 +13,7 @@ export interface CheckboxProps extends Omit<GetProps<typeof CheckboxRoot>, "chil
   ref?: Ref<View>;
 }
 
-export function Checkbox({
-  checked = false,
-  disabled,
-  label,
-  onCheckedChange,
-  ref,
-  ...props
-}: CheckboxProps) {
+export function Checkbox({ checked = false, disabled, label, onCheckedChange, ref, ...props }: CheckboxProps) {
   return (
     <CheckboxRoot
       ref={ref}
@@ -37,7 +30,9 @@ export function Checkbox({
       }}
       {...props}
     >
-      <CheckboxBox checked={checked} aria-hidden>{checked ? <CheckboxCheck>✓</CheckboxCheck> : null}</CheckboxBox>
+      <CheckboxBox checked={checked} aria-hidden>
+        {checked ? <CheckboxCheck>✓</CheckboxCheck> : null}
+      </CheckboxBox>
       {label != null && label !== false ? <CheckboxLabel>{label}</CheckboxLabel> : null}
     </CheckboxRoot>
   );

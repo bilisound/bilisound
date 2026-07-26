@@ -32,7 +32,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  decorators: [Story => <View width={360}><Story /></View>],
+  decorators: [
+    Story => (
+      <View width={360}>
+        <Story />
+      </View>
+    ),
+  ],
 };
 
 export const Invalid: Story = {
@@ -40,7 +46,13 @@ export const Invalid: Story = {
     invalid: true,
     placeholder: "A comment is required",
   },
-  decorators: [Story => <View width={360}><Story /></View>],
+  decorators: [
+    Story => (
+      <View width={360}>
+        <Story />
+      </View>
+    ),
+  ],
 };
 
 export const Disabled: Story = {
@@ -48,5 +60,11 @@ export const Disabled: Story = {
     disabled: true,
     value: "Comments are disabled",
   },
-  decorators: [Story => <View width={360}><Story /></View>],
+  decorators: [
+    Story => (
+      <View width={360}>
+        <Story />
+      </View>
+    ),
+  ],
 };

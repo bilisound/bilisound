@@ -16,9 +16,7 @@ export interface TextAreaProps extends Omit<TamaguiInputProps, "ref" | "size" | 
 export function TextArea({ disabled, invalid = false, ref, rows = 3, size = "md", style, ...props }: TextAreaProps) {
   const inputProps = props as ComponentProps<typeof TextAreaFrame>;
   const mergedStyle = (
-    isWeb
-      ? ({ ...(style as CSSProperties | undefined), resize: "none" } satisfies CSSProperties)
-      : style
+    isWeb ? ({ ...(style as CSSProperties | undefined), resize: "none" } satisfies CSSProperties) : style
   ) as StyleProp<TextStyle>;
 
   return (

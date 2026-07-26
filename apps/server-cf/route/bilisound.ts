@@ -206,7 +206,11 @@ export default function bilisound(router: RouterType) {
       },
     }).then(e => e.json())) as any;
     // nightly 只认 pre-release，不 fallback 到正式版；正式版直接取 releases/latest
-    const latestRelease = nightly ? (Array.isArray(response) ? response.find((r: any) => r.prerelease) : undefined) : response;
+    const latestRelease = nightly
+      ? Array.isArray(response)
+        ? response.find((r: any) => r.prerelease)
+        : undefined
+      : response;
 
     // 没有可用发布（从未发布、无 pre-release、或 GitHub 返回异常结构）时，兜底为「无更新」
     if (!latestRelease?.tag_name || !latestRelease.assets?.[0]?.browser_download_url) {

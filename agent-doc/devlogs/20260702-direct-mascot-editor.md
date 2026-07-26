@@ -69,16 +69,18 @@ const handleMascotChange = useCallback(
 文件引用：`apps/mobile/app/settings/theme/editor.tsx:432`
 
 ```tsx
-{currentSize === "original" && assetUri ? (
-  <View style={styles.field}>
-    <ButtonOuter>
-      <Button variant="outline" action="secondary" onPress={enterMascotEditMode}>
-        <ButtonMonIcon name="fa6-solid:arrows-up-down-left-right" />
-        <ButtonText>调整位置和大小</ButtonText>
-      </Button>
-    </ButtonOuter>
-  </View>
-) : null}
+{
+  currentSize === "original" && assetUri ? (
+    <View style={styles.field}>
+      <ButtonOuter>
+        <Button variant="outline" action="secondary" onPress={enterMascotEditMode}>
+          <ButtonMonIcon name="fa6-solid:arrows-up-down-left-right" />
+          <ButtonText>调整位置和大小</ButtonText>
+        </Button>
+      </ButtonOuter>
+    </View>
+  ) : null;
+}
 ```
 
 原始尺寸模式下隐藏原来的比例和偏移滑块，避免出现两套控制方式。
@@ -86,31 +88,35 @@ const handleMascotChange = useCallback(
 文件引用：`apps/mobile/app/settings/theme/editor.tsx:458`
 
 ```tsx
-{size !== "original" ? (
-  <View style={styles.conditionalField}>
-    <Controller
-      control={form.control}
-      name="originalScale"
-      render={({ field: { value, onChange } }) => <OriginalScaleSlider value={value} onChange={onChange} />}
-    />
-  </View>
-) : null}
+{
+  size !== "original" ? (
+    <View style={styles.conditionalField}>
+      <Controller
+        control={form.control}
+        name="originalScale"
+        render={({ field: { value, onChange } }) => <OriginalScaleSlider value={value} onChange={onChange} />}
+      />
+    </View>
+  ) : null;
+}
 ```
 
 文件引用：`apps/mobile/app/settings/theme/editor.tsx:513`
 
 ```tsx
-{currentSize !== "original" ? (
-  <Controller
-    control={form.control}
-    name="offsetX"
-    render={({ field: { value, onChange } }) => (
-      <View style={styles.sliderField}>
-        <OffsetSlider label="水平偏移" value={value} onChange={onChange} />
-      </View>
-    )}
-  />
-) : null}
+{
+  currentSize !== "original" ? (
+    <Controller
+      control={form.control}
+      name="offsetX"
+      render={({ field: { value, onChange } }) => (
+        <View style={styles.sliderField}>
+          <OffsetSlider label="水平偏移" value={value} onChange={onChange} />
+        </View>
+      )}
+    />
+  ) : null;
+}
 ```
 
 ### 3. 编辑态内部使用左上角绝对坐标
@@ -205,8 +211,10 @@ const pinch = Gesture.Pinch()
     if (pinchImagePointXRef.value < 0 || pinchImagePointYRef.value < 0) {
       startFocalXRef.value = event.focalX;
       startFocalYRef.value = event.focalY;
-      pinchImagePointXRef.value = startScaleRatio > 0 ? (startFocalXRef.value - startLeftRef.value) / startScaleRatio : 0;
-      pinchImagePointYRef.value = startScaleRatio > 0 ? (startFocalYRef.value - startTopRef.value) / startScaleRatio : 0;
+      pinchImagePointXRef.value =
+        startScaleRatio > 0 ? (startFocalXRef.value - startLeftRef.value) / startScaleRatio : 0;
+      pinchImagePointYRef.value =
+        startScaleRatio > 0 ? (startFocalYRef.value - startTopRef.value) / startScaleRatio : 0;
     }
     const nextLeft = startFocalXRef.value - pinchImagePointXRef.value * nextScaleRatio;
     const nextTop = startFocalYRef.value - pinchImagePointYRef.value * nextScaleRatio;
