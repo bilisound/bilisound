@@ -31,6 +31,7 @@ app/
 │
 ├── settings/                      ← 设置子页面
 │   ├── theme.tsx                  → /settings/theme  主题
+│   ├── theme/editor.tsx           → /settings/theme/editor  主题 / 看板娘编辑器
 │   ├── logs.tsx                   → /settings/logs   日志列表
 │   ├── log/[id].tsx               → /settings/log/:id  日志详情
 │   ├── data.tsx                   → /settings/data   数据管理

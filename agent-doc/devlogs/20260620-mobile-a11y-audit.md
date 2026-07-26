@@ -1,4 +1,8 @@
-# Bilisound 移动端可访问性（a11y）审计报告
+# Bilisound - 20260620 移动端可访问性（a11y）审计
+
+> **这是历史审计记录，不是当前状态。** 下列结论是 2026-06-20 至 06-23 期间在特定设备与构建上的观测，此后 UI 未针对本报告继续整改。需要当前 a11y 结论时请重新实测，不要引用本文的「已整改 / 未达标」判定。
+>
+> 其中长期有效的一条工具前提（Expo Dev Client 的 `Tools button` 浮层会污染 accessibility tree）已收录到 [../mobile-debugging.md](../mobile-debugging.md)。
 
 > 生成时间：2026-06-20
 > 最近复核：2026-06-23（Android 真机）

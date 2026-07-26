@@ -11,13 +11,11 @@ This guide is for future agent sessions working on Bilisound v3.
 5. Keep each task scoped to one epic where possible.
 6. Treat business decoupling as preparation for a later UI rewrite, not as the UI rewrite itself.
 
-## Current Branch
+## Branch
 
-The intended branch for v3 planning and early refactor work is:
+There is no single long-lived v3 branch. Do not assume or create one.
 
-```txt
-feature/v3
-```
+Check `git branch -a` and ask the user which branch the task belongs on. Recent v3-adjacent work has landed on `develop` directly and on narrowly scoped feature branches such as `feature/tamagui-evaluation` and `feature/refactor-settings-storage`.
 
 ## Recommended First Workstream
 

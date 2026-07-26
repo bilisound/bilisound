@@ -86,15 +86,24 @@ apps/server-netlify (独立，无 SDK 依赖)
 
 ## 技术栈速览
 
+具体版本一律看对应的 `package.json` 与根 `pnpm-workspace.yaml` 的 `catalog:`，本节只记录「用了什么」和「为什么」。
+
 ### apps/mobile
 
-- Expo SDK 55 + React Native 0.83
-- Expo Router (文件路由)
-- NativeWind 4 (Tailwind CSS) + GluestackUI (组件库)
+- Expo + Expo Router (文件路由)
 - Drizzle ORM (SQLite, `expo-sqlite`)
 - MMKV (KV 存储)
 - Zustand (UI 状态)
 - TanStack React Query
+- 样式现状是 NativeWind + GluestackUI 与逐步替换它们的本地组件并存，详见下节
+
+### packages/ui
+
+- `@tamagui/core` 及按需引入的 Tamagui 组件包，不使用 `@tamagui/config` 或聚合的 `tamagui` 包
+- 分层为 `design-token` → `recipe` → `component`，Tamagui 属于组件契约之下的实现细节
+- 源码直供 (`react-native` / `exports` 指向 `src/index.ts`)，无 `dist` 契约，由消费方 Metro/Babel 转译
+- Storybook (React Native Web) 作为组件目录，`App.tsx` 是独立的原生 smoke 展示
+- **尚未被 `apps/mobile` 依赖**：mobile 的 `package.json` 目前只依赖 `@bilisound/player` 和 `@bilisound/sdk`
 
 ### packages/sdk
 
@@ -105,11 +114,23 @@ apps/server-netlify (独立，无 SDK 依赖)
 ### packages/player
 
 - expo-modules-core (原生模块桥接)
-- iOS: Swift + Kotlin
-- Android: Kotlin
+- iOS: Swift
+- Android: Kotlin (Media3 / ExoPlayer)
 
 ### apps/server-cf
 
 - Cloudflare Workers
 - itty-router
 - @bilisound/sdk (Direct 模式 + KV 缓存)
+
+## 当前 UI 栈的过渡状态
+
+mobile 端同时存在三代 UI 代码，判断该往哪写之前先确认落点：
+
+| 位置                            | 状态                                                              |
+| ------------------------------- | ----------------------------------------------------------------- |
+| `components/ui/*`               | GluestackUI 包装层，存量，不要在此新增                            |
+| `components/ui-next/*`          | 无 NativeWind / Gluestack 的本地 RN 组件，mobile 内新共享组件落点 |
+| `packages/ui` (`@bilisound/ui`) | v3 Tamagui 组件库，独立演进，暂未接入 mobile                      |
+
+`className` / NativeWind 与 Gluestack 在 mobile 中仍有可观存量，属于预期状态而非待修 bug。是否整体替换属于 v3 UI 重写阶段的决定，见 [v3-plan/README.md](v3-plan/README.md)。

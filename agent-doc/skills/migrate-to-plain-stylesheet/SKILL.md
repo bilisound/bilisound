@@ -57,11 +57,13 @@ Capture at least:
 Save screenshots with clear names such as:
 
 ```txt
-/tmp/<feature>-portrait-before.png
-/tmp/<feature>-landscape-before.png
-/tmp/<feature>-portrait-after.png
-/tmp/<feature>-landscape-after.png
+.temp/<feature>-portrait-before.png
+.temp/<feature>-landscape-before.png
+.temp/<feature>-portrait-after.png
+.temp/<feature>-landscape-after.png
 ```
+
+Write them under the repository-root `.temp/`, not `/tmp`, per `AGENTS.md`.
 
 Make sure the app under test is the intended package or build. Dev clients, production apps, launchers, and stale bundles can all look similar while testing the wrong code.
 
