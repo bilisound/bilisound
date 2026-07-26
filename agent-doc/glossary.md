@@ -20,19 +20,13 @@
 
 ## 项目术语
 
-| 术语              | 说明                                                            |
-| ----------------- | --------------------------------------------------------------- |
-| **Direct SDK**    | `BilisoundSDKDirect` — 原生端直接从客户端调 B 站 API            |
-| **Remote SDK**    | `BilisoundSDKRemote` — Web 端通过 CF Worker 代理调 B 站 API     |
-| **CF Worker**     | Cloudflare Worker — 部署在 Cloudflare Edge 上的 Serverless 函数 |
-| **Native Module** | Expo 原生模块 — 通过 `expo-modules-core` 桥接原生平台的 JS 模块 |
-| **Expo Router**   | Expo 的文件路由系统 — 基于文件系统自动生成路由                  |
-| **NativeWind**    | 将 Tailwind CSS 编译为 React Native StyleSheet 的工具           |
-| **GluestackUI**   | 基于 NativeWind 的 UI 组件库                                    |
-| **Drizzle ORM**   | TypeScript ORM，本项目的 SQLite 数据库层                        |
-| **MMKV**          | 高性能 KV 存储 (微信开源)，用于简单状态持久化                   |
-| **Zustand**       | 轻量 React 状态管理库                                           |
-| **TOML**          | 歌单导出格式 (使用 smol-toml 库)                                |
+只收录本仓库特有的叫法。通用库（Zustand、Drizzle、MMKV、Expo Router 等）不在此列，用到哪个看 `package.json`。
+
+| 术语             | 说明                                                                |
+| ---------------- | ------------------------------------------------------------------- |
+| **Direct SDK**   | `BilisoundSDKDirect` — 原生端直接从客户端调 B 站 API，自带 WBI 签名 |
+| **Remote SDK**   | `BilisoundSDKRemote` — Web 端通过 server-cf 代理调 B 站 API         |
+| **歌单交换格式** | 导入导出使用 TOML，实现在 `apps/mobile/utils/exchange/`             |
 
 ## URL / ID 格式速查
 
