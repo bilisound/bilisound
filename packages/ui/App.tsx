@@ -6,10 +6,31 @@ import { Text, View } from "@tamagui/core";
 
 import {
   ActionMenu,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBackdrop,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPortal,
+  AlertDialogTitle,
   BilisoundProvider,
   Button,
   Checkbox,
   Label,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalPortal,
+  ModalTitle,
   Slider,
   Switch,
   SwitchVisual,
@@ -117,6 +138,8 @@ export default function App() {
   const [notify, setNotify] = useState(true);
   const [autoplay, setAutoplay] = useState(true);
   const [actionMenuOpen, setActionMenuOpen] = useState(false);
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const showUserTheme = () => {
     const { primaryBase, accentBase } = pickUserThemeBaseColors();
@@ -289,6 +312,62 @@ export default function App() {
                 },
               ]}
             />
+          </View>
+
+          <View gap="$4">
+            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+              Dialogs
+            </Text>
+            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+              <Button onPress={() => setModalOpen(true)}>Open modal</Button>
+              <Button variant="secondary" onPress={() => setAlertDialogOpen(true)}>
+                Open alert dialog
+              </Button>
+            </View>
+
+            <Modal open={modalOpen} onOpenChange={setModalOpen}>
+              <ModalPortal>
+                <ModalBackdrop />
+                <ModalContent>
+                  <ModalHeader>
+                    <ModalTitle>播放设置</ModalTitle>
+                  </ModalHeader>
+                  <ModalBody marginTop="$3" marginBottom="$5">
+                    <ModalDescription>这是使用 Tamagui headless Dialog primitive 构建的普通模态框。</ModalDescription>
+                  </ModalBody>
+                  <ModalFooter>
+                    <ModalClose aria-label="取消" asChild>
+                      <Button variant="ghost">取消</Button>
+                    </ModalClose>
+                    <ModalClose aria-label="完成" asChild>
+                      <Button>完成</Button>
+                    </ModalClose>
+                  </ModalFooter>
+                </ModalContent>
+              </ModalPortal>
+            </Modal>
+
+            <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+              <AlertDialogPortal>
+                <AlertDialogBackdrop />
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>清空播放队列？</AlertDialogTitle>
+                  </AlertDialogHeader>
+                  <AlertDialogBody>
+                    <AlertDialogDescription>此操作无法撤销，当前队列中的全部音视频都会被移除。</AlertDialogDescription>
+                  </AlertDialogBody>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel aria-label="取消" asChild>
+                      <Button variant="ghost">取消</Button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction aria-label="确认清空" asChild>
+                      <Button>确认清空</Button>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogPortal>
+            </AlertDialog>
           </View>
 
           <View gap="$4">

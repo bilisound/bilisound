@@ -1,3 +1,34 @@
+export {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogBackdrop,
+  AlertDialogBody,
+  AlertDialogCancel,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPortal,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./alert-dialog";
+export type {
+  AlertDialogActionProps,
+  AlertDialogBackdropProps,
+  AlertDialogBodyProps,
+  AlertDialogCancelProps,
+  AlertDialogCloseButtonProps,
+  AlertDialogContentProps,
+  AlertDialogDescriptionProps,
+  AlertDialogFooterProps,
+  AlertDialogHeaderProps,
+  AlertDialogPortalProps,
+  AlertDialogProps,
+  AlertDialogSize,
+  AlertDialogTitleProps,
+  AlertDialogTriggerProps,
+} from "./alert-dialog";
 export { ActionMenu } from "./action-menu";
 export type { ActionMenuItem, ActionMenuProps } from "./action-menu";
 export { Button } from "./button";
@@ -8,6 +39,35 @@ export { Label } from "./label";
 export type { LabelProps } from "./label";
 export { Icon } from "./icon";
 export type { IconName, IconProps } from "./icon";
+export {
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalClose,
+  ModalCloseButton,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalPortal,
+  ModalTitle,
+  ModalTrigger,
+} from "./modal";
+export type {
+  ModalBackdropProps,
+  ModalBodyProps,
+  ModalCloseButtonProps,
+  ModalCloseProps,
+  ModalContentProps,
+  ModalDescriptionProps,
+  ModalFooterProps,
+  ModalHeaderProps,
+  ModalPortalProps,
+  ModalProps,
+  ModalSize,
+  ModalTitleProps,
+  ModalTriggerProps,
+} from "./modal";
 export { Slider } from "./slider";
 export type { SliderProps } from "./slider";
 export { Switch, SwitchVisual } from "./switch";

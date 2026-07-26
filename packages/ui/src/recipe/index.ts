@@ -1,4 +1,14 @@
 export {
+  AlertDialogBackdropFrame,
+  AlertDialogBodyFrame,
+  AlertDialogCloseButtonFrame,
+  AlertDialogContentFrame,
+  AlertDialogDescriptionFrame,
+  AlertDialogFooterFrame,
+  AlertDialogHeaderFrame,
+  AlertDialogTitleFrame,
+} from "./alert-dialog";
+export {
   ActionMenuCell,
   ActionMenuFrame,
   ActionMenuHandle,
@@ -8,6 +18,16 @@ export {
   ActionMenuList,
   ActionMenuOverlay,
 } from "./action-menu";
+export {
+  ModalBackdropFrame,
+  ModalBodyFrame,
+  ModalCloseButtonFrame,
+  ModalContentFrame,
+  ModalDescriptionFrame,
+  ModalFooterFrame,
+  ModalHeaderFrame,
+  ModalTitleFrame,
+} from "./modal";
 export { ButtonFrame, ButtonLabel, buttonIconSize, useButtonIconColor } from "./button";
 export { CheckboxBox, CheckboxCheck, CheckboxLabel, CheckboxRoot } from "./checkbox";
 export { LabelFrame, LabelRequiredMark } from "./label";

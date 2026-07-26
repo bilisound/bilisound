@@ -28,9 +28,11 @@
     }
   },
   "peerDependencies": {
+    "@tamagui/alert-dialog": ">=2.4.2 <2.5.0",
     "@tamagui/animations-react-native": ">=2.4.2 <2.5.0",
     "@tamagui/button": ">=2.4.2 <2.5.0",
     "@tamagui/core": ">=2.4.2 <2.5.0",
+    "@tamagui/dialog": ">=2.4.2 <2.5.0",
     "@tamagui/input": ">=2.4.2 <2.5.0",
     "@tamagui/sheet": ">=2.4.2 <2.5.0",
     "@tamagui/slider": ">=2.4.2 <2.5.0",
@@ -63,9 +65,11 @@
     "@storybook/react-native": "10.5.1",
     "@storybook/react-native-ui": "10.5.1",
     "@storybook/react-native-web-vite": "10.5.4",
+    "@tamagui/alert-dialog": "2.4.2",
     "@tamagui/animations-react-native": "2.4.2",
     "@tamagui/button": "2.4.2",
     "@tamagui/core": "2.4.2",
+    "@tamagui/dialog": "2.4.2",
     "@tamagui/input": "2.4.2",
     "@tamagui/sheet": "2.4.2",
     "@tamagui/slider": "2.4.2",

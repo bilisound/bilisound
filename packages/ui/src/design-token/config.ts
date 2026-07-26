@@ -7,6 +7,10 @@ import { bodyFont, tokens } from "./tokens";
 import type { ThemePalette } from "./types";
 
 const animations = createAnimations({
+  dialog: {
+    type: "timing",
+    duration: 250,
+  },
   fade: {
     type: "timing",
     duration: 180,
