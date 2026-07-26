@@ -54,6 +54,7 @@
     "@iconify-json/uil": "^1.2.3",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.1.0",
+    "colorjs.io": "^0.6.1",
     "@react-native-community/slider": "5.2.0",
     "@storybook/addon-a11y": "10.5.3",
     "@storybook/addon-docs": "10.5.4",

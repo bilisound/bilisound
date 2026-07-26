@@ -650,6 +650,9 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14
+      colorjs.io:
+        specifier: ^0.6.1
+        version: 0.6.1
       expo-build-properties:
         specifier: ~57.0.7
         version: 57.0.7(expo@57.0.8)
