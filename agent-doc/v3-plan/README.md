@@ -10,7 +10,13 @@ The business refactor work is the prerequisite for a later UI rewrite.
 
 The current mobile UI is tightly coupled to player mechanics, SQLite rows, SDK DTOs, storage keys, and route-level business orchestration. Rewriting the UI on top of those shapes would carry the same coupling into the new design. v3 should first separate playback, playlist, config, cache, Bilibili data, and player boundaries so a future UI can consume stable use-case APIs and view models.
 
+### UI Framework Replacement Is A Later Decision
+
+This is the canonical statement of the rule; other documents in this directory reference it instead of restating it.
+
 After the business refactor epics are complete, the project can rebuild the app UI from scratch. That later phase may re-evaluate Nativewind and gluestack-ui, including dropping them if they no longer fit the desired v3 UI architecture. UI technology replacement is intentionally a later decision, not part of the foundation refactor unless a small change is required to reduce business coupling.
+
+Concretely: do not replace Nativewind or gluestack-ui while working on Player Foundation, Config, Bilibili Data Boundary, Playback Orchestration, Playlist Domain, or Cache and Download, unless a local UI edit is necessary to remove business coupling. Business work should make UI replacement possible; UI technology replacement should not drive or obscure the business boundary work.
 
 Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 styling direction. Keep v2 styling changes narrow and pragmatic: use native styles when a concrete technical constraint requires it, such as `expo-router/ui` native tab layout, safe-area calculations, or image rendering paths that do not work reliably through `className`. Broad UI styling decisions belong to the later v3 redesign phase.
 

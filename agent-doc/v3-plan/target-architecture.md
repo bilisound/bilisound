@@ -39,7 +39,7 @@ The target architecture is designed to make a later UI rewrite possible.
 
 The current UI should not be treated as the long-term shape. During the business refactor, routes and components may continue to exist, but new boundaries should move durable behavior into feature use cases, repositories, adapters, and view models. The future UI rewrite should be able to replace screens and component libraries without re-implementing player mechanics, playlist persistence, Bilibili DTO mapping, config policy, or cache/download scheduling.
 
-Nativewind and gluestack-ui are implementation details of the current UI. Their replacement should be evaluated during the UI rewrite phase after feature APIs are stable. Business refactor tasks should avoid depending on either library unless they are touching existing UI call sites only to remove coupling.
+Current UI framework choices are implementation details; see the UI rewrite scope rule in [README](./README.md).
 
 Target UI dependency rule:
 

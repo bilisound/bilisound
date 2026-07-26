@@ -186,13 +186,7 @@ an isolated Expo showcase before Epics 1-6 finish. It must not use that work as 
 reason to migrate v2 screens before their feature-facing APIs are stable.
 ```
 
-Non-goals for earlier epics:
-
-```txt
-Do not replace Nativewind or gluestack-ui as part of Player Foundation, Config,
-Bilibili Data Boundary, Playback Orchestration, Playlist Domain, or Cache and
-Download unless a local UI edit is necessary to remove business coupling.
-```
+Non-goals for earlier epics: see the UI technology rule in [README.md](./README.md).
 
 ## Suggested Execution Order
 
@@ -205,5 +199,3 @@ Download unless a local UI edit is necessary to remove business coupling.
 7. UI Rewrite preparation and UI framework re-evaluation.
 
 Some planning work can happen in parallel, but implementation should avoid changing player mechanics, playback orchestration, and playlist storage in the same patch.
-
-The UI rewrite should also remain separate from the business foundation epics. Business work should make UI replacement possible; UI technology replacement should not drive or obscure the business boundary work.

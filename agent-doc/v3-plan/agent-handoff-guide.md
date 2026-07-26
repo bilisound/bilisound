@@ -31,9 +31,7 @@ Changing mobile structure before player APIs are fixed may move the coupling wit
 
 ## Long-Term UI Rewrite Direction
 
-The v3 business foundation work is meant to make a future UI rewrite possible.
-
-Do not start a broad UI rewrite, Nativewind removal, or gluestack-ui replacement while working on the business foundation epics unless the user explicitly asks for that scope. Earlier epics should reduce coupling so future UI code can depend on feature use cases and view models instead of storage, SDK DTOs, native player APIs, or migration details.
+See [README](./README.md#long-term-direction) for the UI rewrite sequencing rule.
 
 When touching UI during a business epic, keep the edit local and explain which coupling it removes. Examples:
 
