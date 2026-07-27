@@ -21,7 +21,7 @@ export const ModalContentFrame = styled(Dialog.Content, {
   overflow: "hidden",
   width: "80%",
   maxWidth: 510,
-  padding: "$6",
+  padding: "$5",
   backgroundColor: "$surface",
   borderRadius: "$4",
   boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",

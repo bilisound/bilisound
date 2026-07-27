@@ -40,11 +40,6 @@ export const ButtonFrame = styled(TamaguiButton, {
       primary: {
         backgroundColor: "$primaryBackground",
         borderColor: "$primaryBackground",
-        shadowColor: "#000000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
         hoverStyle: {
           backgroundColor: "$primaryBackgroundHover",
           borderColor: "$primaryBackgroundHover",
@@ -57,8 +52,6 @@ export const ButtonFrame = styled(TamaguiButton, {
       secondary: {
         backgroundColor: "$secondaryBackground",
         borderColor: "$secondaryBorder",
-        shadowOpacity: 0,
-        elevation: 0,
         hoverStyle: {
           backgroundColor: "$secondaryBackgroundHover",
           borderColor: "$secondaryBorderHover",
@@ -72,8 +65,6 @@ export const ButtonFrame = styled(TamaguiButton, {
         backgroundColor: "transparent",
         borderWidth: 0,
         borderColor: "transparent",
-        shadowOpacity: 0,
-        elevation: 0,
         hoverStyle: {
           backgroundColor: "$surfaceMuted",
         },
@@ -100,8 +91,6 @@ export const ButtonFrame = styled(TamaguiButton, {
         paddingVertical: 0,
         minHeight: 0,
         height: "auto",
-        shadowOpacity: 0,
-        elevation: 0,
         hoverStyle: {
           backgroundColor: "transparent",
         },
@@ -114,18 +103,18 @@ export const ButtonFrame = styled(TamaguiButton, {
     controlSize: {
       sm: {
         borderWidth: 1,
-        height: 32,
-        paddingHorizontal: 12,
+        height: "$8",
+        paddingHorizontal: "$3",
       },
       md: {
         borderWidth: 1,
-        height: 36,
-        paddingHorizontal: 16,
+        height: "$9",
+        paddingHorizontal: "$4",
       },
       lg: {
         borderWidth: 1,
-        height: 40,
-        paddingHorizontal: 20,
+        height: "$10",
+        paddingHorizontal: "$5",
       },
     },
     shape: {
