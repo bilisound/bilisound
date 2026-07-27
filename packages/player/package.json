@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/jest": "catalog:",
     "@types/react": "catalog:",
-    "expo": "catalog:",
+    "expo": "~57.0.8",
     "expo-module-scripts": "catalog:",
     "expo-modules-core": "catalog:",
     "react-native": "catalog:",

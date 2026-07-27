@@ -10,7 +10,6 @@ catalog:
   "@types/node-fetch": ^2.6.13
   "@types/react": ~19.2.14
   axios: ^1.7.9
-  expo: ~57.0.8
   expo-module-scripts: 56.0.3
   expo-modules-core: ~57.0.7
   itty-router: ^5.0.22

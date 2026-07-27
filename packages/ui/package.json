@@ -78,7 +78,6 @@
     "@tamagui/theme": "2.4.2",
     "@types/react": "catalog:",
     "colorjs.io": "^0.6.1",
-    "expo": "catalog:",
     "expo-build-properties": "~57.0.7",
     "expo-dev-client": "~57.0.9",
     "expo-modules-jsi": "57.0.4",
@@ -100,7 +99,7 @@
     "vite-plugin-svgr": "^4.5.0"
   },
   "dependencies": {
-    "expo": "^57.0.8",
+    "expo": "~57.0.8",
     "react": "19.2.3",
     "react-native": "0.86.0"
   }

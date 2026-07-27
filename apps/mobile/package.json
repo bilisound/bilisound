@@ -161,7 +161,6 @@
   "private": true,
   "devDependencies": {
     "@types/node": "catalog:",
-    "expo": "~57.0.8",
     "react-native-svg-transformer": "^1.5.3"
   }
 }
