@@ -31,7 +31,6 @@ export const ActionMenuFrame = styled(Sheet.Frame, {
   alignSelf: "center",
   marginHorizontal: "auto",
   alignItems: "center",
-  overflow: "hidden",
   padding: "$2",
   backgroundColor: "$surface",
   borderWidth: 1,

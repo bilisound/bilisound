@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import type { ReactNode } from "react";
+import { Platform } from "react-native";
 import type { SheetProps } from "@tamagui/sheet";
 import { Sheet } from "@tamagui/sheet";
 import { SafeAreaInsetsContext } from "react-native-safe-area-context";
@@ -62,7 +63,7 @@ export function ActionMenu({
         enterStyle={{ opacity: 0 }}
         exitStyle={{ opacity: 0 }}
       >
-        <ActionMenuBottomSurface />
+        {Platform.OS === "android" ? <ActionMenuBottomSurface /> : null}
       </ActionMenuOverlay>
       <ActionMenuFrame
         unstyled
