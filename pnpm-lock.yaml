@@ -641,6 +641,9 @@ importers:
       '@tamagui/input':
         specifier: 2.4.2
         version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/portal':
+        specifier: 2.4.2
+        version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/sheet':
         specifier: 2.4.2
         version: 2.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)

@@ -36,12 +36,18 @@ export const Modal = forwardRef<DialogHandle, ModalProps>(function Modal(
     </ModalSizeContext.Provider>
   );
 });
+Modal.displayName = "Modal";
 
 export type ModalTriggerProps = ComponentProps<typeof Dialog.Trigger>;
 export const ModalTrigger = Dialog.Trigger;
 
 export type ModalPortalProps = Omit<ComponentProps<typeof Dialog.Portal>, "unstyled">;
-export const ModalPortal = forwardRef<TamaguiElement, ModalPortalProps>(function ModalPortal(props, ref) {
+export const ModalPortal = forwardRef<TamaguiElement, ModalPortalProps>(function ModalPortal(
+  { children, ...props },
+  ref,
+) {
+  const size = useContext(ModalSizeContext);
+
   return (
     <Dialog.Portal
       ref={ref}
@@ -62,9 +68,12 @@ export const ModalPortal = forwardRef<TamaguiElement, ModalPortalProps>(function
       maxWidth="100%"
       {...props}
       unstyled
-    />
+    >
+      <ModalSizeContext.Provider value={size}>{children}</ModalSizeContext.Provider>
+    </Dialog.Portal>
   );
 });
+ModalPortal.displayName = "ModalPortal";
 
 export type ModalBackdropProps = Omit<ComponentProps<typeof ModalBackdropFrame>, "unstyled">;
 export const ModalBackdrop = forwardRef<TamaguiElement, ModalBackdropProps>(function ModalBackdrop(
@@ -89,6 +98,7 @@ export const ModalBackdrop = forwardRef<TamaguiElement, ModalBackdropProps>(func
     />
   );
 });
+ModalBackdrop.displayName = "ModalBackdrop";
 
 export type ModalContentProps = Omit<ComponentProps<typeof ModalContentFrame>, "dialogSize" | "unstyled"> & {
   size?: ModalSize;
@@ -120,6 +130,7 @@ export const ModalContent = forwardRef<TamaguiElement, ModalContentProps>(functi
     />
   );
 });
+ModalContent.displayName = "ModalContent";
 
 export type ModalCloseProps = ComponentProps<typeof Dialog.Close>;
 export const ModalClose = Dialog.Close;
@@ -140,6 +151,7 @@ export type ModalTitleProps = Omit<ComponentProps<typeof ModalTitleFrame>, "unst
 export const ModalTitle = forwardRef<TamaguiElement, ModalTitleProps>(function ModalTitle(props, ref) {
   return <ModalTitleFrame ref={ref} {...props} unstyled />;
 });
+ModalTitle.displayName = "ModalTitle";
 
 export type ModalDescriptionProps = Omit<ComponentProps<typeof ModalDescriptionFrame>, "unstyled">;
 export const ModalDescription = forwardRef<TamaguiElement, ModalDescriptionProps>(
@@ -147,3 +159,4 @@ export const ModalDescription = forwardRef<TamaguiElement, ModalDescriptionProps
     return <ModalDescriptionFrame ref={ref} {...props} unstyled />;
   },
 );
+ModalDescription.displayName = "ModalDescription";

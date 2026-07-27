@@ -100,12 +100,16 @@ export function AlertDialog({
     </AlertDialogSizeContext.Provider>
   );
 }
+AlertDialog.displayName = "AlertDialog";
 
 export type AlertDialogTriggerProps = ComponentProps<typeof TamaguiAlertDialog.Trigger>;
 export const AlertDialogTrigger = TamaguiAlertDialog.Trigger;
 
 export type AlertDialogPortalProps = Omit<ComponentProps<typeof TamaguiAlertDialog.Portal>, "unstyled">;
-export function AlertDialogPortal(props: AlertDialogPortalProps) {
+export function AlertDialogPortal({ children, ...props }: AlertDialogPortalProps) {
+  const open = useContext(AlertDialogAnimationContext);
+  const size = useContext(AlertDialogSizeContext);
+
   return (
     <TamaguiAlertDialog.Portal
       alignItems="center"
@@ -125,9 +129,14 @@ export function AlertDialogPortal(props: AlertDialogPortalProps) {
       maxWidth="100%"
       {...props}
       unstyled
-    />
+    >
+      <AlertDialogSizeContext.Provider value={size}>
+        <AlertDialogAnimationContext.Provider value={open}>{children}</AlertDialogAnimationContext.Provider>
+      </AlertDialogSizeContext.Provider>
+    </TamaguiAlertDialog.Portal>
   );
 }
+AlertDialogPortal.displayName = "AlertDialogPortal";
 
 export type AlertDialogBackdropProps = Omit<
   ComponentProps<typeof AlertDialogBackdropFrame>,
@@ -153,6 +162,7 @@ export const AlertDialogBackdrop = forwardRef<TamaguiElement, AlertDialogBackdro
     );
   },
 );
+AlertDialogBackdrop.displayName = "AlertDialogBackdrop";
 
 export type AlertDialogContentProps = Omit<
   ComponentProps<typeof AlertDialogContentFrame>,
@@ -189,6 +199,7 @@ export const AlertDialogContent = forwardRef<TamaguiElement, AlertDialogContentP
     </AnimatedView>
   );
 });
+AlertDialogContent.displayName = "AlertDialogContent";
 
 function getAlertDialogBackdropAnimationStyle(value: number) {
   return {
@@ -236,6 +247,7 @@ export const AlertDialogTitle = forwardRef<TamaguiElement, AlertDialogTitleProps
     return <AlertDialogTitleFrame ref={ref} {...props} unstyled />;
   },
 );
+AlertDialogTitle.displayName = "AlertDialogTitle";
 
 export type AlertDialogDescriptionProps = Omit<ComponentProps<typeof AlertDialogDescriptionFrame>, "unstyled">;
 export const AlertDialogDescription = forwardRef<TamaguiElement, AlertDialogDescriptionProps>(
@@ -243,6 +255,7 @@ export const AlertDialogDescription = forwardRef<TamaguiElement, AlertDialogDesc
     return <AlertDialogDescriptionFrame ref={ref} {...props} unstyled />;
   },
 );
+AlertDialogDescription.displayName = "AlertDialogDescription";
 
 const styles = StyleSheet.create({
   backdropAnimation: {

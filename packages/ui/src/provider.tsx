@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { TamaguiProvider, Theme } from "@tamagui/core";
+import { PortalProvider } from "@tamagui/portal";
 import { updateTheme } from "@tamagui/theme";
 
 import { bilisoundConfig } from "./design-token/config";
@@ -28,7 +29,9 @@ export function BilisoundProvider({
 
   return (
     <TamaguiProvider config={config} defaultTheme={appearance} disableInjectCSS={disableInjectCSS} insets={insets}>
-      <Theme name={themeName}>{children}</Theme>
+      <Theme name={themeName}>
+        <PortalProvider>{children}</PortalProvider>
+      </Theme>
     </TamaguiProvider>
   );
 }
