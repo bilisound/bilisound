@@ -2,20 +2,31 @@ import type { ReactNode, Ref } from "react";
 import type { View } from "react-native";
 import type { ButtonProps as TamaguiButtonProps } from "@tamagui/button";
 
-import { ButtonFrame, ButtonLabel, buttonIconSize, useButtonIconColor } from "../recipe";
+import {
+  ButtonFrame,
+  ButtonLabel,
+  buttonIconSize,
+  getButtonColorScheme,
+  getButtonFrameStyles,
+  getButtonLabelStyles,
+  useButtonIconColor,
+} from "../recipe";
+import type { ButtonColor, ButtonVariant } from "../recipe";
 import { Icon } from "./icon";
 import type { IconName } from "./icon";
 
+export type { ButtonColor, ButtonVariant } from "../recipe";
+
 export type ButtonIconPosition = "start" | "end";
 export type ButtonShape = "default" | "rounded";
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "link";
 export type ControlSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends Omit<
   TamaguiButtonProps,
-  "children" | "icon" | "iconAfter" | "ref" | "shape" | "size" | "unstyled" | "variant"
+  "children" | "color" | "icon" | "iconAfter" | "ref" | "shape" | "size" | "unstyled" | "variant"
 > {
   children?: ReactNode;
+  color?: ButtonColor;
   icon?: IconName;
   iconPosition?: ButtonIconPosition;
   ref?: Ref<View>;
@@ -28,25 +39,29 @@ export function Button({
   "aria-label": ariaLabel,
   accessibilityLabel,
   children,
+  color = "primary",
   disabled,
   icon,
   iconPosition = "start",
   ref,
   shape = "default",
   size = "md",
-  variant = "primary",
+  variant = "solid",
   ...props
 }: ButtonProps) {
   const isIconOnly = children == null;
   const isLink = variant === "link";
-  const iconColor = useButtonIconColor(variant);
+  const scheme = getButtonColorScheme(color);
+  const frameStyles = getButtonFrameStyles(variant, scheme);
+  const labelStyles = getButtonLabelStyles(variant, scheme);
+  const iconColor = useButtonIconColor(color, variant);
   const buttonIcon = icon ? <Icon aria-hidden color={iconColor} name={icon} size={buttonIconSize[size]} /> : null;
 
   return (
     <ButtonFrame
       ref={ref}
       unstyled
-      tone={variant}
+      {...frameStyles}
       aria-label={ariaLabel ?? accessibilityLabel}
       accessibilityLabel={accessibilityLabel ?? ariaLabel}
       controlSize={isLink && !isIconOnly ? undefined : size}
@@ -59,7 +74,7 @@ export function Button({
     >
       {iconPosition === "start" && buttonIcon}
       {!isIconOnly && (
-        <ButtonLabel unstyled tone={variant} controlSize={isLink ? "md" : size}>
+        <ButtonLabel unstyled {...labelStyles} controlSize={isLink ? "md" : size}>
           {children}
         </ButtonLabel>
       )}

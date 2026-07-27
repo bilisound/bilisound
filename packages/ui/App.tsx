@@ -170,13 +170,13 @@ export default function App() {
               <Button onPress={() => setAppearance(current => (current === "light" ? "dark" : "light"))}>
                 {appearance === "light" ? "Use dark" : "Use light"}
               </Button>
-              <Button variant="secondary" onPress={() => setTheme("classic")}>
+              <Button variant="outline" color="accent" onPress={() => setTheme("classic")}>
                 Classic
               </Button>
-              <Button variant="secondary" onPress={() => setTheme("red")}>
+              <Button variant="outline" color="accent" onPress={() => setTheme("red")}>
                 Red
               </Button>
-              <Button variant="secondary" onPress={showUserTheme}>
+              <Button variant="outline" color="accent" onPress={showUserTheme}>
                 User theme
               </Button>
             </View>
@@ -248,21 +248,22 @@ export default function App() {
               <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
                 Button variants
               </Text>
+              {(["solid", "outline", "ghost", "link"] as const).map(variant => (
+                <View key={variant} flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+                  <Button variant={variant} onPress={() => undefined}>
+                    {variant} primary
+                  </Button>
+                  <Button variant={variant} color="accent" onPress={() => undefined}>
+                    {variant} accent
+                  </Button>
+                  <Button variant={variant} color="neutral" onPress={() => undefined}>
+                    {variant} neutral
+                  </Button>
+                </View>
+              ))}
               <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
-                <Button onPress={() => undefined}>Primary</Button>
-                <Button variant="secondary" onPress={() => undefined}>
-                  Secondary
-                </Button>
-                <Button variant="ghost" onPress={() => undefined}>
-                  Ghost
-                </Button>
                 <Button disabled onPress={() => undefined}>
                   Disabled
-                </Button>
-              </View>
-              <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
-                <Button variant="link" onPress={() => undefined}>
-                  Link
                 </Button>
               </View>
             </View>
@@ -322,7 +323,7 @@ export default function App() {
               </Text>
               <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
                 <Button onPress={() => setModalOpen(true)}>Open modal</Button>
-                <Button variant="secondary" onPress={() => setAlertDialogOpen(true)}>
+                <Button variant="outline" color="accent" onPress={() => setAlertDialogOpen(true)}>
                   Open alert dialog
                 </Button>
               </View>
@@ -339,7 +340,9 @@ export default function App() {
                     </ModalBody>
                     <ModalFooter>
                       <ModalClose aria-label="取消" asChild>
-                        <Button variant="ghost">取消</Button>
+                        <Button variant="ghost" color="neutral">
+                          取消
+                        </Button>
                       </ModalClose>
                       <ModalClose aria-label="完成" asChild>
                         <Button>完成</Button>
@@ -363,7 +366,9 @@ export default function App() {
                     </AlertDialogBody>
                     <AlertDialogFooter>
                       <AlertDialogCancel aria-label="取消" asChild>
-                        <Button variant="ghost">取消</Button>
+                        <Button variant="ghost" color="neutral">
+                          取消
+                        </Button>
                       </AlertDialogCancel>
                       <AlertDialogAction aria-label="确认清空" asChild>
                         <Button>确认清空</Button>

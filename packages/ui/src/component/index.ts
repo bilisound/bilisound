@@ -32,7 +32,7 @@ export type {
 export { ActionMenu } from "./action-menu";
 export type { ActionMenuItem, ActionMenuProps } from "./action-menu";
 export { Button } from "./button";
-export type { ButtonIconPosition, ButtonProps, ButtonShape, ButtonVariant, ControlSize } from "./button";
+export type { ButtonColor, ButtonIconPosition, ButtonProps, ButtonShape, ButtonVariant, ControlSize } from "./button";
 export { Checkbox } from "./checkbox";
 export type { CheckboxProps } from "./checkbox";
 export { Label, LabelError } from "./label";

@@ -1,14 +1,101 @@
 import { classicPalette, neutralPalette, redPalette } from "./palettes";
 import { colorTokens } from "./tokens";
-import type { Appearance, ThemePalette } from "./types";
+import type { Appearance, TailwindScale, ThemePalette } from "./types";
 
 const fixedThemeTokens = {
   white: colorTokens.white,
   black: colorTokens.black,
 } as const;
 
+/**
+ * Button color slots, resolved per button color (primary/accent/neutral).
+ *
+ * - solid*: filled background ramp + readable foreground
+ * - text: colored label on plain surfaces (outline/ghost)
+ * - outline*: border ramp for the outline variant
+ * - tint*: subtle hover/press fill for outline & ghost
+ */
+interface ButtonColorSchemeTokens {
+  solid: string;
+  solidHover: string;
+  solidPress: string;
+  onSolid: string;
+  text: string;
+  outline: string;
+  outlineHover: string;
+  tintHover: string;
+  tintPress: string;
+}
+
+function createChromaticButtonScheme(scale: TailwindScale, appearance: Appearance): ButtonColorSchemeTokens {
+  if (appearance === "dark") {
+    return {
+      solid: scale[400],
+      solidHover: scale[300],
+      solidPress: scale[500],
+      onSolid: getReadableForeground(scale[400]),
+      text: scale[300],
+      outline: scale[700],
+      outlineHover: scale[500],
+      tintHover: scale[950],
+      tintPress: scale[900],
+    };
+  }
+
+  return {
+    solid: scale[600],
+    solidHover: scale[500],
+    solidPress: scale[700],
+    onSolid: fixedThemeTokens.white,
+    text: scale[700],
+    outline: scale[300],
+    outlineHover: scale[500],
+    tintHover: scale[50],
+    tintPress: scale[100],
+  };
+}
+
+function createNeutralButtonScheme(appearance: Appearance): ButtonColorSchemeTokens {
+  if (appearance === "dark") {
+    return {
+      solid: neutralPalette[400],
+      solidHover: neutralPalette[300],
+      solidPress: neutralPalette[500],
+      onSolid: getReadableForeground(neutralPalette[400]),
+      text: neutralPalette[50],
+      outline: neutralPalette[700],
+      outlineHover: neutralPalette[600],
+      tintHover: neutralPalette[800],
+      tintPress: neutralPalette[800],
+    };
+  }
+
+  return {
+    solid: neutralPalette[600],
+    solidHover: neutralPalette[500],
+    solidPress: neutralPalette[700],
+    onSolid: fixedThemeTokens.white,
+    text: neutralPalette[950],
+    outline: neutralPalette[300],
+    outlineHover: neutralPalette[400],
+    tintHover: neutralPalette[100],
+    tintPress: neutralPalette[100],
+  };
+}
+
+function prefixButtonScheme<Color extends string>(color: Color, scheme: ButtonColorSchemeTokens) {
+  return Object.fromEntries(
+    Object.entries(scheme).map(([key, value]) => [`${color}${key[0].toUpperCase()}${key.slice(1)}`, value]),
+  ) as Record<`${Color}${Capitalize<keyof ButtonColorSchemeTokens>}`, string>;
+}
+
 export function createSemanticTheme(palette: ThemePalette, appearance: Appearance) {
   const { primary, accent } = palette;
+  const buttonColorSchemes = {
+    ...prefixButtonScheme("primary", createChromaticButtonScheme(primary, appearance)),
+    ...prefixButtonScheme("accent", createChromaticButtonScheme(accent, appearance)),
+    ...prefixButtonScheme("neutral", createNeutralButtonScheme(appearance)),
+  };
 
   if (appearance === "dark") {
     return {
@@ -24,18 +111,9 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
       borderHover: neutralPalette[600],
       focusRing: primary[400],
       selection: accent[400],
-      primaryBackground: primary[400],
-      primaryBackgroundHover: primary[300],
-      primaryBackgroundPress: primary[500],
       primaryBorder: primary[300],
       primaryBorderHover: primary[200],
-      primaryForeground: getReadableForeground(primary[400]),
-      secondaryBackground: "transparent",
-      secondaryBackgroundHover: accent[950],
-      secondaryBackgroundPress: accent[900],
-      secondaryBorder: accent[700],
-      secondaryBorderHover: accent[500],
-      secondaryForeground: accent[300],
+      ...buttonColorSchemes,
       danger: "#f87171",
       sliderTrack: neutralPalette[700],
       sliderRange: primary[400],
@@ -60,18 +138,9 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
     borderHover: neutralPalette[400],
     focusRing: primary[700],
     selection: accent[600],
-    primaryBackground: primary[600],
-    primaryBackgroundHover: primary[500],
-    primaryBackgroundPress: primary[700],
     primaryBorder: primary[600],
     primaryBorderHover: primary[500],
-    primaryForeground: fixedThemeTokens.white,
-    secondaryBackground: "transparent",
-    secondaryBackgroundHover: accent[50],
-    secondaryBackgroundPress: accent[100],
-    secondaryBorder: accent[300],
-    secondaryBorderHover: accent[500],
-    secondaryForeground: accent[700],
+    ...buttonColorSchemes,
     danger: "#dc2626",
     sliderTrack: neutralPalette[300],
     sliderRange: primary[600],

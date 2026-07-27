@@ -35,8 +35,8 @@ export const CheckboxBox = styled(View, {
   variants: {
     checked: {
       true: {
-        backgroundColor: "$primaryBackground",
-        borderColor: "$primaryBackground",
+        backgroundColor: "$primarySolid",
+        borderColor: "$primarySolid",
       },
     },
   } as const,
@@ -44,7 +44,7 @@ export const CheckboxBox = styled(View, {
 
 export const CheckboxCheck = styled(Text, {
   name: "BilisoundCheckboxCheck",
-  color: "$primaryForeground",
+  color: "$primaryOnSolid",
   fontSize: 12,
   lineHeight: 14,
   fontWeight: "700",

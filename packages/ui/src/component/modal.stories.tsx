@@ -43,7 +43,9 @@ function ModalDemo(props: ModalProps) {
             </ModalBody>
             <ModalFooter>
               <ModalClose aria-label="取消" asChild>
-                <Button variant="ghost">取消</Button>
+                <Button variant="ghost" color="neutral">
+                  取消
+                </Button>
               </ModalClose>
               <ModalClose aria-label="完成" asChild>
                 <Button>完成</Button>

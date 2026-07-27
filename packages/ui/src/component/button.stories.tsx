@@ -3,6 +3,7 @@ import { View } from "@tamagui/core";
 import { fn } from "storybook/test";
 
 import { Button } from "./button";
+import type { ButtonColor, ButtonVariant } from "./button";
 
 const meta = {
   title: "Components/Button",
@@ -12,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Triggers an action using semantic variants, control sizes, optional icons, and default or rounded shapes.",
+          "Triggers an action using a color (primary, accent, neutral) decoupled from a variant (solid, outline, ghost, link), plus control sizes, optional icons, and default or rounded shapes.",
       },
     },
   },
@@ -28,6 +29,10 @@ const meta = {
     onPress: fn(),
   },
   argTypes: {
+    color: {
+      control: "select",
+      options: ["primary", "accent", "neutral"],
+    },
     icon: {
       control: "select",
       options: ["fa6-solid:play", "fa6-solid:plus", "fa6-solid:arrow-up-from-bracket"],
@@ -42,7 +47,7 @@ const meta = {
     },
     variant: {
       control: "select",
-      options: ["primary", "secondary", "ghost", "link"],
+      options: ["solid", "outline", "ghost", "link"],
     },
     shape: {
       control: "select",
@@ -54,16 +59,20 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {};
+const colors: ButtonColor[] = ["primary", "accent", "neutral"];
 
-export const Secondary: Story = {
+export const Solid: Story = {};
+
+export const Outline: Story = {
   args: {
-    variant: "secondary",
+    color: "accent",
+    variant: "outline",
   },
 };
 
 export const Ghost: Story = {
   args: {
+    color: "neutral",
     variant: "ghost",
   },
 };
@@ -72,6 +81,22 @@ export const Link: Story = {
   args: {
     variant: "link",
   },
+};
+
+export const ColorMatrix: Story = {
+  render: args => (
+    <View gap="$3">
+      {(["solid", "outline", "ghost", "link"] as ButtonVariant[]).map(variant => (
+        <View key={variant} flexDirection="row" flexWrap="wrap" alignItems="center" gap="$3">
+          {colors.map(color => (
+            <Button key={color} {...args} color={color} variant={variant}>
+              {variant} {color}
+            </Button>
+          ))}
+        </View>
+      ))}
+    </View>
+  ),
 };
 
 export const Disabled: Story = {

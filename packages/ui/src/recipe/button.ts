@@ -7,19 +7,155 @@ export const buttonIconSize = {
   lg: 18,
 } as const;
 
-export function useButtonIconColor(tone: "primary" | "secondary" | "ghost" | "link") {
-  const theme = useTheme();
+export type ButtonColor = "primary" | "accent" | "neutral";
+export type ButtonVariant = "solid" | "outline" | "ghost" | "link";
 
-  switch (tone) {
-    case "primary":
-      return String(getVariableValue(theme.primaryForeground));
-    case "secondary":
-      return String(getVariableValue(theme.secondaryForeground));
+interface ButtonColorScheme {
+  solid: string;
+  solidHover: string;
+  solidPress: string;
+  onSolid: string;
+  text: string;
+  outline: string;
+  outlineHover: string;
+  tintHover: string;
+  tintPress: string;
+}
+
+const buttonColorSchemes = {
+  primary: {
+    solid: "$primarySolid",
+    solidHover: "$primarySolidHover",
+    solidPress: "$primarySolidPress",
+    onSolid: "$primaryOnSolid",
+    text: "$primaryText",
+    outline: "$primaryOutline",
+    outlineHover: "$primaryOutlineHover",
+    tintHover: "$primaryTintHover",
+    tintPress: "$primaryTintPress",
+  },
+  accent: {
+    solid: "$accentSolid",
+    solidHover: "$accentSolidHover",
+    solidPress: "$accentSolidPress",
+    onSolid: "$accentOnSolid",
+    text: "$accentText",
+    outline: "$accentOutline",
+    outlineHover: "$accentOutlineHover",
+    tintHover: "$accentTintHover",
+    tintPress: "$accentTintPress",
+  },
+  neutral: {
+    solid: "$neutralSolid",
+    solidHover: "$neutralSolidHover",
+    solidPress: "$neutralSolidPress",
+    onSolid: "$neutralOnSolid",
+    text: "$neutralText",
+    outline: "$neutralOutline",
+    outlineHover: "$neutralOutlineHover",
+    tintHover: "$neutralTintHover",
+    tintPress: "$neutralTintPress",
+  },
+} as const satisfies Record<ButtonColor, ButtonColorScheme>;
+
+export function getButtonColorScheme(color: ButtonColor): ButtonColorScheme {
+  return buttonColorSchemes[color];
+}
+
+export function useButtonIconColor(color: ButtonColor, variant: ButtonVariant) {
+  const theme = useTheme();
+  const scheme = getButtonColorScheme(color);
+  const tokenRef = variant === "solid" ? scheme.onSolid : variant === "link" ? scheme.solid : scheme.text;
+  return String(getVariableValue(theme[tokenRef.slice(1) as keyof typeof theme]));
+}
+
+/**
+ * Frame styles per variant. Spread onto ButtonFrame *before* controlSize so the
+ * size variant keeps winning shared keys (padding/height/borderWidth) for
+ * icon-only link buttons, matching the previous tone-based recipes.
+ */
+export function getButtonFrameStyles(variant: ButtonVariant, scheme: ButtonColorScheme) {
+  switch (variant) {
+    case "outline":
+      return {
+        backgroundColor: "transparent",
+        borderColor: scheme.outline,
+        hoverStyle: {
+          backgroundColor: scheme.tintHover,
+          borderColor: scheme.outlineHover,
+        },
+        pressStyle: {
+          backgroundColor: scheme.tintPress,
+        },
+      } as const;
+    case "ghost":
+      return {
+        backgroundColor: "transparent",
+        borderColor: "transparent",
+        hoverStyle: {
+          backgroundColor: scheme.tintHover,
+        },
+        pressStyle: {
+          backgroundColor: scheme.tintPress,
+          opacity: 0.92,
+        },
+        focusVisibleStyle: {
+          backgroundColor: scheme.tintHover,
+          outlineColor: "$focusRing",
+          outlineStyle: "solid",
+          outlineWidth: 2,
+          outlineOffset: 2,
+        },
+      } as const;
     case "link":
-      return String(getVariableValue(theme.primaryBackground));
+      return {
+        backgroundColor: "transparent",
+        borderColor: "transparent",
+        borderWidth: 0,
+        alignSelf: "flex-start",
+        justifyContent: "flex-start",
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        minHeight: 0,
+        height: "auto",
+        hoverStyle: {
+          backgroundColor: "transparent",
+        },
+        pressStyle: {
+          backgroundColor: "transparent",
+          opacity: 0.7,
+        },
+      } as const;
     default:
-      return String(getVariableValue(theme.text));
+      return {
+        backgroundColor: scheme.solid,
+        borderColor: scheme.solid,
+        hoverStyle: {
+          backgroundColor: scheme.solidHover,
+          borderColor: scheme.solidHover,
+        },
+        pressStyle: {
+          backgroundColor: scheme.solidPress,
+          borderColor: scheme.solidPress,
+        },
+      } as const;
   }
+}
+
+export function getButtonLabelStyles(variant: ButtonVariant, scheme: ButtonColorScheme) {
+  if (variant === "link") {
+    return {
+      color: scheme.solid,
+      fontWeight: "400",
+      hoverStyle: {
+        textDecorationLine: "underline",
+      },
+    } as const;
+  }
+
+  return {
+    color: variant === "solid" ? scheme.onSolid : scheme.text,
+  };
 }
 
 export const ButtonFrame = styled(TamaguiButton, {
@@ -36,70 +172,6 @@ export const ButtonFrame = styled(TamaguiButton, {
     outlineOffset: 2,
   },
   variants: {
-    tone: {
-      primary: {
-        backgroundColor: "$primaryBackground",
-        borderColor: "$primaryBackground",
-        hoverStyle: {
-          backgroundColor: "$primaryBackgroundHover",
-          borderColor: "$primaryBackgroundHover",
-        },
-        pressStyle: {
-          backgroundColor: "$primaryBackgroundPress",
-          borderColor: "$primaryBackgroundPress",
-        },
-      },
-      secondary: {
-        backgroundColor: "$secondaryBackground",
-        borderColor: "$secondaryBorder",
-        hoverStyle: {
-          backgroundColor: "$secondaryBackgroundHover",
-          borderColor: "$secondaryBorderHover",
-        },
-        pressStyle: {
-          backgroundColor: "$secondaryBackgroundPress",
-        },
-      },
-      // same footprint as solid buttons; fill only appears on hover/focus/press
-      ghost: {
-        backgroundColor: "transparent",
-        borderWidth: 0,
-        borderColor: "transparent",
-        hoverStyle: {
-          backgroundColor: "$surfaceMuted",
-        },
-        pressStyle: {
-          backgroundColor: "$surfaceMuted",
-          opacity: 0.92,
-        },
-        focusVisibleStyle: {
-          backgroundColor: "$surfaceMuted",
-          outlineColor: "$focusRing",
-          outlineStyle: "solid",
-          outlineWidth: 2,
-          outlineOffset: 2,
-        },
-      },
-      // inline text action (guestbook 「回复」)
-      link: {
-        backgroundColor: "transparent",
-        borderWidth: 0,
-        borderColor: "transparent",
-        alignSelf: "flex-start",
-        justifyContent: "flex-start",
-        paddingHorizontal: 0,
-        paddingVertical: 0,
-        minHeight: 0,
-        height: "auto",
-        hoverStyle: {
-          backgroundColor: "transparent",
-        },
-        pressStyle: {
-          backgroundColor: "transparent",
-          opacity: 0.7,
-        },
-      },
-    },
     controlSize: {
       sm: {
         borderWidth: 1,
@@ -144,7 +216,6 @@ export const ButtonFrame = styled(TamaguiButton, {
     },
   } as const,
   defaultVariants: {
-    tone: "primary",
     controlSize: "md",
     shape: "default",
   },
@@ -156,24 +227,6 @@ export const ButtonLabel = styled(TamaguiButton.Text, {
   fontWeight: "600",
   userSelect: "none",
   variants: {
-    tone: {
-      primary: {
-        color: "$primaryForeground",
-      },
-      secondary: {
-        color: "$secondaryForeground",
-      },
-      ghost: {
-        color: "$text",
-      },
-      link: {
-        color: "$primaryBackground",
-        fontWeight: "400",
-        hoverStyle: {
-          textDecorationLine: "underline",
-        },
-      },
-    },
     controlSize: {
       sm: {
         fontSize: "$sm",
@@ -190,7 +243,6 @@ export const ButtonLabel = styled(TamaguiButton.Text, {
     },
   } as const,
   defaultVariants: {
-    tone: "primary",
     controlSize: "md",
   },
 });

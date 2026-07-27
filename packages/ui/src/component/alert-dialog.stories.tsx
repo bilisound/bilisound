@@ -44,7 +44,9 @@ function AlertDialogDemo(props: AlertDialogProps) {
             </AlertDialogBody>
             <AlertDialogFooter>
               <AlertDialogCancel aria-label="取消" asChild>
-                <Button variant="ghost">取消</Button>
+                <Button variant="ghost" color="neutral">
+                  取消
+                </Button>
               </AlertDialogCancel>
               <AlertDialogAction aria-label="确认清空" asChild>
                 <Button>确认清空</Button>
