@@ -35,8 +35,8 @@ export { Button } from "./button";
 export type { ButtonIconPosition, ButtonProps, ButtonShape, ButtonVariant, ControlSize } from "./button";
 export { Checkbox } from "./checkbox";
 export type { CheckboxProps } from "./checkbox";
-export { Label } from "./label";
-export type { LabelProps } from "./label";
+export { Label, LabelError } from "./label";
+export type { LabelErrorProps, LabelProps } from "./label";
 export { Icon } from "./icon";
 export type { IconName, IconProps } from "./icon";
 export {

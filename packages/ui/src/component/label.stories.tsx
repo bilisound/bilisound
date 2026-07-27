@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-native-web-vite";
 import { View } from "@tamagui/core";
 
-import { Label } from "./label";
+import { Label, LabelError } from "./label";
 import { TextInput } from "./text-input";
 
 const meta = {
@@ -36,6 +36,16 @@ export const WithTextInput: Story = {
     <View width={320}>
       <Label {...args} htmlFor="playlist-name" required />
       <TextInput id="playlist-name" placeholder="My favorites" />
+    </View>
+  ),
+};
+
+export const Invalid: Story = {
+  render: args => (
+    <View width={320}>
+      <Label {...args} htmlFor="invalid-playlist-name" required />
+      <TextInput id="invalid-playlist-name" invalid value="" />
+      <LabelError>Playlist name is required</LabelError>
     </View>
   ),
 };

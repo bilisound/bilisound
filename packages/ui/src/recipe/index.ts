@@ -31,7 +31,7 @@ export {
 } from "./modal";
 export { ButtonFrame, ButtonLabel, buttonIconSize, useButtonIconColor } from "./button";
 export { CheckboxBox, CheckboxCheck, CheckboxLabel, CheckboxRoot } from "./checkbox";
-export { LabelFrame, LabelRequiredMark } from "./label";
+export { LabelErrorFrame, LabelErrorText, LabelFrame, LabelRequiredMark } from "./label";
 export { SliderRange, SliderThumb, SliderTrack, sliderRootRecipe, sliderThumbSize } from "./slider";
 export { SwitchControl, switchAnimationDuration, switchStyles, switchThumbTravel, useSwitchColors } from "./switch";
 export { TextAreaFrame, TextInputFrame } from "./text-input";
