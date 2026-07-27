@@ -10,16 +10,16 @@ catalog:
   "@types/node-fetch": ^2.6.13
   "@types/react": ~19.2.14
   axios: ^1.7.9
-  expo: ~57.0.1
+  expo: ~57.0.8
   expo-module-scripts: 56.0.3
-  expo-modules-core: ~57.0.1
+  expo-modules-core: ~57.0.7
   itty-router: ^5.0.22
   md5: ^2.3.0
   netlify-cli: ^23.13.4
   node-fetch: ^3.3.2
   react-native: 0.86.0
   tsdown: ^0.19.0
-  typescript: ~5.9.3
+  typescript: ~6.0.3
   wrangler: ^4.59.2
 allowBuilds:
   "@parcel/watcher": true
