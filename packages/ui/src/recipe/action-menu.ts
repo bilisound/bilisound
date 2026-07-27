@@ -10,8 +10,17 @@ export const ActionMenuOverlay = styled(Sheet.Overlay, {
   left: 0,
   position: "absolute",
   zIndex: 99_999,
-  backgroundColor: "$black",
-  opacity: 0.5,
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+});
+export const ActionMenuBottomSurface = styled(View, {
+  name: "BilisoundActionMenuBottomSurface",
+  position: "absolute",
+  right: 0,
+  bottom: 0,
+  left: 0,
+  height: "$16",
+  backgroundColor: "$surface",
+  pointerEvents: "none",
 });
 
 export const ActionMenuFrame = styled(Sheet.Frame, {

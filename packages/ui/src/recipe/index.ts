@@ -9,6 +9,7 @@ export {
   AlertDialogTitleFrame,
 } from "./alert-dialog";
 export {
+  ActionMenuBottomSurface,
   ActionMenuCell,
   ActionMenuFrame,
   ActionMenuHandle,

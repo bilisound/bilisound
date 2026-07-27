@@ -5,6 +5,7 @@ import { Sheet } from "@tamagui/sheet";
 import { SafeAreaInsetsContext } from "react-native-safe-area-context";
 
 import {
+  ActionMenuBottomSurface,
   ActionMenuCell,
   ActionMenuFrame,
   ActionMenuHandle,
@@ -60,7 +61,9 @@ export function ActionMenu({
         transition={{ opacity: "fade" }}
         enterStyle={{ opacity: 0 }}
         exitStyle={{ opacity: 0 }}
-      />
+      >
+        <ActionMenuBottomSurface />
+      </ActionMenuOverlay>
       <ActionMenuFrame
         unstyled
         paddingBottom={Math.max(insets?.bottom ?? 0, 8)}

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Text, View } from "@tamagui/core";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import {
   ActionMenu,
@@ -151,311 +152,315 @@ export default function App() {
   };
 
   return (
-    <BilisoundProvider appearance={appearance} theme={theme}>
-      <StatusBar style={appearance === "dark" ? "light" : "dark"} />
-      <View flex={1} backgroundColor="$canvas">
-        <ScrollView contentContainerStyle={styles.content}>
-          <View gap="$2">
-            <Text color="$text" fontFamily="$heading" fontSize="$3xl" fontWeight="700">
-              Bilisound UI
-            </Text>
-            <Text color="$textMuted" fontFamily="$body" fontSize="$base" lineHeight="$base">
-              Headless Tamagui components backed by Bilisound design tokens.
-            </Text>
-          </View>
+    <SafeAreaProvider>
+      <BilisoundProvider appearance={appearance} theme={theme}>
+        <StatusBar style={appearance === "dark" ? "light" : "dark"} />
+        <View flex={1} backgroundColor="$canvas">
+          <ScrollView contentContainerStyle={styles.content}>
+            <View gap="$2">
+              <Text color="$text" fontFamily="$heading" fontSize="$3xl" fontWeight="700">
+                Bilisound UI
+              </Text>
+              <Text color="$textMuted" fontFamily="$body" fontSize="$base" lineHeight="$base">
+                Headless Tamagui components backed by Bilisound design tokens.
+              </Text>
+            </View>
 
-          <View flexDirection="row" flexWrap="wrap" gap="$2">
-            <Button onPress={() => setAppearance(current => (current === "light" ? "dark" : "light"))}>
-              {appearance === "light" ? "Use dark" : "Use light"}
-            </Button>
-            <Button variant="secondary" onPress={() => setTheme("classic")}>
-              Classic
-            </Button>
-            <Button variant="secondary" onPress={() => setTheme("red")}>
-              Red
-            </Button>
-            <Button variant="secondary" onPress={showUserTheme}>
-              User theme
-            </Button>
-          </View>
+            <View flexDirection="row" flexWrap="wrap" gap="$2">
+              <Button onPress={() => setAppearance(current => (current === "light" ? "dark" : "light"))}>
+                {appearance === "light" ? "Use dark" : "Use light"}
+              </Button>
+              <Button variant="secondary" onPress={() => setTheme("classic")}>
+                Classic
+              </Button>
+              <Button variant="secondary" onPress={() => setTheme("red")}>
+                Red
+              </Button>
+              <Button variant="secondary" onPress={showUserTheme}>
+                User theme
+              </Button>
+            </View>
 
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Guestbook form
-            </Text>
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Guestbook form
+              </Text>
 
-            <View flexDirection="row" flexWrap="wrap" gap="$4">
-              <View flex={1} minWidth={180} gap="$0">
-                <Label htmlFor="guest-name" required>
-                  昵称
-                </Label>
-                <TextInput id="guest-name" value={name} onChangeText={setName} placeholder="怎么称呼你" />
+              <View flexDirection="row" flexWrap="wrap" gap="$4">
+                <View flex={1} minWidth={180} gap="$0">
+                  <Label htmlFor="guest-name" required>
+                    昵称
+                  </Label>
+                  <TextInput id="guest-name" value={name} onChangeText={setName} placeholder="怎么称呼你" />
+                </View>
+                <View flex={1} minWidth={180} gap="$0">
+                  <Label htmlFor="guest-email" required>
+                    邮箱
+                  </Label>
+                  <TextInput
+                    id="guest-email"
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="name@example.com"
+                    autoCapitalize="none"
+                  />
+                </View>
+                <View flex={1} minWidth={180} gap="$0">
+                  <Label htmlFor="guest-website">网站</Label>
+                  <TextInput
+                    id="guest-website"
+                    value={website}
+                    onChangeText={setWebsite}
+                    placeholder="https://"
+                    autoCapitalize="none"
+                  />
+                </View>
               </View>
-              <View flex={1} minWidth={180} gap="$0">
-                <Label htmlFor="guest-email" required>
-                  邮箱
+
+              <View>
+                <Label htmlFor="guest-comment" required>
+                  评论
                 </Label>
-                <TextInput
-                  id="guest-email"
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="name@example.com"
-                  autoCapitalize="none"
+                <TextArea
+                  id="guest-comment"
+                  value={comment}
+                  onChangeText={setComment}
+                  placeholder="不适合发到其它博文的留言，可以发到这里"
+                  rows={3}
                 />
               </View>
-              <View flex={1} minWidth={180} gap="$0">
-                <Label htmlFor="guest-website">网站</Label>
-                <TextInput
-                  id="guest-website"
-                  value={website}
-                  onChangeText={setWebsite}
-                  placeholder="https://"
-                  autoCapitalize="none"
-                />
+
+              <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$5">
+                <Button onPress={() => undefined}>发布评论</Button>
+                <Checkbox checked={notify} onCheckedChange={setNotify} label="接收邮件通知" />
               </View>
             </View>
 
-            <View>
-              <Label htmlFor="guest-comment" required>
-                评论
-              </Label>
-              <TextArea
-                id="guest-comment"
-                value={comment}
-                onChangeText={setComment}
-                placeholder="不适合发到其它博文的留言，可以发到这里"
-                rows={3}
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Text input
+              </Text>
+              <TextInput value={query} onChangeText={setQuery} placeholder="Paste a Bilibili URL" />
+              <TextInput invalid placeholder="Invalid input preview" />
+            </View>
+
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Button variants
+              </Text>
+              <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+                <Button onPress={() => undefined}>Primary</Button>
+                <Button variant="secondary" onPress={() => undefined}>
+                  Secondary
+                </Button>
+                <Button variant="ghost" onPress={() => undefined}>
+                  Ghost
+                </Button>
+                <Button disabled onPress={() => undefined}>
+                  Disabled
+                </Button>
+              </View>
+              <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+                <Button variant="link" onPress={() => undefined}>
+                  Link
+                </Button>
+              </View>
+            </View>
+
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Action menu
+              </Text>
+              <View alignItems="flex-start">
+                <Button onPress={() => setActionMenuOpen(true)}>Open action menu</Button>
+              </View>
+              <ActionMenu
+                open={actionMenuOpen}
+                onOpenChange={setActionMenuOpen}
+                menuItems={[
+                  {
+                    id: "add",
+                    text: "添加到歌单",
+                    icon: "fa6-solid:plus",
+                    iconSize: 16,
+                    action: () => setActionMenuOpen(false),
+                  },
+                  {
+                    id: "edit",
+                    text: "编辑信息",
+                    icon: "fa6-solid:pen",
+                    iconSize: 16,
+                    action: () => setActionMenuOpen(false),
+                  },
+                  {
+                    id: "download",
+                    text: "下载",
+                    icon: "fa6-solid:download",
+                    action: () => setActionMenuOpen(false),
+                  },
+                  {
+                    id: "delete",
+                    text: "删除",
+                    icon: "fa6-solid:trash-can",
+                    disabled: true,
+                    action: () => undefined,
+                  },
+                  {
+                    id: "cancel",
+                    text: "取消",
+                    icon: "fa6-solid:xmark",
+                    iconSize: 20,
+                    action: () => setActionMenuOpen(false),
+                  },
+                ]}
               />
             </View>
 
-            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$5">
-              <Button onPress={() => undefined}>发布评论</Button>
-              <Checkbox checked={notify} onCheckedChange={setNotify} label="接收邮件通知" />
-            </View>
-          </View>
-
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Text input
-            </Text>
-            <TextInput value={query} onChangeText={setQuery} placeholder="Paste a Bilibili URL" />
-            <TextInput invalid placeholder="Invalid input preview" />
-          </View>
-
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Button variants
-            </Text>
-            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
-              <Button onPress={() => undefined}>Primary</Button>
-              <Button variant="secondary" onPress={() => undefined}>
-                Secondary
-              </Button>
-              <Button variant="ghost" onPress={() => undefined}>
-                Ghost
-              </Button>
-              <Button disabled onPress={() => undefined}>
-                Disabled
-              </Button>
-            </View>
-            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
-              <Button variant="link" onPress={() => undefined}>
-                Link
-              </Button>
-            </View>
-          </View>
-
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Action menu
-            </Text>
-            <View alignItems="flex-start">
-              <Button onPress={() => setActionMenuOpen(true)}>Open action menu</Button>
-            </View>
-            <ActionMenu
-              open={actionMenuOpen}
-              onOpenChange={setActionMenuOpen}
-              menuItems={[
-                {
-                  id: "add",
-                  text: "添加到歌单",
-                  icon: "fa6-solid:plus",
-                  iconSize: 16,
-                  action: () => setActionMenuOpen(false),
-                },
-                {
-                  id: "edit",
-                  text: "编辑信息",
-                  icon: "fa6-solid:pen",
-                  iconSize: 16,
-                  action: () => setActionMenuOpen(false),
-                },
-                {
-                  id: "download",
-                  text: "下载",
-                  icon: "fa6-solid:download",
-                  action: () => setActionMenuOpen(false),
-                },
-                {
-                  id: "delete",
-                  text: "删除",
-                  icon: "fa6-solid:trash-can",
-                  disabled: true,
-                  action: () => undefined,
-                },
-                {
-                  id: "cancel",
-                  text: "取消",
-                  icon: "fa6-solid:xmark",
-                  iconSize: 20,
-                  action: () => setActionMenuOpen(false),
-                },
-              ]}
-            />
-          </View>
-
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Dialogs
-            </Text>
-            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
-              <Button onPress={() => setModalOpen(true)}>Open modal</Button>
-              <Button variant="secondary" onPress={() => setAlertDialogOpen(true)}>
-                Open alert dialog
-              </Button>
-            </View>
-
-            <Modal open={modalOpen} onOpenChange={setModalOpen}>
-              <ModalPortal>
-                <ModalBackdrop />
-                <ModalContent>
-                  <ModalHeader>
-                    <ModalTitle>播放设置</ModalTitle>
-                  </ModalHeader>
-                  <ModalBody marginTop="$3" marginBottom="$5">
-                    <ModalDescription>这是使用 Tamagui headless Dialog primitive 构建的普通模态框。</ModalDescription>
-                  </ModalBody>
-                  <ModalFooter>
-                    <ModalClose aria-label="取消" asChild>
-                      <Button variant="ghost">取消</Button>
-                    </ModalClose>
-                    <ModalClose aria-label="完成" asChild>
-                      <Button>完成</Button>
-                    </ModalClose>
-                  </ModalFooter>
-                </ModalContent>
-              </ModalPortal>
-            </Modal>
-
-            <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
-              <AlertDialogPortal>
-                <AlertDialogBackdrop />
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>清空播放队列？</AlertDialogTitle>
-                  </AlertDialogHeader>
-                  <AlertDialogBody>
-                    <AlertDialogDescription>此操作无法撤销，当前队列中的全部音视频都会被移除。</AlertDialogDescription>
-                  </AlertDialogBody>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel aria-label="取消" asChild>
-                      <Button variant="ghost">取消</Button>
-                    </AlertDialogCancel>
-                    <AlertDialogAction aria-label="确认清空" asChild>
-                      <Button>确认清空</Button>
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialogPortal>
-            </AlertDialog>
-          </View>
-
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Button sizes
-            </Text>
-            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
-              <Button size="sm" onPress={() => undefined}>
-                Small
-              </Button>
-              <Button size="md" onPress={() => undefined}>
-                Medium
-              </Button>
-              <Button size="lg" onPress={() => undefined}>
-                Large
-              </Button>
-            </View>
-          </View>
-
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Button icons and shapes
-            </Text>
-            <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
-              <Button icon="fa6-solid:play" onPress={() => undefined}>
-                Play
-              </Button>
-              <Button icon="fa6-solid:arrow-up-from-bracket" iconPosition="end" onPress={() => undefined}>
-                Share
-              </Button>
-              <Button accessibilityLabel="Pause" icon="fa6-solid:pause" onPress={() => undefined} />
-              <Button accessibilityLabel="Add" icon="fa6-solid:plus" shape="rounded" onPress={() => undefined} />
-              <Button icon="fa6-solid:play" shape="rounded" onPress={() => undefined}>
-                Rounded
-              </Button>
-            </View>
-          </View>
-
-          <View gap="$4">
-            <View flexDirection="row" justifyContent="space-between">
+            <View gap="$4">
               <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-                Slider
+                Dialogs
               </Text>
-              <Text color="$textMuted" fontFamily="$body" fontSize="$sm">
-                {volume[0]}%
-              </Text>
+              <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+                <Button onPress={() => setModalOpen(true)}>Open modal</Button>
+                <Button variant="secondary" onPress={() => setAlertDialogOpen(true)}>
+                  Open alert dialog
+                </Button>
+              </View>
+
+              <Modal open={modalOpen} onOpenChange={setModalOpen}>
+                <ModalPortal>
+                  <ModalBackdrop />
+                  <ModalContent>
+                    <ModalHeader>
+                      <ModalTitle>播放设置</ModalTitle>
+                    </ModalHeader>
+                    <ModalBody marginTop="$3" marginBottom="$5">
+                      <ModalDescription>这是使用 Tamagui headless Dialog primitive 构建的普通模态框。</ModalDescription>
+                    </ModalBody>
+                    <ModalFooter>
+                      <ModalClose aria-label="取消" asChild>
+                        <Button variant="ghost">取消</Button>
+                      </ModalClose>
+                      <ModalClose aria-label="完成" asChild>
+                        <Button>完成</Button>
+                      </ModalClose>
+                    </ModalFooter>
+                  </ModalContent>
+                </ModalPortal>
+              </Modal>
+
+              <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+                <AlertDialogPortal>
+                  <AlertDialogBackdrop />
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>清空播放队列？</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogBody>
+                      <AlertDialogDescription>
+                        此操作无法撤销，当前队列中的全部音视频都会被移除。
+                      </AlertDialogDescription>
+                    </AlertDialogBody>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel aria-label="取消" asChild>
+                        <Button variant="ghost">取消</Button>
+                      </AlertDialogCancel>
+                      <AlertDialogAction aria-label="确认清空" asChild>
+                        <Button>确认清空</Button>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialogPortal>
+              </AlertDialog>
             </View>
-            <Slider accessibilityLabel="Volume" value={volume} onValueChange={setVolume} />
-          </View>
-          <View gap="$4">
-            <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
-              Switch
-            </Text>
-            <View flexDirection="row" alignItems="center" justifyContent="space-between" gap="$4">
-              <Text color="$text" fontFamily="$body" fontSize="$base">
-                Semantic control
+
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Button sizes
               </Text>
-              <Switch accessibilityLabel="Autoplay next item" checked={autoplay} onCheckedChange={setAutoplay} />
+              <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+                <Button size="sm" onPress={() => undefined}>
+                  Small
+                </Button>
+                <Button size="md" onPress={() => undefined}>
+                  Medium
+                </Button>
+                <Button size="lg" onPress={() => undefined}>
+                  Large
+                </Button>
+              </View>
             </View>
-            <View
-              accessibilityLabel="Autoplay inside settings button"
-              accessibilityRole="switch"
-              accessibilityState={{ checked: autoplay }}
-              render="button"
-              role="switch"
-              aria-checked={autoplay}
-              aria-label="Autoplay inside settings button"
-              tabIndex={0}
-              onPress={() => setAutoplay(value => !value)}
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="space-between"
-              gap="$4"
-              padding="$4"
-              borderWidth={1}
-              borderColor="$border"
-              borderRadius={10}
-              backgroundColor="$surface"
-            >
-              <Text color="$text" fontFamily="$body" fontSize="$base" fontWeight="600">
-                Parent-owned semantics
+
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Button icons and shapes
               </Text>
-              <SwitchVisual checked={autoplay} />
+              <View flexDirection="row" flexWrap="wrap" alignItems="center" gap="$2">
+                <Button icon="fa6-solid:play" onPress={() => undefined}>
+                  Play
+                </Button>
+                <Button icon="fa6-solid:arrow-up-from-bracket" iconPosition="end" onPress={() => undefined}>
+                  Share
+                </Button>
+                <Button accessibilityLabel="Pause" icon="fa6-solid:pause" onPress={() => undefined} />
+                <Button accessibilityLabel="Add" icon="fa6-solid:plus" shape="rounded" onPress={() => undefined} />
+                <Button icon="fa6-solid:play" shape="rounded" onPress={() => undefined}>
+                  Rounded
+                </Button>
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </View>
-    </BilisoundProvider>
+
+            <View gap="$4">
+              <View flexDirection="row" justifyContent="space-between">
+                <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                  Slider
+                </Text>
+                <Text color="$textMuted" fontFamily="$body" fontSize="$sm">
+                  {volume[0]}%
+                </Text>
+              </View>
+              <Slider accessibilityLabel="Volume" value={volume} onValueChange={setVolume} />
+            </View>
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Switch
+              </Text>
+              <View flexDirection="row" alignItems="center" justifyContent="space-between" gap="$4">
+                <Text color="$text" fontFamily="$body" fontSize="$base">
+                  Semantic control
+                </Text>
+                <Switch accessibilityLabel="Autoplay next item" checked={autoplay} onCheckedChange={setAutoplay} />
+              </View>
+              <View
+                accessibilityLabel="Autoplay inside settings button"
+                accessibilityRole="switch"
+                accessibilityState={{ checked: autoplay }}
+                render="button"
+                role="switch"
+                aria-checked={autoplay}
+                aria-label="Autoplay inside settings button"
+                tabIndex={0}
+                onPress={() => setAutoplay(value => !value)}
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="space-between"
+                gap="$4"
+                padding="$4"
+                borderWidth={1}
+                borderColor="$border"
+                borderRadius={10}
+                backgroundColor="$surface"
+              >
+                <Text color="$text" fontFamily="$body" fontSize="$base" fontWeight="600">
+                  Parent-owned semantics
+                </Text>
+                <SwitchVisual checked={autoplay} />
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </BilisoundProvider>
+    </SafeAreaProvider>
   );
 }
 

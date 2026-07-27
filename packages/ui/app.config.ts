@@ -9,6 +9,14 @@ const config: ExpoConfig = {
   plugins: [
     "./plugins/withAndroidTheme",
     [
+      "react-native-edge-to-edge",
+      {
+        android: {
+          enforceNavigationBarContrast: false,
+        },
+      },
+    ],
+    [
       "expo-build-properties",
       {
         ios: {

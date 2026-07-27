@@ -1,5 +1,6 @@
 import type { Preview } from "@storybook/react-native";
 import { View } from "@tamagui/core";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { BilisoundProvider } from "../src";
 import type { Appearance, ThemeName } from "../src";
@@ -14,11 +15,13 @@ const preview: Preview = {
       const theme = themes.includes(context.globals.theme) ? context.globals.theme : "classic";
 
       return (
-        <BilisoundProvider appearance={appearance} theme={theme}>
-          <View flex={1} backgroundColor="$canvas" padding="$4">
-            <Story />
-          </View>
-        </BilisoundProvider>
+        <SafeAreaProvider>
+          <BilisoundProvider appearance={appearance} theme={theme}>
+            <View flex={1} backgroundColor="$canvas" padding="$4">
+              <Story />
+            </View>
+          </BilisoundProvider>
+        </SafeAreaProvider>
       );
     },
   ],
