@@ -1,6 +1,6 @@
 import type { ComponentProps, CSSProperties, Ref } from "react";
 import type { StyleProp, TextInput as ReactNativeTextInput, TextStyle } from "react-native";
-import { isWeb } from "@tamagui/core";
+import { isWeb, useTheme } from "@tamagui/core";
 import type { InputProps as TamaguiInputProps } from "@tamagui/input";
 
 import { TextAreaFrame } from "../recipe";
@@ -14,6 +14,7 @@ export interface TextAreaProps extends Omit<TamaguiInputProps, "ref" | "size" | 
 }
 
 export function TextArea({ disabled, invalid = false, ref, rows = 3, size = "md", style, ...props }: TextAreaProps) {
+  const theme = useTheme();
   const inputProps = props as ComponentProps<typeof TextAreaFrame>;
   const mergedStyle = (
     isWeb ? ({ ...(style as CSSProperties | undefined), resize: "none" } satisfies CSSProperties) : style
@@ -24,6 +25,8 @@ export function TextArea({ disabled, invalid = false, ref, rows = 3, size = "md"
       {...inputProps}
       ref={ref}
       unstyled
+      // A resolved value makes Tamagui's native Input update when the provider theme changes.
+      backgroundColor={theme.surface.get()}
       multiline
       numberOfLines={rows}
       fieldSize={size}
