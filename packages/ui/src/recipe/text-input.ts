@@ -6,7 +6,7 @@ import { Input as TamaguiInput } from "@tamagui/input";
  * Headless Input sets unstyled=true → borderWidth:0 + transparent bg.
  * Visual geometry lives in fieldSize so it wins after that reset.
  */
-const fieldChrome = {
+export const fieldChrome = {
   borderWidth: 1,
   borderColor: "$border",
   borderRadius: 6,

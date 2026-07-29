@@ -25,6 +25,7 @@ export interface ActionMenuItem {
   icon: IconName;
   iconSize?: number;
   id?: string;
+  selected?: boolean;
   show?: boolean;
   text: string;
 }
@@ -79,11 +80,14 @@ export function ActionMenu({
               <ActionMenuItemFrame
                 unstyled
                 disabled={item.disabled}
+                role="menuitem"
+                aria-checked={item.selected}
+                selected={item.selected}
                 visuallyDisabled={item.disabled}
                 onPress={item.action}
               >
                 <ActionMenuIconSlot>
-                  <Icon name={item.icon} size={item.iconSize ?? 18} aria-hidden />
+                  {item.selected === false ? null : <Icon name={item.icon} size={item.iconSize ?? 18} aria-hidden />}
                 </ActionMenuIconSlot>
                 <ActionMenuItemText>{item.text}</ActionMenuItemText>
               </ActionMenuItemFrame>

@@ -99,6 +99,11 @@ export const ActionMenuItemFrame = styled(TamaguiButton, {
     outlineOffset: -2,
   },
   variants: {
+    selected: {
+      true: {
+        backgroundColor: "$surfaceMuted",
+      },
+    },
     visuallyDisabled: {
       true: {
         cursor: "not-allowed",

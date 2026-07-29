@@ -35,6 +35,8 @@ export { Button } from "./button";
 export type { ButtonColor, ButtonIconPosition, ButtonProps, ButtonShape, ButtonVariant, ControlSize } from "./button";
 export { Checkbox } from "./checkbox";
 export type { CheckboxProps } from "./checkbox";
+export { DropdownSelect } from "./dropdown-select";
+export type { DropdownSelectOption, DropdownSelectProps } from "./dropdown-select";
 export { Label, LabelError } from "./label";
 export type { LabelErrorProps, LabelProps } from "./label";
 export { Icon } from "./icon";

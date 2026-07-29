@@ -21,6 +21,7 @@ import {
   BilisoundProvider,
   Button,
   Checkbox,
+  DropdownSelect,
   Label,
   Modal,
   ModalBackdrop,
@@ -41,6 +42,13 @@ import {
   updateUserTheme,
 } from "@bilisound/ui";
 import type { Appearance, TailwindScale, TailwindShade, ThemeName } from "@bilisound/ui";
+
+const audioQualityOptions = [
+  { label: "流畅 64K", value: "64k" },
+  { label: "标准 132K", value: "132k" },
+  { label: "高品质 192K", value: "192k" },
+  { disabled: true, label: "无损 FLAC（暂不可用）", value: "flac" },
+] as const;
 
 const userThemeBaseColors = [
   "#14b8a6",
@@ -138,6 +146,7 @@ export default function App() {
   const [comment, setComment] = useState("");
   const [notify, setNotify] = useState(true);
   const [autoplay, setAutoplay] = useState(true);
+  const [audioQuality, setAudioQuality] = useState("132k");
   const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -242,6 +251,21 @@ export default function App() {
               </Text>
               <TextInput value={query} onChangeText={setQuery} placeholder="Paste a Bilibili URL" />
               <TextInput invalid placeholder="Invalid input preview" />
+            </View>
+
+            <View gap="$4">
+              <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                Dropdown select
+              </Text>
+              <DropdownSelect
+                value={audioQuality}
+                onValueChange={setAudioQuality}
+                options={audioQualityOptions}
+                placeholder="选择音质"
+              />
+              <Text color="$textMuted" fontFamily="$body" fontSize="$sm">
+                当前选择：{audioQualityOptions.find(option => option.value === audioQuality)?.label}
+              </Text>
             </View>
 
             <View gap="$4">

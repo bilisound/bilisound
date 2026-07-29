@@ -20,6 +20,17 @@ export {
   ActionMenuOverlay,
 } from "./action-menu";
 export {
+  DropdownSelectChevronSlot,
+  DropdownSelectContentFrame,
+  DropdownSelectOptionFrame,
+  DropdownSelectOptionIndicator,
+  DropdownSelectOptionText,
+  DropdownSelectOptionsFrame,
+  DropdownSelectRootFrame,
+  DropdownSelectTriggerFrame,
+  DropdownSelectValueText,
+} from "./dropdown-select";
+export {
   ModalBackdropFrame,
   ModalBodyFrame,
   ModalCloseButtonFrame,

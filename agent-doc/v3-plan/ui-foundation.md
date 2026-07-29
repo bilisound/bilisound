@@ -91,6 +91,7 @@ Icon        locally bundled SVG registry generated from selected `@iconify-json`
 ActionMenu  Tamagui Sheet presentation, responsive one/two-column items, hidden and disabled states
 Modal       Tamagui headless Dialog composition with xs/sm/md/lg/full sizing and accessible title/description parts
 AlertDialog Tamagui headless AlertDialog composition with explicit action/cancel semantics and matching responsive sizing
+DropdownSelect TextInput-compatible chrome, controlled/uncontrolled single-value selection, ActionMenu below 640px, anchored dropdown from 640px
 ```
 
 The Slider keeps Tamagui's keyboard and accessibility behavior. A host using a vertical Slider on iOS must pass complete safe-area `insets` to `BilisoundProvider`.
