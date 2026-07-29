@@ -59,7 +59,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const colors: ButtonColor[] = ["primary", "accent", "neutral"];
+const colors: ButtonColor[] = ["primary", "accent", "neutral", "positive", "negative"];
 
 export const Solid: Story = {};
 

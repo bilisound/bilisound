@@ -71,3 +71,31 @@ export const redPalette = {
     "950": "#431407",
   },
 } satisfies ThemePalette;
+
+export const positivePalette = {
+  "50": "#caffe8",
+  "100": "#a2f1c0",
+  "200": "#84d3a2",
+  "300": "#66b584",
+  "400": "#489766",
+  "500": "#348352",
+  "600": "#2a7948",
+  "700": "#206f3e",
+  "800": "#166534",
+  "900": "#14532d",
+  "950": "#1b3224",
+} satisfies TailwindScale;
+
+export const negativePalette = {
+  "50": "#fee2e2",
+  "100": "#fecaca",
+  "200": "#fca5a5",
+  "300": "#f87171",
+  "400": "#ef4444",
+  "500": "#e63535",
+  "600": "#dc2626",
+  "700": "#b91c1c",
+  "800": "#991b1b",
+  "900": "#7f1d1d",
+  "950": "#531313",
+} satisfies TailwindScale;

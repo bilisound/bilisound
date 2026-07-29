@@ -1,4 +1,4 @@
-import { classicPalette, neutralPalette, redPalette } from "./palettes";
+import { classicPalette, negativePalette, neutralPalette, positivePalette, redPalette } from "./palettes";
 import { colorTokens } from "./tokens";
 import type { Appearance, TailwindScale, ThemePalette } from "./types";
 
@@ -95,6 +95,8 @@ export function createSemanticTheme(palette: ThemePalette, appearance: Appearanc
     ...prefixButtonScheme("primary", createChromaticButtonScheme(primary, appearance)),
     ...prefixButtonScheme("accent", createChromaticButtonScheme(accent, appearance)),
     ...prefixButtonScheme("neutral", createNeutralButtonScheme(appearance)),
+    ...prefixButtonScheme("positive", createChromaticButtonScheme(positivePalette, appearance)),
+    ...prefixButtonScheme("negative", createChromaticButtonScheme(negativePalette, appearance)),
   };
 
   if (appearance === "dark") {

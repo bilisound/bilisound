@@ -1,6 +1,6 @@
 export { bilisoundConfig, createBilisoundConfig } from "./config";
 export type { BilisoundConfig, CreateBilisoundConfigOptions } from "./config";
-export { classicPalette, neutralPalette, redPalette } from "./palettes";
+export { classicPalette, negativePalette, neutralPalette, positivePalette, redPalette } from "./palettes";
 export { bodyFont, colorTokens, radiusTokens, sizeTokens, spaceTokens, tokens } from "./tokens";
 export { createSemanticTheme, createThemes, getReadableForeground } from "./themes";
 export type { SemanticTheme } from "./themes";

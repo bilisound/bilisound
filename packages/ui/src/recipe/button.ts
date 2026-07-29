@@ -7,7 +7,7 @@ export const buttonIconSize = {
   lg: 18,
 } as const;
 
-export type ButtonColor = "primary" | "accent" | "neutral";
+export type ButtonColor = "primary" | "accent" | "neutral" | "positive" | "negative";
 export type ButtonVariant = "solid" | "outline" | "ghost" | "link";
 
 interface ButtonColorScheme {
@@ -55,6 +55,28 @@ const buttonColorSchemes = {
     outlineHover: "$neutralOutlineHover",
     tintHover: "$neutralTintHover",
     tintPress: "$neutralTintPress",
+  },
+  positive: {
+    solid: "$positiveSolid",
+    solidHover: "$positiveSolidHover",
+    solidPress: "$positiveSolidPress",
+    onSolid: "$positiveOnSolid",
+    text: "$positiveText",
+    outline: "$positiveOutline",
+    outlineHover: "$positiveOutlineHover",
+    tintHover: "$positiveTintHover",
+    tintPress: "$positiveTintPress",
+  },
+  negative: {
+    solid: "$negativeSolid",
+    solidHover: "$negativeSolidHover",
+    solidPress: "$negativeSolidPress",
+    onSolid: "$negativeOnSolid",
+    text: "$negativeText",
+    outline: "$negativeOutline",
+    outlineHover: "$negativeOutlineHover",
+    tintHover: "$negativeTintHover",
+    tintPress: "$negativeTintPress",
   },
 } as const satisfies Record<ButtonColor, ButtonColorScheme>;
 
