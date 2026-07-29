@@ -62,46 +62,61 @@ export const tokens = createTokens({
   },
 });
 
-export const bodyFont = createFont({
-  family: isWeb ? "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" : "System",
-  size: {
-    xs: 12,
-    sm: 14,
-    base: 16,
-    lg: 18,
-    xl: 20,
-    "2xl": 24,
-    "3xl": 30,
-    true: 16,
-  },
-  lineHeight: {
-    xs: 16,
-    sm: 20,
-    base: 24,
-    lg: 28,
-    xl: 28,
-    "2xl": 32,
-    "3xl": 36,
-    true: 24,
-  },
-  weight: {
-    4: "400",
-    5: "500",
-    6: "600",
-    7: "700",
-    true: "400",
-  },
-  letterSpacing: {
-    xs: 0.2,
-    sm: 0.1,
-    base: 0,
-    lg: -0.1,
-    xl: -0.2,
-    "2xl": -0.4,
-    "3xl": -0.6,
-    true: 0,
-  },
-});
+export const DEFAULT_WEB_FONT_FAMILY =
+  "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+export const DEFAULT_NATIVE_FONT_FAMILY = "System";
+
+/**
+ * Body/heading font.
+ *
+ * `family` is parameterized for DOM components: a webview has its own JavaScript
+ * context where `isWeb` is always true and natively loaded fonts (expo-font) do
+ * not exist, so the host must pass an explicit CSS family instead.
+ */
+export function createBodyFont(family: string = isWeb ? DEFAULT_WEB_FONT_FAMILY : DEFAULT_NATIVE_FONT_FAMILY) {
+  return createFont({
+    family,
+    size: {
+      xs: 12,
+      sm: 14,
+      base: 16,
+      lg: 18,
+      xl: 20,
+      "2xl": 24,
+      "3xl": 30,
+      true: 16,
+    },
+    lineHeight: {
+      xs: 16,
+      sm: 20,
+      base: 24,
+      lg: 28,
+      xl: 28,
+      "2xl": 32,
+      "3xl": 36,
+      true: 24,
+    },
+    weight: {
+      4: "400",
+      5: "500",
+      6: "600",
+      7: "700",
+      true: "400",
+    },
+    letterSpacing: {
+      xs: 0.2,
+      sm: 0.1,
+      base: 0,
+      lg: -0.1,
+      xl: -0.2,
+      "2xl": -0.4,
+      "3xl": -0.6,
+      true: 0,
+    },
+  });
+}
+
+export const bodyFont = createBodyFont();
 
 function prefixPalette<const Name extends string>(name: Name, scale: TailwindScale) {
   return Object.fromEntries(TAILWIND_SHADES.map(shade => [`${name}${shade}`, scale[shade]])) as Record<

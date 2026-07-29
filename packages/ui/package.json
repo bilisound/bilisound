@@ -9,7 +9,7 @@
     "start": "expo start -c --port 8082",
     "android": "expo run:android --port 8082",
     "ios": "expo run:ios --port 8082",
-    "web": "storybook dev --port 6006",
+    "web": "expo start --web --port 8082",
     "storybook": "storybook dev --port 6006",
     "build:storybook": "storybook build --output-dir ../../.temp/ui-storybook-static",
     "extract-icons": "tsx ./scripts/extract-icons.mts",
@@ -47,6 +47,7 @@
     "react-native-svg": ">=15.15.4 <16.0.0"
   },
   "devDependencies": {
+    "@expo/dom-webview": "~57.0.1",
     "@expo/metro-runtime": "~57.0.2",
     "@gorhom/bottom-sheet": "5.2.14",
     "@iconify-json/fa6-solid": "^1.2.4",

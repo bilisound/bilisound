@@ -1,7 +1,17 @@
 export { bilisoundConfig, createBilisoundConfig } from "./config";
 export type { BilisoundConfig, CreateBilisoundConfigOptions } from "./config";
 export { classicPalette, negativePalette, neutralPalette, positivePalette, redPalette } from "./palettes";
-export { bodyFont, colorTokens, radiusTokens, sizeTokens, spaceTokens, tokens } from "./tokens";
+export {
+  bodyFont,
+  colorTokens,
+  createBodyFont,
+  DEFAULT_NATIVE_FONT_FAMILY,
+  DEFAULT_WEB_FONT_FAMILY,
+  radiusTokens,
+  sizeTokens,
+  spaceTokens,
+  tokens,
+} from "./tokens";
 export { createSemanticTheme, createThemes, getReadableForeground } from "./themes";
 export type { SemanticTheme } from "./themes";
 export { TAILWIND_SHADES } from "./types";

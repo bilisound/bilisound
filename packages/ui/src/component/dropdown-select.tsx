@@ -3,6 +3,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { useWindowDimensions } from "react-native";
 import type { LayoutChangeEvent } from "react-native";
 import { Popover } from "@tamagui/popover";
+import { isWeb } from "@tamagui/core";
 
 import {
   DropdownSelectChevronSlot,
@@ -130,11 +131,15 @@ export function DropdownSelect({
     <DropdownSelectTriggerFrame
       {...triggerProps}
       unstyled
-      accessibilityState={{
-        ...accessibilityState,
-        disabled,
-        expanded: open,
-      }}
+      {...(isWeb
+        ? {}
+        : {
+            accessibilityState: {
+              ...accessibilityState,
+              disabled,
+              expanded: open,
+            },
+          })}
       aria-expanded={open}
       aria-haspopup="menu"
       aria-invalid={invalid || undefined}

@@ -1,6 +1,6 @@
 import Color from "colorjs.io";
 import { useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { Platform, ScrollView, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Text, View } from "@tamagui/core";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -41,7 +41,9 @@ import {
   TAILWIND_SHADES,
   updateUserTheme,
 } from "@bilisound/ui";
-import type { Appearance, TailwindScale, TailwindShade, ThemeName } from "@bilisound/ui";
+import type { Appearance, TailwindScale, TailwindShade, ThemeName, ThemePalette } from "@bilisound/ui";
+
+import DomProviderExample from "./dom-provider-example";
 
 const audioQualityOptions = [
   { label: "流畅 64K", value: "64k" },
@@ -138,6 +140,7 @@ function hexFromSrgbCoords(coords: number[]) {
 export default function App() {
   const [appearance, setAppearance] = useState<Appearance>("light");
   const [theme, setTheme] = useState<ThemeName>("classic");
+  const [userPalette, setUserPalette] = useState<ThemePalette>();
   const [query, setQuery] = useState("");
   const [volume, setVolume] = useState([64]);
   const [name, setName] = useState("");
@@ -153,10 +156,12 @@ export default function App() {
 
   const showUserTheme = () => {
     const { primaryBase, accentBase } = pickUserThemeBaseColors();
-    updateUserTheme({
+    const palette = {
       primary: generateTailwindScale(primaryBase),
       accent: generateTailwindScale(accentBase),
-    });
+    };
+    updateUserTheme(palette);
+    setUserPalette(palette);
     setTheme("user");
   };
 
@@ -188,6 +193,25 @@ export default function App() {
               <Button variant="outline" color="accent" onPress={showUserTheme}>
                 User theme
               </Button>
+            </View>
+
+            <View id="dom-provider-example-section" gap="$4">
+              <View gap="$1">
+                <Text color="$text" fontFamily="$heading" fontSize="$xl" fontWeight="600">
+                  Expo DOM provider
+                </Text>
+                <Text color="$textMuted" fontFamily="$body" fontSize="$sm">
+                  A separate DOM root using BilisoundDomProvider and the active showcase theme.
+                </Text>
+              </View>
+              <DomProviderExample
+                dom={{ matchContents: true, scrollEnabled: false }}
+                theme={{
+                  appearance,
+                  theme,
+                  userPalette: theme === "user" ? userPalette : undefined,
+                }}
+              />
             </View>
 
             <View gap="$4">
@@ -461,14 +485,18 @@ export default function App() {
                 <Switch accessibilityLabel="Autoplay next item" checked={autoplay} onCheckedChange={setAutoplay} />
               </View>
               <View
-                accessibilityLabel="Autoplay inside settings button"
-                accessibilityRole="switch"
-                accessibilityState={{ checked: autoplay }}
-                render="button"
-                role="switch"
-                aria-checked={autoplay}
-                aria-label="Autoplay inside settings button"
-                tabIndex={0}
+                {...(Platform.OS === "web"
+                  ? {
+                      "aria-checked": autoplay,
+                      "aria-label": "Autoplay inside settings button",
+                      role: "switch" as const,
+                      tabIndex: 0,
+                    }
+                  : {
+                      accessibilityLabel: "Autoplay inside settings button",
+                      accessibilityRole: "switch" as const,
+                      accessibilityState: { checked: autoplay },
+                    })}
                 onPress={() => setAutoplay(value => !value)}
                 flexDirection="row"
                 alignItems="center"

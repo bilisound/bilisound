@@ -1,6 +1,7 @@
 import type { ReactNode, Ref } from "react";
 import type { View } from "react-native";
 import type { ButtonProps as TamaguiButtonProps } from "@tamagui/button";
+import { isWeb } from "@tamagui/core";
 
 import {
   ButtonFrame,
@@ -50,6 +51,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const isIconOnly = children == null;
+  const resolvedAccessibilityLabel = ariaLabel ?? accessibilityLabel;
   const isLink = variant === "link";
   const scheme = getButtonColorScheme(color);
   const frameStyles = getButtonFrameStyles(variant, scheme);
@@ -62,8 +64,9 @@ export function Button({
       ref={ref}
       unstyled
       {...frameStyles}
-      aria-label={ariaLabel ?? accessibilityLabel}
-      accessibilityLabel={accessibilityLabel ?? ariaLabel}
+      {...(isWeb
+        ? { "aria-label": resolvedAccessibilityLabel }
+        : { accessibilityLabel: resolvedAccessibilityLabel })}
       controlSize={isLink && !isIconOnly ? undefined : size}
       hasIconAndLabel={Boolean(icon && !isIconOnly)}
       iconOnly={isIconOnly}

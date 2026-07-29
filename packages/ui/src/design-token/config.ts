@@ -3,7 +3,7 @@ import { createTamagui } from "@tamagui/core";
 
 import { classicPalette } from "./palettes";
 import { createThemes } from "./themes";
-import { bodyFont, tokens } from "./tokens";
+import { createBodyFont, tokens } from "./tokens";
 import type { ThemePalette } from "./types";
 
 const animations = createAnimations({
@@ -23,10 +23,23 @@ const animations = createAnimations({
 });
 
 export interface CreateBilisoundConfigOptions {
+  /**
+   * Explicit CSS/native font family for the body & heading fonts.
+   *
+   * DOM components run in a separate JavaScript context where fonts loaded by
+   * `expo-font` on the native side do not exist, so a webview host must pass the
+   * family it actually declares via `@font-face`.
+   */
+  fontFamily?: string;
   userPalette?: ThemePalette;
 }
 
-export function createBilisoundConfig({ userPalette = classicPalette }: CreateBilisoundConfigOptions = {}) {
+export function createBilisoundConfig({
+  fontFamily,
+  userPalette = classicPalette,
+}: CreateBilisoundConfigOptions = {}) {
+  const bodyFont = createBodyFont(fontFamily);
+
   return createTamagui({
     animations,
     tokens,

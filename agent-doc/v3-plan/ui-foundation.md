@@ -99,6 +99,55 @@ The Switch uses `@tamagui/switch-headless` for state and accessibility behavior.
 The ActionMenu owns the Sheet presentation but leaves action-driven dismissal to the caller. Its Icon names are a typed, generated registry; `packages/ui/scripts/extract-icons.mts` refreshes committed local SVGs without runtime network access.
 Modal and AlertDialog preserve the current mobile overlay/content/header/body/footer visual structure while adopting Tamagui portals, focus management, dismissal behavior, and required title/description semantics.
 
+## DOM Component Boundary
+
+v3 needs `expo-dom` webviews for markdown and log content, and that content must keep the Bilisound design system. Tamagui works inside a DOM component, but nothing crosses the bridge implicitly.
+
+A DOM component is bundled for `platform=web`, so Metro resolves the web Tamagui build (`@tamagui/core/dist/esm/index.mjs`, `constants.mjs`, `react-native-web`). That is Tamagui's most mature target: CSS injection, `t_light`/`t_dark` theme classes, tokens, portals, Sheet, Popover, and keyboard/ARIA behavior all work in the webview.
+
+What does not cross the webview boundary:
+
+```txt
+TamaguiProvider / BilisoundProvider   separate JavaScript context
+updateUserTheme registry mutations    separate module instance
+safe-area insets                      webview viewport has no notch data
+expo-font registered families         Roboto/Poppins do not exist in the webview
+Platform.OS / isWeb branches          always resolve to the web path
+```
+
+### Contract
+
+`BilisoundDomProvider` is the design-system root for `"use dom"` components. It is not interchangeable with `BilisoundProvider`: it builds its own Tamagui config, injects its own CSS, and supplies `SafeAreaInsetsContext` from host-provided values.
+
+The host passes a single `DomTheme` prop. Every field is JSON-serializable because DOM props are marshalled as JSON:
+
+```txt
+appearance    light | dark
+theme         classic | red | user
+userPalette   required for theme: "user"
+fontFamily    CSS stack that resolves inside the webview
+insets        measured by the native host
+```
+
+The initial user palette is baked into the config through `createBilisoundConfig({ userPalette })`, so `light_user`/`dark_user` are correct on first paint instead of flashing the classic palette. The config remains stable for the lifetime of the webview. Live `userPalette` changes must use `updateUserTheme`; rebuilding the config does not replace Tamagui's already-injected theme CSS. `BilisoundDomProvider` owns both paths.
+
+`appearance`, `theme`, `userPalette`, and `insets` may change through normal DOM prop updates. `fontFamily` is initialization-only because Tamagui injects the font variables once; remount the DOM component to change it. `createBodyFont(family)` and `createBilisoundConfig({ fontFamily })` parameterize the initial family. A DOM component using a bundled font must also declare a matching `@font-face` inside the webview; passing a family alone does not load it.
+
+### Cost
+
+Measured minified Metro DOM bundle size for one component on this tree:
+
+```txt
+plain <div> component                269 KB raw / 81 KB gzip
+Tamagui + @bilisound/ui             1184 KB raw / 316 KB gzip
+```
+
+Roughly 235 KB gzip extra per DOM bundle, and each webview loads its own copy with no sharing with the native bundle. Import only the components a webview actually needs. v3 markdown and log views should mount `BilisoundDomProvider` so their typography, surfaces, borders, semantic colors, user palette, and safe-area behavior match the app; their content renderer may still use efficient plain DOM elements such as `<article>`, `<pre>`, and `<code>`. The current v2 `LogViewerDom` need not migrate before Epic 7.
+
+### Integration Timing
+
+This is package-local foundation work. Wiring DOM components into `apps/mobile` screens remains Epic 7 UI-rewrite work, and `apps/mobile` currently has no Tamagui dependency: `@tamagui/core` and `@bilisound/ui` do not resolve from there, so the peer set must be installed before a mobile DOM component can consume this bridge. `@expo/dom-webview` is already present.
+
 ## Verification
 
 ```sh
@@ -115,3 +164,4 @@ pnpm -C packages/ui exec expo export --platform android --clear --output-dir ../
 3. Establish a visual regression matrix for iOS, Android, desktop Web, and narrow Web.
 4. Add new components one at a time; keep screen-specific business policy out of recipes and components.
 5. Evaluate the Tamagui compiler separately after runtime integration and public contracts stabilize.
+6. Validate the DOM boundary in a real WKWebView/Android WebView via the dev client. Current evidence covers Metro DOM bundling plus Chromium rendering of that bundle; the native webview shell (`matchContents` auto-height, live inset changes) is unverified.

@@ -60,8 +60,12 @@ export function SwitchVisual({ checked, disabled, ref, style, ...props }: Switch
       accessibilityElementsHidden
       aria-hidden
       importantForAccessibility="no-hide-descendants"
-      pointerEvents="none"
-      style={[switchStyles.track, style, disabled && switchStyles.disabled, { backgroundColor: trackColor }]}
+      style={[
+        switchStyles.track,
+        style,
+        disabled && switchStyles.disabled,
+        { backgroundColor: trackColor, pointerEvents: "none" },
+      ]}
     >
       <Animated.View
         style={[switchStyles.thumb, { backgroundColor: thumbColor, transform: [{ translateX: thumbTranslateX }] }]}
@@ -71,6 +75,10 @@ export function SwitchVisual({ checked, disabled, ref, style, ...props }: Switch
 }
 
 export function Switch({
+  "aria-label": ariaLabel,
+  accessibilityLabel,
+  accessibilityRole,
+  accessibilityState,
   checked: checkedProp,
   defaultChecked = false,
   disabled,
@@ -113,9 +121,13 @@ export function Switch({
         ref={switchRef}
         render="button"
         {...webButtonProps}
-        accessibilityRole="switch"
-        aria-label={props["aria-label"] ?? props.accessibilityLabel}
-        accessibilityState={{ ...props.accessibilityState, checked, disabled }}
+        {...(isWeb
+          ? { "aria-label": ariaLabel ?? accessibilityLabel }
+          : {
+              accessibilityLabel: accessibilityLabel ?? ariaLabel,
+              accessibilityRole: accessibilityRole ?? "switch",
+              accessibilityState: { ...accessibilityState, checked, disabled },
+            })}
         disabled={disabled}
         hitSlop={props.hitSlop ?? 8}
         visuallyDisabled={disabled}
