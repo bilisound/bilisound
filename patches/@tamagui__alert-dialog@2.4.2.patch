@@ -1,0 +1,64 @@
+diff --git a/dist/cjs/AlertDialog.cjs b/dist/cjs/AlertDialog.cjs
+index ac0754f54c74335c5d419ad8561e9eed55aa3d3a..7ca52dd6305039fb145517d4eb94581eca40168d 100644
+--- a/dist/cjs/AlertDialog.cjs
++++ b/dist/cjs/AlertDialog.cjs
+@@ -232,9 +232,9 @@ const DescriptionWarning = ({
+ }) => {
+   if (process.env.NODE_ENV === "development") React.useEffect(() => {
+     if (!import_constants.isWeb) return;
+-    if (!document.getElementById(
+-    // @ts-ignore
+-    contentRef.current?.getAttribute("aria-describedby"))) console.warn(`\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
++    const contentNode = contentRef.current;
++    if (!(contentNode instanceof HTMLElement)) return;
++    if (!document.getElementById(contentNode.getAttribute("aria-describedby"))) console.warn(`\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
+   
+         You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+         
+diff --git a/dist/esm/AlertDialog.mjs b/dist/esm/AlertDialog.mjs
+index 8650f224ea27908710d6ccd6b4761159caeab9f6..f722345481745bbfc58df9b715b5f0dd37107557 100644
+--- a/dist/esm/AlertDialog.mjs
++++ b/dist/esm/AlertDialog.mjs
+@@ -182,7 +182,9 @@ const DescriptionWarning = ({
+ }) => {
+   if (process.env.NODE_ENV === "development") React.useEffect(() => {
+     if (!isWeb) return;
+-    if (!document.getElementById(contentRef.current?.getAttribute("aria-describedby"))) console.warn(`\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
++    const contentNode = contentRef.current;
++    if (!(contentNode instanceof HTMLElement)) return;
++    if (!document.getElementById(contentNode.getAttribute("aria-describedby"))) console.warn(`\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
+   
+         You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+         
+diff --git a/dist/jsx/AlertDialog.mjs b/dist/jsx/AlertDialog.mjs
+index 8650f224ea27908710d6ccd6b4761159caeab9f6..f722345481745bbfc58df9b715b5f0dd37107557 100644
+--- a/dist/jsx/AlertDialog.mjs
++++ b/dist/jsx/AlertDialog.mjs
+@@ -182,7 +182,9 @@ const DescriptionWarning = ({
+ }) => {
+   if (process.env.NODE_ENV === "development") React.useEffect(() => {
+     if (!isWeb) return;
+-    if (!document.getElementById(contentRef.current?.getAttribute("aria-describedby"))) console.warn(`\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
++    const contentNode = contentRef.current;
++    if (!(contentNode instanceof HTMLElement)) return;
++    if (!document.getElementById(contentNode.getAttribute("aria-describedby"))) console.warn(`\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.
+   
+         You can add a description to the \`${CONTENT_NAME}\` by passing a \`${DESCRIPTION_NAME}\` component as a child, which also benefits sighted users by adding visible context to the dialog.
+         
+diff --git a/src/AlertDialog.tsx b/src/AlertDialog.tsx
+index bffdb407d78c8c2aa91c44e12bf6a986687e83e8..254b0ff4f572a21f6906b9fe8997b47c181171ab 100644
+--- a/src/AlertDialog.tsx
++++ b/src/AlertDialog.tsx
+@@ -338,9 +338,10 @@ const DescriptionWarning: React.FC<DescriptionWarningProps> = ({ contentRef }) =
+   if (process.env.NODE_ENV === 'development') {
+     React.useEffect(() => {
+       if (!isWeb) return
++      const contentNode = contentRef.current
++      if (!(contentNode instanceof HTMLElement)) return
+       const hasDescription = document.getElementById(
+-        // @ts-ignore
+-        contentRef.current?.getAttribute('aria-describedby')
++        contentNode.getAttribute('aria-describedby')
+       )
+       if (!hasDescription) {
+         console.warn(`\`${CONTENT_NAME}\` requires a description for the component to be accessible for screen reader users.

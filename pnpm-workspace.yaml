@@ -45,4 +45,5 @@ minimumReleaseAgeExclude:
   - expo-constants@57.0.8
   - expo-router@57.0.9
 patchedDependencies:
+  '@tamagui/alert-dialog@2.4.2': patches/@tamagui__alert-dialog@2.4.2.patch
   expo-modules-jsi@57.0.4: patches/expo-modules-jsi@57.0.4.patch
