@@ -15,9 +15,10 @@ Screen migration is still Epic 7 work. Current v2 screens should not adopt `pack
 ```txt
 packages/ui/
   .storybook/          # React Native Web documentation configuration
-  App.tsx              # isolated native smoke showcase
-  index.ts             # Expo showcase entry
-  plugins/            # shared Expo config plugins for native UI behavior
+  app/                 # Expo Router showcase routes
+  showcase/            # route-independent showcase demos and theme state
+  index.ts             # native Storybook entry used by Storybook scripts
+  plugins/             # shared Expo config plugins for native UI behavior
   src/
     design-token/      # primitive and semantic tokens, themes, Tamagui config
     recipe/            # headless Tamagui styling and visual states
@@ -46,7 +47,7 @@ Storybook uses `@storybook/react-native-web-vite` because documentation, sharing
 
 The consuming Expo application's Metro and Babel pipeline must transpile the source. This keeps Tamagui runtime/compiler analysis and React Native platform resolution in the application build instead of hiding them behind a generic library bundler. `packages/ui` has no `dist` contract and mobile development has no package build prerequisite.
 
-The package-level `main` field points to the standalone Expo showcase entry. The `react-native`, `types`, and package `exports` fields point to the library source entry, so consumers do not execute showcase registration.
+The package-level `main` field points to `expo-router/entry` for the standalone Expo showcase. The `react-native`, `types`, and package `exports` fields point to the library source entry, so consumers do not execute showcase registration. Native Storybook scripts set `STORYBOOK_ENABLED=true`; Metro then redirects the entry to `index.ts` and enables Storybook transforms.
 
 ## Token And Theme Contract
 

@@ -30,7 +30,7 @@ Storybook renders through React Native Web for fast documentation and accessibil
 import { Button, Slider, TextInput } from "@bilisound/ui";
 ```
 
-The package exports `src/index.ts`, so the consuming Expo application's Metro and Babel pipeline transpiles Tamagui and application code together. There is no package build step or `dist` contract. The package-level `main` field remains reserved for the standalone Expo showcase entry.
+The package exports `src/index.ts`, so the consuming Expo application's Metro and Babel pipeline transpiles Tamagui and application code together. There is no package build step or `dist` contract. The package-level `main` field starts the standalone Expo Router showcase; its index route links to separate component and Expo DOM demos.
 
 ## Theme Contract
 

@@ -25,6 +25,7 @@ const config: ExpoConfig = {
       },
     ],
     "@react-native-community/datetimepicker",
+    "expo-router",
   ],
   ios: {
     bundleIdentifier: "moe.bilisound.ui",

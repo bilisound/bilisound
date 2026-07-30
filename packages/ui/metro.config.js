@@ -24,4 +24,5 @@ config.transformer = {
 
 module.exports = withStorybook(config, {
   configPath: path.resolve(projectRoot, ".rnstorybook"),
+  enabled: process.env.STORYBOOK_ENABLED === "true",
 });

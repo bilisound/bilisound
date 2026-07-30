@@ -41,5 +41,8 @@ minimumReleaseAgeExclude:
   - "@storybook/react-vite@10.5.4"
   - "@storybook/react@10.5.4"
   - storybook@10.5.4
+  - "@expo/ui@57.0.8"
+  - expo-constants@57.0.8
+  - expo-router@57.0.9
 patchedDependencies:
   expo-modules-jsi@57.0.4: patches/expo-modules-jsi@57.0.4.patch
