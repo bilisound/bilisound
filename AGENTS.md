@@ -20,7 +20,6 @@ bilisound/
 ├── apps/
 │   ├── mobile/            ← Expo React Native 客户端 (iOS/Android/Web)
 │   ├── server-cf/         ← Cloudflare Worker API 代理 (Web 端后端)
-│   └── server-netlify/    ← Netlify Functions 版本分发代理
 ├── packages/
 │   ├── sdk/               ← @bilisound/sdk — B 站 API 封装 (运行时无关)
 │   ├── player/            ← @bilisound/player — Expo 原生音频播放模块
@@ -29,7 +28,6 @@ bilisound/
 
 - **apps/mobile**: Expo 客户端。源文件按功能分目录：`app/`（路由页面）、`components/`、`business/`、`store/`、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。
 - **apps/server-cf**: Cloudflare Worker，为 Web 端代理 B 站 API 请求。入口 `index.ts`，路由在 `route/bilisound.ts`。
-- **apps/server-netlify**: Netlify Functions，代理 GitHub Releases 用于版本检查与 APK 下载。
 - **packages/sdk**: 运行时无关的核心逻辑，发布为 `@bilisound/sdk`（TypeScript → `dist/`）。
 - **packages/player**: Expo 原生音频播放模块（iOS/Android/Kotlin + Swift + Web shim），发布为 `@bilisound/player`。
 - **packages/ui**: v3 跨平台组件库，按 design token、recipe、component 分层，并可作为独立 Expo 项目运行。
@@ -39,7 +37,7 @@ bilisound/
 **数据流**: `用户输入 URL → SDK (解析 B23/获取元数据/音频流) → Player (播放/下载) → 音频输出`
 
 - **SDK 双模式**: Web 端使用 `BilisoundSDKRemote`（通过 server-cf 代理），原生端使用 `BilisoundSDKDirect`（直接调 B 站 API 并做 WBI 签名）。切换逻辑在 `apps/mobile/api/bilisound.ts`。
-- **两个 Server 的区别**: `server-cf` 是 B 站 API 代理（核心后端），`server-netlify` 是 GitHub Release 代理（仅版本分发）。
+- **两个 Server 的区别**: `server-cf` 是 B 站 API 代理（核心后端）。
 - **平台分叉**: `.web.ts` 后缀文件为 Web 专属实现，同名无后缀文件供原生端使用。
 
 架构细节参见 **[agent-doc/architecture.md](agent-doc/architecture.md)**。
@@ -86,7 +84,6 @@ bilisound/
 - Player build: `pnpm -C packages/player build` (expo-module build).
 - UI typecheck: `pnpm -C packages/ui typecheck`; showcase: `pnpm -C packages/ui web`.
 - CF Worker dev: `pnpm -C apps/server-cf dev`; deploy: `pnpm -C apps/server-cf deploy`.
-- Netlify dev: `pnpm -C apps/server-netlify dev`; deploy: `pnpm -C apps/server-netlify deploy`.
 
 ## Long-Running Process Rules
 
@@ -134,4 +131,4 @@ bilisound/
 ## Security & Configuration Tips
 
 - Android signing: place `apps/mobile/credentials/bilisound-release.keystore` and root‑level `credentials.json` (both git‑ignored). Do not commit secrets.
-- Environment/config: prefer platform configs (`app.config.ts`, Netlify `netlify.toml`). Avoid hard‑coding keys; use platform stores or deploy‑time variables.
+- Environment/config: prefer platform configs (`app.config.ts`). Avoid hard‑coding keys; use platform stores or deploy‑time variables.

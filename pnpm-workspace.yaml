@@ -3,8 +3,6 @@ packages:
   - "packages/*"
 catalog:
   "@cloudflare/workers-types": ^4.20260118.0
-  "@netlify/blobs": ^10.5.0
-  "@netlify/functions": ^5.1.2
   "@types/jest": ^29.5.14
   "@types/node": ^24.10.9
   "@types/node-fetch": ^2.6.13
@@ -14,8 +12,6 @@ catalog:
   expo-modules-core: ~57.0.7
   itty-router: ^5.0.22
   md5: ^2.3.0
-  netlify-cli: ^23.13.4
-  node-fetch: ^3.3.2
   react-native: 0.86.0
   tsdown: ^0.19.0
   typescript: ~6.0.3
@@ -25,7 +21,6 @@ allowBuilds:
   core-js: true
   esbuild: true
   msgpackr-extract: true
-  netlify-cli: true
   react-native-nitro-modules: true
   sharp: true
   unix-dgram: true

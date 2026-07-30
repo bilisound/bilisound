@@ -19,9 +19,6 @@ yarn-error.*
 .idea/
 .turbo/
 
-# Local Netlify folder
-.netlify
-
 .envrc
 
 .claude

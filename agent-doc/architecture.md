@@ -11,7 +11,6 @@ apps/mobile ──── depends on ────> @bilisound/sdk
      └── depends on ────> @bilisound/player (原生音频播放)
 
 apps/server-cf ── depends on ──> @bilisound/sdk (只用 Direct 实现)
-apps/server-netlify (独立，无 SDK 依赖)
 ```
 
 ## 数据流
@@ -59,13 +58,6 @@ apps/server-netlify (独立，无 SDK 依赖)
 - **端点**: `/api/internal/resolve-b23`, `/api/internal/metadata`, `/api/internal/resource`, `/api/internal/user-list`, `/api/internal/image`, `/api/internal/app/update`
 - **为什么需要**: 浏览器无法直接调 `api.bilibili.com`（CORS/Referer 限制）
 - **技术栈**: itty-router + `@bilisound/sdk` (Direct 模式)
-
-### server-netlify (Netlify Functions) — 版本分发
-
-- **职责**: 代理 GitHub Releases API，为客户端提供版本更新检查和 APK 下载
-- **端点**: `/latest`, `/releases`, `/download/:tag/:filename`
-- **技术栈**: Netlify Functions + Netlify Blobs (缓存)
-- **为什么需要**: 避免客户端直接调 GitHub API（频率限制、私密 Token）
 
 ## 平台分叉策略
 
