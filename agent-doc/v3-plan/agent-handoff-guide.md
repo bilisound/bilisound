@@ -19,15 +19,18 @@ Check `git branch -a` and ask the user which branch the task belongs on. Recent 
 
 ## Recommended First Workstream
 
-Start with Player Foundation unless the user explicitly asks for another epic.
+Check the [Status Overview](./epic-breakdown.md#status-overview) first and continue with the
+next planned epic. Epics 1–3 (Player Foundation, Config Architecture, Bilibili Data Boundary)
+are delivered; the next target is Epic 4 (Playback Orchestration).
 
-Reason:
+Historical reason for the original ordering:
 
 ```txt
-mobile app shuffle/playback code currently compensates for player-level platform differences
+mobile app shuffle/playback code compensated for player-level platform differences
 ```
 
-Changing mobile structure before player APIs are fixed may move the coupling without reducing it.
+Epic 1 removed that coupling, so new orchestration work can now build on the stable player
+APIs instead of carrying platform workarounds into `apps/mobile`.
 
 ## Long-Term UI Rewrite Direction
 

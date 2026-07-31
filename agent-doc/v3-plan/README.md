@@ -32,9 +32,10 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 
 ## Current Working Assumption
 
-The first implementation priority is `packages/player`, not `apps/mobile`.
-
-The mobile app currently compensates for player-level limitations in shuffle and queue operations. Moving those workarounds into a new `features/playback` directory would improve file organization, but it would not remove the underlying coupling. The player package should first expose a stable cross-platform abstraction for shuffle mode and queue transactions.
+Epics 1–3 (Player Foundation, Config Architecture, Bilibili Data Boundary) are delivered.
+See the [Status Overview](./epic-breakdown.md#status-overview) in the epic breakdown for the
+up-to-date delivery state; the next implementation target is Epic 4 (Playback Orchestration),
+which consumes `features/bilibili` and the player shuffle APIs as-is.
 
 The isolated `packages/ui` design-system foundation may be developed in parallel because it does not consume current mobile business modules. Integrating it into screens remains part of the later UI rewrite and must wait for stable feature-facing APIs.
 

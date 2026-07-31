@@ -2,7 +2,27 @@
 
 This document splits Bilisound v3 into handoff-sized workstreams.
 
-## Epic 1: Player Foundation
+## Status Overview
+
+| Epic | Status | Notes |
+| ---- | ------ | ----- |
+| 1. Player Foundation | **Delivered** | slices A–F complete; some native paths still need device verification, see [player-foundation.md](./player-foundation.md#implementation-status) |
+| 2. Config Architecture | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
+| 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web |
+| 4. Playback Orchestration | Planned | next implementation target |
+| 5. Playlist Domain | Planned | |
+| 6. Cache and Download | Planned | |
+| 7. UI Rewrite | Planned | requires Epics 1–6 boundaries to be stable |
+
+Delivered epics keep their full scope/goals below under **Delivered Epics** so the handoff
+record stays in one place. Planned epics are listed under **Upcoming Epics**.
+
+## Delivered Epics
+
+### Epic 1: Player Foundation
+
+> Status: **delivered** — slices A–F complete in [player-foundation.md](./player-foundation.md#implementation-status).
+> Native shuffle verification (iOS, and Android large-queue cases) is still pending device testing.
 
 Scope:
 
@@ -32,7 +52,7 @@ platform test matrix
 
 This epic should happen before large mobile restructuring.
 
-## Epic 2: Config Architecture
+### Epic 2: Config Architecture
 
 > Status: **delivered** (facade + consumer migration, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered)); storage-key split still open.
 
@@ -70,7 +90,11 @@ DiagnosticsConfig:
   debugMode
 ```
 
-## Epic 3: Bilibili Data Boundary
+### Epic 3: Bilibili Data Boundary
+
+> Status: **delivered** — `features/bilibili` is the sole application SDK boundary; verified on
+> Android (video detail, playback, history, create playlist) and Web (metadata proxy, image proxy,
+> download URLs, remote playlists).
 
 Scope:
 
@@ -95,9 +119,8 @@ Suggested first sample:
 ```txt
 video detail page
 ```
-### Implementation Status (delivered)
 
-`apps/mobile/features/bilibili` is now the sole application boundary for Bilibili SDK access:
+Implementation record:
 
 ```txt
 client.ts   # Direct/remote SDK switching, resource policy and URL construction
@@ -133,10 +156,11 @@ routes/components/business -/-> direct SDK calls
 routes/components/business -/-> duplicate Bilibili image/resource URL construction
 ```
 
-Next handoff: Epic 4 should consume `features/bilibili` as-is and move playback coordination
-into `features/playback`; do not expand this adapter with playlist or player behavior.
+## Upcoming Epics
 
-## Epic 4: Playback Orchestration
+### Epic 4: Playback Orchestration
+
+> Status: planned.
 
 Scope:
 
@@ -154,7 +178,9 @@ Goals:
 3. Remove mobile-level queue physical reordering for shuffle after player shuffle API exists.
 4. Keep player mechanics in `features/player` or `@bilisound/player`.
 
-## Epic 5: Playlist Domain
+### Epic 5: Playlist Domain
+
+> Status: planned.
 
 Scope:
 
@@ -173,7 +199,9 @@ Goals:
 3. Introduce playlist domain/view models where useful.
 4. Split `SongItem` into storage-independent UI and feature-specific wrappers.
 
-## Epic 6: Cache and Download
+### Epic 6: Cache and Download
+
+> Status: planned.
 
 Scope:
 
@@ -192,7 +220,9 @@ Goals:
 3. Provide cache status repositories and hooks.
 4. Keep cache independent from player.
 
-## Epic 7: UI Rewrite (after business foundation)
+### Epic 7: UI Rewrite (after business foundation)
+
+> Status: planned.
 
 Scope:
 
@@ -232,10 +262,10 @@ Non-goals for earlier epics: see the UI technology rule in [README.md](./README.
 
 ## Suggested Execution Order
 
-1. Player Foundation.
-2. Config Architecture facade and migration design.
-3. Bilibili Data Boundary sample on video detail.
-4. Playback Orchestration after player APIs are available.
+1. Player Foundation. — **done**
+2. Config Architecture facade and migration design. — **done**
+3. Bilibili Data Boundary sample on video detail. — **done**
+4. Playback Orchestration after player APIs are available. — next
 5. Playlist Domain migration.
 6. Cache and Download migration.
 7. UI Rewrite preparation and UI framework re-evaluation.
