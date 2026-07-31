@@ -34,6 +34,8 @@ This epic should happen before large mobile restructuring.
 
 ## Epic 2: Config Architecture
 
+> Status: **delivered** (facade + consumer migration, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered)); storage-key split still open.
+
 Scope:
 
 ```txt

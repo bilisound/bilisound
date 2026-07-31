@@ -57,6 +57,8 @@ Diagnostics:
 
 The store is imported directly by UI, business logic, components, and initialization code. Several consumers use `useSettingsStore.getState()`, which makes configuration reads non-reactive and hides dependencies.
 
+> 已解决：见下方 Implementation Status。facade 交付后，`features/config` 之外不再有模块直接 import settings store。
+
 ## v3 Goal
 
 Config should provide narrow access points instead of one broad settings store.

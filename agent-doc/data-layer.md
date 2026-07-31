@@ -89,11 +89,11 @@ MMKV 是微信团队开源的高性能 KV 存储，用于简单状态的快速�
 
 ## Zustand
 
-**位置**: `apps/mobile/store/`
+**位置**: `apps/mobile/store/`（settings 已迁移至 `apps/mobile/features/config/`，其余仍在此目录）
 
 | Store          | 文件                | 用途                        |
 | -------------- | ------------------- | --------------------------- |
-| settings       | `settings.ts`       | 应用设置 (主题、API 地址等) |
+| settings       | `features/config/store.ts` | 应用设置 (主题、API 地址等)，外部通过 `features/config` 的 selectors/policies 读取 |
 | download       | `download.ts`       | 下载任务列表与状态          |
 | bottom-sheet   | `bottom-sheet.ts`   | 底部弹出面板状态            |
 | apply-playlist | `apply-playlist.ts` | "加入歌单" 选择器状态       |
