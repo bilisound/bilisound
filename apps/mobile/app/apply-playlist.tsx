@@ -13,7 +13,7 @@ import { Text } from "~/components/ui/text";
 import { usePlaylistOnQueue } from "~/storage/playlist";
 import { addToPlaylist, getPlaylistMetas, quickCreatePlaylist, syncPlaylistAmount } from "~/storage/sqlite/playlist";
 import useApplyPlaylistStore from "~/store/apply-playlist";
-import { getImageProxyUrl } from "~/business/constant-helper";
+import { getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import { Layout } from "~/components/layout";
 import { Pressable } from "~/components/ui/pressable";
 import { playlistToTracks } from "~/business/playlist/handler";
@@ -82,10 +82,7 @@ export default function Page() {
         </Text>
         {isSingle && (
           <VideoItem
-            image={getImageProxyUrl(
-              playlistDetail[0].imgUrl,
-              "https://www.bilibili.com/video/" + playlistDetail[0].bvid,
-            )}
+            image={getVideoImageUrl(playlistDetail[0].imgUrl, getVideoUrl(playlistDetail[0].bvid))}
             text1={playlistDetail[0].title}
             text2={playlistDetail[0].author}
           />

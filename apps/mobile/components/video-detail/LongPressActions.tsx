@@ -1,4 +1,4 @@
-import { GetMetadataResponse } from "@bilisound/sdk";
+import { getVideoImageUrl, getVideoUrl, type VideoMetadata } from "~/features/bilibili";
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -9,7 +9,6 @@ import {
 import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu";
 import { useDownloadMenuItem } from "~/hooks/useDownloadMenuItem";
-import { getImageProxyUrl } from "~/business/constant-helper";
 import { formatSecond } from "~/utils/datetime";
 import type { PageItem } from "./helpers";
 
@@ -20,23 +19,23 @@ export interface LongPressActionsProps {
   displayTrack: PageItem;
   onClose: () => void;
   onAction: (action: LongPressAction) => void;
-  data: GetMetadataResponse;
+  data: VideoMetadata;
 }
 
 export function LongPressActions({ showActionSheet, displayTrack, onAction, onClose, data }: LongPressActionsProps) {
   const menuItems: ActionMenuItem[] = [
     ...useDownloadMenuItem(
       {
-        title: displayTrack.part,
+        title: displayTrack.title,
         artist: data.owner.name ?? "",
-        artworkUri: data.pic ?? "",
+        artworkUri: data.coverUrl ?? "",
         duration: displayTrack.duration ?? 0,
         extendedData: {
           id: data.bvid,
           episode: displayTrack.page,
           isLoaded: false,
           expireAt: 0,
-          artworkUrl: data.pic,
+          artworkUrl: data.coverUrl,
         },
         headers: {},
         id: "",
@@ -75,9 +74,9 @@ export function LongPressActions({ showActionSheet, displayTrack, onAction, onCl
         </ActionsheetDragIndicatorWrapper>
         {displayTrack && data && (
           <ActionSheetCurrent
-            line1={displayTrack.part}
+            line1={displayTrack.title}
             line2={formatSecond(displayTrack.duration)}
-            image={getImageProxyUrl(data.pic, "https://www.bilibili.com/video/" + data.bvid)}
+            image={getVideoImageUrl(data.coverUrl, getVideoUrl(data.bvid))}
           />
         )}
         <ActionMenu menuItems={menuItems} />

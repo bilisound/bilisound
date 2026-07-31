@@ -1,7 +1,7 @@
 import { RELEASE_CHANNEL } from "~/constants/releasing";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { BRAND } from "~/constants/branding";
-import { getUpdate } from "~/api/bilisound";
+import { getUpdate } from "~/api/release";
 
 export interface CheckLatestVersionReturns {
   isLatest: boolean;

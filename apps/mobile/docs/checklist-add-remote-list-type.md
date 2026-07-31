@@ -16,16 +16,16 @@ format.ts (URL 解析，提取 mode/userId/listId)
 resolveVideoAndJump() → 路由到 /remote-list?mode=xxx
   │
   ▼
-remote-list.tsx (调用 SDK 获取列表，展示 UI)
+remote-list.tsx (通过 features/bilibili 获取应用模型，展示 UI)
   │
   ▼
-SDK getUserList / getUserListFull (按 mode 分发到不同 API 端点)
+features/bilibili → SDK getUserList / getUserListFull (按 mode 分发到不同 API 端点)
   │
   ▼
 apply-playlist.tsx → quickCreatePlaylist() (写入数据库，source.subType = mode)
 ```
 
-大部分代码对 `UserListMode` 是**泛型消费**的——只需在少数关键位置编写新 mode 的具体逻辑，其余会自动支持。
+除 `features/bilibili` 外，移动端代码对 `RemotePlaylistMode` 和应用模型进行泛型消费——新增 mode 时，只需扩展 SDK 与 feature boundary；UI 不应导入 SDK 类型。
 
 ## Checklist
 
@@ -109,9 +109,9 @@ apply-playlist.tsx → quickCreatePlaylist() (写入数据库，source.subType =
 | `packages/sdk/src/sdk/base.ts`            | 抽象方法签名泛型接受 `UserListMode`             |
 | `packages/sdk/src/sdk/remote.ts`          | 仅将 mode 作为字符串参数传递给服务端            |
 | `apps/server-cf/route/bilisound.ts`       | `mode as UserListMode` 直接转发给 SDK           |
-| `apps/mobile/api/bilisound.ts`            | SDK 的薄封装层                                  |
-| `apps/mobile/typings/playlist.ts`         | `PlaylistSource.subType` 使用 `UserListMode`    |
-| `apps/mobile/business/playlist/update.ts` | 通过 `source.subType` 透传调用 SDK              |
+| `apps/mobile/features/bilibili/*`         | 唯一 SDK adapter；DTO 到应用模型的映射落点      |
+| `apps/mobile/typings/playlist.ts`         | `PlaylistSource.subType` 使用 `RemotePlaylistMode` |
+| `apps/mobile/business/playlist/update.ts` | 通过 feature boundary 同步远程播放列表          |
 | `apps/mobile/business/qrcode.ts`          | 调用 `resolveVideoAndJump()`，无 mode 特定逻辑  |
 | `apps/mobile/app/barcode.tsx`             | 调用 `handleQrCode()`，无 mode 特定逻辑         |
 | `apps/mobile/store/apply-playlist.ts`     | 接受任意 `PlaylistSource`                       |

@@ -2,10 +2,8 @@ import useDownloadStore from "~/store/download";
 import { getCacheAudioPath } from "~/utils/file";
 import * as FileSystem from "expo-file-system/legacy";
 import { filesize } from "filesize";
-import { getBilisoundResourceUrl } from "~/api/bilisound";
+import { getMediaResource, getVideoUrl } from "~/features/bilibili";
 import log from "~/utils/logger";
-import { getResourcePolicy } from "~/features/config";
-import { getVideoUrl } from "~/business/constant-helper";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { isCacheExists, setCacheExists } from "~/storage/cache-status";
 import { extractAudioFile } from "~/business/mp4";
@@ -86,16 +84,7 @@ export async function downloadResource(bvid: string, episode: number) {
   const checkUrl = getCacheAudioPath(playingRequest.id, playingRequest.episode, false);
 
   // 获取源地址
-  const { url, isAudio } = await getBilisoundResourceUrl(
-    playingRequest.id,
-    playingRequest.episode,
-    getResourcePolicy().filterResourceURL,
-  );
-
-  if (!useDownloadStore.getState().downloadList.has(id)) {
-    log.info(prefix + "操作取消");
-    return;
-  }
+  const { url, isAudio } = await getMediaResource(playingRequest.id, playingRequest.episode);
 
   // 待下载资源地址（可能是音频或视频）
   const downloadTargetFileUrl = getCacheAudioPath(playingRequest.id, playingRequest.episode, true);

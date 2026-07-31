@@ -2,19 +2,17 @@ import * as Player from "@bilisound/player";
 import { RepeatMode, ShuffleMode } from "@bilisound/player";
 import { Platform } from "react-native";
 
-import type { TrackData } from "@bilisound/player/build/types";
+import type { TrackData } from "@bilisound/player";
 
 import { setQueuePlayingMode } from "~/storage/queue";
-import { getImageProxyUrl, getVideoUrl } from "~/business/constant-helper";
+import { getMediaResource, getVideoImageUrl, getVideoMetadata, getVideoUrl } from "~/features/bilibili";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
-import { getBilisoundMetadata, getBilisoundResourceUrl } from "~/api/bilisound";
 import log from "~/utils/logger";
 import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
 import { getPlaylistDetail } from "~/storage/sqlite/playlist";
 import { invalidateOnQueueStatus, PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
-import { getResourcePolicy } from "~/features/config";
 import useErrorMessageStore from "~/store/error-message";
 
 import { playlistToTracks } from "./track-data";
@@ -57,9 +55,9 @@ export async function addTrackFromDetail(id: string, episode: number) {
     return;
   }
 
-  const data = await getBilisoundMetadata({ id });
-  const url = await getBilisoundResourceUrl(id, episode, getResourcePolicy().filterResourceURL);
-  const currentEpisode = data.pages.find(e => e.page === episode);
+  const data = await getVideoMetadata(id);
+  const url = await getMediaResource(id, episode);
+  const currentEpisode = data.episodes.find(item => item.page === episode);
   if (!currentEpisode) {
     throw new Error("指定视频没有指定的分 P 信息");
   }
@@ -67,7 +65,7 @@ export async function addTrackFromDetail(id: string, episode: number) {
   const trackData: TrackData = {
     uri: url.url,
     artist: data.owner.name,
-    artworkUri: getImageProxyUrl(data.pic, "https://www.bilibili.com/video/" + id),
+    artworkUri: getVideoImageUrl(data.coverUrl, getVideoUrl(id)),
     duration: currentEpisode.duration,
     mimeType: "video/mp4",
     extendedData: {
@@ -75,14 +73,14 @@ export async function addTrackFromDetail(id: string, episode: number) {
       episode,
       isLoaded: false,
       expireAt: new Date().getTime() + URI_EXPIRE_DURATION,
-      artworkUrl: data.pic,
+      artworkUrl: data.coverUrl,
     },
     headers: {
       referer: getVideoUrl(id, episode),
       "user-agent": USER_AGENT_BILIBILI,
     },
     id: getCacheStatusKey(id, episode),
-    title: data.pages.length === 1 ? data.title : currentEpisode.part,
+    title: data.episodes.length === 1 ? data.title : currentEpisode.title,
   };
   await Player.addTrack(trackData);
   // v3 起 player 内部管理随机顺序，新增曲目会被自动并入播放顺序，无需再维护 backup
@@ -117,7 +115,7 @@ export async function refreshTrack(trackData: TrackData) {
 
   // 拉取最新的 URL
   log.info("开始拉取最新的 URL");
-  const url = await getBilisoundResourceUrl(id, episode, getResourcePolicy().filterResourceURL);
+  const url = await getMediaResource(id, episode);
   trackData.uri = url.url;
   trackData.extendedData!.expireAt = new Date().getTime() + URI_EXPIRE_DURATION;
   trackData.mimeType = "video/mp4";

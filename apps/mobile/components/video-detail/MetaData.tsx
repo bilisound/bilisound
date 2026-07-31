@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import { twMerge } from "tailwind-merge";
 import { decodeHTML } from "entities";
 import { Image } from "expo-image";
-import { GetMetadataResponse } from "@bilisound/sdk";
+import type { VideoMetadata } from "~/features/bilibili";
 
 import { Text } from "~/components/ui/text";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -15,17 +15,15 @@ import { Pressable } from "~/components/ui/pressable";
 import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { DownloadButton } from "~/components/download-button";
 
-import { getImageProxyUrl } from "~/business/constant-helper";
-import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
+import { getDownloadUrl, getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import { formatDate } from "~/utils/datetime";
 import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
 import { useWindowSize } from "~/hooks/useWindowSize";
-import { getResourcePolicy } from "~/features/config";
 import log from "~/utils/logger";
 import { handleAddPlaylist } from "./helpers";
 
 export interface MetaDataProps {
-  data?: GetMetadataResponse;
+  data?: VideoMetadata;
   className?: string;
   style?: ViewStyle;
   showFullMeta?: boolean;
@@ -48,10 +46,10 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
     if (!data) {
       return [];
     }
-    return data.pages.map(e => ({
+    return data.episodes.map(episode => ({
       id: data.bvid,
-      episode: e.page,
-      title: e.partDisplayName,
+      episode: episode.page,
+      title: episode.displayTitle,
     }));
   }, [data]);
 
@@ -59,10 +57,8 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
     if (!data) {
       return;
     }
-    if (data.pages.length === 1) {
-      globalThis.window.open(
-        getBilisoundResourceUrlOnline(data.bvid, 1, getResourcePolicy().useLegacyID ? "av" : "bv").url,
-      );
+    if (data.episodes.length === 1) {
+      globalThis.window.open(getDownloadUrl(data.bvid, 1));
       return;
     }
     router.navigate(`/download-web?id=${data.bvid}`);
@@ -70,7 +66,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
 
   let staff: ReactNode = null;
   if (data?.staff) {
-    const groupedArray: Exclude<GetMetadataResponse["staff"], undefined>[] = [];
+    const groupedArray: NonNullable<VideoMetadata["staff"]>[] = [];
     for (let i = 0; i < data.staff.length; i += 2) {
       groupedArray.push(data.staff.slice(i, i + 2));
     }
@@ -82,7 +78,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
             {e.map((f, j) => (
               <View key={j} className={"flex-1 flex-row gap-3 w-full items-center"}>
                 <Image
-                  source={getImageProxyUrl(f.face, "https://www.bilibili.com/video/" + data.bvid)}
+                  source={getVideoImageUrl(f.avatarUrl, getVideoUrl(data.bvid))}
                   className="flex-0 basis-auto size-10 rounded-full aspect-square"
                 />
                 <View className={"flex-1 gap-1"}>
@@ -90,7 +86,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
                     {f.name}
                   </Text>
                   <Text className="text-sm text-typography-500" isTruncated>
-                    {f.title}
+                    {f.role}
                   </Text>
                 </View>
               </View>
@@ -104,10 +100,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
   return (
     <View className={twMerge("gap-4", className)} style={style}>
       {data ? (
-        <Image
-          source={getImageProxyUrl(data.pic, "https://www.bilibili.com/video/" + data.bvid)}
-          className="aspect-[16/9] rounded-lg"
-        />
+        <Image source={getVideoImageUrl(data.coverUrl, getVideoUrl(data.bvid))} className="aspect-[16/9] rounded-lg" />
       ) : (
         <Skeleton className="aspect-[16/9] rounded-lg w-[unset] h-[unset]" />
       )}
@@ -133,7 +126,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
               ) : (
                 <>
                   <Image
-                    source={getImageProxyUrl(data.owner.face, "https://www.bilibili.com/video/" + data.bvid)}
+                    source={getVideoImageUrl(data.owner.avatarUrl, getVideoUrl(data.bvid))}
                     className="w-9 h-9 rounded-full aspect-square flex-shrink-0"
                   />
                   <Text className="flex-grow text-sm font-bold text-typography-700" isTruncated>
@@ -142,7 +135,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
                 </>
               )}
               <Text className="flex-shrink-0 text-sm opacity-50 text-typography-700 ">
-                {formatDate(data.pubDate, "yyyy-MM-dd")}
+                {formatDate(data.publishedAt, "yyyy-MM-dd")}
               </Text>
             </>
           ) : (
@@ -159,11 +152,13 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
           <>
             {alwaysShowFullMeta || showFullMeta ? (
               <Text className={"text-sm leading-normal break-words"} selectable>
-                {decodeHTML(data.desc)}
+                {decodeHTML(data.description)}
               </Text>
             ) : (
               <Pressable onPress={() => setAlwaysShowFullMeta(true)}>
-                <Text className={"text-sm leading-normal break-words line-clamp-6"}>{decodeHTML(data.desc)}</Text>
+                <Text className={"text-sm leading-normal break-words line-clamp-6"}>
+                  {decodeHTML(data.description)}
+                </Text>
               </Pressable>
             )}
           </>
@@ -199,7 +194,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
                     className={"rounded-full"}
                     variant={"outline"}
                     onPress={() => {
-                      router.navigate(`/remote-list?userId=${data?.owner.mid}&listId=${data?.seasonId}&mode=season`);
+                      router.navigate(`/remote-list?userId=${data.owner.id}&listId=${data.seasonId}&mode=season`);
                     }}
                   >
                     <ButtonMonIcon name={"fa6-solid:list"} size={16} />

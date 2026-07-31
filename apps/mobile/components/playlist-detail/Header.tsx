@@ -17,7 +17,7 @@ import { ImagesGroup } from "./ImagesGroup";
 import { PlaylistDetail, PlaylistMeta } from "~/storage/sqlite/schema";
 import { convertToRelativeTime } from "~/utils/datetime";
 import { updatePlaylist } from "~/business/playlist/update";
-import { getImageProxyUrl } from "~/business/constant-helper";
+import { getVideoImageUrl } from "~/features/bilibili";
 import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
 import log from "~/utils/logger";
 
@@ -118,7 +118,7 @@ export function Header({ meta, detail, images, onPlay, showPlayButton, className
   return (
     <View className={twMerge("gap-4", className)}>
       {imgUrl ? (
-        <Image source={getImageProxyUrl(imgUrl)} className="aspect-video rounded-lg" />
+        <Image source={getVideoImageUrl(imgUrl)} className="aspect-video rounded-lg" />
       ) : (
         <ImagesGroup images={images} />
       )}

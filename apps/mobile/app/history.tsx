@@ -6,7 +6,7 @@ import { VideoItem } from "~/components/video-item";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getImageProxyUrl } from "~/business/constant-helper";
+import { getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -107,7 +107,7 @@ export default function Page() {
               <VideoItem
                 text1={item.name}
                 text2={item.authorName}
-                image={getImageProxyUrl(item.thumbnailUrl, "https://www.bilibili.com/video/" + item.id)}
+                image={getVideoImageUrl(item.thumbnailUrl, getVideoUrl(item.id))}
                 onPress={() => {
                   router.navigate(`/video/${item.id}`);
                 }}

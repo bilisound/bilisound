@@ -1,7 +1,7 @@
 import { ScrollView, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { useLocalSearchParams } from "expo-router";
-import { getBilisoundMetadata } from "~/api/bilisound";
+import { getVideoMetadata } from "~/features/bilibili";
 import { useQuery } from "@tanstack/react-query";
 import { useWindowSize } from "~/hooks/useWindowSize";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -19,7 +19,7 @@ export default function Page() {
       if (!id) {
         return undefined;
       }
-      return getBilisoundMetadata({ id });
+      return getVideoMetadata(id);
     },
   });
 
@@ -32,7 +32,7 @@ export default function Page() {
           paddingBottom: insets.bottom,
         }}
       >
-        <Text className={"text-sm leading-normal p-4"}>{data?.desc}</Text>
+        <Text className={"text-sm leading-normal p-4"}>{data?.description}</Text>
       </ScrollView>
     </View>
   );

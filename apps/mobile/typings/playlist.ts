@@ -1,5 +1,5 @@
-import { Numberish } from "~/typings/common";
-import { UserListMode } from "@bilisound/sdk";
+import type { RemotePlaylistMode } from "~/features/bilibili";
+import type { Numberish } from "~/typings/common";
 
 export type PlaylistSource =
   | {
@@ -12,7 +12,7 @@ export type PlaylistSource =
       type: "playlist";
       originalTitle: string;
       lastSyncAt: number;
-      subType: UserListMode;
+      subType: RemotePlaylistMode;
       userId: Numberish;
       listId: Numberish;
     };

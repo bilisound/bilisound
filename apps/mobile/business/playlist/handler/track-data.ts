@@ -1,11 +1,10 @@
 import { Platform } from "react-native";
 
-import type { TrackData } from "@bilisound/player/build/types";
+import type { TrackData } from "@bilisound/player";
 
-import { getImageProxyUrl, getVideoUrl } from "~/business/constant-helper";
+import { getOnlineMediaResourceUrl, getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
-import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
 import type { PlaylistDetail } from "~/storage/sqlite/schema";
 import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
@@ -37,13 +36,10 @@ export function processTrackDataForLoad(trackData: TrackData[]) {
       referer: getVideoUrl(e.extendedData.id, e.extendedData.episode),
       "user-agent": USER_AGENT_BILIBILI,
     };
-    e.artworkUri = getImageProxyUrl(
-      // 只有 Web 版需要分离原 URL 和实际 URL，且 Web 版在 v1 从未上线
-      e.extendedData.artworkUrl ?? e.artworkUri,
-      "https://www.bilibili.com/video/" + e.extendedData.id,
-    );
+    // Web needs the original URL for the Bilibili referer-aware image proxy.
+    e.artworkUri = getVideoImageUrl(e.extendedData.artworkUrl ?? e.artworkUri, getVideoUrl(e.extendedData.id));
     if (Platform.OS === "web") {
-      e.uri = getBilisoundResourceUrlOnline(e.extendedData!.id, e.extendedData!.episode).url;
+      e.uri = getOnlineMediaResourceUrl(e.extendedData.id, e.extendedData.episode);
       return;
     } else {
       if (e.extendedData.isLoaded) {
@@ -66,13 +62,13 @@ export function playlistToTracks(playlist: PlaylistDetail[]): TrackData[] {
 
     let uri = isLoaded ? getCacheAudioPath(e.bvid, e.episode) : PLACEHOLDER_AUDIO;
     if (Platform.OS === "web") {
-      uri = getBilisoundResourceUrlOnline(e.bvid, e.episode).url;
+      uri = getOnlineMediaResourceUrl(e.bvid, e.episode);
     }
 
     return {
       uri,
       artist: e.author,
-      artworkUri: getImageProxyUrl(e.imgUrl, "https://www.bilibili.com/video/" + e.bvid),
+      artworkUri: getVideoImageUrl(e.imgUrl, getVideoUrl(e.bvid)),
       duration: e.duration,
       extendedData: {
         id: e.bvid,

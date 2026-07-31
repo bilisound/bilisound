@@ -1,4 +1,4 @@
-import { getBilisoundMetadata, getUserList, getUserListFull } from "~/api/bilisound";
+import { getFullRemotePlaylist, getRemotePlaylist, getVideoMetadata } from "~/features/bilibili";
 import { replacePlaylistDetail, setPlaylistMeta } from "~/storage/sqlite/playlist";
 import { PlaylistDetailInsert } from "~/storage/sqlite/schema";
 import { PlaylistSource } from "~/typings/playlist";
@@ -12,29 +12,29 @@ import { PlaylistSource } from "~/typings/playlist";
 export async function updatePlaylist(id: number, source: PlaylistSource, progressCallback: (progress: number) => void) {
   switch (source.type) {
     case "playlist": {
-      const { meta } = await getUserList(source.subType, source.userId, source.listId, 1);
-      const list = await getUserListFull(source.subType, source.userId, source.listId, progress => {
+      const { metadata } = await getRemotePlaylist(source.subType, source.userId, source.listId, 1);
+      const list = await getFullRemotePlaylist(source.subType, source.userId, source.listId, progress => {
         progressCallback?.(progress);
       });
       const needsFallback = list.some(e => !e.author);
-      const firstEpisode = needsFallback ? await getBilisoundMetadata({ id: list[0].bvid }) : null;
+      const firstEpisode = needsFallback ? await getVideoMetadata(list[0].bvid) : null;
       const builtList: PlaylistDetailInsert[] = list.map(e => ({
         author: e.author?.name ?? firstEpisode?.owner.name ?? "",
         bvid: e.bvid ?? "",
         duration: e.duration,
         episode: 1,
         title: e.title,
-        imgUrl: e.cover ?? "",
+        imgUrl: e.coverUrl,
         playlistId: id,
         extendedData: null,
       }));
       replacePlaylistDetail(id, builtList);
       await setPlaylistMeta({
         id,
-        imgUrl: meta.cover,
+        imgUrl: metadata.coverUrl,
         source: JSON.stringify({
           ...source,
-          originalTitle: meta.name,
+          originalTitle: metadata.name,
           lastSyncAt: new Date().getTime(),
         } as PlaylistSource),
       });
@@ -42,21 +42,21 @@ export async function updatePlaylist(id: number, source: PlaylistSource, progres
     }
     case "video": {
       progressCallback?.(0);
-      const data = await getBilisoundMetadata({ id: source.bvid });
-      const builtList: PlaylistDetailInsert[] = data.pages.map(e => ({
+      const data = await getVideoMetadata(source.bvid);
+      const builtList: PlaylistDetailInsert[] = data.episodes.map(episode => ({
         author: data.owner.name,
         bvid: data.bvid,
-        duration: e.duration,
-        episode: e.page,
-        title: e.part,
-        imgUrl: data.pic,
+        duration: episode.duration,
+        episode: episode.page,
+        title: episode.title,
+        imgUrl: data.coverUrl,
         playlistId: id,
         extendedData: null,
       }));
       replacePlaylistDetail(id, builtList);
       await setPlaylistMeta({
         id,
-        imgUrl: data.pic,
+        imgUrl: data.coverUrl,
         source: JSON.stringify({
           ...source,
           originalTitle: data.title,

@@ -9,7 +9,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { SkeletonText } from "~/components/skeleton-text";
 import { Icon } from "~/components/icon";
 import { Image } from "expo-image";
-import { getImageProxyUrl } from "~/business/constant-helper";
+import { getVideoImageUrl } from "~/features/bilibili";
 import { Svg, Polygon } from "react-native-svg";
 
 export interface PlaylistItemProps {
@@ -65,7 +65,7 @@ export function PlaylistItem({ item, onPress, onLongPress, className, style, gri
         {item ? (
           <>
             <View className={"w-full rounded-2xl bg-background-200 overflow-hidden relative"}>
-              <Image source={getImageProxyUrl(item?.imgUrl ?? "")} className={"w-full aspect-square"}></Image>
+              <Image source={getVideoImageUrl(item?.imgUrl ?? "")} className={"w-full aspect-square"}></Image>
               {item.source ? (
                 <>
                   <Svg width="58" height="58" style={{ position: "absolute", right: 0, bottom: 0 }}>

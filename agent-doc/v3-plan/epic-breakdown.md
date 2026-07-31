@@ -95,6 +95,46 @@ Suggested first sample:
 ```txt
 video detail page
 ```
+### Implementation Status (delivered)
+
+`apps/mobile/features/bilibili` is now the sole application boundary for Bilibili SDK access:
+
+```txt
+client.ts   # Direct/remote SDK switching, resource policy and URL construction
+mappers.ts  # SDK DTO -> app-owned VideoMetadata / RemotePlaylistPage / MediaResource
+models.ts   # app-owned models consumed by routes, components, and business flows
+index.ts    # public feature surface
+```
+
+Migrated consumers include video detail, description, browser download, remote playlists,
+playlist synchronization, playback resource refresh, downloads, history, and image URLs.
+`components/video-detail/*` now accepts `VideoMetadata` / `VideoEpisode`, never SDK DTOs.
+
+The old `api/bilisound.ts` SDK facade and generic `business/constant-helper.ts` were removed;
+`api/release.ts` retains only unrelated release metadata access. `getVideoUrl`, image proxy URLs,
+online resource URLs, and the user resource policy are consolidated in the Bilibili feature.
+
+Verification:
+
+```txt
+pnpm -C apps/mobile exec tsc --noEmit
+pnpm -C apps/mobile exec jest features/bilibili/__tests__/mappers.test.ts --runInBand
+git diff --check -- apps/mobile pnpm-lock.yaml agent-doc/v3-plan
+```
+
+All passed. The mapper test covers metadata, remote playlist pagination, and media-resource
+mapping so API DTO changes cannot silently re-enter the UI boundary.
+
+Coupling reduced:
+
+```txt
+routes/components/business -/-> @bilisound/sdk DTOs
+routes/components/business -/-> direct SDK calls
+routes/components/business -/-> duplicate Bilibili image/resource URL construction
+```
+
+Next handoff: Epic 4 should consume `features/bilibili` as-is and move playback coordination
+into `features/playback`; do not expand this adapter with playlist or player behavior.
 
 ## Epic 4: Playback Orchestration
 

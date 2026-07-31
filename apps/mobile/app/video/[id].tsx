@@ -12,7 +12,7 @@ import { SongItem } from "~/components/song-item";
 import { ErrorContent } from "~/components/error-content";
 import { DualScrollView } from "~/components/dual-scroll-view";
 
-import { getBilisoundMetadata } from "~/api/bilisound";
+import { getVideoMetadata } from "~/features/bilibili";
 import { addTrackFromDetail } from "~/business/playlist/handler";
 import { openAddPlaylistPage } from "~/business/playlist/misc";
 import { convertToHTTPS } from "~/utils/string";
@@ -36,7 +36,7 @@ export default function Page() {
   const { data, error } = useQuery({
     queryKey: [id],
     queryFn: () => {
-      return getBilisoundMetadata({ id });
+      return getVideoMetadata(id);
     },
   });
 
@@ -49,7 +49,7 @@ export default function Page() {
         authorName: data.owner.name,
         id: data.bvid,
         name: data.title,
-        thumbnailUrl: convertToHTTPS(data.pic),
+        thumbnailUrl: convertToHTTPS(data.coverUrl),
         visitedAt: new Date(),
         key: v4(),
       });
@@ -109,15 +109,15 @@ export default function Page() {
                       bvid: data!.bvid,
                       duration: e.item.duration,
                       episode: e.item.page,
-                      title: e.item.partDisplayName,
-                      imgUrl: data!.pic,
+                      title: e.item.displayTitle,
+                      imgUrl: data!.coverUrl,
                       id: 0,
                       playlistId: 0,
                       extendedData: null,
                     }}
                   />
                 )}
-                data={data?.pages ?? []}
+                data={data?.episodes ?? []}
               />
             )}
           />
@@ -144,15 +144,15 @@ export default function Page() {
                       bvid: data?.bvid ?? "",
                       duration: displayTrack.duration,
                       episode: displayTrack.page,
-                      title: displayTrack.part,
-                      imgUrl: data?.pic ?? "",
+                      title: displayTrack.title,
+                      imgUrl: data?.coverUrl ?? "",
                       id: 0,
                       playlistId: 0,
                       extendedData: null,
                     },
                   ],
                   name: data?.title ?? "",
-                  description: data?.desc ?? "",
+                  description: data?.description ?? "",
                 });
                 break;
               case "close":

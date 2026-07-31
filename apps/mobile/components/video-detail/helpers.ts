@@ -1,29 +1,29 @@
-import { GetMetadataResponse } from "@bilisound/sdk";
+import type { VideoEpisode, VideoMetadata } from "~/features/bilibili";
 import { openAddPlaylistPage } from "~/business/playlist/misc";
 
-export function handleAddPlaylist(meta: GetMetadataResponse) {
+export function handleAddPlaylist(metadata: VideoMetadata) {
   openAddPlaylistPage({
-    playlistDetail: meta.pages.map(e => ({
-      author: meta.owner.name ?? "",
-      bvid: meta.bvid ?? "",
-      duration: e.duration,
-      episode: e.page,
-      title: e.part,
-      imgUrl: meta.pic ?? "",
+    playlistDetail: metadata.episodes.map(episode => ({
+      author: metadata.owner.name,
+      bvid: metadata.bvid,
+      duration: episode.duration,
+      episode: episode.page,
+      title: episode.title,
+      imgUrl: metadata.coverUrl,
       id: 0,
       playlistId: 0,
       extendedData: null,
     })),
-    name: meta.title,
-    description: meta.desc,
+    name: metadata.title,
+    description: metadata.description,
     source: {
       type: "video",
-      bvid: meta.bvid,
-      originalTitle: meta.title,
+      bvid: metadata.bvid,
+      originalTitle: metadata.title,
       lastSyncAt: new Date().getTime(),
     },
-    cover: meta.pic,
+    cover: metadata.coverUrl,
   });
 }
 
-export type PageItem = GetMetadataResponse["pages"][number];
+export type PageItem = VideoEpisode;

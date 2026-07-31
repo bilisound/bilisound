@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import Fuse from "fuse.js";
 import React, { createContext, useContext, useMemo, useState } from "react";
 import Toast from "react-native-toast-message";
-import { getImageProxyUrl } from "~/business/constant-helper";
+import { getVideoImageUrl } from "~/features/bilibili";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu"; // Fixing the import path for ActionMenu and ActionMenuItem components
 import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { Layout, LayoutButton } from "~/components/layout";
@@ -149,7 +149,7 @@ function LongPressActions({ showActionSheet, displayTrack, onAction, onClose }: 
           <ActionSheetCurrent
             line1={displayTrack.title}
             line2={`${displayTrack.amount} 首歌曲`}
-            image={getImageProxyUrl(displayTrack.imgUrl!)}
+            image={getVideoImageUrl(displayTrack.imgUrl!)}
           />
         )}
         <ActionMenu menuItems={menuItems} />

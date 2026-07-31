@@ -8,7 +8,7 @@ import {
 import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu";
 import { PlaylistMeta } from "~/storage/sqlite/schema";
-import { getImageProxyUrl } from "~/business/constant-helper";
+import { getVideoImageUrl } from "~/features/bilibili";
 
 export type LongPressAction = "editMeta" | "editCover" | "editMass" | "close";
 
@@ -68,7 +68,7 @@ export function LongPressActions({ showActionSheet, onAction, onClose, current }
           <ActionSheetCurrent
             line1={current.title}
             line2={`${current.amount} 首歌曲`}
-            image={current?.imgUrl ? getImageProxyUrl(current.imgUrl) : undefined}
+            image={current?.imgUrl ? getVideoImageUrl(current.imgUrl) : undefined}
           />
         )}
         <ActionMenu menuItems={menuItems} />

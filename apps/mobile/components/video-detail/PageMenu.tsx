@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import Toast from "react-native-toast-message";
 import { pause } from "@bilisound/player";
-import { GetMetadataResponse } from "@bilisound/sdk";
+import type { VideoMetadata } from "~/features/bilibili";
 
 import { LayoutButton } from "~/components/layout";
 import {
@@ -16,14 +16,12 @@ import {
 } from "~/components/ui/actionsheet";
 import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu";
-import { getImageProxyUrl } from "~/business/constant-helper";
-import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
-import { getResourcePolicy } from "~/features/config";
+import { getDownloadUrl, getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 
 export type PageMenuAction = "addPlaylist";
 
 export interface PageMenuProps {
-  data: GetMetadataResponse;
+  data: VideoMetadata;
   onAction: (action: PageMenuAction) => void;
 }
 
@@ -55,10 +53,8 @@ export function PageMenu({ data, onAction }: PageMenuProps) {
         if (!data) {
           return;
         }
-        if (data.pages.length === 1) {
-          globalThis.window.open(
-            getBilisoundResourceUrlOnline(data.bvid, 1, getResourcePolicy().useLegacyID ? "av" : "bv").url,
-          );
+        if (data.episodes.length === 1) {
+          globalThis.window.open(getDownloadUrl(data.bvid, 1));
           return;
         }
         router.navigate(`/download-web?id=${data.bvid}`);
@@ -71,7 +67,7 @@ export function PageMenu({ data, onAction }: PageMenuProps) {
       show: true,
       async action() {
         await pause();
-        await Linking.openURL("https://www.bilibili.com/video/" + data.bvid + "/");
+        await Linking.openURL(getVideoUrl(data.bvid));
         onClose();
       },
     },
@@ -80,7 +76,7 @@ export function PageMenu({ data, onAction }: PageMenuProps) {
       icon: "fa6-solid:copy",
       show: true,
       async action() {
-        await Clipboard.setStringAsync("https://www.bilibili.com/video/" + data.bvid + "/");
+        await Clipboard.setStringAsync(getVideoUrl(data.bvid));
         Toast.show({
           type: "success",
           text1: "视频链接已复制到剪贴板",
@@ -111,7 +107,7 @@ export function PageMenu({ data, onAction }: PageMenuProps) {
           <ActionSheetCurrent
             line1={data.title}
             line2={data.owner.name}
-            image={getImageProxyUrl(data.pic, "https://www.bilibili.com/video/" + data.bvid)}
+            image={getVideoImageUrl(data.coverUrl, getVideoUrl(data.bvid))}
           />
           <ActionMenu menuItems={menuItems} />
         </ActionsheetContent>

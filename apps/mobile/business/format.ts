@@ -1,8 +1,7 @@
 import { router } from "expo-router";
 
-import { parseB23 } from "~/api/bilisound";
+import { resolveShortUrl, type RemotePlaylistMode } from "~/features/bilibili";
 import log from "~/utils/logger";
-import { UserListMode } from "@bilisound/sdk";
 
 export const B23_REGEX = /https?:\/\/b23\.tv\/([a-zA-Z0-9]+)/;
 export const USER_LIST_URL_REGEX = /^\/(\d+)\/channel\/(seriesdetail|collectiondetail)$/;
@@ -11,7 +10,7 @@ export const USER_FAV_URL_REGEX = /^\/(\d+)\/favlist$/;
 
 export interface UserListParseResult {
   type: "userList";
-  mode: UserListMode;
+  mode: RemotePlaylistMode;
   userId: string;
   listId: string;
 }
@@ -48,7 +47,7 @@ export async function resolveVideo(input: string): Promise<string | UserListPars
   // 含有 b23.tv 的短链接
   const tested = B23_REGEX.exec(input);
   if (tested && tested[1]) {
-    return resolveVideo(await parseB23(tested[1]));
+    return resolveVideo(await resolveShortUrl(tested[1]));
   }
 
   // 可能是链接

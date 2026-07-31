@@ -1,8 +1,6 @@
 import * as Player from "@bilisound/player";
-import { ShuffleMode } from "@bilisound/player";
+import { ShuffleMode, type TrackData } from "@bilisound/player";
 import { Platform } from "react-native";
-
-import type { TrackData } from "@bilisound/player/build/types";
 
 import {
   getQueuePlayingMode,

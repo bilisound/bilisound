@@ -3,9 +3,15 @@ import { Text } from "~/components/ui/text";
 import { router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getBilisoundMetadata, getUserList, getUserListFull } from "~/api/bilisound";
+import {
+  getFullRemotePlaylist,
+  getRemotePlaylist,
+  getVideoImageUrl,
+  getVideoMetadata,
+  type RemotePlaylistMetadata,
+  type RemotePlaylistMode,
+} from "~/features/bilibili";
 import { twMerge } from "tailwind-merge";
-import { getImageProxyUrl } from "~/business/constant-helper";
 import { Skeleton } from "~/components/ui/skeleton";
 import { formatSecond } from "~/utils/datetime";
 import { decodeHTML } from "entities";
@@ -20,15 +26,14 @@ import { FlashList } from "@shopify/flash-list";
 import { VideoItem } from "~/components/video-item";
 import useApplyPlaylistStore from "~/store/apply-playlist";
 import Toast from "react-native-toast-message";
-import { GetEpisodeUserResponse, UserListMode } from "@bilisound/sdk";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { DualScrollView } from "~/components/dual-scroll-view";
 
 interface MetaDataProps {
-  data?: GetEpisodeUserResponse["meta"];
+  data?: RemotePlaylistMetadata;
   className?: string;
   style?: ViewStyle;
-  mode: UserListMode;
+  mode: RemotePlaylistMode;
 }
 
 function MetaData({ data, className, style, mode }: MetaDataProps) {
@@ -52,17 +57,17 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
     }
     setLoading(true);
     try {
-      const list = await getUserListFull(mode, data.userId, data.seasonId);
-      const needsFallback = list.some(e => !e.author);
-      const firstEpisode = needsFallback ? await getBilisoundMetadata({ id: list[0].bvid }) : null;
+      const list = await getFullRemotePlaylist(mode, data.userId, data.playlistId);
+      const needsFallback = list.some(episode => !episode.author);
+      const firstEpisode = needsFallback ? await getVideoMetadata(list[0].bvid) : null;
       setPlaylistDetail(
-        list.map(e => ({
-          author: e.author?.name ?? firstEpisode?.owner.name ?? "",
-          bvid: e.bvid ?? "",
-          duration: e.duration,
+        list.map(episode => ({
+          author: episode.author?.name ?? firstEpisode?.owner.name ?? "",
+          bvid: episode.bvid,
+          duration: episode.duration,
           episode: 1,
-          title: e.title,
-          imgUrl: e.cover ?? "",
+          title: episode.title,
+          imgUrl: episode.coverUrl,
           id: 0,
           playlistId: 0,
           extendedData: null,
@@ -76,9 +81,9 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
         lastSyncAt: new Date().getTime(),
         subType: mode,
         userId: data.userId,
-        listId: data.seasonId,
+        listId: data.playlistId,
       });
-      setCover(data.cover);
+      setCover(data.coverUrl);
       router.push(`/apply-playlist`);
     } catch (e) {
       Toast.show({
@@ -94,7 +99,7 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
   return (
     <View className={twMerge("gap-4", className)} style={style}>
       {data ? (
-        <Image source={getImageProxyUrl(data.cover)} className="aspect-[16/9] rounded-lg" />
+        <Image source={getVideoImageUrl(data.coverUrl)} className="aspect-[16/9] rounded-lg" />
       ) : (
         <Skeleton className="aspect-[16/9] rounded-lg w-[unset] h-[unset]" />
       )}
@@ -141,7 +146,7 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
 }
 
 export default function Page() {
-  const { userId, listId, mode } = useLocalSearchParams<{ userId: string; listId: string; mode: UserListMode }>();
+  const { userId, listId, mode } = useLocalSearchParams<{ userId: string; listId: string; mode: RemotePlaylistMode }>();
 
   const edgeInsets = useSafeAreaInsets();
   const { colorValue } = useRawThemeValues();
@@ -149,10 +154,10 @@ export default function Page() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error } = useInfiniteQuery({
     initialPageParam: 1,
     queryKey: [`getEpisodeUser_${mode}_${userId}_${listId}`],
-    queryFn: ({ pageParam = 1 }) => getUserList(mode!, userId!, listId!, pageParam),
+    queryFn: ({ pageParam = 1 }) => getRemotePlaylist(mode!, userId!, listId!, pageParam),
     getNextPageParam: lastPage => {
-      if (lastPage.pageNum < Math.ceil(lastPage.total / lastPage.pageSize)) {
-        return lastPage.pageNum + 1;
+      if (lastPage.page < Math.ceil(lastPage.total / lastPage.pageSize)) {
+        return lastPage.page + 1;
       }
       return undefined;
     },
@@ -177,7 +182,7 @@ export default function Page() {
       ) : (
         <DualScrollView
           edgeInsets={{ ...edgeInsets, left: 0, right: 0 }}
-          header={<MetaData mode={mode} data={data?.pages[0].meta} />}
+          header={<MetaData mode={mode} data={data?.pages[0].metadata} />}
           list={({ contentContainerStyle }) => (
             <FlashList
               scrollIndicatorInsets={{
@@ -187,14 +192,14 @@ export default function Page() {
                 ...contentContainerStyle,
               }}
               ListHeaderComponent={
-                <MetaData mode={mode} data={data?.pages[0].meta} className={"flex md:hidden px-4 pb-4"} />
+                <MetaData mode={mode} data={data?.pages[0].metadata} className={"flex md:hidden px-4 pb-4"} />
               }
               ListFooterComponent={
                 isFetchingNextPage ? <ActivityIndicator color={colorValue("--color-typography-500")} /> : null
               }
               renderItem={e => (
                 <VideoItem
-                  image={getImageProxyUrl(e.item.cover)}
+                  image={getVideoImageUrl(e.item.coverUrl)}
                   text1={e.item.title}
                   text2={formatSecond(e.item.duration)}
                   onPress={() => {
@@ -202,7 +207,7 @@ export default function Page() {
                   }}
                 />
               )}
-              data={data?.pages.flatMap(page => page.rows) || []}
+              data={data?.pages.flatMap(page => page.episodes) || []}
               keyExtractor={item => item.bvid}
               onEndReached={loadMore}
               onEndReachedThreshold={0.5}

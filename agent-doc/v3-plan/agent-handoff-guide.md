@@ -78,8 +78,7 @@ Start with a facade in `features/config` before changing persisted storage layou
 
 Files likely involved:
 
-```txt
-apps/mobile/api/bilisound.ts
+apps/mobile/features/bilibili
 apps/mobile/components/video-detail/*
 apps/mobile/app/video/[id].tsx
 apps/mobile/app/remote-list.tsx
@@ -87,7 +86,8 @@ apps/mobile/app/download-web.tsx
 packages/sdk
 ```
 
-Do not change SDK behavior and UI model migration in one patch unless the change is very small.
+Do not change SDK behavior while extending this boundary. Consume its app-owned models and
+public functions; keep playlist/player orchestration outside `features/bilibili`.
 
 ## Definition of Done for v3 Refactor Tasks
 

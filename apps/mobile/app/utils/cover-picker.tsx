@@ -18,7 +18,7 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Heading } from "~/components/ui/heading";
 import Toast from "react-native-toast-message";
-import { getImageProxyUrl } from "~/business/constant-helper";
+import { getVideoImageUrl } from "~/features/bilibili";
 import { useWindowSize } from "~/hooks/useWindowSize";
 
 function determinePadding(index: number, amount: number, columns: number) {
@@ -105,7 +105,7 @@ export default function CoverPicker() {
                 className={"w-full"}
                 androidRipple={false}
               >
-                <Image source={getImageProxyUrl(e.item.imgUrl)} className={"w-full aspect-square"} />
+                <Image source={getVideoImageUrl(e.item.imgUrl)} className={"w-full aspect-square"} />
               </Pressable>
             </View>
           )}
@@ -143,7 +143,7 @@ export default function CoverPicker() {
             </Heading>
           </AlertDialogHeader>
           <AlertDialogBody>
-            <Image source={getImageProxyUrl(userPickResult)} className={"rounded-xl w-full aspect-video"} />
+            <Image source={getVideoImageUrl(userPickResult)} className={"rounded-xl w-full aspect-video"} />
           </AlertDialogBody>
           <AlertDialogFooter>
             <ButtonOuter>

@@ -1,5 +1,5 @@
 import React, { createContext, useEffect } from "react";
-import { TrackData } from "@bilisound/player/build/types";
+import type { TrackData } from "@bilisound/player";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 import { useBottomSheetStore } from "~/store/bottom-sheet";
 import { router } from "expo-router";

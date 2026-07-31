@@ -1,11 +1,11 @@
 import useDownloadStore from "~/store/download";
-import { TrackData } from "@bilisound/player/build/types";
+import type { TrackData } from "@bilisound/player";
 import { Platform } from "react-native";
 import { downloadResourceNow } from "~/business/download";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import Toast from "react-native-toast-message";
 import { useCacheExists } from "~/storage/cache-status";
-import { getBilisoundResourceUrlOnline } from "~/api/bilisound";
+import { getDownloadUrl } from "~/features/bilibili";
 import { getResourcePolicy } from "~/features/config";
 import { bv2av } from "~/utils/vendors/av-bv";
 import { getCacheAudioPath, saveAudioFile, uriToPath } from "~/utils/file";
@@ -67,13 +67,7 @@ export function useDownloadMenuItem(
         if (!currentTrack?.extendedData) {
           return;
         }
-        globalThis.window.open(
-          getBilisoundResourceUrlOnline(
-            currentTrack.extendedData.id,
-            currentTrack.extendedData.episode,
-            getResourcePolicy().useLegacyID ? "av" : "bv",
-          ).url,
-        );
+        globalThis.window.open(getDownloadUrl(currentTrack.extendedData.id, currentTrack.extendedData.episode));
         closeCallback();
       },
     },

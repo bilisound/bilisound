@@ -1,4 +1,4 @@
-import type { TrackData } from "@bilisound/player/build/types";
+import type { TrackData } from "@bilisound/player";
 
 /**
  * 旧版本的 TrackData 类型（1.x 版本）
