@@ -37,7 +37,7 @@ Use this routing table when the user names a v3 area.
 | User intent                                                             | Read first                                       | Likely scope                                                      |
 | ----------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
 | Player, shuffle, queue, ExoPlayer, AVQueuePlayer, repeat mode           | `player-foundation.md`                           | `packages/player`                                                 |
-| Settings, config, preferences, debug mode, storage migration            | `config-architecture.md`                         | `apps/mobile/store/settings.ts`, future `features/config`         |
+| Settings, config, preferences, debug mode, storage migration            | `config-architecture.md`                         | `apps/mobile/features/config`                                             |
 | SDK, Bilibili data, metadata, remote list, DTO leakage                  | `target-architecture.md`, `epic-breakdown.md`    | future `features/bilibili`, `apps/mobile/api/bilisound.ts`        |
 | Playback, play playlist, play episode, queue restore, playlist-to-queue | `target-architecture.md`, `player-foundation.md` | future `features/playback`, current `business/playlist/handler/*` |
 | Playlist CRUD, playlist detail, SongItem schema coupling                | `target-architecture.md`, `epic-breakdown.md`    | future `features/playlist`                                        |

@@ -7,7 +7,7 @@ import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { getImageProxyUrl } from "~/business/constant-helper";
 import { View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import useSettingsStore from "~/store/settings";
+import { getResourcePolicy } from "~/features/config";
 
 export default function Page() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -35,11 +35,7 @@ export default function Page() {
               <a
                 className={"flex flex-row items-center gap-3 px-3 h-12 hover:bg-background-50"}
                 href={
-                  getBilisoundResourceUrlOnline(
-                    data.bvid,
-                    item.page,
-                    useSettingsStore.getState().useLegacyID ? "av" : "bv",
-                  ).url
+                  getBilisoundResourceUrlOnline(data.bvid, item.page, getResourcePolicy().useLegacyID ? "av" : "bv").url
                 }
                 target={"_blank"}
               >

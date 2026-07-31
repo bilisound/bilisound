@@ -2,7 +2,8 @@ import * as FileSystem from "expo-file-system/legacy";
 import { SplashScreen } from "expo-router";
 
 import log, { deleteOldLogContent } from "./logger";
-import useSettingsStore from "../store/settings";
+
+import { getDiagnosticsConfig, rehydrateSettings } from "~/features/config";
 
 import { BILISOUND_LOG_URI, BILISOUND_OFFLINE_URI, BILISOUND_PROCESS_URI } from "~/constants/file";
 import { handleCacheStatus } from "~/utils/migration/cache-status";
@@ -12,9 +13,8 @@ import { loadPlaceholderAudio } from "~/constants/playback";
 
 export default async function init() {
   // 日志系统初始化
-  await useSettingsStore.persist.rehydrate();
-  const settings = useSettingsStore.getState();
-  log.setSeverity(settings.debugMode ? "debug" : "info");
+  await rehydrateSettings();
+  log.setSeverity(getDiagnosticsConfig().debugMode ? "debug" : "info");
   if (!(await FileSystem.getInfoAsync(BILISOUND_LOG_URI)).exists) {
     await FileSystem.makeDirectoryAsync(BILISOUND_LOG_URI);
   }

@@ -37,7 +37,7 @@ This epic should happen before large mobile restructuring.
 Scope:
 
 ```txt
-apps/mobile/store/settings.ts
+apps/mobile/features/config
 apps/mobile/app/settings/*
 settings consumers in business/components/init
 ```

@@ -1,7 +1,7 @@
 import { useColorScheme } from "react-native";
 
 import { findUserTheme, resolveThemeConfig, useThemeRegistry } from "~/features/theme/registry";
-import useSettingsStore from "~/store/settings";
+import { useAppearanceConfig } from "~/features/config";
 
 type UiNextColorKey =
   | "--color-accent-500"
@@ -42,7 +42,7 @@ function rgba(rgb: string, opacity = 1) {
 }
 
 export function useUiNextColors() {
-  const themeSetting = useSettingsStore(state => state.theme);
+  const { theme: themeSetting } = useAppearanceConfig();
   const themes = useThemeRegistry(state => state.themes);
   let colorScheme = useColorScheme() ?? "light";
   if (colorScheme === "unspecified") {

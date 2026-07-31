@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { getParsedBuiltInConfig } from "./config";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { OverlayProvider } from "@gluestack-ui/core/overlay/creator";
-import useSettingsStore from "~/store/settings";
 import { ThemeValueProvider } from "~/components/ui/gluestack-ui-provider/theme";
+import { useAppearanceConfig } from "~/features/config";
 import {
   createRuntimeVars,
   findUserTheme,
@@ -19,7 +19,7 @@ type GluestackUIProviderProps = {
 };
 
 export function GluestackUIProvider({ mode = "light", ...props }: GluestackUIProviderProps) {
-  const theme = useSettingsStore(state => state.theme);
+  const { theme } = useAppearanceConfig();
   const { themes, loaded, loadThemes } = useThemeRegistry();
 
   useEffect(() => {

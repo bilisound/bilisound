@@ -3,9 +3,8 @@ import { Platform, ScrollView, StyleSheet, useWindowDimensions } from "react-nat
 
 import { SettingMenuItem } from "~/components/setting-menu";
 import { VERSION } from "~/constants/releasing";
-import { useShallow } from "zustand/shallow";
-import useSettingsStore from "~/store/settings";
 import log from "~/utils/logger";
+import { useDiagnosticsConfig, useDownloadConfig, useResourceConfig, useSettingsActions } from "~/features/config";
 import { Layout } from "~/components/layout";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { FEATURE_DOWNLOAD_MANAGER } from "~/constants/feature";
@@ -30,15 +29,10 @@ export default function Page() {
   const edgeInsets = useTabSafeAreaInsets();
   const { width } = useWindowDimensions();
   const downloadDescription = useDownloadDescriptionText();
-  const { useLegacyID, downloadNextTrack, filterResourceURL, debugMode, toggle } = useSettingsStore(
-    useShallow(state => ({
-      useLegacyID: state.useLegacyID,
-      downloadNextTrack: state.downloadNextTrack,
-      filterResourceURL: state.filterResourceURL,
-      debugMode: state.debugMode,
-      toggle: state.toggle,
-    })),
-  );
+  const { useLegacyID, filterResourceURL } = useResourceConfig();
+  const { downloadNextTrack } = useDownloadConfig();
+  const { debugMode } = useDiagnosticsConfig();
+  const { toggle } = useSettingsActions();
 
   const developerOptions = (
     <>

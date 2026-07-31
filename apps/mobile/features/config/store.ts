@@ -3,20 +3,7 @@ import { create } from "zustand";
 
 import { createStorage } from "~/storage/zustand";
 
-export interface SettingsProps {
-  useLegacyID: boolean;
-  downloadNextTrack: boolean;
-  filterResourceURL: boolean;
-  debugMode: boolean;
-  showPlaylistInGrid: boolean;
-  theme: string;
-  showYuruChara: boolean;
-}
-
-export interface SettingsMethods {
-  update: <K extends keyof SettingsProps>(key: K, value: SettingsProps[K]) => void;
-  toggle: <K extends keyof SettingsProps>(key: K) => boolean;
-}
+import type { SettingsMethods, SettingsProps } from "./types";
 
 const initialState: SettingsProps = {
   // 使用 av 号
@@ -35,7 +22,11 @@ const initialState: SettingsProps = {
   showYuruChara: true,
 };
 
-const useSettingsStore = create<SettingsProps & SettingsMethods>()(
+/**
+ * 配置持久化 store。这是 features/config 的内部实现，外部一律通过
+ * selectors（响应式）或 policies（非响应式）读取，不要直接 import 本文件。
+ */
+export const useSettingsStore = create<SettingsProps & SettingsMethods>()(
   persist(
     (set, get) => ({
       ...initialState,
@@ -58,4 +49,7 @@ const useSettingsStore = create<SettingsProps & SettingsMethods>()(
   ),
 );
 
-export default useSettingsStore;
+/** 初始化引导：从持久化恢复用户设置后再读取配置。 */
+export async function rehydrateSettings(): Promise<void> {
+  await useSettingsStore.persist.rehydrate();
+}

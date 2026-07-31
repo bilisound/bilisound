@@ -6,10 +6,10 @@ import React, { useEffect } from "react";
 import { ThemeValueProvider } from "./theme";
 
 import { findUserTheme, resolveThemeConfig, useThemeRegistry } from "~/features/theme/registry";
-import useSettingsStore from "~/store/settings";
+import { useAppearanceConfig } from "~/features/config";
 
 export function GluestackUIProvider({ mode = "light", ...props }: { mode?: "light" | "dark"; children?: any }) {
-  const theme = useSettingsStore(state => state.theme);
+  const { theme } = useAppearanceConfig();
   const { themes, loaded, loadThemes } = useThemeRegistry();
 
   useEffect(() => {

@@ -1,7 +1,8 @@
 import { SplashScreen } from "expo-router";
 
 import log from "./logger";
-import useSettingsStore from "../store/settings";
+
+import { getDiagnosticsConfig, rehydrateSettings } from "~/features/config";
 
 import { initDatabase } from "~/storage/sqlite/init-web";
 import { loadTrackData } from "~/business/playlist/handler";
@@ -9,9 +10,8 @@ import { initPolyfill } from "@bilisound/player/src/polyfill";
 
 export default async function init() {
   // 日志系统初始化
-  await useSettingsStore.persist.rehydrate();
-  const settings = useSettingsStore.getState();
-  log.setSeverity(settings.debugMode ? "debug" : "info");
+  await rehydrateSettings();
+  log.setSeverity(getDiagnosticsConfig().debugMode ? "debug" : "info");
 
   // 数据库初始化
   await initDatabase();

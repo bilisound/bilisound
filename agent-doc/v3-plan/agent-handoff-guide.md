@@ -65,7 +65,7 @@ Avoid changing unrelated mobile app structure in the same patch.
 Files likely involved:
 
 ```txt
-apps/mobile/store/settings.ts
+apps/mobile/features/config
 apps/mobile/storage/zustand.ts
 apps/mobile/app/settings/*
 apps/mobile/utils/init.ts

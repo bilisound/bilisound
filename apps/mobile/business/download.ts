@@ -4,7 +4,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { filesize } from "filesize";
 import { getBilisoundResourceUrl } from "~/api/bilisound";
 import log from "~/utils/logger";
-import useSettingsStore from "~/store/settings";
+import { getResourcePolicy } from "~/features/config";
 import { getVideoUrl } from "~/business/constant-helper";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { isCacheExists, setCacheExists } from "~/storage/cache-status";
@@ -89,7 +89,7 @@ export async function downloadResource(bvid: string, episode: number) {
   const { url, isAudio } = await getBilisoundResourceUrl(
     playingRequest.id,
     playingRequest.episode,
-    useSettingsStore.getState().filterResourceURL,
+    getResourcePolicy().filterResourceURL,
   );
 
   if (!useDownloadStore.getState().downloadList.has(id)) {

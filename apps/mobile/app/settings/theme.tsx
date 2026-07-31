@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, useWindowDimensions, View, Pressable } from "react-native";
 import type { ImageSourcePropType } from "react-native";
 import Toast from "react-native-toast-message";
-import { useShallow } from "zustand/shallow";
 
 import log from "~/utils/logger";
 import { ActionMenu } from "~/components/action-menu";
 import type { ActionMenuItem } from "~/components/action-menu";
+import { useAppearanceConfig, useSettingsActions } from "~/features/config";
 import BgCornerClassic from "~/assets/images/bg-corner-classic.png";
 import BgCornerRed from "~/assets/images/bg-corner-red.png";
 import { Icon } from "~/components/icon";
@@ -42,7 +42,6 @@ import { getYuruCharaAssetId } from "~/features/theme/editor";
 import { findUserTheme, getUserThemeSettingId, useThemeRegistry } from "~/features/theme/registry";
 import { themeStorage } from "~/features/theme/storage";
 import type { UserTheme } from "~/features/theme/types";
-import useSettingsStore from "~/store/settings";
 import { saveBinaryFile } from "~/utils/file";
 import { SettingSwitch } from "~/components/settings-switch";
 
@@ -63,14 +62,8 @@ export default function Page() {
   const [showThemeActions, setShowThemeActions] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<UserTheme>();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const { theme, update, showYuruChara, toggle } = useSettingsStore(
-    useShallow(state => ({
-      theme: state.theme,
-      update: state.update,
-      showYuruChara: state.showYuruChara,
-      toggle: state.toggle,
-    })),
-  );
+  const { theme, showYuruChara } = useAppearanceConfig();
+  const { update, toggle } = useSettingsActions();
   const { themes, loaded, loadThemes, saveTheme, deleteTheme } = useThemeRegistry();
 
   useEffect(() => {

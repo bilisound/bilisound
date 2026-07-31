@@ -48,9 +48,8 @@ jest.mock("~/features/theme/registry", () => {
 
 let mockTheme = "classic";
 
-jest.mock("~/store/settings", () => ({
-  __esModule: true,
-  default: (selector: (state: { theme: string }) => unknown) => selector({ theme: mockTheme }),
+jest.mock("~/features/config", () => ({
+  useAppearanceConfig: () => ({ theme: mockTheme, showYuruChara: true, showPlaylistInGrid: false }),
 }));
 jest.mock("~/hooks/useWindowSize", () => ({
   useWindowSize: () => mockWindowSize,

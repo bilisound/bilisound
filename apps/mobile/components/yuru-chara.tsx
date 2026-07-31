@@ -8,10 +8,10 @@ import { getYuruCharaRenderMetrics } from "~/features/theme/editor";
 import { findUserTheme, useThemeRegistry } from "~/features/theme/registry";
 import { themeStorage } from "~/features/theme/storage";
 import { useWindowSize } from "~/hooks/useWindowSize";
-import useSettingsStore from "~/store/settings";
+import { useAppearanceConfig } from "~/features/config";
 
 export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
-  const theme = useSettingsStore(state => state.theme);
+  const { theme } = useAppearanceConfig();
   const userTheme = useThemeRegistry(state => findUserTheme(state.themes, theme));
   const [assetUri, setAssetUri] = useState<string | null>(null);
   const [loadedImageSize, setLoadedImageSize] = useState<{ width: number; height: number } | null>(null);
