@@ -20,8 +20,8 @@ Check `git branch -a` and ask the user which branch the task belongs on. Recent 
 ## Recommended First Workstream
 
 Check the [Status Overview](./epic-breakdown.md#status-overview) first and continue with the
-next planned epic. Epics 1–3 (Player Foundation, Config Architecture, Bilibili Data Boundary)
-are delivered; the next target is Epic 4 (Playback Orchestration).
+next planned epic. Epics 1–4 (Player Foundation, Config Architecture, Bilibili Data Boundary,
+Playback Orchestration) are delivered; the next target is Epic 5 (Playlist Domain).
 
 Historical reason for the original ordering:
 

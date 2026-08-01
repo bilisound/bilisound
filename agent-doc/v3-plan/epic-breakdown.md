@@ -9,7 +9,7 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 | 1. Player Foundation | **Delivered** | slices A–F complete; some native paths still need device verification, see [player-foundation.md](./player-foundation.md#implementation-status) |
 | 2. Config Architecture | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web |
-| 4. Playback Orchestration | Planned | next implementation target |
+| 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration) |
 | 5. Playlist Domain | Planned | |
 | 6. Cache and Download | Planned | |
 | 7. UI Rewrite | Planned | requires Epics 1–6 boundaries to be stable |
@@ -160,23 +160,83 @@ routes/components/business -/-> duplicate Bilibili image/resource URL constructi
 
 ### Epic 4: Playback Orchestration
 
-> Status: planned.
+> Status: **delivered** — `features/playback` is the playback use-case boundary; the app no
+> longer imports `business/playlist/handler` and the remaining `business/playlist`
+> modules are playlist-domain files only (`misc.ts`, `update.ts`, Epic 5 scope).
 
-Scope:
+Scope (as executed):
 
 ```txt
-business/playlist/handler/*
-business/playlist/shuffle.ts
-hooks/playlist-detail/usePlaylistPlayer.ts
-app-level playback flows
+business/playlist/handler/*        -> features/playback/* (track operations, persistence, cache, track data)
+business/playlist/shuffle.ts       -> features/playback/shuffle.ts (toggleShuffleMode)
+hooks/playlist-detail/usePlaylistPlayer.ts -> features/playback/use-playlist-player.ts
+app-level playback flows           -> features/playback/background.ts + route consumer updates
 ```
 
 Goals:
 
 1. Introduce `features/playback` as use-case orchestration.
 2. Move playlist/player/cache/data/config coordination out of route files and playlist domain modules.
-3. Remove mobile-level queue physical reordering for shuffle after player shuffle API exists.
+3. Remove mobile-level queue physical reordering for shuffle after player shuffle API exists. (done in Epic 1 Slice D)
 4. Keep player mechanics in `features/player` or `@bilisound/player`.
+
+Implementation record:
+
+```txt
+features/playback/index.ts                # public use-case surface
+features/playback/track-operations.ts     # playEpisode / playPlaylist / playNextTrack /
+                                          #   refreshTrack / refreshCurrentTrack /
+                                          #   appendPlaylistToCurrentQueue
+features/playback/queue-persistence.ts    # saveTrackData / loadTrackData (session restore)
+features/playback/cache.ts                # saveCurrentAndNextTrack / deleteCurrentTrackCache
+features/playback/shuffle.ts              # toggleShuffleMode (player API + persisted preference)
+features/playback/background.ts           # registerPlaybackBackgroundEvents (was app/_layout.tsx)
+features/playback/use-playlist-player.ts  # usePlaylistPlayer hook (was hooks/playlist-detail/)
+features/playback/track-data.ts           # queue preprocessing + playlistToTracks (internal)
+features/playback/types.ts                # legacy TrackDataOld (internal)
+```
+
+Renames:
+
+```txt
+addTrackFromDetail      -> playEpisode
+replaceQueueWithPlaylist -> playPlaylist
+setMode (shuffle)       -> toggleShuffleMode
+```
+
+`appendPlaylistToCurrentQueue` is a new use case extracted from the `apply-playlist`
+route flow (append playlist rows to the current queue when the queue belongs to that
+playlist). Routes no longer call `@bilisound/player` for queue/playback flows;
+`app/_layout.tsx` keeps only `registerPlaybackBackgroundEvents()` wiring.
+
+Deleted:
+
+```txt
+business/playlist/handler/*
+business/playlist/shuffle.ts
+hooks/playlist-detail/usePlaylistPlayer.ts
+```
+
+Verification:
+
+```txt
+pnpm -C apps/mobile exec tsc --noEmit
+EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform android --clear
+pnpm -C apps/mobile exec eslint <changed files>
+pnpm -C apps/mobile exec jest features/bilibili/__tests__/mappers.test.ts --runInBand
+git diff --check -- apps/mobile agent-doc/v3-plan
+```
+
+All passed (eslint clean after merging the duplicate `~/features/playback` import).
+
+Coupling reduced:
+
+```txt
+routes/components/business -/-> business/playlist/handler
+routes -/-> direct @bilisound/player calls for playback flows (layout background listener,
+           apply-playlist queue append, video detail play episode)
+route-level playback orchestration -/-> kept outside features/playback
+```
 
 ### Epic 5: Playlist Domain
 
@@ -188,7 +248,7 @@ Scope:
 storage/sqlite/playlist.ts
 storage/sqlite/schema.ts playlist types
 components/playlist-*
-hooks/playlist-detail/*
+hooks/playlist-detail/*        (usePlaylistPlayer already moved to features/playback)
 app/(main)/(playlist)/*
 ```
 
@@ -265,7 +325,7 @@ Non-goals for earlier epics: see the UI technology rule in [README.md](./README.
 1. Player Foundation. — **done**
 2. Config Architecture facade and migration design. — **done**
 3. Bilibili Data Boundary sample on video detail. — **done**
-4. Playback Orchestration after player APIs are available. — next
+4. Playback Orchestration after player APIs are available. — **done**
 5. Playlist Domain migration.
 6. Cache and Download migration.
 7. UI Rewrite preparation and UI framework re-evaluation.

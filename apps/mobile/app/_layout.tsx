@@ -11,15 +11,13 @@ import log from "~/utils/logger";
 import init from "~/utils/init";
 import { Roboto_400Regular, Roboto_700Bold } from "@expo-google-fonts/roboto";
 import { Poppins_700Bold } from "@expo-google-fonts/poppins";
-import * as Player from "@bilisound/player";
 import "~/utils/polyfill";
 import "~/utils/nativewind";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { registerBackgroundEventListener } from "@bilisound/player";
 import { toastConfig } from "~/components/notify-toast";
 import Toast from "react-native-toast-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { refreshCurrentTrack, saveCurrentAndNextTrack, saveTrackData } from "~/business/playlist/handler";
+import { registerPlaybackBackgroundEvents } from "~/features/playback";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@gorhom/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -45,18 +43,7 @@ export const unstable_settings = {
   initialRouteName: "(main)",
 };
 
-registerBackgroundEventListener(async ({ event, data }) => {
-  if (event === "onTrackChange") {
-    // console.log(event, data);
-    const trackData = await Player.getCurrentTrack();
-    if (!trackData) {
-      return;
-    }
-    await refreshCurrentTrack();
-    await saveTrackData();
-    await saveCurrentAndNextTrack();
-  }
-});
+registerPlaybackBackgroundEvents();
 
 function CheckUpdate() {
   // 检查更新处理

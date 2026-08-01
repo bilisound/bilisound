@@ -24,7 +24,7 @@ import { Heading } from "~/components/ui/heading";
 import { TextField, TextFieldAction } from "~/components/ui-next";
 import { Text } from "~/components/ui/text";
 import { usePlaylistEditor } from "~/hooks/playlist-detail/usePlaylistEditor";
-import { usePlaylistPlayer } from "~/hooks/playlist-detail/usePlaylistPlayer";
+import { usePlaylistPlayer } from "~/features/playback";
 import { usePlaylistSearch } from "~/hooks/playlist-detail/usePlaylistSearch";
 import { useConfirm } from "~/hooks/useConfirm";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";

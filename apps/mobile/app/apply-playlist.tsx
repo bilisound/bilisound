@@ -16,8 +16,7 @@ import useApplyPlaylistStore from "~/store/apply-playlist";
 import { getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import { Layout } from "~/components/layout";
 import { Pressable } from "~/components/ui/pressable";
-import { playlistToTracks } from "~/business/playlist/handler";
-import * as Player from "@bilisound/player";
+import { appendPlaylistToCurrentQueue } from "~/features/playback";
 import { Icon } from "~/components/icon";
 
 export default function Page() {
@@ -48,9 +47,7 @@ export default function Page() {
 
     // 如果当前的 queue 来自试图被添加的播放列表，给 queue 也添加这些曲目
     if (playlistOnQueue) {
-      const convertedList = playlistToTracks(playlistDetail ?? []);
-      await Player.addTracks(convertedList);
-      // v3 起 player 内部管理随机顺序，新增曲目会被自动并入播放顺序，无需再维护 backup
+      await appendPlaylistToCurrentQueue(playlistDetail ?? []);
     }
 
     await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });

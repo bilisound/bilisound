@@ -13,7 +13,7 @@ import { ErrorContent } from "~/components/error-content";
 import { DualScrollView } from "~/components/dual-scroll-view";
 
 import { getVideoMetadata } from "~/features/bilibili";
-import { addTrackFromDetail } from "~/business/playlist/handler";
+import { playEpisode } from "~/features/playback";
 import { openAddPlaylistPage } from "~/business/playlist/misc";
 import { convertToHTTPS } from "~/utils/string";
 import useHistoryStore from "~/store/history";
@@ -99,7 +99,7 @@ export default function Page() {
                 ListHeaderComponent={<MetaData data={data} className={"flex md:hidden px-4 pb-4"} />}
                 renderItem={e => (
                   <SongItem
-                    onRequestPlay={() => addTrackFromDetail(data!.bvid, e.item.page)}
+                    onRequestPlay={() => playEpisode(data!.bvid, e.item.page)}
                     onLongPress={() => {
                       setDisplayTrack(e.item);
                       setShowActionSheet(true);

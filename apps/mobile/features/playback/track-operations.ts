@@ -12,6 +12,7 @@ import log from "~/utils/logger";
 import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
 import { getPlaylistDetail } from "~/storage/sqlite/playlist";
+import type { PlaylistDetail } from "~/storage/sqlite/schema";
 import { invalidateOnQueueStatus, PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
 import useErrorMessageStore from "~/store/error-message";
 
@@ -43,9 +44,9 @@ function shouldRefreshTrack(trackData: OptionalTrackData) {
 }
 
 /**
- * 从视频详情页添加曲目到队列
+ * 播放用例：从视频详情页播放指定分 P（追加/跳转到播放队列）
  */
-export async function addTrackFromDetail(id: string, episode: number) {
+export async function playEpisode(id: string, episode: number) {
   log.debug(`用户请求增加曲目：${id} / ${episode}`);
   const existing = await Player.getTracks();
   const found = existing.findIndex(e => e.extendedData?.id === id && e.extendedData.episode === episode);
@@ -203,9 +204,9 @@ export async function playNextTrack() {
 }
 
 /**
- * 替换播放队列
+ * 播放用例：将歌单加载到播放队列并开始播放
  */
-export async function replaceQueueWithPlaylist(id: number, index = 0) {
+export async function playPlaylist(id: number, index = 0) {
   const data = await getPlaylistDetail(id);
   const tracks = playlistToTracks(data);
   if (Platform.OS !== "web" && !tracks[index].extendedData?.isLoaded) {
@@ -217,4 +218,13 @@ export async function replaceQueueWithPlaylist(id: number, index = 0) {
   // 替换队列时恢复到非随机状态（与旧版行为一致），随机顺序由 player 内部管理
   await Player.setShuffleMode(ShuffleMode.OFF);
   setQueuePlayingMode("normal");
+}
+
+/**
+ * 播放用例：向当前播放队列追加歌单曲目（歌单新增曲目后同步到正在播放该歌单的队列）
+ */
+export async function appendPlaylistToCurrentQueue(playlistDetail: PlaylistDetail[]) {
+  const convertedList = playlistToTracks(playlistDetail);
+  await Player.addTracks(convertedList);
+  // v3 起 player 内部管理随机顺序，新增曲目会被自动并入播放顺序，无需再维护 backup
 }

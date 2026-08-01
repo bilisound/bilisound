@@ -5,7 +5,7 @@ import log from "./logger";
 import { getDiagnosticsConfig, rehydrateSettings } from "~/features/config";
 
 import { initDatabase } from "~/storage/sqlite/init-web";
-import { loadTrackData } from "~/business/playlist/handler";
+import { loadTrackData } from "~/features/playback";
 import { initPolyfill } from "@bilisound/player/src/polyfill";
 
 export default async function init() {

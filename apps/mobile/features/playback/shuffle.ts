@@ -9,7 +9,7 @@ import { QueuePlayingMode, setQueuePlayingMode } from "~/storage/queue";
  * iOS/Web 在 player 内部模拟播放顺序。app 层不再物理打乱队列，只负责持久化用户偏好，
  * 这样 getTracks() 始终返回 canonical 顺序，无需 QUEUE_LIST_BACKUP 备份还原。
  */
-export async function setMode(): Promise<QueuePlayingMode> {
+export async function toggleShuffleMode(): Promise<QueuePlayingMode> {
   const current = await getShuffleMode();
   const next = current === ShuffleMode.ON ? ShuffleMode.OFF : ShuffleMode.ON;
   await setShuffleMode(next);

@@ -1,6 +1,6 @@
 import * as Player from "@bilisound/player";
 import { PLAYLIST_ON_QUEUE, playlistStorage, usePlaylistOnQueue } from "~/storage/playlist";
-import { replaceQueueWithPlaylist } from "~/business/playlist/handler";
+import { playPlaylist } from "./track-operations";
 import { PlaylistDetail, PlaylistMeta } from "~/storage/sqlite/schema";
 import log from "~/utils/logger";
 
@@ -23,8 +23,8 @@ export function usePlaylistPlayer({
 
   async function handlePlayConfirm(index: number) {
     log.debug("将队列中的内容设置为本歌单");
-    // replaceQueueWithPlaylist 内部已重置随机模式（Player.setShuffleMode + 持久化偏好）
-    await replaceQueueWithPlaylist(playlistId, index);
+    // playPlaylist 内部已重置随机模式（Player.setShuffleMode + 持久化偏好）
+    await playPlaylist(playlistId, index);
     setPlaylistOnQueue({ value: meta });
   }
 

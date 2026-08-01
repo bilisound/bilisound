@@ -11,7 +11,7 @@ import { bv2av } from "~/utils/vendors/av-bv";
 import { getCacheAudioPath, saveAudioFile, uriToPath } from "~/utils/file";
 import log from "~/utils/logger";
 import { ActionMenuItem } from "~/components/action-menu";
-import { deleteCurrentTrackCache } from "~/business/playlist/handler";
+import { deleteCurrentTrackCache } from "~/features/playback";
 
 export function useDownloadMenuItem(
   currentTrack: TrackData | null | undefined,

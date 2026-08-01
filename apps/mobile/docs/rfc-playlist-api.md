@@ -597,7 +597,7 @@ type PlaylistSource =
 
 #### `POST /queue/play-playlist`
 
-将歌单加载到播放队列并开始播放（对应 `replaceQueueWithPlaylist`）。
+将歌单加载到播放队列并开始播放（对应 `playPlaylist`）。
 
 **Request Body:**
 
@@ -628,7 +628,7 @@ type PlaylistSource =
 
 #### `POST /queue/add`
 
-添加曲目到播放队列末尾（通过 BV 号和分 P，对应 `addTrackFromDetail`）。
+添加曲目到播放队列末尾（通过 BV 号和分 P，对应 `playEpisode`）。
 
 **Request Body:**
 

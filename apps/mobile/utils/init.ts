@@ -8,7 +8,7 @@ import { getDiagnosticsConfig, rehydrateSettings } from "~/features/config";
 import { BILISOUND_LOG_URI, BILISOUND_OFFLINE_URI, BILISOUND_PROCESS_URI } from "~/constants/file";
 import { handleCacheStatus } from "~/utils/migration/cache-status";
 import { handlePlaylist } from "~/utils/migration/playlist";
-import { loadTrackData } from "~/business/playlist/handler";
+import { loadTrackData } from "~/features/playback";
 import { loadPlaceholderAudio } from "~/constants/playback";
 
 export default async function init() {

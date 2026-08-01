@@ -17,12 +17,11 @@ import { isLoading } from "~/components/main-bottom-sheet/utils";
 import { useProgressSecond } from "~/hooks/useProgressSecond";
 import Toast from "react-native-toast-message";
 import { DEBUG_COLOR, REPEAT_MODE } from "~/components/main-bottom-sheet/constants";
-import { setMode } from "~/business/playlist/shuffle";
+import { playNextTrack, toggleShuffleMode } from "~/features/playback";
 import { View } from "react-native";
 import { Button, ButtonOuter } from "~/components/ui/button";
 import { Icon } from "~/components/icon";
 import { PlayButtonIcon } from "./play-button-icon";
-import { playNextTrack } from "~/business/playlist/handler";
 
 export function PlayerControlButtons() {
   const { colorValue } = useRawThemeValues();
@@ -64,7 +63,7 @@ export function PlayerControlButtons() {
   }
 
   async function handleChangeShuffle() {
-    const result = await setMode();
+    const result = await toggleShuffleMode();
     if (result === "normal") {
       Toast.show({
         type: "info",
