@@ -29,6 +29,7 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 5. [Config Architecture](./config-architecture.md)
 6. [UI Foundation](./ui-foundation.md)
 7. [Agent Handoff Guide](./agent-handoff-guide.md)
+8. [Epic 1 macOS / iOS Verification Handoff](./epic-1-macos-verification-handoff.md) — execute on macOS to close the remaining native iOS verification gap
 
 ## Current Working Assumption
 
