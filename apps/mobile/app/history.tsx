@@ -90,7 +90,9 @@ export default function Page() {
       title={"历史记录"}
       leftAccessories={"BACK_BUTTON"}
       rightAccessories={
-        historyList.length > 0 ? <LayoutButton iconName={"fa6-solid:trash-can"} onPress={handleOpen} /> : null
+        historyList.length > 0 ? (
+          <LayoutButton iconName={"fa6-solid:trash-can"} aria-label={"清空历史记录"} onPress={handleOpen} />
+        ) : null
       }
       edgeInsets={{
         ...edgeInsets,

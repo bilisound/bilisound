@@ -268,7 +268,7 @@ export default function Page() {
         leftAccessories={
           <LayoutButton
             iconName={showPlaylistInGrid ? "mingcute:grid-fill" : "fa6-solid:list"}
-            aria-label={"扫描二维码"}
+            aria-label={showPlaylistInGrid ? "切换到列表视图" : "切换到网格视图"}
             iconSize={showPlaylistInGrid ? 24 : 20}
             onPress={() => {
               toggle("showPlaylistInGrid");

@@ -163,6 +163,7 @@ export default function Page() {
         ) : (
           <LayoutButton
             iconName={"fa6-solid:ellipsis-vertical"}
+            aria-label={"更多操作"}
             onPress={() => {
               setShowActionSheet(true);
             }}

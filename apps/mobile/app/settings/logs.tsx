@@ -56,7 +56,9 @@ export default function Page() {
     <Layout
       title={"查看日志"}
       leftAccessories={"BACK_BUTTON"}
-      rightAccessories={<LayoutButton iconName={"fa6-solid:trash-can"} onPress={() => handleDelete()} />}
+      rightAccessories={
+        <LayoutButton iconName={"fa6-solid:trash-can"} aria-label={"删除日志"} onPress={() => handleDelete()} />
+      }
       edgeInsets={{ ...edgeInsets, bottom: 0 }}
     >
       <FlashList

@@ -97,7 +97,11 @@ export function PageMenu({ data, onAction }: PageMenuProps) {
 
   return (
     <>
-      <LayoutButton iconName={"fa6-solid:ellipsis-vertical"} onPress={() => setShowActionSheet(true)} />
+      <LayoutButton
+        iconName={"fa6-solid:ellipsis-vertical"}
+        aria-label={"更多操作"}
+        onPress={() => setShowActionSheet(true)}
+      />
       <Actionsheet isOpen={showActionSheet} onClose={onClose}>
         <ActionsheetBackdrop />
         <ActionsheetContent>

@@ -69,6 +69,7 @@ export function PlayerControl() {
       <View className={"absolute z-10"} style={{ left: 10 + left, top: 10 + top }}>
         <LayoutButton
           iconName={"fa6-solid:angle-down"}
+          aria-label={"收起播放器"}
           onPress={() => {
             if (isInsidePage) {
               if (router.canGoBack()) {
@@ -85,6 +86,7 @@ export function PlayerControl() {
       <View className={"absolute z-10"} style={{ right: 10 + right, top: 10 + top }}>
         <LayoutButton
           iconName={"fa6-solid:ellipsis-vertical"}
+          aria-label={"更多操作"}
           onPress={() => {
             setShowActionSheet(true);
           }}
