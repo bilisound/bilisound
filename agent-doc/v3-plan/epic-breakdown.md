@@ -4,15 +4,15 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 
 ## Status Overview
 
-| Epic | Status | Notes |
-| ---- | ------ | ----- |
-| 1. Player Foundation | **Delivered** | slices A–F complete; some native paths still need device verification, see [player-foundation.md](./player-foundation.md#implementation-status) |
-| 2. Config Architecture | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
-| 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web |
-| 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration) |
-| 5. Playlist Domain | Planned | |
-| 6. Cache and Download | Planned | |
-| 7. UI Rewrite | Planned | requires Epics 1–6 boundaries to be stable |
+| Epic                      | Status        | Notes                                                                                                                                                    |
+| ------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Player Foundation      | **Delivered** | slices A–F complete; some native paths still need device verification, see [player-foundation.md](./player-foundation.md#implementation-status)          |
+| 2. Config Architecture    | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
+| 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
+| 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
+| 5. Playlist Domain        | Planned       |                                                                                                                                                          |
+| 6. Cache and Download     | Planned       |                                                                                                                                                          |
+| 7. UI Rewrite             | Planned       | requires Epics 1–6 boundaries to be stable                                                                                                               |
 
 Delivered epics keep their full scope/goals below under **Delivered Epics** so the handoff
 record stays in one place. Planned epics are listed under **Upcoming Epics**.
@@ -34,8 +34,8 @@ apps/mobile call sites only when needed for integration
 Goals:
 
 1. Add cross-platform shuffle mode abstraction.
-2. Use Android Media3 native shuffle support.
-3. Simulate shuffle order internally on iOS and Web.
+2. Keep canonical-queue and shuffle playback-order management entirely inside `@bilisound/player`.
+3. Treat Media3, AVQueuePlayer, and HTMLAudio as playback engines only: native shuffle stays disabled, and next/previous/natural-end/external media controls resolve through the same player-owned order.
 4. Add queue transaction capability for replacing queue while preserving index, position, and playback state.
 5. Remove mobile reliance on `@bilisound/player/build/*` deep imports.
 6. Export missing public hooks such as `useRepeatMode`.

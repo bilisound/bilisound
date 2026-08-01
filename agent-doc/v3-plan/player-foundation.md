@@ -21,21 +21,25 @@ Android Media3 ExoPlayer has native shuffle support. The current all-platform ph
 
 ## Design Direction
 
-The player package should expose a cross-platform shuffle abstraction:
+The player package should own one cross-platform random queue contract:
 
 ```txt
-Android:
-  use Media3 native shuffle support
+@bilisound/player:
+  own the canonical queue and shuffle playback order
+  identify queue occurrences independently from business media ids
+  keep native-engine shuffle disabled
+  route next, previous, natural end, repeat wrapping, and external media controls
+  through the same playback-order resolver
 
-iOS/Web:
-  simulate shuffle order inside @bilisound/player
+Media3 / AVQueuePlayer / HTMLAudio:
+  execute playback and canonical-index seeks selected by @bilisound/player
 
 mobile app:
   call setShuffleMode / toggleShuffleMode
-  do not physically reorder queue for shuffle
+  do not physically reorder the queue or compensate for platform differences
 ```
 
-The app should own shuffle policy only where it is product-specific. The player should own queue mechanics and platform differences.
+Implementations may differ by platform, but ownership and observable behavior must not. The app should own shuffle policy only where it is product-specific; the player owns queue mechanics and platform differences.
 
 ## Queue Concepts
 
@@ -153,12 +157,20 @@ Existing `setQueue(tracks, beginIndex)` should remain for compatibility during m
 
 ### Android
 
-Android should use Media3 native shuffle where possible.
+Android should not delegate shuffle ordering to Media3. `shuffleModeEnabled` stays disabled, while the player-owned queue manager resolves canonical target indices for:
 
-Expected implementation area:
+```txt
+JS next / previous
+natural item completion
+MediaSession, notification, headset, and car controls
+getNextTrackIndex
+```
+
+Expected implementation areas:
 
 ```txt
 packages/player/android/src/main/java/moe/bilisound/player/BilisoundPlayerModule.kt
+packages/player/android/src/main/java/moe/bilisound/player/services/BilisoundPlaybackService.kt
 ```
 
 Queue transaction can use `seekTo(mediaItemIndex, positionMs)` after setting media items.
@@ -211,6 +223,10 @@ Manual test scenarios should cover iOS, Android, and Web:
 9. Add tracks while shuffle is enabled.
 10. Replace queue while shuffle is enabled.
 11. Verify `useQueue`, `useCurrentTrack`, and queue-related events update correctly.
+12. Let a track end naturally and verify the same order used by explicit next.
+13. Exercise notification, headset, lock-screen, and MediaSession next/previous controls.
+14. Shuffle a queue containing duplicate business media ids and verify every occurrence plays exactly once per cycle.
+15. Verify queue replacement rebuilds playback order without exposing native-engine ordering.
 
 ## Implementation Status
 
@@ -271,11 +287,11 @@ prepares removal of app-level physical-queue shuffle + @bilisound/player/build/*
 Not verifiable in this environment: native iOS/Android. Web shuffle still needs
 manual browser testing per the Test Matrix above.
 
-### Slice B — Android (Media3 native shuffle) (DONE, needs device verification)
+### Slice B — Android Media3 native shuffle experiment (SUPERSEDED BY SLICE F)
 
-Native code; not compiled in this environment. Verify in Android Studio / on device.
+This slice originally delegated shuffle ordering to Media3 and added the native event contract. Slice F superseded the ordering decision after current-item replacement exposed unstable shuffled transitions.
 
-Changes:
+Historical changes retained from this slice:
 
 ```txt
 Constants.kt
@@ -283,18 +299,21 @@ Constants.kt
 
 BilisoundPlayerModule.kt
   + registered EVENT_SHUFFLE_MODE_CHANGE in Events(...)
-  + getShuffleMode: returns controller.shuffleModeEnabled ? 1 : 0
-  + setShuffleMode: controller.shuffleModeEnabled = (mode == 1)
-  + playerListener.onShuffleModeEnabledChanged -> sendEvent("onShuffleModeChange", { mode })
+  + getShuffleMode / setShuffleMode native contract
 ```
 
-Design:
+Superseded design:
 
 ```txt
-uses Media3 native shuffle (shuffleModeEnabled).
-seekToNext/seekToPrevious follow shuffle order automatically.
-getMediaItemAt / currentMediaItemIndex still return canonical order/index.
-event is dispatched from the listener (single source), not from the setter.
+Media3 shuffleModeEnabled owned playback order.
+seekToNext/seekToPrevious followed Media3 shuffle order.
+```
+
+Current direction:
+
+```txt
+@bilisound/player owns one stable playback order on every platform.
+Media3 shuffle stays disabled and receives canonical target indices from that manager.
 ```
 
 ### Slice C — iOS (AVQueuePlayer simulated shuffle order) (DONE, needs device verification)
@@ -452,10 +471,10 @@ apps/mobile/business/playlist/handler/cache.ts
 Design:
 
 ```txt
-The public queue remains canonical. Playback-order lookup belongs in @bilisound/player
-because Android uses Media3 native shuffle while iOS/Web simulate shuffle internally.
-Mobile cache policy can still choose to prefetch current + next, but it no longer needs
-to know how next is computed on each platform.
+The public queue remains canonical. Playback-order lookup belongs in `@bilisound/player`
+on every platform; app cache policy must not infer next from canonical index or native-engine
+shuffle state. Mobile can still choose to prefetch current + next while the player-owned
+queue manager decides which canonical index is next.
 ```
 
 ### Slice F — Preserve current index after Android current-item refresh (DONE, needs large-queue verification)
