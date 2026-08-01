@@ -6,7 +6,7 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 
 | Epic                      | Status        | Notes                                                                                                                                                    |
 | ------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Player Foundation      | **Delivered** | player-owned occurrence order, Android transport routing, and atomic queue transaction delivered; iOS native verification remains                        |
+| 1. Player Foundation      | **Delivered** | player-owned occurrence order, transport routing, and atomic queue transaction; verified on iOS Simulator, physical Android, and Web                     |
 | 2. Config Architecture    | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
@@ -21,8 +21,9 @@ record stays in one place. Planned epics are listed under **Upcoming Epics**.
 
 ### Epic 1: Player Foundation
 
-> Status: **delivered** — slices A–I complete in [player-foundation.md](./player-foundation.md#implementation-status).
-> Remaining verification: compile and exercise the latest occurrence/transaction code on iOS hardware or Simulator.
+> Status: **delivered and verified** — slices A–I complete in
+> [player-foundation.md](./player-foundation.md#implementation-status), including the full iOS
+> Simulator runtime matrix.
 
 Scope:
 

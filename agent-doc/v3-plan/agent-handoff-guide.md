@@ -35,8 +35,9 @@ mobile queue restore and playlist replacement through that transaction
 The player package owns canonical queue occurrences and shuffle playback order. Native
 engines execute canonical-index seeks selected by the player; mobile code must not carry
 platform-specific shuffle mechanics. Before changing this contract, read the Slice G–I
-handoff in `player-foundation.md`. To close the remaining native iOS verification gap on
-macOS, execute [Epic 1 macOS / iOS Verification Handoff](./epic-1-macos-verification-handoff.md).
+handoff in `player-foundation.md`. The native iOS verification gap is closed; the completed
+[Epic 1 macOS / iOS Verification Handoff](./epic-1-macos-verification-handoff.md) remains the
+reproducible runbook and evidence index.
 
 ## Long-Term UI Rewrite Direction
 

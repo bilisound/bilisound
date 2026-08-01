@@ -1,17 +1,17 @@
 # Epic 1 macOS / iOS Verification Handoff
 
-This document is a directly executable task brief for the next agent running on macOS.
-Do not stop at review: build the current implementation, exercise it on an iOS Simulator or
-device, fix failures at their source, update the v3 status documents, and commit the result.
+This document was written as a directly executable task brief for an agent running on macOS.
+The task completed on 2026-08-02 and the runbook is retained for reproducibility. The
+completion evidence is summarized below and in `player-foundation.md`.
 
 ## Mission
 
-Close the only platform-specific verification gap left by Bilisound v3 Epic 1: compile and
-exercise the latest iOS player occurrence manager, shuffle transport routing, and atomic
-queue transaction introduced by implementation commit `030c29f`.
+This task closed the platform-specific verification gap left by Bilisound v3 Epic 1 by
+compiling and exercising the latest iOS player occurrence manager, shuffle transport routing,
+and atomic queue transaction introduced by implementation commit `030c29f`.
 
-The implementation is already delivered on TypeScript, Web, and Android. The macOS task is
-not a redesign. Preserve these contracts:
+The implementation was already delivered on TypeScript, Web, and Android. The macOS task did
+not redesign it and preserved these contracts:
 
 - The public queue is canonical and never physically shuffled.
 - `@bilisound/player` owns occurrence identity and playback order.
@@ -20,6 +20,25 @@ not a redesign. Preserve these contracts:
 - `setQueueWithOptions` atomically replaces the queue and applies canonical index, position
   in seconds, and playback intent.
 - Mobile code must not gain iOS-specific queue or shuffle workarounds.
+
+## Completion Record
+
+Status: **complete** on an iPhone 17 Simulator running iOS 26.5 with Xcode 26.6.
+
+The current iOS module built, the Expo Dev Client launched, and the complete runtime matrix
+passed: stable shuffled next/previous, duplicate occurrences, queue mutations, natural
+completion, Repeat ONE/ALL, system MediaRemote next/previous, paused startup restoration, and
+atomic playlist replacement at canonical index 2.
+
+The pass found and fixed two native integration defects: an empty
+`getCurrentTrackIndex()` lookup now resolves `-1`, and `next()` at the end of the playback
+order now resolves as a no-op. Both behaviors match Android and Web. Exact commands,
+transitions, environment, and evidence paths are recorded in
+[player-foundation.md](./player-foundation.md#ios-completion-verification-iphone-17-simulator-ios-265-2026-08-02).
+
+Simulator Control Center did not expose a Music/Now Playing tile, so a signed helper invoked
+the system MediaRemote next/previous commands directly. Physical hardware and a real headset
+button remain unverified.
 
 ## Required Reading
 

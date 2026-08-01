@@ -284,8 +284,8 @@ missing public hook export (useRepeatMode) — now exported
 prepares removal of app-level physical-queue shuffle + @bilisound/player/build/* deep import
 ```
 
-Not verifiable in this environment: native iOS/Android. Web shuffle still needs
-manual browser testing per the Test Matrix above.
+Native and Web runtime verification was completed in later slices and is recorded in their
+platform evidence sections below.
 
 ### Slice B — Android Media3 native shuffle experiment (SUPERSEDED BY SLICE F)
 
@@ -317,9 +317,10 @@ Android enables Media3 shuffle traversal with @bilisound/player's custom Shuffle
 Media3's generated random order is never authoritative.
 ```
 
-### Slice C — iOS (AVQueuePlayer simulated shuffle order) (DONE, needs device verification)
+### Slice C — iOS (AVQueuePlayer simulated shuffle order) (DONE; superseded design verified)
 
-Native code; not compiled in this environment. Verify in Xcode / on device.
+The original implementation below was later superseded by the occurrence-token manager in
+Slice G. The current iOS implementation is verified in the Slice G–I completion record below.
 
 Changes:
 
@@ -442,7 +443,7 @@ Verified via agent-device + iOS simulator app logs:
     so player controls were exercised by coordinates and verified through logs
 ```
 
-### Slice E — Playback-order next index for cache prefetch (DONE, needs native device verification)
+### Slice E — Playback-order next index for cache prefetch (DONE, verified on Android and iOS Simulator)
 
 Mobile cache prefetch previously used `currentIndex + 1`. That was valid when shuffle physically reordered the public queue, but it became wrong after player-managed shuffle because canonical queue order and playback order diverged.
 
@@ -553,9 +554,9 @@ pnpm exec ./gradlew :bilisound-player:testDebugUnitTest --tests moe.bilisound.pl
 pnpm -C apps/mobile exec tsc --noEmit
 ```
 
-TypeScript, Web, and Android checks passed. The occurrence contract is integrated into
-all three implementations; the latest iOS code still needs native compilation and device
-verification.
+TypeScript, Web, Android, and iOS checks passed. The current occurrence contract is integrated
+into all three implementations; native iOS compilation and runtime evidence is recorded in
+the Slice G–I completion record below.
 
 ### Slice H — Android transport integration (DONE, verified on a physical device)
 
@@ -641,6 +642,66 @@ On the physical Android device, a persisted queue was restored through the new
 transaction with its canonical current track selected, playback paused, and shuffle
 preference reapplied. The Web app also started and rendered without console or page
 errors after the transaction implementation changed.
+
+### iOS completion verification (iPhone 17 Simulator, iOS 26.5; 2026-08-02)
+
+Environment:
+
+```txt
+Xcode 26.6 (17F113)
+Node v24.18.0
+pnpm 11.7.0
+iPhone 17 Simulator, iOS 26.5
+UDID 92D5EE1F-762A-418A-B16C-03B396F0EAC4
+```
+
+Passing commands:
+
+```txt
+pnpm install --frozen-lockfile
+pnpm -C packages/player test -- --runInBand
+  2 suites, 9 tests passed
+pnpm -C packages/player build
+pnpm -C apps/mobile exec tsc --noEmit
+EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo run:ios \
+  --device 92D5EE1F-762A-418A-B16C-03B396F0EAC4 --no-bundler
+```
+
+Observed through the rebuilt Expo Dev Client:
+
+```txt
+- A five-occurrence canonical queue contained duplicate business media at positions 1 and 5;
+  one shuffled cycle visited all five occurrences exactly once. A sixth occurrence inserted
+  while shuffled remained reachable; metadata replacement preserved the occurrence, and
+  removal kept traversal reversible.
+- Enabling shuffle while paused preserved the current occurrence and progress. Toggling it
+  while playing preserved playing intent. Disabling it resumed canonical traversal.
+- A shuffled explicit next moved canonical #1 みくみくにしてあげる -> #4 卑怯戦隊うろたんだー,
+  rather than canonical #2. Previous returned to the prior occurrence.
+- Natural completion moved 卑怯戦隊うろたんだー -> みくみくにしてあげる, matching the
+  previously recorded explicit next target. Repeat ONE repeated メルト; Repeat ALL wrapped
+  the shuffled order.
+- System MediaRemote next/previous commands traversed the same occurrence order as app
+  controls. The Simulator Control Center had no Music/Now Playing tile to press directly,
+  so MRMediaRemoteSendCommand was dispatched from a signed helper retained under .temp/.
+- Startup restoration selected the persisted canonical occurrence, remained paused, and
+  reapplied shuffle. Playlist replacement at canonical index 2 exposed all six canonical
+  occurrences, selected メルト, and reported queue count 6 / queue index 2 through
+  MPNowPlayingInfoCenter.
+```
+
+The runtime pass found and fixed two iOS integration failures in
+`ios/BilisoundPlayerModule.swift`:
+
+```txt
+- getCurrentTrackIndex now resolves -1 when no item is active, matching the other platforms
+  and preventing an unhandled startup PLAYER_ERROR.
+- next now resolves as a no-op at the end of the playback order instead of rejecting,
+  matching Android/Web transport semantics.
+```
+
+Evidence is retained under `.temp/epic1-ios-20260802/`. Physical hardware and a real headset
+button were not exercised; the Simulator MediaRemote handler path was exercised directly.
 
 ## Migration Impact on Mobile
 

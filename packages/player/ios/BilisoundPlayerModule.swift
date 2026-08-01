@@ -92,6 +92,10 @@ public class BilisoundPlayerModule: Module {
         }
 
         AsyncFunction("next") { (promise: Promise) in
+            guard self.nextIndexInOrder() != nil else {
+                promise.resolve()
+                return
+            }
             do {
                 if self.skipToNext() {
                     promise.resolve()
@@ -156,7 +160,7 @@ public class BilisoundPlayerModule: Module {
                 let currentItem = player.currentItem,
                 let metadata = self.getTrackMetadata(from: currentItem)
             else {
-                promise.reject("PLAYER_ERROR", "No track is currently playing")
+                promise.resolve(nil)
                 return
             }
             promise.resolve(metadata)
@@ -164,7 +168,7 @@ public class BilisoundPlayerModule: Module {
 
         AsyncFunction("getCurrentTrackIndex") { (promise: Promise) in
             guard self.currentIndex < self.playerItems.count else {
-                promise.reject("PLAYER_ERROR", "Invalid track index")
+                promise.resolve(-1)
                 return
             }
             promise.resolve(self.currentIndex)
