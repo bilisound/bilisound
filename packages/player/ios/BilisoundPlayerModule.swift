@@ -10,12 +10,8 @@ public class BilisoundPlayerModule: Module {
     private var timeObserverToken: Any?
     private var artworkCache: [String: MPMediaItemArtwork] = [:]
     private var repeatMode: Int = 0  // 0: OFF, 1: ONE, 2: ALL
-    private var shuffleMode: Int = 0  // 0: OFF, 1: ON
-    /// 随机播放顺序，以 track id 表示。
-    ///
-    /// 与 Web 实现保持一致：存 id 而非 canonical 索引，队列增删时通过 id 解析回当前
-    /// 索引，从而自愈，无需在每次队列变更时手动维护顺序。
-    private var shuffleOrderIds: [String] = []
+    private let playbackOrderManager = PlaybackOrderManager()
+    private var remoteCommandTargets: [(command: MPRemoteCommand, target: Any)] = []
 
     // Playback states
     private let STATE_IDLE = "STATE_IDLE"
@@ -62,7 +58,6 @@ public class BilisoundPlayerModule: Module {
         OnCreate {
             print("\(BilisoundPlayerModule.TAG): Initializing player module")
             self.setupPlayer()
-            self.setupRemoteTransportControls()
         }
 
         OnDestroy {
@@ -293,7 +288,12 @@ public class BilisoundPlayerModule: Module {
 
                 // Insert the item at the specified index
                 if index >= 0 && index <= self.playerItems.count {
+                    let hadCurrentItem = !self.playerItems.isEmpty
                     self.playerItems.insert(newItem, at: index)
+                    if hadCurrentItem && index <= self.currentIndex {
+                        self.currentIndex += 1
+                    }
+                    self.playbackOrderManager.insert(at: index, count: 1, currentIndex: self.currentIndex)
                     self.updatePlayerQueue()
                     self.firePlaylistChangeEvent()
                     promise.resolve()
@@ -352,7 +352,16 @@ public class BilisoundPlayerModule: Module {
 
                 // Insert items at the specified index
                 if index >= 0 && index <= self.playerItems.count {
+                    let hadCurrentItem = !self.playerItems.isEmpty
                     self.playerItems.insert(contentsOf: newItems, at: index)
+                    if hadCurrentItem && index <= self.currentIndex {
+                        self.currentIndex += newItems.count
+                    }
+                    self.playbackOrderManager.insert(
+                        at: index,
+                        count: newItems.count,
+                        currentIndex: self.currentIndex
+                    )
                     self.updatePlayerQueue()
                     self.firePlaylistChangeEvent()
                     promise.resolve()
@@ -470,6 +479,7 @@ public class BilisoundPlayerModule: Module {
 
                 // Remove the item
                 self.playerItems.remove(at: index)
+                self.playbackOrderManager.remove(indices: [index])
 
                 // If we're deleting the current track, handle it properly
                 if index == self.currentIndex {
@@ -513,8 +523,8 @@ public class BilisoundPlayerModule: Module {
                         userInfo: [NSLocalizedDescriptionKey: "Invalid JSON format"])
                 }
 
-                // Sort indices in descending order to avoid index shifting problems
-                let sortedIndices = indices.sorted(by: >)
+                // Sort unique indices in descending order to avoid index shifting problems
+                let sortedIndices = Array(Set(indices)).sorted(by: >)
 
                 // Validate all indices first
                 for index in sortedIndices {
@@ -539,6 +549,7 @@ public class BilisoundPlayerModule: Module {
                         currentIndexAdjustment += 1
                     }
                 }
+                self.playbackOrderManager.remove(indices: sortedIndices)
 
                 // Handle current index adjustment
                 if deletedCurrentTrack {
@@ -570,6 +581,7 @@ public class BilisoundPlayerModule: Module {
 
         AsyncFunction("clearQueue") { (promise: Promise) in
             self.playerItems.removeAll()
+            self.playbackOrderManager.reset(size: 0)
             self.currentIndex = 0
             self.player?.replaceCurrentItem(with: nil)
             self.firePlaylistChangeEvent()
@@ -579,27 +591,47 @@ public class BilisoundPlayerModule: Module {
         AsyncFunction("setQueue") { (jsonContent: String, beginIndex: Int, promise: Promise) in
             do {
                 print("\(BilisoundPlayerModule.TAG): User attempting to set the queue")
-                guard let jsonData = jsonContent.data(using: .utf8),
-                    let tracksArray = try JSONSerialization.jsonObject(with: jsonData)
-                        as? [[String: Any]]
-                else {
-                    throw NSError(
-                        domain: "BilisoundPlayer", code: -1,
-                        userInfo: [NSLocalizedDescriptionKey: "Invalid JSON format"])
-                }
-
-                // Create AVPlayerItems for each track
-                let newItems = try tracksArray.map { try self.createPlayerItem(from: $0) }
-
-                // Replace the current queue with the new one
-                self.playerItems = newItems
-                self.currentIndex = beginIndex
-                self.updatePlayerQueue()
-                self.firePlaylistChangeEvent()
-
+                try self.replaceQueue(
+                    jsonContent: jsonContent,
+                    beginIndex: beginIndex,
+                    position: 0,
+                    preservePlaybackState: false
+                )
                 promise.resolve()
             } catch {
                 promise.reject("PLAYER_ERROR", "Failed to set queue: \(error.localizedDescription)")
+            }
+        }
+
+        AsyncFunction("setQueueWithOptions") {
+            (jsonContent: String, optionsContent: String, promise: Promise) in
+            do {
+                guard let optionsData = optionsContent.data(using: .utf8),
+                    let options = try JSONSerialization.jsonObject(with: optionsData)
+                        as? [String: Any],
+                    let beginIndex = (options["beginIndex"] as? NSNumber)?.intValue,
+                    let position = (options["position"] as? NSNumber)?.doubleValue,
+                    let preservePlaybackState = options["preservePlaybackState"] as? Bool
+                else {
+                    throw NSError(
+                        domain: "BilisoundPlayer",
+                        code: -1,
+                        userInfo: [NSLocalizedDescriptionKey: "Invalid queue options"]
+                    )
+                }
+
+                try self.replaceQueue(
+                    jsonContent: jsonContent,
+                    beginIndex: beginIndex,
+                    position: position,
+                    preservePlaybackState: preservePlaybackState
+                )
+                promise.resolve()
+            } catch {
+                promise.reject(
+                    "PLAYER_ERROR",
+                    "Failed to set queue with options: \(error.localizedDescription)"
+                )
             }
         }
 
@@ -632,12 +664,11 @@ public class BilisoundPlayerModule: Module {
         }
 
         AsyncFunction("getShuffleMode") { (promise: Promise) in
-            promise.resolve(self.shuffleMode)
+            promise.resolve(self.playbackOrderManager.isShuffleEnabled ? 1 : 0)
         }
 
         AsyncFunction("setShuffleMode") { (mode: Int, promise: Promise) in
             do {
-                // Validate mode
                 guard mode == 0 || mode == 1 else {
                     throw NSError(
                         domain: "BilisoundPlayer",
@@ -646,25 +677,15 @@ public class BilisoundPlayerModule: Module {
                     )
                 }
 
-                if mode == self.shuffleMode {
-                    promise.resolve()
-                    return
+                let changed = self.playbackOrderManager.setShuffleEnabled(
+                    mode == 1,
+                    currentIndex: self.currentIndex
+                )
+                if changed {
+                    self.sendEvent("onShuffleModeChange", [
+                        "mode": mode
+                    ])
                 }
-
-                self.shuffleMode = mode
-                if mode == 1 {
-                    // 开启时重建随机顺序，当前曲目固定在首位，播放进度不受影响。
-                    // 仅改变 next/prev/end 的走向，playerItems 与 currentIndex 保持 canonical。
-                    self.rebuildShuffleOrder()
-                } else {
-                    self.shuffleOrderIds = []
-                }
-
-                // Emit event
-                self.sendEvent("onShuffleModeChange", [
-                    "mode": mode
-                ])
-
                 promise.resolve()
             } catch {
                 promise.reject("SET_SHUFFLE_MODE_ERROR", "Failed to set shuffle mode: \(error.localizedDescription)")
@@ -681,9 +702,71 @@ public class BilisoundPlayerModule: Module {
         }
     }
 
+    private func replaceQueue(
+        jsonContent: String,
+        beginIndex: Int,
+        position: Double,
+        preservePlaybackState: Bool
+    ) throws {
+        guard position.isFinite && position >= 0 else {
+            throw NSError(
+                domain: "BilisoundPlayer",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid playback position"]
+            )
+        }
+        guard let jsonData = jsonContent.data(using: .utf8),
+            let tracksArray = try JSONSerialization.jsonObject(with: jsonData)
+                as? [[String: Any]]
+        else {
+            throw NSError(
+                domain: "BilisoundPlayer",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid JSON format"]
+            )
+        }
+
+        let newItems = try tracksArray.map { try self.createPlayerItem(from: $0) }
+        guard newItems.isEmpty ? beginIndex == 0 : newItems.indices.contains(beginIndex) else {
+            throw NSError(
+                domain: "BilisoundPlayer",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid begin index"]
+            )
+        }
+
+        let shouldResume = preservePlaybackState && (self.player?.rate ?? 0) != 0
+        self.player?.pause()
+        self.playerItems = newItems
+        if newItems.isEmpty {
+            self.currentIndex = 0
+            self.playbackOrderManager.reset(size: 0)
+            self.player?.replaceCurrentItem(with: nil)
+            self.firePlaylistChangeEvent()
+            return
+        }
+
+        self.currentIndex = beginIndex
+        self.playbackOrderManager.reset(size: newItems.count, currentIndex: beginIndex)
+        self.updatePlayerQueue()
+        self.player?.seek(
+            to: CMTime(seconds: position, preferredTimescale: 1000),
+            toleranceBefore: .zero,
+            toleranceAfter: .zero
+        )
+        if shouldResume {
+            self.player?.play()
+        }
+    }
+
     private func addTracksToPlayer(_ items: [AVPlayerItem]) {
-        // Add items to our tracking array
+        let insertIndex = self.playerItems.count
         self.playerItems.append(contentsOf: items)
+        self.playbackOrderManager.insert(
+            at: insertIndex,
+            count: items.count,
+            currentIndex: self.currentIndex
+        )
 
         // If player is not playing anything, start from the beginning
         if let player = self.player, player.items().isEmpty {
@@ -837,13 +920,6 @@ public class BilisoundPlayerModule: Module {
         player?.actionAtItemEnd = .pause
 
         // Initialize observers
-        mediaItemTransitionObserver = MediaItemTransitionObserver(module: self)
-        player?.addObserver(
-            mediaItemTransitionObserver!,
-            forKeyPath: #keyPath(AVPlayer.currentItem),
-            options: [.old, .new],
-            context: nil
-        )
 
         // Set up audio session for background playback
         do {
@@ -882,34 +958,34 @@ public class BilisoundPlayerModule: Module {
     }
 
     private func setupRemoteTransportControls() {
+        removeRemoteTransportControls()
         let commandCenter = MPRemoteCommandCenter.shared()
 
-        // Add handler for play command
-        commandCenter.playCommand.addTarget { [weak self] _ in
+        let playTarget = commandCenter.playCommand.addTarget { [weak self] _ in
             self?.player?.play()
             return .success
         }
+        remoteCommandTargets.append((commandCenter.playCommand, playTarget))
 
-        // Add handler for pause command
-        commandCenter.pauseCommand.addTarget { [weak self] _ in
+        let pauseTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
             self?.player?.pause()
             return .success
         }
+        remoteCommandTargets.append((commandCenter.pauseCommand, pauseTarget))
 
-        // Add handler for next track command
-        commandCenter.nextTrackCommand.addTarget { [weak self] _ in
+        let nextTarget = commandCenter.nextTrackCommand.addTarget { [weak self] _ in
             guard let self = self else { return .commandFailed }
             return self.skipToNext() ? .success : .noSuchContent
         }
+        remoteCommandTargets.append((commandCenter.nextTrackCommand, nextTarget))
 
-        // Add handler for previous track command
-        commandCenter.previousTrackCommand.addTarget { [weak self] _ in
+        let previousTarget = commandCenter.previousTrackCommand.addTarget { [weak self] _ in
             guard let self = self else { return .commandFailed }
             return self.skipToPrevious() ? .success : .noSuchContent
         }
+        remoteCommandTargets.append((commandCenter.previousTrackCommand, previousTarget))
 
-        // Add handler for seeking
-        commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
+        let seekTarget = commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
             guard let self = self,
                 let player = self.player,
                 let positionCommand = event as? MPChangePlaybackPositionCommandEvent
@@ -920,6 +996,14 @@ public class BilisoundPlayerModule: Module {
             player.seek(to: CMTime(seconds: positionCommand.positionTime, preferredTimescale: 1000))
             return .success
         }
+        remoteCommandTargets.append((commandCenter.changePlaybackPositionCommand, seekTarget))
+    }
+
+    private func removeRemoteTransportControls() {
+        remoteCommandTargets.forEach { entry in
+            entry.command.removeTarget(entry.target)
+        }
+        remoteCommandTargets.removeAll()
     }
 
     private func setupPlayerObservers() {
@@ -1057,6 +1141,22 @@ public class BilisoundPlayerModule: Module {
     private func cleanupPlayer() {
         player?.pause()
         NotificationCenter.default.removeObserver(self)
+
+        if let token = timeObserverToken {
+            player?.removeTimeObserver(token)
+            timeObserverToken = nil
+        }
+        if let observer = playbackStateObserver {
+            player?.removeObserver(observer, forKeyPath: #keyPath(AVPlayer.timeControlStatus))
+            playbackStateObserver = nil
+        }
+        if let observer = mediaItemTransitionObserver {
+            player?.removeObserver(observer, forKeyPath: #keyPath(AVPlayer.currentItem))
+            mediaItemTransitionObserver = nil
+        }
+
+        removeRemoteTransportControls()
+        UIApplication.shared.endReceivingRemoteControlEvents()
         artworkCache.removeAll()
         player = nil
     }
@@ -1260,87 +1360,16 @@ public class BilisoundPlayerModule: Module {
         }
     }
 
-    /// 获取指定 AVPlayerItem 的 track id。
-    private func trackId(of item: AVPlayerItem) -> String? {
-        return getTrackMetadata(from: item)?["id"] as? String
-    }
-
-    /// 基于当前队列重建随机播放顺序。
-    ///
-    /// 当前曲目（若存在）固定排在第一位，其余曲目用 Fisher-Yates 洗牌，这样开启随机
-    /// 播放时当前曲目与播放进度不受影响。
-    private func rebuildShuffleOrder() {
-        let ids = playerItems.compactMap { trackId(of: $0) }
-        let currentId =
-            (currentIndex >= 0 && currentIndex < playerItems.count)
-            ? trackId(of: playerItems[currentIndex]) : nil
-        var rest = ids.filter { $0 != currentId }
-        for i in stride(from: rest.count - 1, to: 0, by: -1) {
-            let j = Int.random(in: 0...i)
-            rest.swapAt(i, j)
-        }
-        if let currentId = currentId {
-            shuffleOrderIds = [currentId] + rest
-        } else {
-            shuffleOrderIds = rest
-        }
-    }
-
-    /// 将随机播放顺序解析为当前队列中的 canonical 索引列表，自动跳过已失效的 id。
-    private func resolvePlaybackOrder() -> [Int] {
-        var idToIndex: [String: Int] = [:]
-        for (index, item) in playerItems.enumerated() {
-            if let id = trackId(of: item), idToIndex[id] == nil {
-                // 同 id 取首个出现位置，与 deleteTracks 的 id 唯一性假设一致
-                idToIndex[id] = index
-            }
-        }
-        var order: [Int] = []
-        for id in shuffleOrderIds {
-            if let index = idToIndex[id] {
-                order.append(index)
-            }
-        }
-        // 兜底：队列中新增、但尚未进入随机顺序的曲目追加到末尾
-        if order.count < playerItems.count {
-            let seen = Set(order)
-            for index in 0..<playerItems.count where !seen.contains(index) {
-                order.append(index)
-            }
-        }
-        return order
-    }
-
-    /// 按当前播放模式获取下一首的 canonical 索引，没有则返回 nil。
     private func nextIndexInOrder() -> Int? {
-        if shuffleMode == 1 {
-            let order = resolvePlaybackOrder()
-            guard let pos = order.firstIndex(of: currentIndex) else {
-                return order.first
-            }
-            return pos < order.count - 1 ? order[pos + 1] : nil
-        }
-        return currentIndex < playerItems.count - 1 ? currentIndex + 1 : nil
+        playbackOrderManager.nextIndex(after: currentIndex)
     }
 
-    /// 按当前播放模式获取上一首的 canonical 索引，没有则返回 nil。
     private func prevIndexInOrder() -> Int? {
-        if shuffleMode == 1 {
-            let order = resolvePlaybackOrder()
-            guard let pos = order.firstIndex(of: currentIndex), pos > 0 else {
-                return nil
-            }
-            return order[pos - 1]
-        }
-        return currentIndex > 0 ? currentIndex - 1 : nil
+        playbackOrderManager.previousIndex(before: currentIndex)
     }
 
-    /// 按当前播放模式获取首个应播放的 canonical 索引（用于 RepeatMode.ALL 循环回到开头）。
     private func firstIndexInOrder() -> Int? {
-        if shuffleMode == 1 {
-            return resolvePlaybackOrder().first
-        }
-        return playerItems.isEmpty ? nil : 0
+        playbackOrderManager.firstIndex()
     }
 
     private func skipToNext() -> Bool {

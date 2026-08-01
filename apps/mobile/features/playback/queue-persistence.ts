@@ -90,7 +90,10 @@ export async function loadTrackData() {
   // 如果用户退出应用时上次播放的是没有加载过的音频，重新启动应用后会自动跳转到下一首曲目
   if (trackData.length > 0) {
     trackData[current] = await refreshTrack(trackData[current]);
-    await Player.setQueue(trackData, current);
+    await Player.setQueueWithOptions(trackData, {
+      beginIndex: current,
+      preservePlaybackState: false,
+    });
 
     // v3 起随机播放由 player 内部管理。根据持久化的偏好重新应用随机模式：
     // 当前曲目会被 rebuildShuffleOrder 固定在首位，播放进度不受影响，但随机顺序

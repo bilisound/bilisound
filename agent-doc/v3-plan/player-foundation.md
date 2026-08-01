@@ -230,7 +230,7 @@ Manual test scenarios should cover iOS, Android, and Web:
 
 ## Implementation Status
 
-This epic is being delivered in slices so native code (which cannot be compiled/verified in every agent environment) does not block the TypeScript contract.
+This epic was delivered in slices so native implementation and verification could remain independently traceable.
 
 ### Slice A — TS contract + Web + hook exports (DONE)
 
@@ -313,7 +313,8 @@ Current direction:
 
 ```txt
 @bilisound/player owns one stable playback order on every platform.
-Media3 shuffle stays disabled and receives canonical target indices from that manager.
+Android enables Media3 shuffle traversal with @bilisound/player's custom ShuffleOrder;
+Media3's generated random order is never authoritative.
 ```
 
 ### Slice C — iOS (AVQueuePlayer simulated shuffle order) (DONE, needs device verification)
@@ -458,8 +459,7 @@ BilisoundPlayerModule.web.ts
   + getNextTrackIndex delegates to existing playback-order getNextIndex()
 
 BilisoundPlayerModule.kt
-  + getNextTrackIndex uses Media3 Timeline.getNextWindowIndex(..., REPEAT_MODE_OFF, shuffleModeEnabled)
-
+  + getNextTrackIndex delegates to the player-owned PlaybackOrderManager
 BilisoundPlayerModule.swift
   + getNextTrackIndex delegates to existing nextIndexInOrder()
 
@@ -477,7 +477,7 @@ shuffle state. Mobile can still choose to prefetch current + next while the play
 queue manager decides which canonical index is next.
 ```
 
-### Slice F — Preserve current index after Android current-item refresh (DONE, needs large-queue verification)
+### Slice F — Preserve current index after Android current-item refresh (DONE, verified on Android)
 
 Large shuffle queues exposed a second Android-specific transition bug after Slice E: refreshing an uncached current track calls `replaceTrack(currentIndex, refreshedTrack)`, but Media3 may advance to the next shuffled media item when the currently playing item is replaced. In queues with many uncached items, every refresh could therefore trigger another transition and produce repeated random jumps.
 
@@ -502,9 +502,145 @@ Design:
 ```txt
 The player remains responsible for deciding shuffle next. The app only repairs the Android
 current-item replacement side effect after refreshing the item that was already selected.
-Android keeps Media3 native shuffle disabled and owns shuffle order in @bilisound/player so
-previous/next remain reversible along one fixed shuffled sequence.
+Android replaces Media3's generated random order with @bilisound/player's custom
+ShuffleOrder, so previous/next remain reversible along one fixed shuffled sequence.
 ```
+
+Android unit coverage preserves the occurrence order across replacement, and physical
+large-queue navigation completed without a replacement-triggered extra transition.
+
+### Slice G — Player-owned occurrence manager (DONE)
+
+Shuffle order no longer uses business media ids. Each platform now owns queue-occurrence
+tokens inside `@bilisound/player`, so duplicate tracks remain distinct and queue replacement
+can rebuild a valid playback order while shuffle stays enabled.
+
+Changes:
+
+```txt
+src/playback-order-manager.ts
+android/.../PlaybackOrderManager.kt
+ios/PlaybackOrderManager.swift
+  + canonical occurrence tokens independent from TrackData.id / MediaItem.mediaId
+  + stable playback order with current occurrence first
+  + reset / insert / remove mutation handling
+  + next / previous / first canonical-index lookup
+
+BilisoundPlayerModule.web.ts / BilisoundPlayerModule.kt / BilisoundPlayerModule.swift
+  ~ setQueue rebuilds playback order when shuffle is already enabled
+  ~ queue insert/delete operations update occurrence state
+  ~ replaceTrack preserves the existing occurrence token
+  - removed track-id-based shuffle order lookup
+```
+
+Contract coverage:
+
+```txt
+duplicate media entries are separate queue occurrences
+current occurrence remains first when enabling or rebuilding shuffle
+each occurrence is visited exactly once per cycle
+insertion and removal preserve unaffected occurrence identity
+shuffle-off lookup follows canonical neighbors
+```
+
+Verification:
+
+```txt
+pnpm -C packages/player build
+pnpm -C packages/player test -- --runInBand src/__tests__/playback-order-manager.test.ts
+pnpm exec ./gradlew :bilisound-player:compileDebugKotlin
+pnpm exec ./gradlew :bilisound-player:testDebugUnitTest --tests moe.bilisound.player.PlaybackOrderManagerTest
+pnpm -C apps/mobile exec tsc --noEmit
+```
+
+TypeScript, Web, and Android checks passed. The occurrence contract is integrated into
+all three implementations; the latest iOS code still needs native compilation and device
+verification.
+
+### Slice H — Android transport integration (DONE, verified on a physical device)
+
+Android now exposes the player-owned occurrence order to Media3 as an immutable custom
+`ShuffleOrder`. Media3's shuffle-enabled flag selects that order; Media3 does not generate
+the order itself. Canonical-index seeks, natural completion, notification controls,
+headset controls, and MediaSession next/previous all traverse the same occurrence sequence.
+
+Changes:
+
+```txt
+android/.../PlaybackOrderManager.kt
+  ~ implements Media3 ShuffleOrder
+  + immutable cloneAndInsert / cloneAndRemove / cloneAndClear / cloneAndSet support
+
+android/.../services/BilisoundPlaybackService.kt
+  + owns and installs the active PlaybackOrderManager on ExoPlayer
+  ~ current-item replacement preserves the installed occurrence order
+
+android/.../BilisoundPlayerModule.kt
+  ~ queue mutations synchronize the occurrence manager
+  ~ setShuffleMode rebuilds or canonicalizes the installed order
+  ~ next / previous / getNextTrackIndex resolve through the installed order
+```
+
+Physical Android verification (`22122RK93C`, Android 14):
+
+```txt
+canonical current: 【染云】深昏睡
+canonical next:    台湾云林县官方宣传影片「星期六去斗六」
+shuffle next:      用17个歌手的声音唱「米津玄師 - さよーならまたいつか！」
+app next/previous: 深昏睡 <-> 用17个歌手的声音唱...
+MEDIA_NEXT/PREVIOUS:
+                   深昏睡 <-> 用17个歌手的声音唱...
+natural end:       深昏睡 -> 用17个歌手的声音唱...
+```
+
+The explicit next target was not the canonical neighbor. App controls, injected system
+media key events, and natural completion all selected that same non-canonical occurrence,
+proving these entry points consumed one stable order.
+
+### Slice I — Atomic queue transaction (DONE)
+
+Queue replacement now has one public cross-platform transaction:
+
+```txt
+setQueueWithOptions(tracks, {
+  beginIndex?: number,             // canonical index, default 0
+  position?: number,               // seconds, default 0
+  preservePlaybackState?: boolean, // default false
+})
+```
+
+The wrapper validates the complete request before invoking a platform implementation.
+Web, Android, and iOS replace the canonical queue, select the requested occurrence,
+rebuild playback order, set progress, and optionally restore playing intent inside one
+platform operation. Existing `setQueue(tracks, beginIndex)` remains the paused,
+zero-position convenience API implemented through this transaction.
+
+Mobile integration:
+
+```txt
+features/playback/queue-persistence.ts
+  ~ startup restore uses setQueueWithOptions(..., preservePlaybackState: false)
+
+features/playback/track-operations.ts
+  ~ playlist replacement uses setQueueWithOptions(..., preservePlaybackState: false)
+```
+
+Verification:
+
+```txt
+pnpm -C packages/player test -- --runInBand          # 2 suites, 9 tests
+pnpm -C packages/player build
+pnpm -C apps/mobile exec tsc --noEmit
+pnpm exec ./gradlew :bilisound-player:compileDebugKotlin
+pnpm exec ./gradlew :bilisound-player:testDebugUnitTest \
+  --tests moe.bilisound.player.PlaybackOrderManagerTest
+pnpm -C apps/mobile exec expo run:android --no-bundler
+```
+
+On the physical Android device, a persisted queue was restored through the new
+transaction with its canonical current track selected, playback paused, and shuffle
+preference reapplied. The Web app also started and rendered without console or page
+errors after the transaction implementation changed.
 
 ## Migration Impact on Mobile
 

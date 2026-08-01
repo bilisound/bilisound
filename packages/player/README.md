@@ -28,13 +28,15 @@ SDK 获取音频 URL → Player.addTrack() → Player.play() → 音频输出
 
 ### 队列管理
 
-| 函数                                    | 说明         |
-| --------------------------------------- | ------------ |
-| `setQueue(tracks, startIndex)`          | 设置完整队列 |
-| `addTrack(track)` / `addTracks(tracks)` | 添加曲目     |
-| `deleteTracks(indices)`                 | 删除指定曲目 |
-| `clearQueue()`                          | 清空队列     |
-| `replaceTrack(index, track)`            | 替换曲目     |
+| 函数                                    | 说明                                                       |
+| --------------------------------------- | ---------------------------------------------------------- |
+| `setQueue(tracks, startIndex)`          | 设置完整队列并从规范索引开始，初始进度为 0、播放状态为暂停 |
+| `setQueueWithOptions(tracks, options)`  | 原子替换队列、规范索引、进度（秒）与播放状态               |
+| `addTrack(track)` / `addTracks(tracks)` | 添加曲目                                                   |
+| `deleteTracks(indices)`                 | 删除指定曲目                                               |
+| `clearQueue()`                          | 清空队列                                                   |
+| `replaceTrack(index, track)`            | 替换曲目并保留该队列 occurrence                            |
+| `getNextTrackIndex()`                   | 查询当前播放顺序中的下一项规范索引                         |
 
 ### 下载管理
 
@@ -53,16 +55,19 @@ SDK 获取音频 URL → Player.addTrack() → Player.play() → 音频输出
 | `getIsPlaying()`    | 播放中?               |
 | `getProgress()`     | 当前进度              |
 | `getRepeatMode()`   | 循环模式              |
+| `getShuffleMode()`  | 随机播放模式          |
 | `useProgress()`     | 进度 Hook (0.5s 轮询) |
-| `useQueue()`        | 队列 Hook             |
+| `useQueue()`        | 规范队列 Hook         |
 | `useIsPlaying()`    | 播放状态 Hook         |
+| `useRepeatMode()`   | 循环模式 Hook         |
+| `useShuffleMode()`  | 随机播放模式 Hook     |
 
 ## Hooks
 
 所有 Hook 从 `@bilisound/player` 直接导出：
 
 ```ts
-import { useCurrentTrack, useIsPlaying, useProgress, useQueue } from "@bilisound/player";
+import { useCurrentTrack, useIsPlaying, useProgress, useQueue, useRepeatMode, useShuffleMode } from "@bilisound/player";
 ```
 
 ## 循环模式
@@ -73,6 +78,17 @@ import { useCurrentTrack, useIsPlaying, useProgress, useQueue } from "@bilisound
 | `1` | 单曲循环 (ONE) |
 | `2` | 列表循环 (ALL) |
 
+## 随机播放
+
+| 值  | 含义       |
+| --- | ---------- |
+| `0` | 关闭 (OFF) |
+| `1` | 开启 (ON)  |
+
+公开队列始终保持规范顺序。Player 使用内部 occurrence token 维护固定随机顺序；重复的业务曲目 ID 仍是不同队列项。应用按钮、自然结束和系统媒体控制共用该顺序。
+
+`setQueueWithOptions` 的 `beginIndex` 始终是规范队列索引，`position` 以秒为单位，`preservePlaybackState` 决定事务后是否恢复调用前的播放意图。
+
 ## 事件
 
 通过 `registerBackgroundEventListener` 注册后台事件处理，在 `apps/mobile/app/_layout.tsx` 中初始化。
@@ -80,7 +96,8 @@ import { useCurrentTrack, useIsPlaying, useProgress, useQueue } from "@bilisound
 ## 功能列表
 
 - 完整播放控制 (play, pause, seek, next/prev)
-- 队列管理 (支持增删改替换)
+- 队列管理 (支持原子替换及增删改)
+- 稳定随机顺序 (OFF/ON，支持重复曲目 occurrence)
 - 循环模式 (OFF/ONE/ALL)
 - 播放速度调整 (保留音高)
 - 后台播放

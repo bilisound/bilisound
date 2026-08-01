@@ -1,9 +1,17 @@
 import { registerWebModule, NativeModule } from "expo";
 
-import type { EventListFunc, PlaybackProgress, PlaybackState, TrackData, TrackDataInternal } from "./types";
+import type {
+  EventListFunc,
+  PlaybackProgress,
+  PlaybackState,
+  SetQueueOptions,
+  TrackData,
+  TrackDataInternal,
+} from "./types";
 import { DownloadState, RepeatMode, ShuffleMode } from "./types";
 import type { BilisoundPlayerModuleInterface } from "./types/module";
 import { deleteItems } from "./utils";
+import { PlaybackOrderManager } from "./playback-order-manager";
 
 class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements BilisoundPlayerModuleInterface {
   private static isMediaSessionAvailable = !!window?.navigator?.mediaSession;
@@ -34,16 +42,9 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   private playbackState: PlaybackState = "STATE_IDLE";
   private repeatMode: RepeatMode = RepeatMode.OFF;
   /**
-   * 随机播放模式
+   * Owns queue-occurrence identity and shuffled playback order.
    */
-  private shuffleMode: ShuffleMode = ShuffleMode.OFF;
-  /**
-   * 随机播放顺序，以 track id 表示。
-   *
-   * 这里刻意存 id 而非 canonical 索引：队列增删时索引会整体平移，存 id 可以让
-   * 播放顺序在不额外维护的情况下自愈（解析时按 id 映射回当前索引，已失效的 id 自动跳过）。
-   */
-  private shuffleOrderIds: string[] = [];
+  private readonly playbackOrderManager = new PlaybackOrderManager();
   private audioContext: AudioContext | null = null;
   private gainNode: GainNode | null = null;
   private sourceNode: MediaElementAudioSourceNode | null = null;
@@ -166,6 +167,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     this.audioElement.src = "";
     this.index = -1;
     this.trackData = [];
+    this.playbackOrderManager.reset(0);
   }
 
   private assertInRange(index: number) {
@@ -174,92 +176,16 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     }
   }
 
-  /**
-   * 基于当前队列重建随机播放顺序。
-   *
-   * 当前曲目（若存在）固定排在第一位，其余曲目用 Fisher-Yates 洗牌，这样开启随机播放
-   * 时当前曲目与播放进度不受影响。
-   */
-  private rebuildShuffleOrder() {
-    const ids = this.trackData.map(e => e.id);
-    const currentId = this.trackData[this.index]?.id;
-    const rest = ids.filter(id => id !== currentId);
-    for (let i = rest.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [rest[i], rest[j]] = [rest[j]!, rest[i]!];
-    }
-    this.shuffleOrderIds = currentId === undefined ? rest : [currentId, ...rest];
-  }
-
-  /**
-   * 将随机播放顺序解析为当前队列中的 canonical 索引列表，自动跳过已失效的 id。
-   */
-  private resolvePlaybackOrder(): number[] {
-    const idToIndex = new Map<string, number>();
-    this.trackData.forEach((track, index) => {
-      // 同 id 取首个出现位置，与 deleteTracks 的 id 唯一性假设一致
-      if (!idToIndex.has(track.id)) {
-        idToIndex.set(track.id, index);
-      }
-    });
-    const order: number[] = [];
-    for (const id of this.shuffleOrderIds) {
-      const index = idToIndex.get(id);
-      if (typeof index === "number") {
-        order.push(index);
-      }
-    }
-    // 兜底：队列中新增、但尚未进入随机顺序的曲目追加到末尾
-    if (order.length < this.trackData.length) {
-      const seen = new Set(order);
-      this.trackData.forEach((_, index) => {
-        if (!seen.has(index)) {
-          order.push(index);
-        }
-      });
-    }
-    return order;
-  }
-
-  /**
-   * 按当前播放模式获取下一首的 canonical 索引，没有则返回 -1。
-   */
   private getNextIndex(): number {
-    if (this.shuffleMode === ShuffleMode.ON) {
-      const order = this.resolvePlaybackOrder();
-      const pos = order.indexOf(this.index);
-      if (pos < 0) {
-        return order[0] ?? -1;
-      }
-      return pos < order.length - 1 ? (order[pos + 1] ?? -1) : -1;
-    }
-    return this.index < this.trackData.length - 1 ? this.index + 1 : -1;
+    return this.playbackOrderManager.getNextIndex(this.index);
   }
 
-  /**
-   * 按当前播放模式获取上一首的 canonical 索引，没有则返回 -1。
-   */
   private getPrevIndex(): number {
-    if (this.shuffleMode === ShuffleMode.ON) {
-      const order = this.resolvePlaybackOrder();
-      const pos = order.indexOf(this.index);
-      if (pos <= 0) {
-        return -1;
-      }
-      return order[pos - 1] ?? -1;
-    }
-    return this.index > 0 ? this.index - 1 : -1;
+    return this.playbackOrderManager.getPreviousIndex(this.index);
   }
 
-  /**
-   * 当前播放模式下是否还有下一首（用于 RepeatMode.ALL 的循环判断）。
-   */
   private getFirstIndex(): number {
-    if (this.shuffleMode === ShuffleMode.ON) {
-      const order = this.resolvePlaybackOrder();
-      return order[0] ?? -1;
-    }
-    return this.trackData.length > 0 ? 0 : -1;
+    return this.playbackOrderManager.getFirstIndex();
   }
 
   private ensureAudioContext() {
@@ -435,39 +361,55 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async addTrack(trackDataJson: TrackData) {
+    const insertIndex = this.trackData.length;
     this.trackData.push(trackDataJson);
     if (this.index < 0) {
       await this.jump(0);
     }
+    this.playbackOrderManager.insert(insertIndex, 1, this.index);
     this.emitQueueChange();
     this.emitCurrentChange();
   }
 
   async addTrackAt(trackDataJson: TrackData, index: number) {
-    this.assertInRange(index);
+    if (index < 0 || index > this.trackData.length) {
+      throw new Error("非法的索引值");
+    }
+    const wasEmpty = this.trackData.length === 0;
     this.trackData.splice(index, 0, trackDataJson);
-    if (this.index >= index) {
+    if (wasEmpty) {
+      await this.jump(0);
+    } else if (this.index >= index) {
       this.index += 1;
     }
+    this.playbackOrderManager.insert(index, 1, this.index);
     this.emitQueueChange();
     this.emitCurrentChange();
   }
 
   async addTracks(trackDatasJson: TrackData[]) {
+    const insertIndex = this.trackData.length;
     this.trackData.push(...trackDatasJson);
-    if (this.index < 0) {
+    if (this.index < 0 && this.trackData.length > 0) {
       await this.jump(0);
     }
+    this.playbackOrderManager.insert(insertIndex, trackDatasJson.length, this.index);
     this.emitQueueChange();
     this.emitCurrentChange();
   }
 
   async addTracksAt(trackDatasJson: TrackData[], index: number) {
-    this.assertInRange(index);
+    if (index < 0 || index > this.trackData.length) {
+      throw new Error("非法的索引值");
+    }
+    const wasEmpty = this.trackData.length === 0;
     this.trackData.splice(index, 0, ...trackDatasJson);
-    if (this.index >= index) {
+    if (wasEmpty && this.trackData.length > 0) {
+      await this.jump(0);
+    } else if (this.index >= index) {
       this.index += trackDatasJson.length;
     }
+    this.playbackOrderManager.insert(index, trackDatasJson.length, this.index);
     this.emitQueueChange();
     this.emitCurrentChange();
   }
@@ -477,6 +419,7 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async replaceTrack(index: number, trackDataJson: TrackData) {
+    this.assertInRange(index);
     const previousUri = this.trackData[this.index]?.uri;
     this.trackData[index] = structuredClone(trackDataJson);
     if (index === this.index) {
@@ -489,34 +432,42 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async deleteTrack(index: number) {
+    this.assertInRange(index);
+    const currentToken = this.playbackOrderManager.getOccurrenceToken(this.index);
+    const deletingCurrent = index === this.index;
     this.trackData.splice(index, 1);
-    if (index === this.index) {
-      await this.setCurrent(index);
-    }
-    if (index > this.index) {
-      this.index -= 1;
+    this.playbackOrderManager.remove([index]);
+
+    if (this.trackData.length === 0) {
+      await this.clear();
+    } else if (deletingCurrent) {
+      await this.setCurrent(Math.min(index, this.trackData.length - 1));
+    } else if (currentToken !== undefined) {
+      this.index = this.playbackOrderManager.getCanonicalIndex(currentToken);
     }
     this.emitQueueChange();
   }
 
   async deleteTracks(indexesJson: number[]) {
-    if (indexesJson.includes(this.index)) {
-      // 被删除的 track 恰好是正在播放的
-      this.trackData = deleteItems(this.trackData, indexesJson);
-      if (this.index >= this.trackData.length - 1) {
-        await this.setCurrent(this.trackData.length - 1);
-      } else {
-        await this.setCurrent(this.index);
-      }
-    } else {
-      const targetId = this.trackData[this.index]?.id;
-      if (!targetId) {
-        return;
-      }
-      this.trackData = deleteItems(this.trackData, indexesJson);
-      this.index = this.trackData.findIndex(e => e.id === targetId);
+    const indexes = [...new Set(indexesJson)].sort((a, b) => b - a);
+    const invalidIndex = indexes.find(index => index < 0 || index >= this.trackData.length);
+    if (invalidIndex !== undefined) {
+      throw new Error("非法的索引值");
     }
 
+    const currentToken = this.playbackOrderManager.getOccurrenceToken(this.index);
+    const deletingCurrent = indexes.includes(this.index);
+    const previousIndex = this.index;
+    this.trackData = deleteItems(this.trackData, indexes);
+    this.playbackOrderManager.remove(indexes);
+
+    if (this.trackData.length === 0) {
+      await this.clear();
+    } else if (deletingCurrent) {
+      await this.setCurrent(Math.min(previousIndex, this.trackData.length - 1));
+    } else if (currentToken !== undefined) {
+      this.index = this.playbackOrderManager.getCanonicalIndex(currentToken);
+    }
     this.emitQueueChange();
   }
 
@@ -526,9 +477,43 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async setQueue(trackDatasJson: TrackData[], beginIndex: number) {
+    return this.setQueueWithOptions(trackDatasJson, {
+      beginIndex,
+      position: 0,
+      preservePlaybackState: false,
+    });
+  }
+
+  async setQueueWithOptions(trackDatasJson: TrackData[], options: Required<SetQueueOptions>) {
+    const { beginIndex, position, preservePlaybackState } = options;
+    if (
+      !Number.isInteger(beginIndex) ||
+      (trackDatasJson.length === 0 ? beginIndex !== 0 : beginIndex < 0 || beginIndex >= trackDatasJson.length)
+    ) {
+      throw new RangeError("beginIndex is outside the canonical queue");
+    }
+    if (!Number.isFinite(position) || position < 0) {
+      throw new RangeError("position must be a finite non-negative number");
+    }
+
+    const nextQueue = structuredClone(trackDatasJson);
+    const shouldResume = preservePlaybackState && !this.audioElement.paused;
     await this.clear();
-    await this.addTracks(trackDatasJson);
-    await this.jump(beginIndex);
+    if (nextQueue.length === 0) {
+      this.emitQueueChange();
+      this.emitCurrentChange();
+      return;
+    }
+
+    this.trackData = nextQueue;
+    this.index = beginIndex;
+    this.playbackOrderManager.reset(this.trackData.length, beginIndex);
+    await this.setCurrent(beginIndex);
+    this.audioElement.currentTime = position;
+    if (shouldResume) {
+      await this.play();
+    }
+    this.emitQueueChange();
   }
 
   async addDownload(id: string, uri: string, metadataJson: string) {}
@@ -561,19 +546,15 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
   }
 
   async getShuffleMode(): Promise<ShuffleMode> {
-    return this.shuffleMode;
+    return this.playbackOrderManager.isShuffleEnabled ? ShuffleMode.ON : ShuffleMode.OFF;
   }
 
   async setShuffleMode(mode: ShuffleMode): Promise<void> {
-    if (mode === this.shuffleMode) {
-      return;
+    if (mode !== ShuffleMode.OFF && mode !== ShuffleMode.ON) {
+      throw new RangeError("Invalid shuffle mode");
     }
-    this.shuffleMode = mode;
-    if (mode === ShuffleMode.ON) {
-      // 开启时重建随机顺序，当前曲目固定在首位，播放进度不受影响
-      this.rebuildShuffleOrder();
-    } else {
-      this.shuffleOrderIds = [];
+    if (!this.playbackOrderManager.setShuffleEnabled(mode === ShuffleMode.ON, this.index)) {
+      return;
     }
     this.emit("onShuffleModeChange", { mode });
   }

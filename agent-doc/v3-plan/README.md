@@ -33,10 +33,11 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 ## Current Working Assumption
 
 Epics 1–4 (Player Foundation, Config Architecture, Bilibili Data Boundary, Playback
-Orchestration) are delivered. See the [Status Overview](./epic-breakdown.md#status-overview)
-in the epic breakdown for the up-to-date delivery state; the next implementation target is
-Epic 5 (Playlist Domain), which consumes `features/playback` and the playlist-facing hooks
-as-is.
+Orchestration) are delivered. Epic 1 now owns queue occurrences, cross-platform shuffle
+playback order, Android natural-end and external transport routing, and atomic queue
+replacement. Native iOS verification remains environment-dependent; see
+[player-foundation.md](./player-foundation.md#implementation-status). Epic 5 (Playlist
+Domain) is the next business refactor.
 
 The isolated `packages/ui` design-system foundation may be developed in parallel because it does not consume current mobile business modules. Integrating it into screens remains part of the later UI rewrite and must wait for stable feature-facing APIs.
 

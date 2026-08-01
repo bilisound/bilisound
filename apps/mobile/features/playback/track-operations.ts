@@ -212,7 +212,10 @@ export async function playPlaylist(id: number, index = 0) {
   if (Platform.OS !== "web" && !tracks[index].extendedData?.isLoaded) {
     await refreshTrack(tracks[index]);
   }
-  await Player.setQueue(tracks, index);
+  await Player.setQueueWithOptions(tracks, {
+    beginIndex: index,
+    preservePlaybackState: false,
+  });
   await Player.play();
 
   // 替换队列时恢复到非随机状态（与旧版行为一致），随机顺序由 player 内部管理

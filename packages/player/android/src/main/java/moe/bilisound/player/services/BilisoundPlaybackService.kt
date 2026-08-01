@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.core.os.bundleOf
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import moe.bilisound.player.BilisoundPlayerModule
+import moe.bilisound.player.PlaybackOrderManager
 import moe.bilisound.player.ERROR_BAD_HTTP_STATUS_CODE
 import moe.bilisound.player.ERROR_GENERIC
 import moe.bilisound.player.ERROR_NETWORK_FAILURE
@@ -50,6 +52,61 @@ import moe.bilisound.player.mediaItemToBundle
 class BilisoundPlaybackService : MediaSessionService() {
     companion object {
         private const val TAG = "BilisoundPlaybackService"
+        private var activePlayer: ExoPlayer? = null
+        private var activePlaybackOrder: PlaybackOrderManager? = null
+
+        fun replaceMediaItemPreservingPlaybackOrder(index: Int, mediaItem: MediaItem): Boolean {
+            val player = checkNotNull(activePlayer) { "Playback service is not ready" }
+            require(index in 0 until player.mediaItemCount) { "Invalid media item index: $index" }
+
+            val playbackOrder = checkNotNull(activePlaybackOrder) { "Playback order is not ready" }
+            val replacingCurrentItem = index == player.currentMediaItemIndex
+            val currentPosition = player.currentPosition.coerceAtLeast(0)
+            if (replacingCurrentItem) {
+                BilisoundPlayerModule.beginCurrentItemReplacementTransitionSuppression()
+            }
+
+            player.replaceMediaItem(index, mediaItem)
+            player.setShuffleOrder(playbackOrder)
+            activePlaybackOrder = playbackOrder
+            if (replacingCurrentItem) {
+                player.seekTo(index, currentPosition)
+            }
+            return replacingCurrentItem
+        }
+
+        fun setMediaItems(
+            mediaItems: List<MediaItem>,
+            startIndex: Int,
+            startPositionMs: Long,
+            playWhenReady: Boolean,
+        ) {
+            val player = checkNotNull(activePlayer) { "Playback service is not ready" }
+            player.pause()
+            if (mediaItems.isEmpty()) {
+                player.clearMediaItems()
+                installPlaybackOrder(player, 0, C.INDEX_UNSET)
+                return
+            }
+
+            player.setMediaItems(mediaItems, startIndex, startPositionMs)
+            installPlaybackOrder(player, mediaItems.size, startIndex)
+            if (playWhenReady) {
+                player.play()
+            }
+        }
+
+        private fun installPlaybackOrder(player: ExoPlayer, size: Int, startIndex: Int) {
+            val playbackOrder = PlaybackOrderManager(
+                size = size,
+                startIndex = startIndex,
+                onOrderChanged = { updatedOrder ->
+                    activePlaybackOrder = updatedOrder
+                },
+            )
+            activePlaybackOrder = playbackOrder
+            player.setShuffleOrder(playbackOrder)
+        }
     }
 
     private var mediaSession: MediaSession? = null
@@ -76,6 +133,8 @@ class BilisoundPlaybackService : MediaSessionService() {
         val player = ExoPlayer.Builder(this)
             .setMediaSourceFactory(mediaSourceFactory)
             .build()
+        installPlaybackOrder(player, 0, C.INDEX_UNSET)
+        activePlayer = player
 
         // 设置 sessionActivity
         val intent = packageManager.getLaunchIntentForPackage(packageName)
@@ -92,9 +151,9 @@ class BilisoundPlaybackService : MediaSessionService() {
 
         player.clearMediaItems()
         player.prepare()
+        startProgressUpdates()
         player.addListener(playerListener)
 
-        startProgressUpdates()
     }
 
     // Remember to release the player and media session in onDestroy
@@ -107,9 +166,10 @@ class BilisoundPlaybackService : MediaSessionService() {
             player.removeListener(playerListener)
             player.release()
             release()
-            mediaSession!!.release()
-            mediaSession = null
         }
+        mediaSession = null
+        activePlayer = null
+        activePlaybackOrder = null
         super.onDestroy()
     }
 
@@ -210,6 +270,18 @@ class BilisoundPlaybackService : MediaSessionService() {
                 )
             )
         }
+        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+            if (!shuffleModeEnabled) {
+                return
+            }
+            val player = mediaSession?.player as? ExoPlayer ?: return
+            installPlaybackOrder(
+                player = player,
+                size = player.mediaItemCount,
+                startIndex = player.currentMediaItemIndex,
+            )
+        }
+
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             if (BilisoundPlayerModule.isSuppressingCurrentItemReplacementTransition()) {

@@ -4,6 +4,7 @@ import type {
   PlaybackState,
   RepeatMode,
   ShuffleMode,
+  SetQueueOptions,
   TrackData,
   TrackDataInternal,
 } from "./index";
@@ -41,6 +42,10 @@ export interface BilisoundPlayerModuleInterface {
   deleteTracks(indexesJson: string | number[]): Promise<void>;
   clearQueue(): Promise<void>;
   setQueue(trackDatasJson: string | TrackData[], beginIndex: number): Promise<void>;
+  setQueueWithOptions(
+    trackDatasJson: string | TrackData[],
+    optionsJson: string | Required<SetQueueOptions>,
+  ): Promise<void>;
 
   // 缓存管理相关
   addDownload(id: string, uri: string, metadataJson: string): Promise<void>;

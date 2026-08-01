@@ -39,6 +39,14 @@ export interface TrackDataInternal {
   headers: string | null;
   extendedData: string | null;
 }
+export interface SetQueueOptions {
+  /** Canonical queue index to select after replacement. Defaults to 0. */
+  beginIndex?: number;
+  /** Playback position in seconds after replacement. Defaults to 0. */
+  position?: number;
+  /** Preserve the previous play/pause intent. Defaults to false. */
+  preservePlaybackState?: boolean;
+}
 
 export interface DownloadData {
   headers: Record<string, string>;

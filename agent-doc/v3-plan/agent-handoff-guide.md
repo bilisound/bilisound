@@ -19,18 +19,24 @@ Check `git branch -a` and ask the user which branch the task belongs on. Recent 
 
 ## Recommended First Workstream
 
-Check the [Status Overview](./epic-breakdown.md#status-overview) first and continue with the
-next planned epic. Epics 1–4 (Player Foundation, Config Architecture, Bilibili Data Boundary,
-Playback Orchestration) are delivered; the next target is Epic 5 (Playlist Domain).
+Check the [Status Overview](./epic-breakdown.md#status-overview) first. Epics 1–4
+(Player Foundation, Config Architecture, Bilibili Data Boundary, Playback Orchestration)
+are delivered. Epic 5 (Playlist Domain) is the next business refactor.
 
-Historical reason for the original ordering:
+Player Foundation now provides:
 
 ```txt
-mobile app shuffle/playback code compensated for player-level platform differences
+player-owned queue-occurrence order on Web, Android, and iOS
+one stable shuffle sequence for next, previous, natural completion, and external controls
+atomic setQueueWithOptions queue replacement
+mobile queue restore and playlist replacement through that transaction
 ```
 
-Epic 1 removed that coupling, so new orchestration work can now build on the stable player
-APIs instead of carrying platform workarounds into `apps/mobile`.
+The player package owns canonical queue occurrences and shuffle playback order. Native
+engines execute canonical-index seeks selected by the player; mobile code must not carry
+platform-specific shuffle mechanics. Before changing this contract, read the Slice G–I
+handoff in `player-foundation.md`. The latest iOS native implementation remains the only
+platform-specific compilation/device verification gap recorded there.
 
 ## Long-Term UI Rewrite Direction
 
@@ -82,12 +88,13 @@ Start with a facade in `features/config` before changing persisted storage layou
 Files likely involved:
 
 apps/mobile/features/bilibili
-apps/mobile/components/video-detail/*
+apps/mobile/components/video-detail/\*
 apps/mobile/app/video/[id].tsx
 apps/mobile/app/remote-list.tsx
 apps/mobile/app/download-web.tsx
 packages/sdk
-```
+
+````
 
 Do not change SDK behavior while extending this boundary. Consume its app-owned models and
 public functions; keep playlist/player orchestration outside `features/bilibili`.
@@ -105,7 +112,7 @@ Does this remove route-level imports from storage/api/player?
 Does this move business policy out of Zustand store actions?
 Does this preserve persisted user data?
 Does this make a future UI rewrite easier without mixing in UI framework replacement?
-```
+````
 
 ## Verification Notes
 

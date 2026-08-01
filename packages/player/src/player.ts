@@ -7,6 +7,7 @@ import type {
   DownloadItem,
   PlaybackProgress,
   PlaybackState,
+  SetQueueOptions,
   TrackData,
   TrackDataInternal,
 } from "./types";
@@ -280,21 +281,44 @@ export async function clearQueue() {
 }
 
 /**
- * 用一个新的队列替换当前队列
- * @param trackDatas
- * @param beginIndex
+ * Atomically replaces the canonical queue and selects its initial playback state.
  */
-export function setQueue(trackDatas: TrackData[], beginIndex = 0): Promise<void> {
+export function setQueueWithOptions(trackDatas: TrackData[], options: SetQueueOptions = {}): Promise<void> {
+  const normalizedOptions = normalizeSetQueueOptions(trackDatas.length, options);
   if (Platform.OS === "web") {
-    return BilisoundPlayerModule.setQueue(structuredClone(trackDatas), beginIndex);
+    return BilisoundPlayerModule.setQueueWithOptions(structuredClone(trackDatas), normalizedOptions);
   }
 
-  const processedData: TrackDataInternal[] = [];
-  for (let i = 0; i < trackDatas.length; i++) {
-    const trackData = trackDatas[i]!;
-    processedData.push(toTrackDataInternal(trackData));
+  const processedData = trackDatas.map(toTrackDataInternal);
+  return BilisoundPlayerModule.setQueueWithOptions(JSON.stringify(processedData), JSON.stringify(normalizedOptions));
+}
+
+/**
+ * Replaces the queue at the requested canonical index and leaves playback paused.
+ */
+export function setQueue(trackDatas: TrackData[], beginIndex = 0): Promise<void> {
+  return setQueueWithOptions(trackDatas, { beginIndex });
+}
+
+function normalizeSetQueueOptions(trackCount: number, options: SetQueueOptions): Required<SetQueueOptions> {
+  const beginIndex = options.beginIndex ?? 0;
+  const position = options.position ?? 0;
+  const preservePlaybackState = options.preservePlaybackState ?? false;
+
+  if (
+    !Number.isInteger(beginIndex) ||
+    (trackCount === 0 ? beginIndex !== 0 : beginIndex < 0 || beginIndex >= trackCount)
+  ) {
+    throw new RangeError("beginIndex is outside the canonical queue");
   }
-  return BilisoundPlayerModule.setQueue(JSON.stringify(processedData), beginIndex);
+  if (!Number.isFinite(position) || position < 0) {
+    throw new RangeError("position must be a finite non-negative number");
+  }
+  if (typeof preservePlaybackState !== "boolean") {
+    throw new TypeError("preservePlaybackState must be a boolean");
+  }
+
+  return { beginIndex, position, preservePlaybackState };
 }
 
 /**

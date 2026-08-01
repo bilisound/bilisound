@@ -6,7 +6,7 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 
 | Epic                      | Status        | Notes                                                                                                                                                    |
 | ------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Player Foundation      | **Delivered** | slices A–F complete; some native paths still need device verification, see [player-foundation.md](./player-foundation.md#implementation-status)          |
+| 1. Player Foundation      | **Delivered** | player-owned occurrence order, Android transport routing, and atomic queue transaction delivered; iOS native verification remains                        |
 | 2. Config Architecture    | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
@@ -21,8 +21,8 @@ record stays in one place. Planned epics are listed under **Upcoming Epics**.
 
 ### Epic 1: Player Foundation
 
-> Status: **delivered** — slices A–F complete in [player-foundation.md](./player-foundation.md#implementation-status).
-> Native shuffle verification (iOS, and Android large-queue cases) is still pending device testing.
+> Status: **delivered** — slices A–I complete in [player-foundation.md](./player-foundation.md#implementation-status).
+> Remaining verification: compile and exercise the latest occurrence/transaction code on iOS hardware or Simulator.
 
 Scope:
 
@@ -35,7 +35,7 @@ Goals:
 
 1. Add cross-platform shuffle mode abstraction.
 2. Keep canonical-queue and shuffle playback-order management entirely inside `@bilisound/player`.
-3. Treat Media3, AVQueuePlayer, and HTMLAudio as playback engines only: native shuffle stays disabled, and next/previous/natural-end/external media controls resolve through the same player-owned order.
+3. Treat Media3, AVQueuePlayer, and HTMLAudio as playback engines only: engine-generated random order is not authoritative, and next/previous/natural-end/external media controls resolve through the same player-owned order.
 4. Add queue transaction capability for replacing queue while preserving index, position, and playback state.
 5. Remove mobile reliance on `@bilisound/player/build/*` deep imports.
 6. Export missing public hooks such as `useRepeatMode`.

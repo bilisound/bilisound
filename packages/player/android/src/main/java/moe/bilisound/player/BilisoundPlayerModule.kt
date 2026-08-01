@@ -51,6 +51,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.util.concurrent.Executor
+import kotlin.math.roundToLong
 
 
 const val TAG = "BilisoundPlayerModule"
@@ -136,8 +137,6 @@ class BilisoundPlayerModule : Module() {
         // 下载项目的 headers
         private var headersBank: Map<String, Map<String, String>> = mapOf()
         private var suppressCurrentReplacementTransitionsUntil = 0L
-        private var stableShuffleMode = 0
-        private var stableShuffleOrderIds: List<String> = emptyList()
 
         @Synchronized
         fun getHeadersOnBank(key: String): Map<String, String>? {
@@ -181,69 +180,6 @@ class BilisoundPlayerModule : Module() {
             suppressCurrentReplacementTransitionsUntil = 0
         }
 
-        @Synchronized
-        fun getStableShuffleMode(): Int {
-            return stableShuffleMode
-        }
-
-        @Synchronized
-        fun setStableShuffleMode(mode: Int, mediaItems: List<MediaItem>, currentIndex: Int) {
-            stableShuffleMode = mode
-            stableShuffleOrderIds = if (mode == 1) buildStableShuffleOrder(mediaItems, currentIndex) else emptyList()
-        }
-
-        @Synchronized
-        fun getStableNextIndex(mediaItems: List<MediaItem>, currentIndex: Int): Int {
-            if (stableShuffleMode != 1) {
-                return if (currentIndex < mediaItems.size - 1) currentIndex + 1 else -1
-            }
-            val order = resolveStablePlaybackOrder(mediaItems)
-            val pos = order.indexOf(currentIndex)
-            if (pos < 0) {
-                return order.firstOrNull() ?: -1
-            }
-            return if (pos < order.size - 1) order[pos + 1] else -1
-        }
-
-        @Synchronized
-        fun getStablePreviousIndex(mediaItems: List<MediaItem>, currentIndex: Int): Int {
-            if (stableShuffleMode != 1) {
-                return if (currentIndex > 0) currentIndex - 1 else -1
-            }
-            val order = resolveStablePlaybackOrder(mediaItems)
-            val pos = order.indexOf(currentIndex)
-            return if (pos > 0) order[pos - 1] else -1
-        }
-
-        private fun buildStableShuffleOrder(mediaItems: List<MediaItem>, currentIndex: Int): List<String> {
-            val ids = mediaItems.map { it.mediaId }
-            val currentId = mediaItems.getOrNull(currentIndex)?.mediaId
-            val rest = ids.filter { it != currentId }.toMutableList()
-            rest.shuffle()
-            return if (currentId != null) listOf(currentId) + rest else rest
-        }
-
-        private fun resolveStablePlaybackOrder(mediaItems: List<MediaItem>): List<Int> {
-            val idToIndex = mutableMapOf<String, Int>()
-            mediaItems.forEachIndexed { index, item ->
-                idToIndex.putIfAbsent(item.mediaId, index)
-            }
-
-            val order = mutableListOf<Int>()
-            stableShuffleOrderIds.forEach { id ->
-                idToIndex[id]?.let { order.add(it) }
-            }
-
-            if (order.size < mediaItems.size) {
-                val seen = order.toSet()
-                mediaItems.indices.forEach { index ->
-                    if (!seen.contains(index)) {
-                        order.add(index)
-                    }
-                }
-            }
-            return order
-        }
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -257,10 +193,39 @@ class BilisoundPlayerModule : Module() {
         val controller = controllerFuture?.get() ?: throw Exception("Controller not ready")
         return controller
     }
+    private fun replaceQueue(
+        jsonContent: String,
+        beginIndex: Int,
+        position: Double,
+        preservePlaybackState: Boolean,
+    ) {
+        val jsonArray = JSONArray(jsonContent)
+        val mediaItems = mutableListOf<MediaItem>()
+        for (index in 0 until jsonArray.length()) {
+            val trackJson = jsonArray.getString(index)
+            Log.d(TAG, "接收内容：$trackJson")
+            mediaItems.add(createMediaItemFromTrack(trackJson))
+        }
 
-    private fun getMediaItems(controller: Player): List<MediaItem> {
-        return (0 until controller.mediaItemCount).map { controller.getMediaItemAt(it) }
+        require(if (mediaItems.isEmpty()) beginIndex == 0 else beginIndex in mediaItems.indices) {
+            "无效的起始索引: $beginIndex"
+        }
+        require(position.isFinite() && position >= 0 && position <= Long.MAX_VALUE / 1000.0) {
+            "无效的播放进度: $position"
+        }
+
+        val shouldResume = preservePlaybackState && getController().playWhenReady
+        BilisoundPlaybackService.setMediaItems(
+            mediaItems = mediaItems,
+            startIndex = beginIndex,
+            startPositionMs = (position * 1000).roundToLong(),
+            playWhenReady = shouldResume,
+        )
+        firePlaylistChangeEvent()
     }
+
+
+
 
     @OptIn(UnstableApi::class)
     override fun definition() = ModuleDefinition {
@@ -379,20 +344,10 @@ class BilisoundPlayerModule : Module() {
         AsyncFunction("prev") { promise: Promise ->
             mainHandler.post {
                 try {
-                    val controller = getController()
-                    if (getStableShuffleMode() == 1) {
-                        val target = getStablePreviousIndex(getMediaItems(controller), controller.currentMediaItemIndex)
-                        if (target < 0 || controller.currentPosition > 3000) {
-                            controller.seekTo(controller.currentMediaItemIndex, 0)
-                        } else {
-                            controller.seekTo(target, 0)
-                        }
-                    } else {
-                        controller.seekToPrevious()
-                    }
+                    getController().seekToPrevious()
                     promise.resolve(null)
                 } catch (e: Exception) {
-                    promise.reject("PLAYER_ERROR", "无法执行暂停操作 (${e.message})", e)
+                    promise.reject("PLAYER_ERROR", "无法跳转到上一首曲目 (${e.message})", e)
                 }
             }
         }
@@ -400,18 +355,10 @@ class BilisoundPlayerModule : Module() {
         AsyncFunction("next") { promise: Promise ->
             mainHandler.post {
                 try {
-                    val controller = getController()
-                    if (getStableShuffleMode() == 1) {
-                        val target = getStableNextIndex(getMediaItems(controller), controller.currentMediaItemIndex)
-                        if (target >= 0) {
-                            controller.seekTo(target, 0)
-                        }
-                    } else {
-                        controller.seekToNext()
-                    }
+                    getController().seekToNext()
                     promise.resolve(null)
                 } catch (e: Exception) {
-                    promise.reject("PLAYER_ERROR", "无法执行暂停操作 (${e.message})", e)
+                    promise.reject("PLAYER_ERROR", "无法跳转到下一首曲目 (${e.message})", e)
                 }
             }
         }
@@ -497,15 +444,7 @@ class BilisoundPlayerModule : Module() {
         AsyncFunction("getNextTrackIndex") { promise: Promise ->
             mainHandler.post {
                 try {
-                    val controller = getController()
-                    val currentIndex = controller.currentMediaItemIndex
-                    val mediaItems = getMediaItems(controller)
-                    if (currentIndex < 0 || mediaItems.isEmpty()) {
-                        promise.resolve(-1)
-                        return@post
-                    }
-
-                    promise.resolve(getStableNextIndex(mediaItems, currentIndex))
+                    promise.resolve(getController().nextMediaItemIndex)
                 } catch (e: Exception) {
                     promise.reject("PLAYER_ERROR", "无法获取下一首曲目索引 (${e.message})", e)
                 }
@@ -685,14 +624,10 @@ class BilisoundPlayerModule : Module() {
                     }
 
                     val mediaItem = createMediaItemFromTrack(jsonContent)
-                    val replacingCurrentItem = index == controller.currentMediaItemIndex
                     val currentPosition = controller.currentPosition.coerceAtLeast(0)
+                    val replacingCurrentItem =
+                        BilisoundPlaybackService.replaceMediaItemPreservingPlaybackOrder(index, mediaItem)
                     if (replacingCurrentItem) {
-                        beginCurrentItemReplacementTransitionSuppression()
-                    }
-                    controller.replaceMediaItem(index, mediaItem)
-                    if (replacingCurrentItem) {
-                        controller.seekTo(index, currentPosition)
                         mainHandler.postDelayed({
                             if (controller.currentMediaItemIndex != index) {
                                 controller.seekTo(index, currentPosition)
@@ -724,7 +659,6 @@ class BilisoundPlayerModule : Module() {
                         throw IllegalArgumentException("无效的索引: $index")
                     }
 
-                    // 删除单个曲目
                     controller.removeMediaItem(index)
 
                     promise.resolve()
@@ -742,23 +676,18 @@ class BilisoundPlayerModule : Module() {
                     val controller = getController()
                     val jsonArray = JSONArray(jsonContent)
 
-                    // 将索引转换为列表并排序（从大到小）
-                    val indices = mutableListOf<Int>()
+                    val indices = mutableSetOf<Int>()
                     for (i in 0 until jsonArray.length()) {
                         indices.add(jsonArray.getInt(i))
                     }
 
-                    // 验证所有索引是否有效
+                    // 验证所有索引有效后，从大到小删除，避免索引位移。
                     val invalidIndex = indices.find { it < 0 || it >= controller.mediaItemCount }
                     if (invalidIndex != null) {
                         throw IllegalArgumentException("无效的索引: $invalidIndex")
                     }
-
-                    // 从大到小排序
-                    indices.sortDescending()
-
-                    // 从大到小依次删除，这样不会影响后面要删除项目的索引
-                    for (index in indices) {
+                    val sortedIndices = indices.sortedDescending()
+                    for (index in sortedIndices) {
                         controller.removeMediaItem(index)
                     }
 
@@ -773,8 +702,7 @@ class BilisoundPlayerModule : Module() {
         AsyncFunction("clearQueue") { promise: Promise ->
             mainHandler.post {
                 try {
-                    val controller = getController()
-                    controller.clearMediaItems()
+                    BilisoundPlaybackService.setMediaItems(emptyList(), 0, 0, false)
                     promise.resolve()
                     firePlaylistChangeEvent()
                 } catch (e: Exception) {
@@ -787,24 +715,36 @@ class BilisoundPlayerModule : Module() {
             mainHandler.post {
                 try {
                     Log.d(TAG, "用户尝试替换整个播放队列。接收内容：$jsonContent")
-                    val jsonArray = JSONArray(jsonContent)
-                    val mediaItems = mutableListOf<MediaItem>()
-
-                    for (i in 0 until jsonArray.length()) {
-                        val trackJson = jsonArray.getString(i)
-                        Log.d(TAG, "接收内容：$trackJson")
-                        val mediaItem = createMediaItemFromTrack(trackJson)
-                        mediaItems.add(mediaItem)
-                    }
-
-                    val controller = getController()
-                    controller.clearMediaItems()
-                    controller.addMediaItems(0, mediaItems)
-                    controller.seekTo(beginIndex, 0)
+                    replaceQueue(
+                        jsonContent = jsonContent,
+                        beginIndex = beginIndex,
+                        position = 0.0,
+                        preservePlaybackState = false,
+                    )
                     promise.resolve()
-                    firePlaylistChangeEvent()
                 } catch (e: Exception) {
-                    promise.reject("PLAYER_ERROR", "无法在指定位置批量添加曲目 (${e.message})", e)
+                    promise.reject("PLAYER_ERROR", "无法替换播放队列 (${e.message})", e)
+                }
+            }
+        }
+
+        AsyncFunction("setQueueWithOptions") {
+                jsonContent: String,
+                optionsContent: String,
+                promise: Promise ->
+            mainHandler.post {
+                try {
+                    Log.d(TAG, "用户尝试按选项替换整个播放队列。接收内容：$jsonContent")
+                    val options = JSONObject(optionsContent)
+                    replaceQueue(
+                        jsonContent = jsonContent,
+                        beginIndex = options.getInt("beginIndex"),
+                        position = options.getDouble("position"),
+                        preservePlaybackState = options.getBoolean("preservePlaybackState"),
+                    )
+                    promise.resolve()
+                } catch (e: Exception) {
+                    promise.reject("PLAYER_ERROR", "无法按选项替换播放队列 (${e.message})", e)
                 }
             }
         }
@@ -848,7 +788,7 @@ class BilisoundPlayerModule : Module() {
         AsyncFunction("getShuffleMode") { promise: Promise ->
             mainHandler.post {
                 try {
-                    promise.resolve(getStableShuffleMode())
+                    promise.resolve(if (getController().shuffleModeEnabled) 1 else 0)
                 } catch (e: Exception) {
                     promise.reject("GET_SHUFFLE_MODE_ERROR", "无法获取随机播放模式（${e.message}）", e)
                 }
@@ -858,12 +798,8 @@ class BilisoundPlayerModule : Module() {
         AsyncFunction("setShuffleMode") { mode: Int, promise: Promise ->
             mainHandler.post {
                 try {
-                    val controller = getController()
-                    setStableShuffleMode(mode, getMediaItems(controller), controller.currentMediaItemIndex)
-                    controller.shuffleModeEnabled = false
-                    this@BilisoundPlayerModule.sendEvent(EVENT_SHUFFLE_MODE_CHANGE, bundleOf(
-                        "mode" to getStableShuffleMode(),
-                    ))
+                    require(mode == 0 || mode == 1) { "Invalid shuffle mode: $mode" }
+                    getController().shuffleModeEnabled = mode == 1
                     promise.resolve(null)
                 } catch (e: Exception) {
                     promise.reject("SET_SHUFFLE_MODE_ERROR", "无法设置随机播放模式（${e.message}）", e)
@@ -1126,7 +1062,7 @@ class BilisoundPlayerModule : Module() {
 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
             this@BilisoundPlayerModule.sendEvent(EVENT_SHUFFLE_MODE_CHANGE, bundleOf(
-                "mode" to getStableShuffleMode(),
+                "mode" to if (shuffleModeEnabled) 1 else 0,
             ))
         }
     }
