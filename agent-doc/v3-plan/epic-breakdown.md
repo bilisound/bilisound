@@ -144,12 +144,17 @@ Verification:
 
 ```txt
 pnpm -C apps/mobile exec tsc --noEmit
-pnpm -C apps/mobile exec jest features/bilibili/__tests__/mappers.test.ts --runInBand
+pnpm -C apps/mobile exec jest business/__tests__/download.test.ts features/bilibili/__tests__/mappers.test.ts --runInBand
 git diff --check -- apps/mobile pnpm-lock.yaml agent-doc/v3-plan
 ```
 
 All passed. The mapper test covers metadata, remote playlist pagination, and media-resource
 mapping so API DTO changes cannot silently re-enter the UI boundary.
+
+Post-delivery review fixed a cancellation regression in the migrated download flow:
+`downloadResource` now rechecks task membership after asynchronous media-resource resolution and
+before creating `DownloadResumable`. The download regression test proves that cancellation during
+resource resolution starts no network/file download.
 
 Coupling reduced:
 

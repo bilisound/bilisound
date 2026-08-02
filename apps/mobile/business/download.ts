@@ -86,6 +86,11 @@ export async function downloadResource(bvid: string, episode: number) {
   // 获取源地址
   const { url, isAudio } = await getMediaResource(playingRequest.id, playingRequest.episode);
 
+  if (!useDownloadStore.getState().downloadList.has(id)) {
+    log.info(prefix + "操作取消");
+    return;
+  }
+
   // 待下载资源地址（可能是音频或视频）
   const downloadTargetFileUrl = getCacheAudioPath(playingRequest.id, playingRequest.episode, true);
 
