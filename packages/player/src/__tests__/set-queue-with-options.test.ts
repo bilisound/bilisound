@@ -1,3 +1,7 @@
+import { BilisoundPlayerModule } from "../BilisoundPlayerModule";
+import { setQueue, setQueueWithOptions } from "../player";
+import type { TrackData } from "../types";
+
 jest.mock("react-native", () => ({
   Platform: { OS: "web" },
 }));
@@ -7,10 +11,6 @@ jest.mock("../BilisoundPlayerModule", () => ({
     setQueueWithOptions: jest.fn(() => Promise.resolve()),
   },
 }));
-
-import { setQueue, setQueueWithOptions } from "../player";
-import type { TrackData } from "../types";
-import { BilisoundPlayerModule } from "../BilisoundPlayerModule";
 
 const mockSetQueueWithOptions = BilisoundPlayerModule.setQueueWithOptions as jest.Mock;
 

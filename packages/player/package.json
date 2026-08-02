@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/jest": "catalog:",
     "@types/react": "catalog:",
+    "eslint": "^9.39.4",
     "expo": "~57.0.8",
     "expo-module-scripts": "catalog:",
     "expo-modules-core": "catalog:",

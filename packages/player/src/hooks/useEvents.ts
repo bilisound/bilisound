@@ -9,6 +9,7 @@ export function useEvents<T extends keyof EventList>(
   dependencies: any[] = [],
 ) {
   // 使用 useCallback 来保证 listener 的引用稳定性
+  // eslint-disable-next-line react-hooks/use-memo -- This public hook intentionally accepts a caller-owned dependency list.
   const stableListener = useCallback(listener, dependencies);
 
   useEffect(() => {

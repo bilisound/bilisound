@@ -1,5 +1,6 @@
 import { registerWebModule, NativeModule } from "expo";
 
+import { PlaybackOrderManager } from "./playback-order-manager";
 import type {
   EventListFunc,
   PlaybackProgress,
@@ -11,7 +12,6 @@ import type {
 import { DownloadState, RepeatMode, ShuffleMode } from "./types";
 import type { BilisoundPlayerModuleInterface } from "./types/module";
 import { deleteItems } from "./utils";
-import { PlaybackOrderManager } from "./playback-order-manager";
 
 class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements BilisoundPlayerModuleInterface {
   private static isMediaSessionAvailable = !!window?.navigator?.mediaSession;
