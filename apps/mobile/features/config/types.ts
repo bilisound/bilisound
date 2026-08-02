@@ -12,16 +12,19 @@ export interface SettingsProps {
   showYuruChara: boolean;
 }
 
+type BooleanSettingKey = {
+  [K in keyof SettingsProps]: SettingsProps[K] extends boolean ? K : never;
+}[keyof SettingsProps];
+
 export interface SettingsMethods {
   update: <K extends keyof SettingsProps>(key: K, value: SettingsProps[K]) => void;
-  toggle: <K extends keyof SettingsProps>(key: K) => boolean;
+  toggle: (key: BooleanSettingKey) => boolean;
 }
 
 /** 外观偏好 */
 export interface AppearanceConfig {
   theme: string;
   showYuruChara: boolean;
-  showPlaylistInGrid: boolean;
 }
 
 /** 歌单视图偏好 */

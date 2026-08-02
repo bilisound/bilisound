@@ -78,6 +78,8 @@ Suggested categories:
 AppearanceConfig:
   theme
   showYuruChara
+
+PlaylistViewConfig:
   showPlaylistInGrid
 
 DownloadConfig:

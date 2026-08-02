@@ -16,7 +16,6 @@ export function useAppearanceConfig(): AppearanceConfig {
     useShallow(state => ({
       theme: state.theme,
       showYuruChara: state.showYuruChara,
-      showPlaylistInGrid: state.showPlaylistInGrid,
     })),
   );
 }

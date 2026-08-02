@@ -42,6 +42,8 @@ The current store mixes different semantic levels:
 Appearance preferences:
   theme
   showYuruChara
+
+Playlist view preferences:
   showPlaylistInGrid
 
 Download/cache behavior:
@@ -83,6 +85,9 @@ This first shape can still use one persisted store internally. The initial goal 
 export interface AppearanceConfig {
   theme: string;
   showYuruChara: boolean;
+}
+
+export interface PlaylistViewConfig {
   showPlaylistInGrid: boolean;
 }
 
@@ -183,11 +188,17 @@ Decisions:
   features/config instead of touching the store directly.
 - settings editor pages (settings.tsx / theme.tsx) use domain hooks +
   useSettingsActions() for update/toggle.
+- `useAppearanceConfig()` selects only `theme` and `showYuruChara`; playlist layout
+  is exposed exclusively through `usePlaylistViewConfig()` so unrelated appearance
+  consumers do not re-render when `showPlaylistInGrid` changes.
 - test mock updated: components/__tests__/yuru-chara.test.tsx mocks
   ~/features/config instead of ~/store/settings.
 ```
 
-Verification: `tsc --noEmit` clean, ESLint 0 errors (14 pre-existing warnings), jest 14 suites / 85 tests pass.
+Verification (2026-08-03): `tsc --noEmit` clean; changed-file ESLint has 0 errors
+(6 pre-existing `no-require-imports` warnings in `yuru-chara.test.tsx`); Jest passes
+17 suites / 90 tests. `store.test.ts` locks the v2 persisted payload contract, and
+`selectors.test.tsx` locks appearance-selector isolation from playlist view changes.
 
 Coupling reduced: no module outside `features/config` imports the settings store or
 v2 `~/store/settings`; business layers now read policy readers instead of `getState()`.
