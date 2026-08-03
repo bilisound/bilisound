@@ -12,30 +12,12 @@ import {
 import { handleLegacyQueue } from "~/utils/migration/legacy-queue";
 import { cleanupLegacyShuffleKeys } from "~/utils/migration/shuffle-queue";
 import { convertToHTTPS } from "~/utils/string";
-import log from "~/utils/logger";
 
 import type { TrackDataOld } from "./types";
-import { processTrackDataForLoad, processTrackDataForSave } from "./track-data";
+import { processTrackDataForLoad } from "./track-data";
 import { refreshTrack } from "./track-operations";
 
-/**
- * 保存播放队列
- */
-export async function saveTrackData() {
-  log.debug("正在自动保存播放队列");
-  await Promise.all([
-    (async () => {
-      const tracks = await Player.getTracks();
-      processTrackDataForSave(tracks);
-      queueStorage.set(QUEUE_LIST_VERSION, 2);
-      queueStorage.set(QUEUE_LIST, JSON.stringify(tracks));
-    })(),
-    (async () => {
-      const current = await Player.getCurrentTrackIndex();
-      queueStorage.set(QUEUE_CURRENT_INDEX, current || 0);
-    })(),
-  ]);
-}
+export { saveTrackData } from "./queue-snapshot";
 
 /**
  * 读取播放队列

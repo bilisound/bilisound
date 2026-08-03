@@ -13,9 +13,15 @@ import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
 import { getPlaylistDetail } from "~/storage/sqlite/playlist";
 import type { PlaylistDetail } from "~/storage/sqlite/schema";
-import { invalidateOnQueueStatus, PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
+import {
+  invalidateOnQueueStatus,
+  PLAYLIST_ON_QUEUE,
+  PLAYLIST_RESTORE_LOOP_ONCE,
+  playlistStorage,
+} from "~/storage/playlist";
 import useErrorMessageStore from "~/store/error-message";
 
+import { saveTrackData } from "./queue-snapshot";
 import { playlistToTracks } from "./track-data";
 
 let currentTrackRefresh: { key: string; promise: Promise<void> } | null = null;
@@ -226,8 +232,16 @@ export async function playPlaylist(id: number, index = 0) {
 /**
  * 播放用例：向当前播放队列追加歌单曲目（歌单新增曲目后同步到正在播放该歌单的队列）
  */
-export async function appendPlaylistToCurrentQueue(playlistDetail: PlaylistDetail[]) {
+export async function appendPlaylistToCurrentQueue(playlistId: number, playlistDetail: PlaylistDetail[]) {
+  const queueOwner = JSON.parse(playlistStorage.getString(PLAYLIST_ON_QUEUE) ?? "{}") as {
+    value?: { id?: number };
+  };
+  if (queueOwner.value?.id !== playlistId) {
+    return;
+  }
+
   const convertedList = playlistToTracks(playlistDetail);
   await Player.addTracks(convertedList);
+  await saveTrackData();
   // v3 起 player 内部管理随机顺序，新增曲目会被自动并入播放顺序，无需再维护 backup
 }

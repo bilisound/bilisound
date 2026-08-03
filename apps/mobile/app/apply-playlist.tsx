@@ -10,7 +10,6 @@ import Toast from "react-native-toast-message";
 import { PlaylistItem } from "~/components/playlist-item";
 import { VideoItem } from "~/components/video-item";
 import { Text } from "~/components/ui/text";
-import { usePlaylistOnQueue } from "~/storage/playlist";
 import { addToPlaylist, getPlaylistMetas, quickCreatePlaylist, syncPlaylistAmount } from "~/storage/sqlite/playlist";
 import useApplyPlaylistStore from "~/store/apply-playlist";
 import { getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
@@ -20,7 +19,6 @@ import { appendPlaylistToCurrentQueue } from "~/features/playback";
 import { Icon } from "~/components/icon";
 
 export default function Page() {
-  const [playlistOnQueue = {}] = usePlaylistOnQueue();
   // const { update } = useTracks();
 
   // 添加歌单
@@ -45,10 +43,7 @@ export default function Page() {
     await addToPlaylist(id, playlistDetail ?? []);
     await syncPlaylistAmount(id);
 
-    // 如果当前的 queue 来自试图被添加的播放列表，给 queue 也添加这些曲目
-    if (playlistOnQueue) {
-      await appendPlaylistToCurrentQueue(playlistDetail ?? []);
-    }
+    await appendPlaylistToCurrentQueue(id, playlistDetail ?? []);
 
     await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
     await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });

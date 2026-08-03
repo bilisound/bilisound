@@ -195,7 +195,8 @@ features/playback/index.ts                # public use-case surface
 features/playback/track-operations.ts     # playEpisode / playPlaylist / playNextTrack /
                                           #   refreshTrack / refreshCurrentTrack /
                                           #   appendPlaylistToCurrentQueue
-features/playback/queue-persistence.ts    # saveTrackData / loadTrackData (session restore)
+features/playback/queue-persistence.ts    # loadTrackData + public saveTrackData re-export
+features/playback/queue-snapshot.ts       # saveTrackData current queue snapshot
 features/playback/cache.ts                # saveCurrentAndNextTrack / deleteCurrentTrackCache
 features/playback/shuffle.ts              # toggleShuffleMode (player API + persisted preference)
 features/playback/background.ts           # registerPlaybackBackgroundEvents (was app/_layout.tsx)
@@ -216,6 +217,20 @@ setMode (shuffle)       -> toggleShuffleMode
 route flow (append playlist rows to the current queue when the queue belongs to that
 playlist). Routes no longer call `@bilisound/player` for queue/playback flows;
 `app/_layout.tsx` keeps only `registerPlaybackBackgroundEvents()` wiring.
+
+Queue replacement confirmation follows the queue ownership marker:
+
+```txt
+non-empty queue with PLAYLIST_ON_QUEUE.value -> clean playlist-owned queue;
+                                                 switching to any playlist replaces directly
+non-empty queue without PLAYLIST_ON_QUEUE.value -> tainted/manual queue;
+                                                    replacing requires confirmation
+empty queue                                      -> replaces directly
+```
+
+An owned queue is only appended when its playlist id matches the target playlist. After a
+successful append, `saveTrackData` persists the updated queue immediately instead of relying on
+native track-change events.
 
 Deleted:
 

@@ -56,7 +56,8 @@ export function usePlaylistPlayer({
         return;
       }
 
-      // 队列为空或已经是当前歌单，直接播放
+      // 空队列或仍关联任意歌单（未 tainted）的队列可以直接切换；
+      // 只有非空且没有歌单归属标记的队列需要确认替换
       if (onQueue || (await Player.getTracks()).length <= 0) {
         return handlePlayConfirm(originalIndex);
       }
