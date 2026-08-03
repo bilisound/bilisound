@@ -57,3 +57,40 @@ agent-device open moe.bilisound.app.dev --platform android --session bilisound-t
 - 图片、布局、横屏、SafeArea、NativeWind/StyleSheet 迁移必须截图验证。
 - `agent-device metro reload` 后如果掉回系统桌面或 Dev Client 页，重新打开 app 并再次选择 `127.0.0.1:8081`。
 - Expo Dev Client 的 `Tools button` 是 a11y 验证常见干扰源；业务 UI 视觉正常但 snapshot 为空时，优先检查它，而不是直接判定页面无语义。
+
+## Metro 编译环境异常排查（布局错位 / a11y 树异常 / CssInterop 告警）
+
+**现象**（2026-08 真机会话实测）：
+
+- NativeWind 样式大面积失效：AlertDialog 内容堆叠在屏幕左上角、无遮罩、按钮全宽垂直堆叠（flex-row / justify-center / w-full 全部不生效）。
+- a11y 树不稳定：对话框按钮时隐时现、bounds 与实际渲染位置错位，导致 agent-device 点击/ref 操作失败，被迫用 raw ref 或坐标盲点。
+- Metro 日志持续刷 `Cannot update a component (CssInterop.View) while rendering a different component (CssInterop.Modal/View/Text/Image)`，且告警横幅会遮挡底部 tab 栏。
+
+**根因**：watchman 的 fsevents watch 反复 recrawl（事件丢失）→ Metro 感知不到文件变化、转换缓存不一致 → 部分模块（尤其 node_modules 里的 @gluestack-ui 等）拿到未走 NativeWind JSX 转换的旧编译产物 → className → style 转换失效。**与业务代码无关**，同一份代码在干净环境下完全正常。
+
+**排查步骤**：
+
+1. 检查 watchman 状态：
+
+```bash
+watchman watch-project <仓库根目录>
+```
+
+   出现 `Recrawled this watch N times` 警告即命中本问题。
+
+2. 确认代码改动真的进了 bundle（`agent-device metro reload` 不生效 ≠ 代码无效，先验证）：
+
+```bash
+curl -s "http://127.0.0.1:8081/.expo/.virtual-metro-entry.bundle?platform=android&dev=true&minify=false" -o /tmp/bundle.js
+# 检查你最近的改动标记是否出现在 bundle 里
+```
+
+3. 修复：重置 watchman 并重启 Metro：
+
+```bash
+watchman watch-del <仓库根目录>
+watchman watch-project <仓库根目录>
+# kill 旧 Metro 后重新启动（必要时带 --clear 清 Metro 缓存）
+```
+
+**教训**：在 Metro watch 失效的情况下做过多个「修复实验」（cssInterop 注册、硬编码 className 等）都看似无效，实际是改动从未进入 bundle。凡是在改代码后怀疑「修复不生效」，**先 curl bundle 确认改动已编译**，再讨论代码本身。
