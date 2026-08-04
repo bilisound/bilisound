@@ -4,7 +4,7 @@ import { ActivityIndicator, View } from "react-native";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Text } from "~/components/ui/text";
 import { useCacheExists } from "~/storage/cache-status";
-import { PlaylistDetail } from "~/features/playlist"
+import type { SongListItem } from "~/features/playlist";
 import { formatSecond } from "~/utils/datetime";
 
 import * as Player from "@bilisound/player";
@@ -64,7 +64,7 @@ export interface SongItemProps {
   onRequestPlay?: () => void;
   onLongPress?: () => void;
   onToggle?: () => void;
-  data?: PlaylistDetail;
+  data?: SongListItem;
   index?: number;
   isChecking?: boolean;
   isChecked?: boolean;

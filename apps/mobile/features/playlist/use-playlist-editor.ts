@@ -5,15 +5,15 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import useMultiSelect from "~/hooks/useMultiSelect";
 import useApplyPlaylistStore from "~/store/apply-playlist";
-import { deletePlaylistDetail, syncPlaylistAmount } from "~/features/playlist/repository";
+import { deletePlaylistDetail, syncPlaylistAmount } from "./repository";
 import { PLAYLIST_ON_QUEUE, playlistStorage, usePlaylistOnQueue } from "~/storage/playlist";
-import { PlaylistDetail, PlaylistMeta } from "~/features/playlist/models";
+import type { Playlist, PlaylistTrack } from "./models";
 
 interface UsePlaylistEditorOptions {
   playlistId: number;
-  meta: PlaylistMeta | undefined;
-  playlistDetail: PlaylistDetail[] | undefined;
-  filteredPlaylistDetail: PlaylistDetail[];
+  meta: Playlist | undefined;
+  playlistDetail: PlaylistTrack[] | undefined;
+  filteredPlaylistDetail: PlaylistTrack[];
   refetchData: () => Promise<void>;
   showConfirmDialog: (options: { title: string; description: string; onConfirm: () => Promise<void> }) => void;
 }

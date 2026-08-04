@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/actionsheet";
 import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu";
-import { PlaylistMeta } from "~/features/playlist"
+import type { Playlist } from "~/features/playlist";
 import { getVideoImageUrl } from "~/features/bilibili";
 
 export type LongPressAction = "editMeta" | "editCover" | "editMass" | "close";
@@ -16,7 +16,7 @@ export interface LongPressActionsProps {
   showActionSheet: boolean;
   onClose: () => void;
   onAction: (action: LongPressAction) => void;
-  current?: PlaylistMeta;
+  current?: Playlist;
 }
 
 export function LongPressActions({ showActionSheet, onAction, onClose, current }: LongPressActionsProps) {

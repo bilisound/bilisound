@@ -1,7 +1,7 @@
-import type { PlaylistImport } from "~/features/playlist"
+import type { PlaylistExport } from "~/features/playlist";
 import { BRAND } from "~/constants/branding";
 
-type PlaylistLLMExportInput = Pick<PlaylistImport, "meta" | "detail">;
+type PlaylistLLMExportInput = Pick<PlaylistExport, "meta" | "detail">;
 
 interface PlaylistGroupTrack {
   episode: number;

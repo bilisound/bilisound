@@ -1,5 +1,5 @@
 import type { VideoEpisode, VideoMetadata } from "~/features/bilibili";
-import { openAddPlaylistPage } from "~/features/playlist"
+import { openAddPlaylistPage } from "~/features/playlist";
 
 export function handleAddPlaylist(metadata: VideoMetadata) {
   openAddPlaylistPage({
@@ -10,9 +10,6 @@ export function handleAddPlaylist(metadata: VideoMetadata) {
       episode: episode.page,
       title: episode.title,
       imgUrl: metadata.coverUrl,
-      id: 0,
-      playlistId: 0,
-      extendedData: null,
     })),
     name: metadata.title,
     description: metadata.description,

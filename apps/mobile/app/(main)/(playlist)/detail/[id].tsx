@@ -23,16 +23,20 @@ import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Heading } from "~/components/ui/heading";
 import { TextField, TextFieldAction } from "~/components/ui-next";
 import { Text } from "~/components/ui/text";
-import { usePlaylistEditor } from "~/features/playlist";
 import { usePlaylistPlayer } from "~/features/playback";
-import { usePlaylistSearch } from "~/features/playlist";
 import { useConfirm } from "~/hooks/useConfirm";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { useWindowSize } from "~/hooks/useWindowSize";
-import { getPlaylistDetail, getPlaylistMeta } from "~/features/playlist"
-import { PlaylistDetail, PlaylistMeta } from "~/features/playlist"
+import {
+  getPlaylistDetail,
+  getPlaylistMeta,
+  usePlaylistEditor,
+  usePlaylistSearch,
+  type Playlist,
+  type PlaylistTrack,
+} from "~/features/playlist";
 
-function extractAndProcessImgUrls(playlistDetails: PlaylistDetail[]) {
+function extractAndProcessImgUrls(playlistDetails: PlaylistTrack[]) {
   const imgUrls = playlistDetails.map(detail => detail.imgUrl);
   return Array.from(new Set(imgUrls));
 }
@@ -47,7 +51,7 @@ export default function Page() {
     queryFn: () => getPlaylistMeta(Number(id)),
   });
 
-  const meta: PlaylistMeta | undefined = metaRaw?.[0];
+  const meta: Playlist | undefined = metaRaw ?? undefined;
 
   const { data: playlistDetail, refetch: dataRefetch } = useQuery({
     queryKey: [`playlist_detail_${id}`],
@@ -74,7 +78,6 @@ export default function Page() {
   // 播放逻辑
   const { handlePlay } = usePlaylistPlayer({
     playlistId: Number(id),
-    meta,
     filteredPlaylistDetail,
     getOriginalIndex,
     showConfirmDialog,

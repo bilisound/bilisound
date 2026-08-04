@@ -1,9 +1,8 @@
 import omit from "lodash/omit";
 
-import { PlaylistDetail, PlaylistDetailInsert, PlaylistImport, PlaylistMeta, PlaylistMetaInsert } from "./schema";
+import { PlaylistDetailInsert, PlaylistMeta, PlaylistMetaInsert } from "./schema";
 
 import { idb } from "~/storage/sqlite/init-web";
-import { PlaylistSource } from "~/typings/playlist";
 
 // ============================================================================
 // 歌单元数据部分
@@ -126,35 +125,7 @@ export async function replacePlaylistDetail(playlistId: number, playlist: Playli
   await tx.done;
 }
 
-export async function quickCreatePlaylist(
-  title: string,
-  description: string,
-  list: PlaylistDetail[],
-  source?: PlaylistSource,
-  imgUrl?: string,
-) {
-  const newPlaylist: PlaylistMetaInsert = {
-    title,
-    description,
-    imgUrl,
-    color:
-      "#" +
-      Math.floor(Math.random() * 16777216)
-        .toString(16)
-        .padStart(6, "0"),
-    amount: list.length,
-    source: source && list.length > 1 ? JSON.stringify(source) : null,
-  };
-  const playlistId = await idb.add("playlistMeta", newPlaylist);
-  const tx = idb.transaction("playlistDetail", "readwrite");
-  for (const item of list) {
-    await tx.store.add({ ...omit(item, "id"), playlistId });
-  }
-  await tx.done;
-  return playlistId;
-}
-
-export async function exportPlaylist(id: number): Promise<PlaylistImport> {
+export async function exportPlaylist(id: number) {
   const meta = await idb.get("playlistMeta", id);
   const detail = await idb.getAllFromIndex("playlistDetail", "by-playlistId", id);
   return {
@@ -165,7 +136,7 @@ export async function exportPlaylist(id: number): Promise<PlaylistImport> {
   };
 }
 
-export async function exportAllPlaylist(): Promise<PlaylistImport> {
+export async function exportAllPlaylist() {
   const meta = await idb.getAll("playlistMeta");
   const detail = await idb.getAll("playlistDetail");
   return {

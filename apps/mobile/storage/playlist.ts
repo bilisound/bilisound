@@ -1,6 +1,8 @@
 import { createMMKV, useMMKVBoolean, useMMKVObject } from "react-native-mmkv";
 
-import { PlaylistMeta } from "~/features/playlist";
+export interface PlaylistQueueOwner {
+  id: number;
+}
 
 export const LEGACY_PLAYLIST_INDEX_KEY = "playlist_index";
 
@@ -33,7 +35,7 @@ export interface LegacyPlaylistDetailRow {
 export const playlistStorage = createMMKV({ id: "storage-playlist" });
 
 export function usePlaylistOnQueue() {
-  return useMMKVObject<{ value?: PlaylistMeta | undefined }>(PLAYLIST_ON_QUEUE, playlistStorage);
+  return useMMKVObject<{ value?: PlaylistQueueOwner }>(PLAYLIST_ON_QUEUE, playlistStorage);
 }
 
 export function invalidateOnQueueStatus() {

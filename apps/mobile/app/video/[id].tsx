@@ -14,7 +14,7 @@ import { DualScrollView } from "~/components/dual-scroll-view";
 
 import { getVideoMetadata } from "~/features/bilibili";
 import { playEpisode } from "~/features/playback";
-import { openAddPlaylistPage } from "~/features/playlist"
+import { openAddPlaylistPage } from "~/features/playlist";
 import { convertToHTTPS } from "~/utils/string";
 import useHistoryStore from "~/store/history";
 import log from "~/utils/logger";
@@ -110,10 +110,6 @@ export default function Page() {
                       duration: e.item.duration,
                       episode: e.item.page,
                       title: e.item.displayTitle,
-                      imgUrl: data!.coverUrl,
-                      id: 0,
-                      playlistId: 0,
-                      extendedData: null,
                     }}
                   />
                 )}
@@ -146,9 +142,6 @@ export default function Page() {
                       episode: displayTrack.page,
                       title: displayTrack.title,
                       imgUrl: data?.coverUrl ?? "",
-                      id: 0,
-                      playlistId: 0,
-                      extendedData: null,
                     },
                   ],
                   name: data?.title ?? "",

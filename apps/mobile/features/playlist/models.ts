@@ -1,17 +1,43 @@
-/**
- * features/playlist/models — 歌单领域类型。
- *
- * 当前阶段直接复用 storage/sqlite/schema 的推断类型，通过 feature 边界导出，
- * 使消费者不再直接引用 storage 层。未来如果 schema 与 domain model 分离，
- * 此文件是唯一需要修改的映射点。
- */
+import type { PlaylistSource } from "~/typings/playlist";
 
-export type {
-  PlaylistMeta,
-  PlaylistDetail,
-  PlaylistMetaInsert,
-  PlaylistDetailInsert,
-  PlaylistImport,
-} from "~/storage/sqlite/schema";
+export interface Playlist {
+  id: number;
+  title: string;
+  color: string;
+  amount: number;
+  imgUrl: string | null;
+  description: string | null;
+  source: PlaylistSource | null;
+  filterRules: string | null;
+  extendedData: string | null;
+}
 
-export { playlistImportSchema } from "~/storage/sqlite/schema";
+export interface PlaylistCreateInput {
+  title: string;
+  color: string;
+  imgUrl?: string | null;
+  description?: string | null;
+  source?: PlaylistSource | null;
+  filterRules?: string | null;
+  extendedData?: string | null;
+}
+
+export type PlaylistUpdate = Partial<PlaylistCreateInput> & { id: number };
+
+export interface PlayableItem {
+  author: string;
+  bvid: string;
+  duration: number;
+  episode: number;
+  title: string;
+  imgUrl: string;
+  extendedData?: string | null;
+}
+
+export interface PlaylistTrack extends PlayableItem {
+  id: number;
+  playlistId: number;
+  extendedData: string | null;
+}
+
+export type SongListItem = Pick<PlayableItem, "author" | "bvid" | "duration" | "episode" | "title">;

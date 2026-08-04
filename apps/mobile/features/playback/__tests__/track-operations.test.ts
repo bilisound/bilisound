@@ -1,4 +1,4 @@
-import type { PlaylistDetail } from "~/features/playlist";
+import type { PlayableItem } from "~/features/playlist";
 
 describe("appendPlaylistToCurrentQueue", () => {
   afterEach(() => {
@@ -68,12 +68,12 @@ describe("appendPlaylistToCurrentQueue", () => {
     jest.doMock("../track-data", () => ({ playlistToTracks }));
     jest.doMock("../queue-snapshot", () => ({ saveTrackData }));
 
-    let appendPlaylistToCurrentQueue!: (playlistId: number, playlistDetail: PlaylistDetail[]) => Promise<void>;
+    let appendPlaylistToCurrentQueue!: (playlistId: number, playlistDetail: PlayableItem[]) => Promise<void>;
     jest.isolateModules(() => {
       ({ appendPlaylistToCurrentQueue } = jest.requireActual("../track-operations"));
     });
 
-    const playlistDetail = [{} as PlaylistDetail];
+    const playlistDetail = [{} as PlayableItem];
 
     await appendPlaylistToCurrentQueue(2, playlistDetail);
     getQueueOwner.mockReturnValue(JSON.stringify({ value: { id: 1 } }));

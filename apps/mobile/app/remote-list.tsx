@@ -68,9 +68,6 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
           episode: 1,
           title: episode.title,
           imgUrl: episode.coverUrl,
-          id: 0,
-          playlistId: 0,
-          extendedData: null,
         })),
       );
       setName(data.name);

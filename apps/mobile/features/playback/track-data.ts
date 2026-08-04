@@ -5,7 +5,7 @@ import type { TrackData } from "@bilisound/player";
 import { getOnlineMediaResourceUrl, getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
-import type { PlaylistDetail } from "~/features/playlist"
+import type { PlayableItem } from "~/features/playlist";
 import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 
@@ -56,7 +56,7 @@ export function processTrackDataForLoad(trackData: TrackData[]) {
 /**
  * 播放列表转播放队列
  */
-export function playlistToTracks(playlist: PlaylistDetail[]): TrackData[] {
+export function playlistToTracks(playlist: PlayableItem[]): TrackData[] {
   return playlist.map(e => {
     const isLoaded = !!isCacheExists(e.bvid, e.episode);
 

@@ -6,7 +6,7 @@ import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import { usePlaybackSpeedStore } from "~/store/playback-speed";
 import { useBottomSheetStore } from "~/store/bottom-sheet";
 import { router } from "expo-router";
-import { openAddPlaylistPage } from "~/features/playlist"
+import { openAddPlaylistPage } from "~/features/playlist";
 import { View } from "react-native";
 import {
   Actionsheet,
@@ -98,9 +98,6 @@ export function PlayerControlMenu() {
                   episode: currentTrack.extendedData?.episode ?? 1,
                   title: currentTrack.title ?? "",
                   imgUrl: currentTrack.extendedData?.artworkUrl ?? "",
-                  id: 0,
-                  playlistId: 0,
-                  extendedData: null,
                 },
               ],
               cover: currentTrack.artworkUri ?? "",

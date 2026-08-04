@@ -1,21 +1,40 @@
+import type {
+  PlaylistDetail as PlaylistDetailRow,
+  PlaylistDetailInsert as PlaylistDetailInsertRow,
+  PlaylistMeta as PlaylistMetaRow,
+  PlaylistMetaInsert as PlaylistMetaInsertRow,
+} from "~/storage/sqlite/schema";
 import type { PlaylistSource } from "~/typings/playlist";
 
-import type { PlaylistDetail, PlaylistDetailInsert, PlaylistImport, PlaylistMeta, PlaylistMetaInsert } from "../models";
+import type { PlaylistExport } from "../exchange";
+import type { PlayableItem, Playlist, PlaylistCreateInput } from "../models";
 import type { PlaylistRepository } from "../repository-contract";
 
-const sampleMeta: PlaylistMeta = {
+const sampleSource: PlaylistSource = {
+  type: "video",
+  bvid: "BV1test",
+  originalTitle: "Source video",
+  lastSyncAt: 123,
+};
+
+const sampleMetaRow: PlaylistMetaRow = {
   id: 1,
   title: "Test playlist",
   color: "#ffffff",
   amount: 1,
   imgUrl: null,
   description: null,
-  source: null,
+  source: JSON.stringify(sampleSource),
   filterRules: null,
   extendedData: null,
 };
 
-const sampleDetail: PlaylistDetail = {
+const samplePlaylist: Playlist = {
+  ...sampleMetaRow,
+  source: sampleSource,
+};
+
+const sampleDetailRow: PlaylistDetailRow = {
   id: 1,
   playlistId: 1,
   author: "Test author",
@@ -27,61 +46,61 @@ const sampleDetail: PlaylistDetail = {
   extendedData: null,
 };
 
-const sampleMetaInsert: PlaylistMetaInsert = {
-  title: sampleMeta.title,
-  color: sampleMeta.color,
-  amount: sampleMeta.amount,
+const samplePlayableItem: PlayableItem = {
+  author: sampleDetailRow.author,
+  bvid: sampleDetailRow.bvid,
+  duration: sampleDetailRow.duration,
+  episode: sampleDetailRow.episode,
+  title: sampleDetailRow.title,
+  imgUrl: sampleDetailRow.imgUrl,
 };
 
-const sampleExport: PlaylistImport = {
+const sampleCreateInput: PlaylistCreateInput = {
+  title: samplePlaylist.title,
+  color: samplePlaylist.color,
+  source: sampleSource,
+};
+
+const sampleExport: PlaylistExport = {
   kind: "moe.bilisound.app.exportedPlaylist",
   version: 1,
-  meta: [sampleMeta],
-  detail: [sampleDetail],
+  meta: [sampleMetaRow],
+  detail: [sampleDetailRow],
 };
 
 interface PlaylistStorageMock {
-  getPlaylistMetas: jest.Mock<Promise<PlaylistMeta[]>, [filterHasSource?: boolean]>;
-  getPlaylistMeta: jest.Mock<Promise<PlaylistMeta[] | undefined>, [id: number]>;
+  getPlaylistMetas: jest.Mock<Promise<PlaylistMetaRow[]>, [filterHasSource?: boolean]>;
+  getPlaylistMeta: jest.Mock<Promise<PlaylistMetaRow[] | undefined>, [id: number]>;
   deletePlaylistMeta: jest.Mock<Promise<void>, [id: number]>;
-  setPlaylistMeta: jest.Mock<Promise<void>, [meta: Partial<PlaylistMetaInsert> & { id: number }]>;
-  insertPlaylistMeta: jest.Mock<Promise<{ lastInsertRowId: number }>, [meta: PlaylistMetaInsert]>;
-  getPlaylistDetail: jest.Mock<Promise<PlaylistDetail[]>, [playlistId: number]>;
+  setPlaylistMeta: jest.Mock<Promise<void>, [meta: Partial<PlaylistMetaInsertRow> & { id: number }]>;
+  insertPlaylistMeta: jest.Mock<Promise<{ lastInsertRowId: number }>, [meta: PlaylistMetaInsertRow]>;
+  getPlaylistDetail: jest.Mock<Promise<PlaylistDetailRow[]>, [playlistId: number]>;
   deletePlaylistDetail: jest.Mock<Promise<void>, [id: number]>;
-  addToPlaylist: jest.Mock<Promise<void>, [playlistId: number, playlist: PlaylistDetailInsert[]]>;
+  addToPlaylist: jest.Mock<Promise<void>, [playlistId: number, playlist: PlaylistDetailInsertRow[]]>;
   syncPlaylistAmount: jest.Mock<Promise<void>, [playlistId: number]>;
-  replacePlaylistDetail: jest.Mock<Promise<void> | void, [playlistId: number, playlist: PlaylistDetailInsert[]]>;
-  quickCreatePlaylist: jest.Mock<
-    Promise<number>,
-    [title: string, description: string, list: PlaylistDetail[], source?: PlaylistSource, imgUrl?: string]
-  >;
-  exportPlaylist: jest.Mock<Promise<PlaylistImport>, [id: number]>;
-  exportAllPlaylist: jest.Mock<Promise<PlaylistImport>, []>;
+  replacePlaylistDetail: jest.Mock<Promise<void> | void, [playlistId: number, playlist: PlaylistDetailInsertRow[]]>;
+  exportPlaylist: jest.Mock<Promise<PlaylistExport>, [id: number]>;
+  exportAllPlaylist: jest.Mock<Promise<PlaylistExport>, []>;
   clonePlaylist: jest.Mock<Promise<number | undefined>, [playlistId: number]>;
   deleteAllPlaylist: jest.Mock<Promise<void>, []>;
 }
 
 function createStorageMock(): PlaylistStorageMock {
   return {
-    getPlaylistMetas: jest.fn<Promise<PlaylistMeta[]>, [boolean?]>(async () => [sampleMeta]),
-    getPlaylistMeta: jest.fn<Promise<PlaylistMeta[] | undefined>, [number]>(async () => [sampleMeta]),
-    deletePlaylistMeta: jest.fn<Promise<void>, [number]>(async () => undefined),
-    setPlaylistMeta: jest.fn<Promise<void>, [Partial<PlaylistMetaInsert> & { id: number }]>(async () => undefined),
-    insertPlaylistMeta: jest.fn<Promise<{ lastInsertRowId: number }>, [PlaylistMetaInsert]>(async () => ({
-      lastInsertRowId: 2,
-    })),
-    getPlaylistDetail: jest.fn<Promise<PlaylistDetail[]>, [number]>(async () => [sampleDetail]),
-    deletePlaylistDetail: jest.fn<Promise<void>, [number]>(async () => undefined),
-    addToPlaylist: jest.fn<Promise<void>, [number, PlaylistDetailInsert[]]>(async () => undefined),
-    syncPlaylistAmount: jest.fn<Promise<void>, [number]>(async () => undefined),
-    replacePlaylistDetail: jest.fn<Promise<void> | void, [number, PlaylistDetailInsert[]]>(async () => undefined),
-    quickCreatePlaylist: jest.fn<Promise<number>, [string, string, PlaylistDetail[], PlaylistSource?, string?]>(
-      async () => 2,
-    ),
-    exportPlaylist: jest.fn<Promise<PlaylistImport>, [number]>(async () => sampleExport),
-    exportAllPlaylist: jest.fn<Promise<PlaylistImport>, []>(async () => sampleExport),
-    clonePlaylist: jest.fn<Promise<number | undefined>, [number]>(async () => 2),
-    deleteAllPlaylist: jest.fn<Promise<void>, []>(async () => undefined),
+    getPlaylistMetas: jest.fn(async (_filterHasSource?: boolean) => [sampleMetaRow]),
+    getPlaylistMeta: jest.fn(async (_id: number) => [sampleMetaRow]),
+    deletePlaylistMeta: jest.fn(async (_id: number) => undefined),
+    setPlaylistMeta: jest.fn(async (_meta: Partial<PlaylistMetaInsertRow> & { id: number }) => undefined),
+    insertPlaylistMeta: jest.fn(async (_meta: PlaylistMetaInsertRow) => ({ lastInsertRowId: 2 })),
+    getPlaylistDetail: jest.fn(async (_playlistId: number) => [sampleDetailRow]),
+    deletePlaylistDetail: jest.fn(async (_id: number) => undefined),
+    addToPlaylist: jest.fn(async (_playlistId: number, _playlist: PlaylistDetailInsertRow[]) => undefined),
+    syncPlaylistAmount: jest.fn(async (_playlistId: number) => undefined),
+    replacePlaylistDetail: jest.fn(async (_playlistId: number, _playlist: PlaylistDetailInsertRow[]) => undefined),
+    exportPlaylist: jest.fn(async (_id: number) => sampleExport),
+    exportAllPlaylist: jest.fn(async () => sampleExport),
+    clonePlaylist: jest.fn(async (_playlistId: number) => 2),
+    deleteAllPlaylist: jest.fn(async () => undefined),
   };
 }
 
@@ -92,7 +111,7 @@ function loadRepository(platform: PlatformName) {
   jest.resetModules();
   const storage = createStorageMock();
   const transaction = jest.fn((callback: (tx: unknown) => void) => {
-    const run = jest.fn(() => ({ lastInsertRowId: 2 }));
+    const run = jest.fn(() => ({ changes: 1, lastInsertRowId: 2 }));
     const values = jest.fn(() => ({ run }));
     const insert = jest.fn(() => ({ values }));
     callback({ insert });
@@ -119,18 +138,18 @@ function repositoryCalls(): [keyof PlaylistRepository, unknown[]][] {
     ["getPlaylistMeta", [1]],
     ["deletePlaylistMeta", [1]],
     ["setPlaylistMeta", [{ id: 1, title: "Updated" }]],
-    ["insertPlaylistMeta", [sampleMetaInsert]],
+    ["insertPlaylistMeta", [sampleCreateInput]],
     ["getPlaylistDetail", [1]],
     ["deletePlaylistDetail", [1]],
-    ["addToPlaylist", [1, [sampleDetail]]],
+    ["addToPlaylist", [1, [samplePlayableItem]]],
     ["syncPlaylistAmount", [1]],
-    ["replacePlaylistDetail", [1, [sampleDetail]]],
-    ["quickCreatePlaylist", ["New playlist", "Description", [sampleDetail]]],
+    ["replacePlaylistDetail", [1, [samplePlayableItem]]],
+    ["quickCreatePlaylist", ["New playlist", "Description", [samplePlayableItem]]],
     ["exportPlaylist", [1]],
     ["exportAllPlaylist", []],
     ["clonePlaylist", [1]],
     ["deleteAllPlaylist", []],
-    ["importPlaylistBatch", [[{ meta: sampleMetaInsert, detail: [sampleDetail] }]]],
+    ["importPlaylistBatch", [[{ playlist: sampleCreateInput, tracks: [samplePlayableItem] }]]],
   ];
 }
 
@@ -158,10 +177,27 @@ function runSharedContract(platform: PlatformName) {
       }
     });
 
-    it("normalizes a missing playlist meta to an empty list", async () => {
-      storage.getPlaylistMeta.mockResolvedValueOnce(undefined);
+    it("maps persistence rows to app-owned domain models", async () => {
+      await expect(repository.getPlaylistMetas()).resolves.toEqual([samplePlaylist]);
+      await expect(repository.getPlaylistMeta(1)).resolves.toEqual(samplePlaylist);
+      await expect(repository.getPlaylistDetail(1)).resolves.toEqual([sampleDetailRow]);
+    });
 
-      await expect(repository.getPlaylistMeta(404)).resolves.toEqual([]);
+    it("maps domain writes to persistence rows", async () => {
+      await repository.insertPlaylistMeta(sampleCreateInput);
+      expect(storage.insertPlaylistMeta).toHaveBeenCalledWith(
+        expect.objectContaining({ amount: 0, source: JSON.stringify(sampleSource) }),
+      );
+
+      await repository.addToPlaylist(7, [samplePlayableItem]);
+      expect(storage.addToPlaylist).toHaveBeenCalledWith(7, [
+        expect.objectContaining({ ...samplePlayableItem, playlistId: 7 }),
+      ]);
+    });
+
+    it("normalizes a missing playlist meta to null", async () => {
+      storage.getPlaylistMeta.mockResolvedValueOnce(undefined);
+      await expect(repository.getPlaylistMeta(404)).resolves.toBeNull();
     });
 
     it("converts synchronous storage failures into Promise rejections", async () => {
@@ -169,14 +205,13 @@ function runSharedContract(platform: PlatformName) {
         throw new Error("replace failed");
       });
 
-      const result = repository.replacePlaylistDetail(1, [sampleDetail]);
+      const result = repository.replacePlaylistDetail(1, [samplePlayableItem]);
       expect(result).toBeInstanceOf(Promise);
       await expect(result).rejects.toThrow("replace failed");
     });
 
     it("rejects cloning a missing playlist instead of returning undefined", async () => {
       storage.clonePlaylist.mockResolvedValueOnce(undefined);
-
       await expect(repository.clonePlaylist(404)).rejects.toThrow("Playlist 404 not found");
     });
   });
@@ -189,7 +224,7 @@ describe("platform persistence adapters", () => {
   it("imports a native playlist in one SQLite transaction", async () => {
     const { repository, transaction } = loadRepository("native");
 
-    await repository.importPlaylistBatch([{ meta: sampleMetaInsert, detail: [sampleDetail] }]);
+    await repository.importPlaylistBatch([{ playlist: sampleCreateInput, tracks: [samplePlayableItem] }]);
 
     expect(transaction).toHaveBeenCalledTimes(1);
   });
@@ -209,7 +244,7 @@ describe("platform persistence adapters", () => {
       return detailWrite;
     });
 
-    const operation = repository.importPlaylistBatch([{ meta: sampleMetaInsert, detail: [sampleDetail] }]);
+    const operation = repository.importPlaylistBatch([{ playlist: sampleCreateInput, tracks: [samplePlayableItem] }]);
     let settled = false;
     void operation.then(() => {
       settled = true;
@@ -217,8 +252,12 @@ describe("platform persistence adapters", () => {
     await detailWriteStarted;
 
     expect(settled).toBe(false);
-    expect(storage.insertPlaylistMeta).toHaveBeenCalledWith({ ...sampleMetaInsert, amount: 1, id: undefined });
-    expect(storage.addToPlaylist).toHaveBeenCalledWith(2, [{ ...sampleDetail, id: 1, playlistId: 2 }]);
+    expect(storage.insertPlaylistMeta).toHaveBeenCalledWith(
+      expect.objectContaining({ amount: 1, source: JSON.stringify(sampleSource) }),
+    );
+    expect(storage.addToPlaylist).toHaveBeenCalledWith(2, [
+      expect.objectContaining({ ...samplePlayableItem, playlistId: 2 }),
+    ]);
 
     resolveDetailWrite();
     await operation;

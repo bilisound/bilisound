@@ -38,8 +38,7 @@ import { useConfirm } from "~/hooks/useConfirm";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { useWindowSize } from "~/hooks/useWindowSize";
 import { invalidateOnQueueStatus, PLAYLIST_ON_QUEUE, playlistStorage } from "~/storage/playlist";
-import { deletePlaylistMeta, getPlaylistMetas } from "~/features/playlist"
-import { PlaylistMeta } from "~/features/playlist"
+import { deletePlaylistMeta, getPlaylistMetas, type Playlist } from "~/features/playlist";
 import { usePlaylistViewConfig, useSettingsActions } from "~/features/config";
 import { exportPlaylistToFile, exportPlaylistToLLMFile, importPlaylistFromFile } from "~/utils/exchange/playlist";
 import log from "~/utils/logger";
@@ -57,7 +56,7 @@ const PlaylistContext = createContext<PlaylistContextProps>({
   width: 0,
 });
 
-function PlaylistActionItem(item: PlaylistMeta & { grid: boolean }) {
+function PlaylistActionItem(item: Playlist & { grid: boolean }) {
   const { onLongPress } = useContext(PlaylistContext);
 
   return (
@@ -76,7 +75,7 @@ function PlaylistActionItem(item: PlaylistMeta & { grid: boolean }) {
 
 interface LongPressActionsProps {
   showActionSheet: boolean;
-  displayTrack?: PlaylistMeta;
+  displayTrack?: Playlist;
   onClose: () => void;
   onAction: (action: "delete" | "close" | "edit" | "editCover" | "export" | "exportForLLM") => void;
 }
@@ -223,7 +222,7 @@ export default function Page() {
 
   // 模态框管理
   const [showActionSheet, setShowActionSheet] = useState(false);
-  const [displayTrack, setDisplayTrack] = useState<PlaylistMeta | undefined>();
+  const [displayTrack, setDisplayTrack] = useState<Playlist | undefined>();
   const { dialogInfo, setDialogInfo, modalVisible, setModalVisible, handleClose, dialogCallback } = useConfirm();
 
   const handleActionSheetClose = () => setShowActionSheet(prevState => !prevState);
@@ -241,7 +240,7 @@ export default function Page() {
       await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
 
       // 清空当前播放队列隶属歌单的状态机
-      const got: { value?: PlaylistMeta } = JSON.parse(playlistStorage.getString(PLAYLIST_ON_QUEUE) || "{}");
+      const got: { value?: { id: number } } = JSON.parse(playlistStorage.getString(PLAYLIST_ON_QUEUE) || "{}");
       if (got?.value?.id === displayTrack?.id) {
         invalidateOnQueueStatus();
       }

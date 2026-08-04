@@ -3,7 +3,7 @@ import { StyleProp, ViewStyle, View } from "react-native";
 import { twMerge } from "tailwind-merge";
 
 import { Text } from "~/components/ui/text";
-import { PlaylistMeta } from "~/features/playlist"
+import type { Playlist } from "~/features/playlist";
 import { Pressable } from "~/components/ui/pressable";
 import { Skeleton } from "~/components/ui/skeleton";
 import { SkeletonText } from "~/components/skeleton-text";
@@ -13,7 +13,7 @@ import { getVideoImageUrl } from "~/features/bilibili";
 import { Svg, Polygon } from "react-native-svg";
 
 export interface PlaylistItemProps {
-  item?: PlaylistMeta;
+  item?: Playlist;
   onPress?: () => void;
   onLongPress?: () => void;
   className?: string;

@@ -11,8 +11,7 @@ import { getCacheAudioPath } from "~/utils/file";
 import log from "~/utils/logger";
 import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
-import { getPlaylistDetail } from "~/features/playlist"
-import type { PlaylistDetail } from "~/features/playlist"
+import { getPlaylistDetail, type PlayableItem } from "~/features/playlist";
 import {
   invalidateOnQueueStatus,
   PLAYLIST_ON_QUEUE,
@@ -232,7 +231,7 @@ export async function playPlaylist(id: number, index = 0) {
 /**
  * 播放用例：向当前播放队列追加歌单曲目（歌单新增曲目后同步到正在播放该歌单的队列）
  */
-export async function appendPlaylistToCurrentQueue(playlistId: number, playlistDetail: PlaylistDetail[]) {
+export async function appendPlaylistToCurrentQueue(playlistId: number, playlistDetail: PlayableItem[]) {
   const queueOwner = JSON.parse(playlistStorage.getString(PLAYLIST_ON_QUEUE) ?? "{}") as {
     value?: { id?: number };
   };

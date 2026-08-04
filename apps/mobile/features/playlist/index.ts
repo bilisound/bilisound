@@ -9,13 +9,15 @@
 
 // 领域类型
 export type {
-  PlaylistMeta,
-  PlaylistDetail,
-  PlaylistMetaInsert,
-  PlaylistDetailInsert,
-  PlaylistImport,
+  PlayableItem,
+  Playlist,
+  PlaylistCreateInput,
+  PlaylistTrack,
+  PlaylistUpdate,
+  SongListItem,
 } from "./models";
-export { playlistImportSchema } from "./models";
+export type { PlaylistExport, PlaylistImportPlan } from "./exchange";
+export { buildPlaylistImportPlans, playlistExportSchema } from "./exchange";
 
 // 数据仓库
 export {

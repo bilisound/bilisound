@@ -10,7 +10,7 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 | 2. Config Architecture    | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
-| 5. Playlist Domain        | **Delivered** | `features/playlist` boundary; Promise-based native/Web repository contract; verified on Android, Web, and with contract tests                            |
+| 5. Playlist Domain        | **Delivered** | app-owned models, SQLite mappers, versioned exchange DTO, and Promise-based native/Web repository contract                                               |
 | 6. Cache and Download     | Planned       |                                                                                                                                                          |
 | 7. UI Rewrite             | Planned       | requires Epics 1–6 boundaries to be stable                                                                                                               |
 
@@ -263,16 +263,16 @@ route-level playback orchestration -/-> kept outside features/playback
 
 ### Epic 5: Playlist Domain
 
-> Status: **delivered** — `features/playlist` is the playlist domain boundary; routes,
-> components, playback, and exchange utils no longer import `storage/sqlite/playlist` or
-> `storage/sqlite/schema` playlist types directly.
+> Status: **delivered** — `features/playlist` owns app-level playlist models, persistence
+> mapping, import/export contracts, and repository APIs. Routes, components, playback, and
+> exchange utilities do not consume SQLite playlist rows or insert types.
 
 Scope (as executed):
 
 ```txt
-storage/sqlite/playlist.ts          -> features/playlist/repository.ts (re-export facade)
-storage/sqlite/playlist.web.ts      -> features/playlist/repository.web.ts
-storage/sqlite/schema playlist types -> features/playlist/models.ts (re-export boundary)
+storage/sqlite/playlist.ts          -> features/playlist/repository.ts persistence adapter
+storage/sqlite/playlist.web.ts      -> features/playlist/repository.web.ts persistence adapter
+storage/sqlite/schema playlist rows -> features/playlist/mappers.ts -> app-owned models
 business/playlist/update.ts         -> features/playlist/update.ts
 business/playlist/misc.ts           -> features/playlist/misc.ts
 hooks/playlist-detail/*             -> features/playlist/use-playlist-editor.ts, use-playlist-search.ts
@@ -282,73 +282,103 @@ Goals:
 
 1. Put local playlist CRUD behind repositories. ✓
 2. Stop route files from importing SQLite storage directly. ✓
-3. Introduce playlist domain/view models where useful. ✓ (type re-exports as boundary; future split point)
-4. Split `SongItem` into storage-independent UI and feature-specific wrappers. (deferred — component still accepts `PlaylistDetail` via feature boundary type, not raw schema)
+3. Introduce app-owned `Playlist`, `PlaylistTrack`, and `PlayableItem` models. ✓
+4. Make `SongItem` storage-independent through the narrow `SongListItem` input model. ✓
+5. Keep the persisted v1 import/export format stable while moving its schema into the feature boundary. ✓
 
 Implementation record:
 
 ```txt
-features/playlist/index.ts              # public feature surface
-features/playlist/models.ts             # domain types (re-export from schema, single mapping point)
-features/playlist/repository-contract.ts # shared Promise-based repository API
-features/playlist/repository.ts         # native repository adapter + transactional import
-features/playlist/repository.web.ts     # Web repository adapter + awaited IndexedDB writes
-features/playlist/update.ts             # upstream playlist sync (was business/playlist/update.ts)
-features/playlist/misc.ts               # openAddPlaylistPage navigation helper
+features/playlist/index.ts               # public feature surface
+features/playlist/models.ts              # app-owned domain and UI input models; no storage imports
+features/playlist/mappers.ts             # SQLite row/insert <-> domain mapping
+features/playlist/source-codec.ts        # PlaylistSource JSON persistence codec
+features/playlist/exchange.ts            # versioned v1 import/export DTO and import-plan mapping
+features/playlist/repository-contract.ts # Promise-based domain repository API
+features/playlist/repository.ts          # native repository adapter + transactional import
+features/playlist/repository.web.ts      # Web repository adapter + awaited IndexedDB writes
+features/playlist/update.ts              # upstream playlist sync
+features/playlist/misc.ts                # openAddPlaylistPage navigation helper
 features/playlist/use-playlist-editor.ts # playlist detail editing hook
 features/playlist/use-playlist-search.ts # playlist detail search hook
-features/playlist/__tests__/repository.test.ts # shared native/Web repository contract tests
+features/playlist/__tests__/exchange.test.ts
+features/playlist/__tests__/repository.test.ts
 ```
+
+The public repository contract now uses:
+
+```txt
+PlaylistCreateInput / PlaylistUpdate -> repository -> SQLite insert/update rows
+SQLite meta row                      -> repository -> Playlist
+SQLite detail row                    -> repository -> PlaylistTrack
+PlayableItem                         -> repository -> SQLite detail insert row
+PlaylistTrack / Bilibili episode     -> SongListItem-compatible component input
+```
+
+`PlayableItem` deliberately excludes database-generated `id` and `playlistId`. Video, remote
+playlist, player queue, and copy-to-playlist flows no longer fabricate zero-valued row fields.
+`Playlist.source` is a parsed `PlaylistSource`; JSON encoding and decoding are confined to the
+persistence boundary.
 
 Deleted:
 
 ```txt
 business/playlist/update.ts
 business/playlist/misc.ts
-business/playlist/ (directory removed)
+business/playlist/
 hooks/playlist-detail/usePlaylistEditor.ts
 hooks/playlist-detail/usePlaylistSearch.ts
-hooks/playlist-detail/ (directory removed)
+hooks/playlist-detail/
+storage/sqlite/schema.ts playlistImportSchema
+storage/sqlite/playlist*.ts quickCreatePlaylist domain policy
 ```
 
 Verification:
 
 ```txt
-pnpm -C apps/mobile exec tsc --noEmit   # clean
-pnpm -C apps/mobile exec jest features/playlist/__tests__/repository.test.ts \
-  features/playback/__tests__/track-operations.test.ts --runInBand   # 11 tests clean
+pnpm -C apps/mobile exec tsc --noEmit
+pnpm -C apps/mobile exec jest \
+  features/playlist/__tests__/exchange.test.ts \
+  features/playlist/__tests__/repository.test.ts \
+  features/playback/__tests__/track-operations.test.ts \
+  storage/sqlite/__tests__/playlist.test.ts --runInBand
+  # 4 suites / 18 tests clean
 EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform web --clear
 EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform android --clear
+Web runtime smoke:
+  - created an empty playlist through /meta/new
+  - observed the new playlist on /playlist
+  - opened /detail/1 and observed mapped title, amount, and description
 Android 真机（22122RK93C, Expo Dev Client）验证 2026-08-04:
   - 歌单列表 / 详情 / 搜索过滤（usePlaylistSearch）/ 长按编辑（usePlaylistEditor）
   - 复制到新歌单（openAddPlaylistPage / apply-playlist）
   - 修改歌单信息 / 创建解绑副本（clonePlaylist 持久化 168 首）
   - 删除歌单（deletePlaylistMeta 级联删除详情）
-  - 顺带修复既有缺陷：列表页长按 imgUrl=null 歌单崩溃
-    （playlist.tsx LongPressActions 的 displayTrack.imgUrl! 非空断言 → 加空值保护）
 ```
 
-The repository follow-up on 2026-08-04 made every public operation Promise-based on both
-platforms. Missing metadata is normalized to `[]`, cloning a missing playlist rejects, and
-playlist replacement/import callers await persistence before reporting success.
+The repository contract is Promise-based on both platforms. Missing metadata is normalized to
+`null`, cloning a missing native playlist checks `changes` before trusting `lastInsertRowId`,
+and replacement/import callers await persistence before reporting success.
 
 Coupling reduced:
 
 ```txt
 routes/components/playback/exchange -/-> storage/sqlite/playlist direct imports
-routes/components/playback/exchange -/-> storage/sqlite/schema playlist type imports
-business/playlist/ directory eliminated — logic lives in features/playlist
-hooks/playlist-detail/ directory eliminated — hooks live in features/playlist
+routes/components/playback/exchange -/-> storage/sqlite/schema playlist types
+features/playlist/models.ts          -/-> storage/sqlite/schema
+SongItem                             -/-> PlaylistTrack / SQLite row fields
+new playable-item flows              -/-> fabricated id / playlistId values
+Playlist UI                          -/-> JSON parsing of persisted source strings
 ```
 
 Remaining allowed `storage/sqlite/schema` references:
 
 ```txt
-features/playlist/models.ts       — boundary mapping point (by design)
-features/playlist/repository.ts   — internal implementation detail
-features/playlist/repository.web.ts — internal implementation detail
-features/theme/storage.ts         — different table (themeProfile), not playlist concern
-utils/migration/playlist.ts       — legacy one-time DB migration, acceptable internal use
+features/playlist/mappers.ts           — persistence mapping boundary
+features/playlist/repository.ts        — native transaction table handles
+features/playlist/__tests__/*          — adapter contract fixtures
+features/theme/storage.ts              — different table (themeProfile)
+utils/migration/playlist.ts            — legacy one-time DB migration
 ```
 
 ### Epic 6: Cache and Download

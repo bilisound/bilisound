@@ -1,9 +1,9 @@
-import { PlaylistDetail } from "~/features/playlist"
+import type { PlayableItem } from "~/features/playlist";
 import { PlaylistSource } from "~/typings/playlist";
 import { create } from "zustand";
 
 export interface ApplyPlaylistProps {
-  playlistDetail: PlaylistDetail[] | null;
+  playlistDetail: PlayableItem[] | null;
   name: string;
   description: string;
   source?: PlaylistSource;

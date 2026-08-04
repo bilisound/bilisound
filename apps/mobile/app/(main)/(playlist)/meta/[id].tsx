@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import omit from "lodash/omit";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -18,14 +17,16 @@ import {
 } from "~/components/ui/form-control";
 import { AlertCircleIcon, CheckIcon } from "~/components/ui/icon";
 import { TextareaField, TextField } from "~/components/ui-next";
-import { addToPlaylist,
-clonePlaylist,
-getPlaylistMeta,
-insertPlaylistMeta,
-setPlaylistMeta,
-syncPlaylistAmount, } from "~/features/playlist"
-import { PlaylistDetailInsert, PlaylistMeta } from "~/features/playlist"
-import { PlaylistSource } from "~/typings/playlist";
+import {
+  addToPlaylist,
+  clonePlaylist,
+  getPlaylistMeta,
+  insertPlaylistMeta,
+  setPlaylistMeta,
+  syncPlaylistAmount,
+  type PlayableItem,
+  type PlaylistCreateInput,
+} from "~/features/playlist";
 import log from "~/utils/logger";
 import { Layout } from "~/components/layout";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
@@ -33,7 +34,7 @@ import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 
 const MAGIC_ID_NEW_ENTRY = "new";
 
-type PlaylistMetaFrom = PlaylistMeta & { createFromQueue: boolean };
+type PlaylistMetaForm = PlaylistCreateInput & { id?: number; createFromQueue: boolean };
 
 export default function Page() {
   const edgeInsets = useTabSafeAreaInsets();
@@ -45,14 +46,14 @@ export default function Page() {
     queryFn: () => getPlaylistMeta(Number(id)),
   });
 
-  const source = data?.[0]?.source ? (JSON.parse(data[0].source) as PlaylistSource) : null;
+  const source = data?.source ?? null;
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm<PlaylistMetaFrom>({
+  } = useForm<PlaylistMetaForm>({
     defaultValues: {
       title: "",
       color:
@@ -60,7 +61,7 @@ export default function Page() {
         Math.floor(Math.random() * 16777216)
           .toString(16)
           .padStart(6, "0"),
-      amount: 0,
+      createFromQueue: false,
     },
   });
 
@@ -68,14 +69,14 @@ export default function Page() {
     if (!data || id === MAGIC_ID_NEW_ENTRY) {
       return;
     }
-    setValue("title", data[0].title);
-    setValue("color", data[0].color);
-    setValue("amount", data[0].amount);
-    setValue("description", data[0].description);
-    setValue("extendedData", data[0].extendedData);
-    setValue("source", data[0].source);
-    setValue("imgUrl", data[0].imgUrl);
-    setValue("id", data[0].id);
+    setValue("title", data.title);
+    setValue("color", data.color);
+    setValue("description", data.description);
+    setValue("extendedData", data.extendedData);
+    setValue("source", data.source);
+    setValue("imgUrl", data.imgUrl);
+    setValue("filterRules", data.filterRules);
+    setValue("id", data.id);
   }, [data, id, setValue]);
 
   async function handleClone() {
@@ -84,7 +85,7 @@ export default function Page() {
       const cloneId = await clonePlaylist(Number(id));
       await setPlaylistMeta({
         id: cloneId,
-        source: "", // 不能是 null，否则会被 ORM 无视
+        source: null,
       });
       await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
       await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
@@ -102,37 +103,38 @@ export default function Page() {
     }
   }
 
-  async function onSubmit(value: PlaylistMetaFrom) {
-    const isCreate = !value.id;
-    let id = value.id;
+  async function onSubmit(value: PlaylistMetaForm) {
+    const { createFromQueue, id: existingId, ...playlist } = value;
+    const isCreate = existingId === undefined;
+    let playlistId: number;
 
-    if (isCreate) {
+    if (existingId === undefined) {
       log.info("用户创建新的歌单");
-      const result = await insertPlaylistMeta(omit(value, "createFromQueue"));
-      id = result.lastInsertRowId;
+      const result = await insertPlaylistMeta(playlist);
+      playlistId = result.lastInsertRowId;
     } else {
       log.info("用户编辑已有歌单");
-      await setPlaylistMeta(omit(value, "createFromQueue"));
+      playlistId = existingId;
+      await setPlaylistMeta({ id: playlistId, ...playlist });
     }
-    log.debug(`歌单详情：${JSON.stringify(value)}, id: ${id}`);
+    log.debug(`歌单详情：${JSON.stringify(value)}, id: ${playlistId}`);
 
-    if (value.createFromQueue) {
+    if (createFromQueue) {
       const trackData = await Player.getTracks();
-      const fromTracks: PlaylistDetailInsert[] = trackData.map(e => ({
-        title: e.title ?? "",
-        imgUrl: e.artworkUri ?? "",
-        author: e.artist ?? "",
-        bvid: e.extendedData?.id ?? "",
-        duration: e.duration ?? 0,
-        episode: e.extendedData?.episode ?? 1,
-        playlistId: id,
+      const fromTracks: PlayableItem[] = trackData.map(track => ({
+        title: track.title ?? "",
+        imgUrl: track.extendedData?.artworkUrl ?? track.artworkUri ?? "",
+        author: track.artist ?? "",
+        bvid: track.extendedData?.id ?? "",
+        duration: track.duration ?? 0,
+        episode: track.extendedData?.episode ?? 1,
       }));
-      await addToPlaylist(id, fromTracks);
-      await syncPlaylistAmount(id);
+      await addToPlaylist(playlistId, fromTracks);
+      await syncPlaylistAmount(playlistId);
     }
     await queryClient.refetchQueries({ queryKey: ["playlist_meta"] });
     await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
-    await queryClient.refetchQueries({ queryKey: [`playlist_meta_${id}`] });
+    await queryClient.refetchQueries({ queryKey: [`playlist_meta_${playlistId}`] });
 
     if (isCreate) {
       Toast.show({

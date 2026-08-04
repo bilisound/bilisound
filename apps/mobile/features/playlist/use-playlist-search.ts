@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import Fuse from "fuse.js";
-import { PlaylistDetail } from "~/features/playlist/models";
+import type { PlaylistTrack } from "./models";
 
-export function usePlaylistSearch(playlistDetail: PlaylistDetail[] | undefined) {
+export function usePlaylistSearch(playlistDetail: PlaylistTrack[] | undefined) {
   const [searchQuery, setSearchQuery] = useState("");
 
   // 创建 Fuse 实例
@@ -21,7 +21,7 @@ export function usePlaylistSearch(playlistDetail: PlaylistDetail[] | undefined) 
   }, [playlistDetail]);
 
   // 过滤后的播放列表数据
-  const filteredPlaylistDetail = useMemo((): (PlaylistDetail & {
+  const filteredPlaylistDetail = useMemo((): (PlaylistTrack & {
     originalIndex: number;
   })[] => {
     if (!playlistDetail) return [];

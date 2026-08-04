@@ -24,12 +24,8 @@ export function PlayerQueueList() {
         renderItem={({ item, index }) => (
           <SongItem
             data={{
-              id: 0,
               title: item.title!,
-              imgUrl: "",
               duration: item.duration!,
-              extendedData: null,
-              playlistId: 0,
               author: "",
               bvid: item.extendedData!.id,
               episode: item.extendedData!.episode,

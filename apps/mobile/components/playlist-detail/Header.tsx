@@ -14,9 +14,8 @@ import { Modal, ModalBackdrop, ModalBody, ModalContent } from "~/components/ui/m
 import { DownloadButton } from "~/components/download-button";
 import { ImagesGroup } from "./ImagesGroup";
 
-import { PlaylistDetail, PlaylistMeta } from "~/features/playlist"
+import { updatePlaylist, type Playlist, type PlaylistTrack } from "~/features/playlist";
 import { convertToRelativeTime } from "~/utils/datetime";
-import { updatePlaylist } from "~/features/playlist"
 import { getVideoImageUrl } from "~/features/bilibili";
 import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
 import log from "~/utils/logger";
@@ -35,8 +34,8 @@ cssInterop(OrigCircle, {
 const Circle = Animated.createAnimatedComponent(OrigCircle);
 
 export interface HeaderProps {
-  meta: PlaylistMeta;
-  detail: PlaylistDetail[];
+  meta: Playlist;
+  detail: PlaylistTrack[];
   images: string[];
   onPlay: () => void;
   showPlayButton: boolean;
@@ -69,7 +68,7 @@ export function Header({ meta, detail, images, onPlay, showPlayButton, className
       if (!meta.source) {
         return;
       }
-      setLastSyncString(convertToRelativeTime(JSON.parse(meta.source).lastSyncAt));
+      setLastSyncString(convertToRelativeTime(meta.source.lastSyncAt));
     }
     const handle = setInterval(action, 5000);
     action();
@@ -86,7 +85,7 @@ export function Header({ meta, detail, images, onPlay, showPlayButton, className
       if (!source) {
         return;
       }
-      const total = await updatePlaylist(meta.id, JSON.parse(source), progress => {
+      const total = await updatePlaylist(meta.id, source, progress => {
         setProgress(progress);
       });
       await Promise.all([

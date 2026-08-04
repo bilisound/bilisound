@@ -1,18 +1,9 @@
 import { eq, count as countFunc, sql, isNull, or } from "drizzle-orm";
 import omit from "lodash/omit";
 
-import {
-  PlaylistDetail,
-  playlistDetail,
-  PlaylistDetailInsert,
-  PlaylistImport,
-  PlaylistMeta,
-  playlistMeta,
-  PlaylistMetaInsert,
-} from "./schema";
+import { playlistDetail, PlaylistDetailInsert, PlaylistMeta, playlistMeta, PlaylistMetaInsert } from "./schema";
 
 import { db } from "~/storage/sqlite/main";
-import { PlaylistSource } from "~/typings/playlist";
 
 // ============================================================================
 // 歌单元数据部分
@@ -136,51 +127,10 @@ export function replacePlaylistDetail(playlistId: number, playlist: PlaylistDeta
 }
 
 /**
- * 从多首曲目快速创建新的播放列表
- * @param title
- * @param description
- * @param list
- * @param source
- * @param imgUrl
- */
-export async function quickCreatePlaylist(
-  title: string,
-  description: string,
-  list: PlaylistDetail[],
-  source?: PlaylistSource,
-  imgUrl?: string,
-) {
-  // 在 playlistMeta 表中创建新的播放列表
-  const newPlaylist = await db
-    .insert(playlistMeta)
-    .values({
-      title,
-      description,
-      imgUrl,
-      color:
-        "#" +
-        Math.floor(Math.random() * 16777216)
-          .toString(16)
-          .padStart(6, "0"), // 生成随机颜色
-      amount: list.length,
-      source: source && list.length > 1 ? JSON.stringify(source) : null,
-    })
-    .returning();
-
-  const playlistId = newPlaylist[0].id;
-
-  // 将 list 中的数据插入到 playlistDetail 表
-  const builtList = list.map(e => omit({ ...e, playlistId }, "id"));
-  await db.insert(playlistDetail).values(builtList);
-
-  return playlistId;
-}
-
-/**
  * 导出播放列表
  * @param id
  */
-export async function exportPlaylist(id: number): Promise<PlaylistImport> {
+export async function exportPlaylist(id: number) {
   const meta = await db.select().from(playlistMeta).where(eq(playlistMeta.id, id));
   const detail = await db.select().from(playlistDetail).where(eq(playlistDetail.playlistId, id));
   return {
@@ -194,7 +144,7 @@ export async function exportPlaylist(id: number): Promise<PlaylistImport> {
 /**
  * 导出全部播放列表
  */
-export async function exportAllPlaylist(): Promise<PlaylistImport> {
+export async function exportAllPlaylist() {
   const meta = await db.select().from(playlistMeta);
   const detail = await db.select().from(playlistDetail);
   return {
@@ -218,6 +168,10 @@ export async function clonePlaylist(playlistId: number) {
                 FROM playlist_meta
                 WHERE id = ${playlistId}`,
     );
+    if (clonedMeta.changes === 0) {
+      return undefined;
+    }
+
     const newPlaylistId = clonedMeta.lastInsertRowId;
 
     // 克隆 playlist_detail

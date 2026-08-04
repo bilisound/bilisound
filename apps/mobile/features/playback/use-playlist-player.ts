@@ -1,20 +1,18 @@
 import * as Player from "@bilisound/player";
 import { PLAYLIST_ON_QUEUE, playlistStorage, usePlaylistOnQueue } from "~/storage/playlist";
 import { playPlaylist } from "./track-operations";
-import { PlaylistDetail, PlaylistMeta } from "~/features/playlist"
+import type { PlayableItem } from "~/features/playlist";
 import log from "~/utils/logger";
 
 interface UsePlaylistPlayerOptions {
   playlistId: number;
-  meta: PlaylistMeta | undefined;
-  filteredPlaylistDetail: PlaylistDetail[];
+  filteredPlaylistDetail: PlayableItem[];
   getOriginalIndex: (filteredIndex: number) => number;
   showConfirmDialog: (options: { title: string; description: string; onConfirm: () => Promise<void> }) => void;
 }
 
 export function usePlaylistPlayer({
   playlistId,
-  meta,
   filteredPlaylistDetail,
   getOriginalIndex,
   showConfirmDialog,
@@ -25,7 +23,7 @@ export function usePlaylistPlayer({
     log.debug("将队列中的内容设置为本歌单");
     // playPlaylist 内部已重置随机模式（Player.setShuffleMode + 持久化偏好）
     await playPlaylist(playlistId, index);
-    setPlaylistOnQueue({ value: meta });
+    setPlaylistOnQueue({ value: { id: playlistId } });
   }
 
   async function handlePlay(index = 0) {
