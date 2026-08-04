@@ -6,7 +6,7 @@ import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import { usePlaybackSpeedStore } from "~/store/playback-speed";
 import { useBottomSheetStore } from "~/store/bottom-sheet";
 import { router } from "expo-router";
-import { openAddPlaylistPage } from "~/business/playlist/misc";
+import { openAddPlaylistPage } from "~/features/playlist"
 import { View } from "react-native";
 import {
   Actionsheet,

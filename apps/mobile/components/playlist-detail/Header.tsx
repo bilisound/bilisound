@@ -14,9 +14,9 @@ import { Modal, ModalBackdrop, ModalBody, ModalContent } from "~/components/ui/m
 import { DownloadButton } from "~/components/download-button";
 import { ImagesGroup } from "./ImagesGroup";
 
-import { PlaylistDetail, PlaylistMeta } from "~/storage/sqlite/schema";
+import { PlaylistDetail, PlaylistMeta } from "~/features/playlist"
 import { convertToRelativeTime } from "~/utils/datetime";
-import { updatePlaylist } from "~/business/playlist/update";
+import { updatePlaylist } from "~/features/playlist"
 import { getVideoImageUrl } from "~/features/bilibili";
 import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
 import log from "~/utils/logger";

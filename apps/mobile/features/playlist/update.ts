@@ -1,6 +1,6 @@
 import { getFullRemotePlaylist, getRemotePlaylist, getVideoMetadata } from "~/features/bilibili";
-import { replacePlaylistDetail, setPlaylistMeta } from "~/storage/sqlite/playlist";
-import { PlaylistDetailInsert } from "~/storage/sqlite/schema";
+import { replacePlaylistDetail, setPlaylistMeta } from "~/features/playlist/repository";
+import { PlaylistDetailInsert } from "~/features/playlist/models";
 import { PlaylistSource } from "~/typings/playlist";
 
 /**
@@ -28,7 +28,7 @@ export async function updatePlaylist(id: number, source: PlaylistSource, progres
         playlistId: id,
         extendedData: null,
       }));
-      replacePlaylistDetail(id, builtList);
+      await replacePlaylistDetail(id, builtList);
       await setPlaylistMeta({
         id,
         imgUrl: metadata.coverUrl,
@@ -53,7 +53,7 @@ export async function updatePlaylist(id: number, source: PlaylistSource, progres
         playlistId: id,
         extendedData: null,
       }));
-      replacePlaylistDetail(id, builtList);
+      await replacePlaylistDetail(id, builtList);
       await setPlaylistMeta({
         id,
         imgUrl: data.coverUrl,

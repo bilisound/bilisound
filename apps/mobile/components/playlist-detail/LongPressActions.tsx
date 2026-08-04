@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/actionsheet";
 import { ActionSheetCurrent } from "~/components/action-sheet-current";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu";
-import { PlaylistMeta } from "~/storage/sqlite/schema";
+import { PlaylistMeta } from "~/features/playlist"
 import { getVideoImageUrl } from "~/features/bilibili";
 
 export type LongPressAction = "editMeta" | "editCover" | "editMass" | "close";

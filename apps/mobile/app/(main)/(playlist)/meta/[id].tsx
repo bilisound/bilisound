@@ -18,15 +18,13 @@ import {
 } from "~/components/ui/form-control";
 import { AlertCircleIcon, CheckIcon } from "~/components/ui/icon";
 import { TextareaField, TextField } from "~/components/ui-next";
-import {
-  addToPlaylist,
-  clonePlaylist,
-  getPlaylistMeta,
-  insertPlaylistMeta,
-  setPlaylistMeta,
-  syncPlaylistAmount,
-} from "~/storage/sqlite/playlist";
-import { PlaylistDetailInsert, PlaylistMeta } from "~/storage/sqlite/schema";
+import { addToPlaylist,
+clonePlaylist,
+getPlaylistMeta,
+insertPlaylistMeta,
+setPlaylistMeta,
+syncPlaylistAmount, } from "~/features/playlist"
+import { PlaylistDetailInsert, PlaylistMeta } from "~/features/playlist"
 import { PlaylistSource } from "~/typings/playlist";
 import log from "~/utils/logger";
 import { Layout } from "~/components/layout";

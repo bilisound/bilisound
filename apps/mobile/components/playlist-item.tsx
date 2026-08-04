@@ -3,7 +3,7 @@ import { StyleProp, ViewStyle, View } from "react-native";
 import { twMerge } from "tailwind-merge";
 
 import { Text } from "~/components/ui/text";
-import { PlaylistMeta } from "~/storage/sqlite/schema";
+import { PlaylistMeta } from "~/features/playlist"
 import { Pressable } from "~/components/ui/pressable";
 import { Skeleton } from "~/components/ui/skeleton";
 import { SkeletonText } from "~/components/skeleton-text";

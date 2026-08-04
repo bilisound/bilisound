@@ -1,5 +1,5 @@
 import { parse } from "smol-toml";
-import { PlaylistDetailInsert, playlistImportSchema, PlaylistMetaInsert } from "~/storage/sqlite/schema";
+import { PlaylistDetailInsert, playlistImportSchema, PlaylistMetaInsert } from "~/features/playlist"
 
 interface MigratePlan {
   meta: PlaylistMetaInsert;

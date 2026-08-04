@@ -1,4 +1,4 @@
-import type { PlaylistDetail } from "~/storage/sqlite/schema";
+import type { PlaylistDetail } from "~/features/playlist";
 
 describe("appendPlaylistToCurrentQueue", () => {
   afterEach(() => {
@@ -11,7 +11,7 @@ describe("appendPlaylistToCurrentQueue", () => {
     jest.dontMock("~/utils/logger");
     jest.dontMock("~/storage/cache-status");
     jest.dontMock("~/constants/playback");
-    jest.dontMock("~/storage/sqlite/playlist");
+    jest.dontMock("~/features/playlist");
     jest.dontMock("~/storage/playlist");
     jest.dontMock("~/store/error-message");
     jest.dontMock("../queue-snapshot");
@@ -50,7 +50,7 @@ describe("appendPlaylistToCurrentQueue", () => {
       isCacheExists: jest.fn(() => false),
     }));
     jest.doMock("~/constants/playback", () => ({ URI_EXPIRE_DURATION: 1 }));
-    jest.doMock("~/storage/sqlite/playlist", () => ({ getPlaylistDetail: jest.fn() }));
+    jest.doMock("~/features/playlist", () => ({ getPlaylistDetail: jest.fn() }));
     jest.doMock("~/storage/playlist", () => ({
       invalidateOnQueueStatus: jest.fn(),
       PLAYLIST_ON_QUEUE: "playlist_on_queue",

@@ -33,12 +33,12 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 
 ## Current Working Assumption
 
-Epics 1–4 (Player Foundation, Config Architecture, Bilibili Data Boundary, Playback
-Orchestration) are delivered. Epic 1 owns queue occurrences, cross-platform shuffle playback
-order, natural completion and external transport routing, and atomic queue replacement.
-Native iOS verification completed on an iPhone 17 Simulator running iOS 26.5; see
+Epics 1–5 (Player Foundation, Config Architecture, Bilibili Data Boundary, Playback
+Orchestration, Playlist Domain) are delivered. Epic 1 owns queue occurrences, cross-platform
+shuffle playback order, natural completion and external transport routing, and atomic queue
+replacement. Native iOS verification completed on an iPhone 17 Simulator running iOS 26.5; see
 [player-foundation.md](./player-foundation.md#ios-completion-verification-iphone-17-simulator-ios-265-2026-08-02).
-Epic 5 (Playlist Domain) is the next business refactor.
+Epic 6 (Cache and Download) is the next business refactor.
 
 The isolated `packages/ui` design-system foundation may be developed in parallel because it does not consume current mobile business modules. Integrating it into screens remains part of the later UI rewrite and must wait for stable feature-facing APIs.
 

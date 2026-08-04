@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import Fuse from "fuse.js";
-import { PlaylistDetail } from "~/storage/sqlite/schema";
+import { PlaylistDetail } from "~/features/playlist/models";
 
 export function usePlaylistSearch(playlistDetail: PlaylistDetail[] | undefined) {
   const [searchQuery, setSearchQuery] = useState("");

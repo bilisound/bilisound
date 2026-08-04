@@ -10,7 +10,7 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 | 2. Config Architecture    | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
-| 5. Playlist Domain        | Planned       |                                                                                                                                                          |
+| 5. Playlist Domain        | **Delivered** | `features/playlist` boundary; Promise-based native/Web repository contract; verified on Android, Web, and with contract tests                            |
 | 6. Cache and Download     | Planned       |                                                                                                                                                          |
 | 7. UI Rewrite             | Planned       | requires Epics 1–6 boundaries to be stable                                                                                                               |
 
@@ -263,24 +263,93 @@ route-level playback orchestration -/-> kept outside features/playback
 
 ### Epic 5: Playlist Domain
 
-> Status: planned.
+> Status: **delivered** — `features/playlist` is the playlist domain boundary; routes,
+> components, playback, and exchange utils no longer import `storage/sqlite/playlist` or
+> `storage/sqlite/schema` playlist types directly.
 
-Scope:
+Scope (as executed):
 
 ```txt
-storage/sqlite/playlist.ts
-storage/sqlite/schema.ts playlist types
-components/playlist-*
-hooks/playlist-detail/*        (usePlaylistPlayer already moved to features/playback)
-app/(main)/(playlist)/*
+storage/sqlite/playlist.ts          -> features/playlist/repository.ts (re-export facade)
+storage/sqlite/playlist.web.ts      -> features/playlist/repository.web.ts
+storage/sqlite/schema playlist types -> features/playlist/models.ts (re-export boundary)
+business/playlist/update.ts         -> features/playlist/update.ts
+business/playlist/misc.ts           -> features/playlist/misc.ts
+hooks/playlist-detail/*             -> features/playlist/use-playlist-editor.ts, use-playlist-search.ts
 ```
 
 Goals:
 
-1. Put local playlist CRUD behind repositories.
-2. Stop route files from importing SQLite storage directly.
-3. Introduce playlist domain/view models where useful.
-4. Split `SongItem` into storage-independent UI and feature-specific wrappers.
+1. Put local playlist CRUD behind repositories. ✓
+2. Stop route files from importing SQLite storage directly. ✓
+3. Introduce playlist domain/view models where useful. ✓ (type re-exports as boundary; future split point)
+4. Split `SongItem` into storage-independent UI and feature-specific wrappers. (deferred — component still accepts `PlaylistDetail` via feature boundary type, not raw schema)
+
+Implementation record:
+
+```txt
+features/playlist/index.ts              # public feature surface
+features/playlist/models.ts             # domain types (re-export from schema, single mapping point)
+features/playlist/repository-contract.ts # shared Promise-based repository API
+features/playlist/repository.ts         # native repository adapter + transactional import
+features/playlist/repository.web.ts     # Web repository adapter + awaited IndexedDB writes
+features/playlist/update.ts             # upstream playlist sync (was business/playlist/update.ts)
+features/playlist/misc.ts               # openAddPlaylistPage navigation helper
+features/playlist/use-playlist-editor.ts # playlist detail editing hook
+features/playlist/use-playlist-search.ts # playlist detail search hook
+features/playlist/__tests__/repository.test.ts # shared native/Web repository contract tests
+```
+
+Deleted:
+
+```txt
+business/playlist/update.ts
+business/playlist/misc.ts
+business/playlist/ (directory removed)
+hooks/playlist-detail/usePlaylistEditor.ts
+hooks/playlist-detail/usePlaylistSearch.ts
+hooks/playlist-detail/ (directory removed)
+```
+
+Verification:
+
+```txt
+pnpm -C apps/mobile exec tsc --noEmit   # clean
+pnpm -C apps/mobile exec jest features/playlist/__tests__/repository.test.ts \
+  features/playback/__tests__/track-operations.test.ts --runInBand   # 11 tests clean
+EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform web --clear
+EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform android --clear
+Android 真机（22122RK93C, Expo Dev Client）验证 2026-08-04:
+  - 歌单列表 / 详情 / 搜索过滤（usePlaylistSearch）/ 长按编辑（usePlaylistEditor）
+  - 复制到新歌单（openAddPlaylistPage / apply-playlist）
+  - 修改歌单信息 / 创建解绑副本（clonePlaylist 持久化 168 首）
+  - 删除歌单（deletePlaylistMeta 级联删除详情）
+  - 顺带修复既有缺陷：列表页长按 imgUrl=null 歌单崩溃
+    （playlist.tsx LongPressActions 的 displayTrack.imgUrl! 非空断言 → 加空值保护）
+```
+
+The repository follow-up on 2026-08-04 made every public operation Promise-based on both
+platforms. Missing metadata is normalized to `[]`, cloning a missing playlist rejects, and
+playlist replacement/import callers await persistence before reporting success.
+
+Coupling reduced:
+
+```txt
+routes/components/playback/exchange -/-> storage/sqlite/playlist direct imports
+routes/components/playback/exchange -/-> storage/sqlite/schema playlist type imports
+business/playlist/ directory eliminated — logic lives in features/playlist
+hooks/playlist-detail/ directory eliminated — hooks live in features/playlist
+```
+
+Remaining allowed `storage/sqlite/schema` references:
+
+```txt
+features/playlist/models.ts       — boundary mapping point (by design)
+features/playlist/repository.ts   — internal implementation detail
+features/playlist/repository.web.ts — internal implementation detail
+features/theme/storage.ts         — different table (themeProfile), not playlist concern
+utils/migration/playlist.ts       — legacy one-time DB migration, acceptable internal use
+```
 
 ### Epic 6: Cache and Download
 
@@ -349,7 +418,7 @@ Non-goals for earlier epics: see the UI technology rule in [README.md](./README.
 2. Config Architecture facade and migration design. — **done**
 3. Bilibili Data Boundary sample on video detail. — **done**
 4. Playback Orchestration after player APIs are available. — **done**
-5. Playlist Domain migration.
+5. Playlist Domain migration. — **done**
 6. Cache and Download migration.
 7. UI Rewrite preparation and UI framework re-evaluation.
 

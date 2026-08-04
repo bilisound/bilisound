@@ -1,4 +1,4 @@
-import { PlaylistDetail } from "~/storage/sqlite/schema";
+import { PlaylistDetail } from "~/features/playlist"
 import { PlaylistSource } from "~/typings/playlist";
 import { create } from "zustand";
 

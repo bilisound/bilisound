@@ -5,7 +5,7 @@ import type { TrackData } from "@bilisound/player";
 import { getOnlineMediaResourceUrl, getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
-import type { PlaylistDetail } from "~/storage/sqlite/schema";
+import type { PlaylistDetail } from "~/features/playlist"
 import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 

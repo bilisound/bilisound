@@ -10,7 +10,7 @@ import Toast from "react-native-toast-message";
 import { PlaylistItem } from "~/components/playlist-item";
 import { VideoItem } from "~/components/video-item";
 import { Text } from "~/components/ui/text";
-import { addToPlaylist, getPlaylistMetas, quickCreatePlaylist, syncPlaylistAmount } from "~/storage/sqlite/playlist";
+import { addToPlaylist, getPlaylistMetas, quickCreatePlaylist, syncPlaylistAmount } from "~/features/playlist"
 import useApplyPlaylistStore from "~/store/apply-playlist";
 import { getVideoImageUrl, getVideoUrl } from "~/features/bilibili";
 import { Layout } from "~/components/layout";

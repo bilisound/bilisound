@@ -1,4 +1,4 @@
-import type { PlaylistImport } from "~/storage/sqlite/schema";
+import type { PlaylistImport } from "~/features/playlist"
 import { BRAND } from "~/constants/branding";
 
 type PlaylistLLMExportInput = Pick<PlaylistImport, "meta" | "detail">;

@@ -2,15 +2,13 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system/legacy";
 import { stringify } from "smol-toml";
 
-import { exportAllPlaylist, exportPlaylist } from "~/storage/sqlite/playlist";
+import { exportAllPlaylist, exportPlaylist, importPlaylistBatch } from "~/features/playlist";
 
 import { saveTextFile } from "~/utils/file";
 import log from "~/utils/logger";
 import Toast from "react-native-toast-message";
 import { importHelper } from "~/utils/exchange/import-helper";
 import { buildPlaylistLLMExportFileName, formatPlaylistForLLMExport } from "~/utils/exchange/playlist-llm";
-import { db } from "~/storage/sqlite/main";
-import { playlistDetail, playlistMeta } from "~/storage/sqlite/schema";
 import { BRAND } from "~/constants/branding";
 
 export async function exportPlaylistToFile(id?: number) {
@@ -60,21 +58,7 @@ export async function importPlaylistFromFile() {
   try {
     log.info(`用户导入歌单：${pickResult.assets?.[0].uri}`);
     const migratePlan = importHelper(await FileSystem.readAsStringAsync(uri, { encoding: "utf8" }));
-    db.transaction(tx => {
-      for (let i = 0; i < migratePlan.length; i++) {
-        const e = migratePlan[i];
-        const { lastInsertRowId } = tx
-          .insert(playlistMeta)
-          .values({ ...e.meta, amount: e.detail.length, id: undefined })
-          .run();
-        for (let j = 0; j < e.detail.length; j++) {
-          const f = e.detail[j];
-          tx.insert(playlistDetail)
-            .values({ ...f, id: undefined, playlistId: lastInsertRowId })
-            .run();
-        }
-      }
-    });
+    await importPlaylistBatch(migratePlan);
     Toast.show({
       type: "success",
       text1: "歌单导入成功",

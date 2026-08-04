@@ -1,7 +1,7 @@
 import * as Player from "@bilisound/player";
 import { PLAYLIST_ON_QUEUE, playlistStorage, usePlaylistOnQueue } from "~/storage/playlist";
 import { playPlaylist } from "./track-operations";
-import { PlaylistDetail, PlaylistMeta } from "~/storage/sqlite/schema";
+import { PlaylistDetail, PlaylistMeta } from "~/features/playlist"
 import log from "~/utils/logger";
 
 interface UsePlaylistPlayerOptions {

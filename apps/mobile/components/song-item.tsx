@@ -4,7 +4,7 @@ import { ActivityIndicator, View } from "react-native";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Text } from "~/components/ui/text";
 import { useCacheExists } from "~/storage/cache-status";
-import { PlaylistDetail } from "~/storage/sqlite/schema";
+import { PlaylistDetail } from "~/features/playlist"
 import { formatSecond } from "~/utils/datetime";
 
 import * as Player from "@bilisound/player";

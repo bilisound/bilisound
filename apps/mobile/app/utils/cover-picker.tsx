@@ -3,7 +3,7 @@ import { Layout } from "~/components/layout";
 import { View } from "react-native";
 import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPlaylistDetail, setPlaylistMeta } from "~/storage/sqlite/playlist";
+import { getPlaylistDetail, setPlaylistMeta } from "~/features/playlist"
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { Pressable } from "~/components/ui/pressable";

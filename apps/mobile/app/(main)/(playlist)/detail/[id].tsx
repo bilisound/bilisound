@@ -23,14 +23,14 @@ import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Heading } from "~/components/ui/heading";
 import { TextField, TextFieldAction } from "~/components/ui-next";
 import { Text } from "~/components/ui/text";
-import { usePlaylistEditor } from "~/hooks/playlist-detail/usePlaylistEditor";
+import { usePlaylistEditor } from "~/features/playlist";
 import { usePlaylistPlayer } from "~/features/playback";
-import { usePlaylistSearch } from "~/hooks/playlist-detail/usePlaylistSearch";
+import { usePlaylistSearch } from "~/features/playlist";
 import { useConfirm } from "~/hooks/useConfirm";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { useWindowSize } from "~/hooks/useWindowSize";
-import { getPlaylistDetail, getPlaylistMeta } from "~/storage/sqlite/playlist";
-import { PlaylistDetail, PlaylistMeta } from "~/storage/sqlite/schema";
+import { getPlaylistDetail, getPlaylistMeta } from "~/features/playlist"
+import { PlaylistDetail, PlaylistMeta } from "~/features/playlist"
 
 function extractAndProcessImgUrls(playlistDetails: PlaylistDetail[]) {
   const imgUrls = playlistDetails.map(detail => detail.imgUrl);

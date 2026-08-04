@@ -19,9 +19,9 @@ Check `git branch -a` and ask the user which branch the task belongs on. Recent 
 
 ## Recommended First Workstream
 
-Check the [Status Overview](./epic-breakdown.md#status-overview) first. Epics 1–4
-(Player Foundation, Config Architecture, Bilibili Data Boundary, Playback Orchestration)
-are delivered. Epic 5 (Playlist Domain) is the next business refactor.
+Check the [Status Overview](./epic-breakdown.md#status-overview) first. Epics 1–5
+(Player Foundation, Config Architecture, Bilibili Data Boundary, Playback Orchestration,
+Playlist Domain) are delivered. Epic 6 (Cache and Download) is the next business refactor.
 
 Player Foundation now provides:
 

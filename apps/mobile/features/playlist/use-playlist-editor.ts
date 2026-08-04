@@ -5,9 +5,9 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import useMultiSelect from "~/hooks/useMultiSelect";
 import useApplyPlaylistStore from "~/store/apply-playlist";
-import { deletePlaylistDetail, syncPlaylistAmount } from "~/storage/sqlite/playlist";
+import { deletePlaylistDetail, syncPlaylistAmount } from "~/features/playlist/repository";
 import { PLAYLIST_ON_QUEUE, playlistStorage, usePlaylistOnQueue } from "~/storage/playlist";
-import { PlaylistDetail, PlaylistMeta } from "~/storage/sqlite/schema";
+import { PlaylistDetail, PlaylistMeta } from "~/features/playlist/models";
 
 interface UsePlaylistEditorOptions {
   playlistId: number;

@@ -11,8 +11,8 @@ import { getCacheAudioPath } from "~/utils/file";
 import log from "~/utils/logger";
 import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
-import { getPlaylistDetail } from "~/storage/sqlite/playlist";
-import type { PlaylistDetail } from "~/storage/sqlite/schema";
+import { getPlaylistDetail } from "~/features/playlist"
+import type { PlaylistDetail } from "~/features/playlist"
 import {
   invalidateOnQueueStatus,
   PLAYLIST_ON_QUEUE,

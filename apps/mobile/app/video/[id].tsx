@@ -14,7 +14,7 @@ import { DualScrollView } from "~/components/dual-scroll-view";
 
 import { getVideoMetadata } from "~/features/bilibili";
 import { playEpisode } from "~/features/playback";
-import { openAddPlaylistPage } from "~/business/playlist/misc";
+import { openAddPlaylistPage } from "~/features/playlist"
 import { convertToHTTPS } from "~/utils/string";
 import useHistoryStore from "~/store/history";
 import log from "~/utils/logger";

@@ -1,6 +1,6 @@
 import { createMMKV, useMMKVBoolean, useMMKVObject } from "react-native-mmkv";
 
-import { PlaylistMeta } from "~/storage/sqlite/schema";
+import { PlaylistMeta } from "~/features/playlist";
 
 export const LEGACY_PLAYLIST_INDEX_KEY = "playlist_index";
 

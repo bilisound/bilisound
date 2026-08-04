@@ -38,8 +38,8 @@ import { useConfirm } from "~/hooks/useConfirm";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { useWindowSize } from "~/hooks/useWindowSize";
 import { invalidateOnQueueStatus, PLAYLIST_ON_QUEUE, playlistStorage } from "~/storage/playlist";
-import { deletePlaylistMeta, getPlaylistMetas } from "~/storage/sqlite/playlist";
-import { PlaylistMeta } from "~/storage/sqlite/schema";
+import { deletePlaylistMeta, getPlaylistMetas } from "~/features/playlist"
+import { PlaylistMeta } from "~/features/playlist"
 import { usePlaylistViewConfig, useSettingsActions } from "~/features/config";
 import { exportPlaylistToFile, exportPlaylistToLLMFile, importPlaylistFromFile } from "~/utils/exchange/playlist";
 import log from "~/utils/logger";
@@ -149,7 +149,7 @@ function LongPressActions({ showActionSheet, displayTrack, onAction, onClose }: 
           <ActionSheetCurrent
             line1={displayTrack.title}
             line2={`${displayTrack.amount} 首歌曲`}
-            image={getVideoImageUrl(displayTrack.imgUrl!)}
+            image={displayTrack.imgUrl ? getVideoImageUrl(displayTrack.imgUrl) : undefined}
           />
         )}
         <ActionMenu menuItems={menuItems} />
