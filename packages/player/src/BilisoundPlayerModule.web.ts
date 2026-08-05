@@ -559,6 +559,18 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     this.emit("onShuffleModeChange", { mode });
   }
 
+  async getPlaybackOrder(): Promise<number[]> {
+    return this.playbackOrderManager.getPlaybackOrder();
+  }
+
+  async setPlaybackOrder(orderJson: number[]): Promise<boolean> {
+    const restored = this.playbackOrderManager.setPlaybackOrder(orderJson);
+    if (restored) {
+      this.emitQueueChange();
+    }
+    return restored;
+  }
+
   async saveFile(path: string, mimeType: string, replaceName?: string | null) {}
 }
 

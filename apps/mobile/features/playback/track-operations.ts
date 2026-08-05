@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 
 import type { TrackData } from "@bilisound/player";
 
-import { setQueuePlayingMode } from "~/storage/queue";
+import { clearQueuePlaybackOrder, setQueuePlayingMode } from "~/storage/queue";
 import { getMediaResource, getVideoImageUrl, getVideoMetadata, getVideoUrl } from "~/features/bilibili";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { getCacheAudioPath } from "~/utils/file";
@@ -226,6 +226,7 @@ export async function playPlaylist(id: number, index = 0) {
   // 替换队列时恢复到非随机状态（与旧版行为一致），随机顺序由 player 内部管理
   await Player.setShuffleMode(ShuffleMode.OFF);
   setQueuePlayingMode("normal");
+  clearQueuePlaybackOrder();
 }
 
 /**

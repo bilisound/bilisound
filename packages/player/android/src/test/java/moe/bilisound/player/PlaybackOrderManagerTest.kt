@@ -4,6 +4,7 @@ import androidx.media3.common.C
 import androidx.media3.exoplayer.source.ShuffleOrder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class PlaybackOrderManagerTest {
@@ -103,6 +104,34 @@ class PlaybackOrderManagerTest {
         }
 
         assertEquals(forward.reversed(), reverse)
+    }
+
+    @Test
+    fun reportsPlaybackOrderAsCanonicalIndices() {
+        val manager = PlaybackOrderManager(size = 4, startIndex = 2, randomSeed = 31)
+
+        assertEquals(collectPlaybackOrder(manager), manager.playbackOrderIndices().toList())
+    }
+
+    @Test
+    fun restoresPersistedPlaybackOrder() {
+        val manager = PlaybackOrderManager(size = 4, startIndex = 0, randomSeed = 37)
+
+        val restored = requireNotNull(manager.withPlaybackOrder(intArrayOf(2, 0, 3, 1)))
+
+        assertEquals(listOf(2, 0, 3, 1), collectPlaybackOrder(restored))
+        assertEquals(2, restored.firstIndex)
+        assertEquals(2, restored.getPreviousIndex(0))
+    }
+
+    @Test
+    fun rejectsPlaybackOrderThatIsNotACanonicalPermutation() {
+        val manager = PlaybackOrderManager(size = 3, startIndex = 0, randomSeed = 41)
+
+        assertNull(manager.withPlaybackOrder(intArrayOf(0, 1)))
+        assertNull(manager.withPlaybackOrder(intArrayOf(0, 1, 1)))
+        assertNull(manager.withPlaybackOrder(intArrayOf(0, 1, 3)))
+        assertNull(manager.withPlaybackOrder(intArrayOf(0, 1, 2, 3)))
     }
 
     private fun collectPlaybackOrder(order: ShuffleOrder): List<Int> {

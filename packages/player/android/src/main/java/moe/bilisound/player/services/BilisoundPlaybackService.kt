@@ -55,6 +55,15 @@ class BilisoundPlaybackService : MediaSessionService() {
         private var activePlayer: ExoPlayer? = null
         private var activePlaybackOrder: PlaybackOrderManager? = null
 
+        /**
+         * A restore request that arrived before Media3 applied `shuffleModeEnabled`.
+         *
+         * MediaController commands propagate to the player asynchronously, so a JS restore can
+         * reach the service either side of the shuffle activation that reinstalls a fresh random
+         * order. Holding the request lets whichever step runs second apply it.
+         */
+        private var pendingPlaybackOrder: IntArray? = null
+
         fun replaceMediaItemPreservingPlaybackOrder(index: Int, mediaItem: MediaItem): Boolean {
             val player = checkNotNull(activePlayer) { "Playback service is not ready" }
             require(index in 0 until player.mediaItemCount) { "Invalid media item index: $index" }
@@ -83,6 +92,8 @@ class BilisoundPlaybackService : MediaSessionService() {
         ) {
             val player = checkNotNull(activePlayer) { "Playback service is not ready" }
             player.pause()
+            // Replacing the queue invalidates any deferred restore for the previous queue.
+            pendingPlaybackOrder = null
             if (mediaItems.isEmpty()) {
                 player.clearMediaItems()
                 installPlaybackOrder(player, 0, C.INDEX_UNSET)
@@ -96,6 +107,44 @@ class BilisoundPlaybackService : MediaSessionService() {
             }
         }
 
+        /**
+         * Canonical indices in playback order.
+         *
+         * The ShuffleOrder instance outlives shuffle mode, so canonical order must be reported
+         * whenever shuffle is disabled rather than reading the retained shuffled order.
+         */
+        fun getPlaybackOrder(): IntArray {
+            val player = checkNotNull(activePlayer) { "Playback service is not ready" }
+            val playbackOrder = activePlaybackOrder
+            if (!player.shuffleModeEnabled || playbackOrder == null) {
+                return IntArray(player.mediaItemCount) { it }
+            }
+            return playbackOrder.playbackOrderIndices()
+        }
+
+        /**
+         * Restores a previously captured playback order. Returns false when shuffle is disabled or
+         * [order] is not a permutation of the current canonical indices.
+         */
+        fun setPlaybackOrder(order: IntArray): Boolean {
+            val player = checkNotNull(activePlayer) { "Playback service is not ready" }
+            val playbackOrder = activePlaybackOrder
+            if (playbackOrder == null || order.size != player.mediaItemCount) {
+                return false
+            }
+            if (!player.shuffleModeEnabled) {
+                // Shuffle activation has not reached the player yet; apply on arrival instead.
+                pendingPlaybackOrder = order.copyOf()
+                return true
+            }
+
+            val restored = playbackOrder.withPlaybackOrder(order) ?: return false
+            pendingPlaybackOrder = null
+            activePlaybackOrder = restored
+            player.setShuffleOrder(restored)
+            return true
+        }
+
         private fun installPlaybackOrder(player: ExoPlayer, size: Int, startIndex: Int) {
             val playbackOrder = PlaybackOrderManager(
                 size = size,
@@ -106,6 +155,24 @@ class BilisoundPlaybackService : MediaSessionService() {
             )
             activePlaybackOrder = playbackOrder
             player.setShuffleOrder(playbackOrder)
+        }
+
+        /**
+         * Applies a restore request that arrived before shuffle mode was active, overwriting the
+         * freshly randomized order that shuffle activation just installed.
+         */
+        private fun consumePendingPlaybackOrder(player: ExoPlayer) {
+            val pending = pendingPlaybackOrder ?: return
+            pendingPlaybackOrder = null
+            val playbackOrder = activePlaybackOrder ?: return
+            val restored = playbackOrder.withPlaybackOrder(pending) ?: return
+            activePlaybackOrder = restored
+            player.setShuffleOrder(restored)
+        }
+
+        /** Drops a deferred restore, e.g. when shuffle is turned off before it could be applied. */
+        private fun clearPendingPlaybackOrder() {
+            pendingPlaybackOrder = null
         }
     }
 
@@ -271,15 +338,19 @@ class BilisoundPlaybackService : MediaSessionService() {
             )
         }
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+            val player = mediaSession?.player as? ExoPlayer ?: return
             if (!shuffleModeEnabled) {
+                // Leaving shuffle discards any deferred restore for the abandoned order.
+                clearPendingPlaybackOrder()
                 return
             }
-            val player = mediaSession?.player as? ExoPlayer ?: return
             installPlaybackOrder(
                 player = player,
                 size = player.mediaItemCount,
                 startIndex = player.currentMediaItemIndex,
             )
+            // A restore issued before this activation must win over the fresh random order.
+            consumePendingPlaybackOrder(player)
         }
 
 

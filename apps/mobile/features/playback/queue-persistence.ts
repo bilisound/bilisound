@@ -3,6 +3,8 @@ import { ShuffleMode, type TrackData } from "@bilisound/player";
 import { Platform } from "react-native";
 
 import {
+  clearQueuePlaybackOrder,
+  getQueuePlaybackOrder,
   getQueuePlayingMode,
   QUEUE_CURRENT_INDEX,
   QUEUE_LIST,
@@ -11,6 +13,7 @@ import {
 } from "~/storage/queue";
 import { handleLegacyQueue } from "~/utils/migration/legacy-queue";
 import { cleanupLegacyShuffleKeys } from "~/utils/migration/shuffle-queue";
+import log from "~/utils/logger";
 import { convertToHTTPS } from "~/utils/string";
 
 import type { TrackDataOld } from "./types";
@@ -23,6 +26,9 @@ export { saveTrackData } from "./queue-snapshot";
  * 读取播放队列
  */
 export async function loadTrackData() {
+  // 先清理旧版遗留数据，这样后面读取随机播放顺序时不会遇到旧形状的值
+  cleanupLegacyShuffleKeys();
+
   const version = queueStorage.getNumber(QUEUE_LIST_VERSION);
 
   let current = queueStorage.getNumber(QUEUE_CURRENT_INDEX) || 0;
@@ -78,13 +84,54 @@ export async function loadTrackData() {
     });
 
     // v3 起随机播放由 player 内部管理。根据持久化的偏好重新应用随机模式：
-    // 当前曲目会被 rebuildShuffleOrder 固定在首位，播放进度不受影响，但随机顺序
-    // 是重新生成的（player 无法持久化精确的随机顺序，这是有意的行为变更）。
+    // 当前曲目会被固定在播放顺序首位，播放进度不受影响。
     if (getQueuePlayingMode() === "shuffle") {
       await Player.setShuffleMode(ShuffleMode.ON);
+      await restorePlaybackOrder(trackData.length);
+    } else {
+      clearQueuePlaybackOrder();
     }
   }
+}
 
-  // 清理旧版物理打乱遗留的持久化数据（QUEUE_LIST_BACKUP / QUEUE_IS_RANDOMIZED）
-  cleanupLegacyShuffleKeys();
+/**
+ * 还原上次退出时的随机播放顺序，让重启后看到的队列顺序与之前一致。
+ *
+ * 必须在 `setShuffleMode(ON)` 之后调用：开启随机模式会先生成一份新的随机顺序，
+ * 这里再用持久化的顺序覆盖它。
+ */
+async function restorePlaybackOrder(queueLength: number) {
+  const persisted = getQueuePlaybackOrder();
+  if (!persisted) {
+    return;
+  }
+  if (!isCanonicalPermutation(persisted, queueLength)) {
+    // 队列在上次保存之后变过（例如歌单同步新增曲目），或数据已损坏，旧顺序不再适用
+    log.info("持久化的随机播放顺序与当前队列不匹配，改用新生成的顺序");
+    clearQueuePlaybackOrder();
+    return;
+  }
+
+  const restored = await Player.setPlaybackOrder(persisted);
+  if (!restored) {
+    log.warn("随机播放顺序还原失败，改用新生成的顺序");
+    clearQueuePlaybackOrder();
+  }
+}
+
+/**
+ * 播放顺序必须是 canonical index 的一个完整排列，否则会有曲目无法被访问到。
+ */
+function isCanonicalPermutation(order: number[], size: number): boolean {
+  if (order.length !== size) {
+    return false;
+  }
+  const seen = new Set<number>();
+  for (const index of order) {
+    if (index < 0 || index >= size || seen.has(index)) {
+      return false;
+    }
+    seen.add(index);
+  }
+  return true;
 }

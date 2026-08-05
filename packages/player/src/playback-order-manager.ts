@@ -1,5 +1,19 @@
 type RandomSource = () => number;
 
+function isCanonicalPermutation(order: readonly number[], size: number): boolean {
+  if (order.length !== size) {
+    return false;
+  }
+  const seen = new Set<number>();
+  for (const index of order) {
+    if (!Number.isInteger(index) || index < 0 || index >= size || seen.has(index)) {
+      return false;
+    }
+    seen.add(index);
+  }
+  return true;
+}
+
 /**
  * Owns canonical queue occurrences and the playback order derived from them.
  *
@@ -148,6 +162,35 @@ export class PlaybackOrderManager {
       return 0;
     }
     return this.canonicalIndexByToken.get(this.playbackOrderTokens[0]!) ?? -1;
+  }
+
+  /**
+   * Canonical indices in playback order.
+   *
+   * When shuffle is disabled the playback order is the canonical order, so the
+   * identity permutation is returned rather than an empty array.
+   */
+  getPlaybackOrder(): number[] {
+    if (!this.shuffleEnabled) {
+      return this.canonicalTokens.map((_, index) => index);
+    }
+    return this.playbackOrderTokens.map(token => this.canonicalIndexByToken.get(token) ?? -1);
+  }
+
+  /**
+   * Restores a previously captured playback order.
+   *
+   * Rejects anything that is not a permutation of the current canonical indices, so a
+   * stale persisted order cannot desynchronize traversal from the queue.
+   */
+  setPlaybackOrder(order: readonly number[]): boolean {
+    if (!this.shuffleEnabled || !isCanonicalPermutation(order, this.canonicalTokens.length)) {
+      return false;
+    }
+
+    this.playbackOrderTokens = order.map(index => this.canonicalTokens[index]!);
+    this.reindexPlaybackOrder();
+    return true;
   }
 
   getOccurrenceToken(index: number): number | undefined {

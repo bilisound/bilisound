@@ -126,6 +126,21 @@ internal class PlaybackOrderManager private constructor(
         )
     }
 
+    /** Canonical indices in playback order. */
+    fun playbackOrderIndices(): IntArray = playbackOrder.copyOf()
+
+    /**
+     * Returns a copy of this order restored from [order], or null when [order] is not a
+     * permutation of the current canonical indices. Rejecting mismatched input keeps a stale
+     * persisted order from desynchronizing traversal from the queue.
+     */
+    fun withPlaybackOrder(order: IntArray): PlaybackOrderManager? {
+        if (!isCanonicalPermutation(order, playbackOrder.size)) {
+            return null
+        }
+        return updatedOrder(order.copyOf(), nextSeed(randomSeed))
+    }
+
     private fun updatedOrder(playbackOrder: IntArray, randomSeed: Long): PlaybackOrderManager {
         return PlaybackOrderManager(playbackOrder, randomSeed, onOrderChanged).also { updated ->
             onOrderChanged?.invoke(updated)
@@ -158,5 +173,19 @@ internal class PlaybackOrderManager private constructor(
         }
 
         private fun nextSeed(seed: Long): Long = Random(seed).nextLong()
+
+        private fun isCanonicalPermutation(order: IntArray, size: Int): Boolean {
+            if (order.size != size) {
+                return false
+            }
+            val seen = BooleanArray(size)
+            order.forEach { index ->
+                if (index !in 0 until size || seen[index]) {
+                    return false
+                }
+                seen[index] = true
+            }
+            return true
+        }
     }
 }

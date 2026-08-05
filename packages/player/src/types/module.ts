@@ -30,6 +30,8 @@ export interface BilisoundPlayerModuleInterface {
   setRepeatMode(mode: RepeatMode): Promise<void>;
   getShuffleMode(): Promise<ShuffleMode>;
   setShuffleMode(mode: ShuffleMode): Promise<void>;
+  getPlaybackOrder(): Promise<string | number[]>;
+  setPlaybackOrder(orderJson: string | number[]): Promise<boolean>;
 
   // 播放队列相关
   addTrack(trackDataJson: string | TrackData): Promise<void>;

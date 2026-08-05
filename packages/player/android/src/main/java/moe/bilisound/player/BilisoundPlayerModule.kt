@@ -807,6 +807,29 @@ class BilisoundPlayerModule : Module() {
             }
         }
 
+        AsyncFunction("getPlaybackOrder") { promise: Promise ->
+            mainHandler.post {
+                try {
+                    val order = BilisoundPlaybackService.getPlaybackOrder()
+                    promise.resolve(JSONArray(order.toList()).toString())
+                } catch (e: Exception) {
+                    promise.reject("GET_PLAYBACK_ORDER_ERROR", "无法获取播放顺序（${e.message}）", e)
+                }
+            }
+        }
+
+        AsyncFunction("setPlaybackOrder") { orderJson: String, promise: Promise ->
+            mainHandler.post {
+                try {
+                    val jsonArray = JSONArray(orderJson)
+                    val order = IntArray(jsonArray.length()) { jsonArray.getInt(it) }
+                    promise.resolve(BilisoundPlaybackService.setPlaybackOrder(order))
+                } catch (e: Exception) {
+                    promise.reject("SET_PLAYBACK_ORDER_ERROR", "无法设置播放顺序（${e.message}）", e)
+                }
+            }
+        }
+
         AsyncFunction("addDownload") { id: String, uri: String, metadata: String, promise: Promise ->
             mainHandler.post {
                 try {

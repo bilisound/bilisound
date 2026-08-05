@@ -38,7 +38,7 @@ export function toTrackData(trackDataInternal: TrackDataInternal): TrackData {
 }
 
 interface CreateSubscriptionStoreConfig<T> {
-  eventName: keyof EventList;
+  eventName: keyof EventList | (keyof EventList)[];
   fetchData: () => Promise<T>;
   addListener: typeof addListener;
   initialValue: T;
@@ -47,7 +47,7 @@ interface CreateSubscriptionStoreConfig<T> {
 
 /**
  * 快速创建面向播放器事件的 React Hook
- * @param eventName
+ * @param eventName 单个事件名，或需要同时订阅的多个事件名
  * @param fetchData
  * @param addListener
  * @param initialValue
@@ -67,7 +67,7 @@ export function createSubscriptionStore<T>({
   let currentValue: T = initialValue;
 
   // Expo Modules 侧的监听器
-  let EventSubscription: EventSubscription | undefined = undefined;
+  let eventSubscriptions: EventSubscription[] = [];
 
   // 自动读取计时器
   let timer: ReturnType<typeof setTimeout> | null = null;
@@ -78,7 +78,8 @@ export function createSubscriptionStore<T>({
   };
 
   const startFetching = () => {
-    EventSubscription = addListener(eventName, doFetch);
+    const eventNames = Array.isArray(eventName) ? eventName : [eventName];
+    eventSubscriptions = eventNames.map(name => addListener(name, doFetch));
     doFetch();
     if (typeof interval === "number" && timer === null) {
       timer = setInterval(doFetch, interval);
@@ -86,9 +87,9 @@ export function createSubscriptionStore<T>({
   };
 
   const stopFetching = () => {
-    EventSubscription?.remove();
-    EventSubscription = undefined;
-    if (typeof timer === "number") {
+    eventSubscriptions.forEach(subscription => subscription.remove());
+    eventSubscriptions = [];
+    if (timer !== null) {
       clearInterval(timer);
       timer = null;
     }
@@ -97,7 +98,7 @@ export function createSubscriptionStore<T>({
   const subscribe = (listener: () => void) => {
     progressListeners.add(listener);
     // 如果还没有 Expo Modules 侧的监听器，则开始监听
-    if (!EventSubscription) {
+    if (eventSubscriptions.length <= 0) {
       startFetching();
     }
     return () => {

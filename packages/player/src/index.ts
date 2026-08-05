@@ -2,6 +2,7 @@ export * from "./hooks/useCurrentTrack";
 export * from "./hooks/useDownloadTasks";
 export * from "./hooks/useEvents";
 export * from "./hooks/useIsPlaying";
+export * from "./hooks/usePlaybackOrder";
 export * from "./hooks/usePlaybackState";
 export * from "./hooks/useProgress";
 export * from "./hooks/useQueue";

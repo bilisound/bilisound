@@ -173,6 +173,33 @@ export function setShuffleMode(mode: ShuffleMode): Promise<void> {
 }
 
 /**
+ * 获取播放顺序（以 canonical 队列索引表示）
+ *
+ * 返回的数组是 `getTracks()` 索引的一个排列：`[0]` 是播放顺序中的第一首。
+ * 随机播放关闭时返回 canonical 顺序本身（即 `0..N-1`）。
+ */
+export async function getPlaybackOrder(): Promise<number[]> {
+  const raw = await BilisoundPlayerModule.getPlaybackOrder();
+  if (typeof raw === "string") {
+    return JSON.parse(raw);
+  }
+  return raw;
+}
+
+/**
+ * 恢复之前保存的播放顺序（用于跨启动保持随机顺序一致）
+ *
+ * 只有当传入的顺序是当前 canonical 队列索引的一个完整排列，且随机播放已开启时才会生效。
+ * @returns 是否成功应用
+ */
+export async function setPlaybackOrder(order: number[]): Promise<boolean> {
+  if (Platform.OS === "web") {
+    return BilisoundPlayerModule.setPlaybackOrder(order);
+  }
+  return BilisoundPlayerModule.setPlaybackOrder(JSON.stringify(order));
+}
+
+/**
  * 切换随机播放模式，并返回切换后的模式
  */
 export async function toggleShuffleMode(): Promise<ShuffleMode> {

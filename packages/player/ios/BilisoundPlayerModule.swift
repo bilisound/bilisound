@@ -696,6 +696,27 @@ public class BilisoundPlayerModule: Module {
             }
         }
 
+        AsyncFunction("getPlaybackOrder") { (promise: Promise) in
+            let order = self.playbackOrderManager.playbackOrder()
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: order),
+                let jsonString = String(data: jsonData, encoding: .utf8)
+            else {
+                promise.resolve("[]")
+                return
+            }
+            promise.resolve(jsonString)
+        }
+
+        AsyncFunction("setPlaybackOrder") { (orderJson: String, promise: Promise) in
+            guard let data = orderJson.data(using: .utf8),
+                let order = try? JSONSerialization.jsonObject(with: data) as? [Int]
+            else {
+                promise.resolve(false)
+                return
+            }
+            promise.resolve(self.playbackOrderManager.setPlaybackOrder(order))
+        }
+
         AsyncFunction("saveFile") { (path: String, mimeType: String, replaceName: String?, promise: Promise) in
             do {
                 // todo

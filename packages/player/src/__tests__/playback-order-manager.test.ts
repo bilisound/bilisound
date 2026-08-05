@@ -74,4 +74,52 @@ describe("PlaybackOrderManager", () => {
     expect(manager.getNextIndex(1)).toBe(2);
     expect(manager.getNextIndex(2)).toBe(-1);
   });
+
+  it("reports the playback order as canonical indices", () => {
+    const manager = new PlaybackOrderManager(() => 0);
+    manager.reset(4, 2);
+    manager.setShuffleEnabled(true, 2);
+
+    expect(manager.getPlaybackOrder()).toEqual(collectPlaybackOrder(manager, 2));
+  });
+
+  it("reports canonical order when shuffle is disabled", () => {
+    const manager = new PlaybackOrderManager(() => 0);
+    manager.reset(3, 1);
+
+    expect(manager.getPlaybackOrder()).toEqual([0, 1, 2]);
+  });
+
+  it("restores a persisted playback order and traverses it", () => {
+    const manager = new PlaybackOrderManager(() => 0);
+    manager.reset(4, 0);
+    manager.setShuffleEnabled(true, 0);
+
+    expect(manager.setPlaybackOrder([2, 0, 3, 1])).toBe(true);
+    expect(manager.getPlaybackOrder()).toEqual([2, 0, 3, 1]);
+    expect(collectPlaybackOrder(manager, 2)).toEqual([2, 0, 3, 1]);
+    expect(manager.getPreviousIndex(0)).toBe(2);
+    expect(manager.getFirstIndex()).toBe(2);
+  });
+
+  it("rejects a playback order that is not a canonical permutation", () => {
+    const manager = new PlaybackOrderManager(() => 0);
+    manager.reset(3, 0);
+    manager.setShuffleEnabled(true, 0);
+    const before = manager.getPlaybackOrder();
+
+    expect(manager.setPlaybackOrder([0, 1])).toBe(false);
+    expect(manager.setPlaybackOrder([0, 1, 1])).toBe(false);
+    expect(manager.setPlaybackOrder([0, 1, 3])).toBe(false);
+    expect(manager.setPlaybackOrder([0, 1, 2, 3])).toBe(false);
+    expect(manager.getPlaybackOrder()).toEqual(before);
+  });
+
+  it("refuses to restore a playback order while shuffle is disabled", () => {
+    const manager = new PlaybackOrderManager(() => 0);
+    manager.reset(3, 0);
+
+    expect(manager.setPlaybackOrder([2, 0, 1])).toBe(false);
+    expect(manager.getPlaybackOrder()).toEqual([0, 1, 2]);
+  });
 });

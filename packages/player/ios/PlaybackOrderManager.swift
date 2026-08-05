@@ -122,6 +122,42 @@ final class PlaybackOrderManager {
         return canonicalIndexByToken[firstToken]
     }
 
+    /// Canonical indices in playback order.
+    ///
+    /// When shuffle is disabled the playback order is the canonical order, so the
+    /// identity permutation is returned rather than an empty array.
+    func playbackOrder() -> [Int] {
+        guard isShuffleEnabled else {
+            return Array(canonicalTokens.indices)
+        }
+        return playbackOrderTokens.compactMap { canonicalIndexByToken[$0] }
+    }
+
+    /// Restores a previously captured playback order.
+    ///
+    /// Rejects anything that is not a permutation of the current canonical indices, so a
+    /// stale persisted order cannot desynchronize traversal from the queue.
+    @discardableResult
+    func setPlaybackOrder(_ order: [Int]) -> Bool {
+        guard isShuffleEnabled, isCanonicalPermutation(order) else { return false }
+
+        playbackOrderTokens = order.map { canonicalTokens[$0] }
+        reindexPlaybackOrder()
+        return true
+    }
+
+    private func isCanonicalPermutation(_ order: [Int]) -> Bool {
+        guard order.count == canonicalTokens.count else { return false }
+        var seen = Set<Int>()
+        for index in order {
+            guard canonicalTokens.indices.contains(index), !seen.contains(index) else {
+                return false
+            }
+            seen.insert(index)
+        }
+        return true
+    }
+
     func occurrenceToken(at index: Int) -> Int? {
         canonicalTokens[safe: index]
     }
