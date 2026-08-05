@@ -285,12 +285,14 @@ Goals:
 3. Introduce app-owned `Playlist`, `PlaylistTrack`, and `PlayableItem` models. ✓
 4. Make `SongItem` storage-independent through the narrow `SongListItem` input model. ✓
 5. Keep the persisted v1 import/export format stable while moving its schema into the feature boundary. ✓
+6. Encapsulate the transient apply-playlist draft behind feature hooks and atomic actions. ✓
 
 Implementation record:
 
 ```txt
 features/playlist/index.ts               # public feature surface
 features/playlist/models.ts              # app-owned domain and UI input models; no storage imports
+features/playlist/apply-draft.ts         # internal Zustand store + public draft hook/actions
 features/playlist/mappers.ts             # SQLite row/insert <-> domain mapping
 features/playlist/source-codec.ts        # PlaylistSource JSON persistence codec
 features/playlist/exchange.ts            # versioned v1 import/export DTO and import-plan mapping
@@ -301,6 +303,7 @@ features/playlist/update.ts              # upstream playlist sync
 features/playlist/misc.ts                # openAddPlaylistPage navigation helper
 features/playlist/use-playlist-editor.ts # playlist detail editing hook
 features/playlist/use-playlist-search.ts # playlist detail search hook
+features/playlist/__tests__/apply-draft.test.ts
 features/playlist/__tests__/exchange.test.ts
 features/playlist/__tests__/repository.test.ts
 ```
@@ -331,6 +334,7 @@ hooks/playlist-detail/usePlaylistSearch.ts
 hooks/playlist-detail/
 storage/sqlite/schema.ts playlistImportSchema
 storage/sqlite/playlist*.ts quickCreatePlaylist domain policy
+store/apply-playlist.ts
 ```
 
 Verification:
@@ -338,11 +342,12 @@ Verification:
 ```txt
 pnpm -C apps/mobile exec tsc --noEmit
 pnpm -C apps/mobile exec jest \
+  features/playlist/__tests__/apply-draft.test.ts \
   features/playlist/__tests__/exchange.test.ts \
   features/playlist/__tests__/repository.test.ts \
   features/playback/__tests__/track-operations.test.ts \
   storage/sqlite/__tests__/playlist.test.ts --runInBand
-  # 4 suites / 18 tests clean
+  # 5 suites / 21 tests clean
 EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform web --clear
 EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform android --clear
 Web runtime smoke:
@@ -360,6 +365,14 @@ The repository contract is Promise-based on both platforms. Missing metadata is 
 `null`, cloning a missing native playlist checks `changes` before trusting `lastInsertRowId`,
 and replacement/import callers await persistence before reporting success.
 
+The apply-playlist follow-up moved its non-persisted draft store into `features/playlist`.
+`openAddPlaylistPage` replaces the complete draft in one update, omitted optional fields reset
+instead of leaking from a previous workflow, and successful apply/create operations or route
+removal release retained track arrays. Routes consume `useApplyPlaylistDraft` rather than a raw
+Zustand store. Queue
+synchronization remains a `features/playback` use case invoked by the route; it was intentionally
+not moved into the playlist feature.
+
 Coupling reduced:
 
 ```txt
@@ -369,6 +382,8 @@ features/playlist/models.ts          -/-> storage/sqlite/schema
 SongItem                             -/-> PlaylistTrack / SQLite row fields
 new playable-item flows              -/-> fabricated id / playlistId values
 Playlist UI                          -/-> JSON parsing of persisted source strings
+routes/features                     -/-> store/apply-playlist raw Zustand access
+apply-playlist entry flows          -/-> sequential partial draft setters
 ```
 
 Remaining allowed `storage/sqlite/schema` references:

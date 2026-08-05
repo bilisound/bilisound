@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Platform, Vibration } from "react-native";
-import { router } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 
 import useMultiSelect from "~/hooks/useMultiSelect";
-import useApplyPlaylistStore from "~/store/apply-playlist";
 import { deletePlaylistDetail, syncPlaylistAmount } from "./repository";
+import { openAddPlaylistPage } from "./misc";
 import { PLAYLIST_ON_QUEUE, playlistStorage, usePlaylistOnQueue } from "~/storage/playlist";
 import type { Playlist, PlaylistTrack } from "./models";
 
@@ -97,11 +96,10 @@ export function usePlaylistEditor({
     if (!meta || !filteredPlaylistDetail) {
       return;
     }
-    const state = useApplyPlaylistStore.getState();
-    state.setName(meta.title + "（副本）");
-    state.setPlaylistDetail([...selected].map(e => filteredPlaylistDetail[e]).filter(Boolean));
-    state.setSource(undefined);
-    router.push("/apply-playlist");
+    openAddPlaylistPage({
+      name: `${meta.title}（副本）`,
+      playlistDetail: [...selected].map(index => filteredPlaylistDetail[index]).filter(Boolean),
+    });
   }
 
   // 全选

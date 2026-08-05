@@ -11,6 +11,7 @@ import {
   type RemotePlaylistMetadata,
   type RemotePlaylistMode,
 } from "~/features/bilibili";
+import { openAddPlaylistPage } from "~/features/playlist";
 import { twMerge } from "tailwind-merge";
 import { Skeleton } from "~/components/ui/skeleton";
 import { formatSecond } from "~/utils/datetime";
@@ -20,11 +21,9 @@ import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/
 import { ActivityIndicator, View, ViewStyle } from "react-native";
 import { Image } from "expo-image";
 import React, { useState } from "react";
-import { useShallow } from "zustand/shallow";
 import { ErrorContent } from "~/components/error-content";
 import { FlashList } from "@shopify/flash-list";
 import { VideoItem } from "~/components/video-item";
-import useApplyPlaylistStore from "~/store/apply-playlist";
 import Toast from "react-native-toast-message";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { DualScrollView } from "~/components/dual-scroll-view";
@@ -40,17 +39,6 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
   const [loading, setLoading] = useState(false);
   const { colorValue } = useRawThemeValues();
 
-  // 添加歌单
-  const { setPlaylistDetail, setName, setDescription, setSource, setCover } = useApplyPlaylistStore(
-    useShallow(state => ({
-      setPlaylistDetail: state.setPlaylistDetail,
-      setName: state.setName,
-      setDescription: state.setDescription,
-      setSource: state.setSource,
-      setCover: state.setCover,
-    })),
-  );
-
   async function handleCreatePlaylist() {
     if (!data) {
       return;
@@ -60,8 +48,8 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
       const list = await getFullRemotePlaylist(mode, data.userId, data.playlistId);
       const needsFallback = list.some(episode => !episode.author);
       const firstEpisode = needsFallback ? await getVideoMetadata(list[0].bvid) : null;
-      setPlaylistDetail(
-        list.map(episode => ({
+      openAddPlaylistPage({
+        playlistDetail: list.map(episode => ({
           author: episode.author?.name ?? firstEpisode?.owner.name ?? "",
           bvid: episode.bvid,
           duration: episode.duration,
@@ -69,19 +57,18 @@ function MetaData({ data, className, style, mode }: MetaDataProps) {
           title: episode.title,
           imgUrl: episode.coverUrl,
         })),
-      );
-      setName(data.name);
-      setDescription(data.description);
-      setSource({
-        type: "playlist",
-        originalTitle: data.name,
-        lastSyncAt: new Date().getTime(),
-        subType: mode,
-        userId: data.userId,
-        listId: data.playlistId,
+        name: data.name,
+        description: data.description,
+        source: {
+          type: "playlist",
+          originalTitle: data.name,
+          lastSyncAt: new Date().getTime(),
+          subType: mode,
+          userId: data.userId,
+          listId: data.playlistId,
+        },
+        cover: data.coverUrl,
       });
-      setCover(data.coverUrl);
-      router.push(`/apply-playlist`);
     } catch (e) {
       Toast.show({
         type: "error",

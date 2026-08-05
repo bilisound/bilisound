@@ -16,6 +16,8 @@ export type {
   PlaylistUpdate,
   SongListItem,
 } from "./models";
+export type { ApplyPlaylistDraft, ApplyPlaylistDraftInput } from "./apply-draft";
+export { clearApplyPlaylistDraft, useApplyPlaylistDraft } from "./apply-draft";
 export type { PlaylistExport, PlaylistImportPlan } from "./exchange";
 export { buildPlaylistImportPlans, playlistExportSchema } from "./exchange";
 
