@@ -705,10 +705,7 @@ button were not exercised; the Simulator MediaRemote handler path was exercised 
 
 ## Migration Impact on Mobile
 
-After player shuffle API exists, mobile should remove physical queue shuffle logic from:
-
-```txt
-apps/mobile/business/playlist/shuffle.ts
-```
-
-The mobile app should call player shuffle APIs through a player adapter or future `features/playback` service.
+This migration is delivered. The old physical queue shuffle implementation under
+`apps/mobile/business/playlist/shuffle.ts` has been removed. Mobile now routes playback and
+shuffle orchestration through `apps/mobile/features/playback`, while `@bilisound/player` owns
+the canonical queue and playback order.

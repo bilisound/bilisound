@@ -34,20 +34,20 @@ If the user says something like `我要做 player` or `继续 v3 的配置部分
 
 Use this routing table when the user names a v3 area.
 
-| User intent                                                             | Read first                                       | Likely scope                                                      |
-| ----------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
-| Player, shuffle, queue, ExoPlayer, AVQueuePlayer, repeat mode           | `player-foundation.md`                           | `packages/player`                                                 |
-| Settings, config, preferences, debug mode, storage migration            | `config-architecture.md`                         | `apps/mobile/features/config`                                             |
-| SDK, Bilibili data, metadata, remote list, DTO leakage                  | `target-architecture.md`, `epic-breakdown.md`    | future `features/bilibili`, `apps/mobile/api/bilisound.ts`        |
-| Playback, play playlist, play episode, queue restore, playlist-to-queue | `target-architecture.md`, `player-foundation.md` | future `features/playback`, current `business/playlist/handler/*` |
-| Playlist CRUD, playlist detail, SongItem schema coupling                | `target-architecture.md`, `epic-breakdown.md`    | future `features/playlist`                                        |
-| Cache, download scheduler, audio/image cache                            | `epic-breakdown.md`                              | future `features/cache`, current cache/download modules           |
+| User intent                                                             | Read first                                       | Likely scope                                                                                   |
+| ----------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| Player, shuffle, queue, ExoPlayer, AVQueuePlayer, repeat mode           | `player-foundation.md`                           | `packages/player`, `apps/mobile/features/playback`                                             |
+| Settings, config, preferences, debug mode, storage migration            | `config-architecture.md`                         | `apps/mobile/features/config`                                                                  |
+| SDK, Bilibili data, metadata, remote list, DTO leakage                  | `target-architecture.md`, `epic-breakdown.md`    | `apps/mobile/features/bilibili`, `packages/sdk`, `apps/server-cf`                              |
+| Playback, play playlist, play episode, queue restore, playlist-to-queue | `target-architecture.md`, `player-foundation.md` | `apps/mobile/features/playback`, `packages/player`                                             |
+| Playlist CRUD, playlist detail, SongItem schema coupling                | `target-architecture.md`, `epic-breakdown.md`    | `apps/mobile/features/playlist`, `apps/mobile/storage/sqlite`                                  |
+| Cache, download scheduler, audio/image cache                            | `epic-breakdown.md`                              | target `apps/mobile/features/cache`; current `business/download.ts`, `storage/cache-status.ts` |
 
 ## Working Rules
 
-1. Preserve the staged plan.
+1. Preserve the staged plan and its delivered boundaries.
 
-   Player foundation comes before large mobile playback restructuring. Mobile currently compensates for player platform differences, especially around shuffle and queue operations.
+   Epics 1–5 are delivered. Treat `features/config`, `features/bilibili`, `features/playback`, and `features/playlist` plus the player foundation as current architecture; do not restart those migrations. Epic 6 (Cache and Download) is the next business refactor.
 
 2. Prefer a narrow task boundary.
 
@@ -88,21 +88,16 @@ When the user asks to work on a v3 area, answer or proceed with this shape:
 
 ## Implementation Priority
 
-Default first implementation priority:
+The current default priority is Epic 6 (Cache and Download), unless the user names another area:
 
 ```txt
-packages/player
+target: apps/mobile/features/cache
+current: apps/mobile/business/download.ts
+current: apps/mobile/storage/cache-status.ts
+current: apps/mobile/features/playback/cache.ts
 ```
 
-The player package should expose stable cross-platform abstractions for:
-
-```txt
-ShuffleMode
-queue transaction / setQueueWithOptions
-public hook exports such as useRepeatMode
-```
-
-After player APIs are stable, mobile code can move playback orchestration into `features/playback` without carrying iOS/Web workarounds into the app layer.
+Player Foundation and the Config, Bilibili, Playback, and Playlist boundaries are already delivered. Changes in those areas should extend or repair the existing boundaries rather than re-run their original migrations.
 
 ## Handoff Discipline
 

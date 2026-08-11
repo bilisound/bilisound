@@ -36,11 +36,13 @@ bilisound/
 
 **数据流**: `用户输入 URL → SDK (解析 B23/获取元数据/音频流) → Player (播放/下载) → 音频输出`
 
-- **SDK 双模式**: Web 端使用 `BilisoundSDKRemote`（通过 server-cf 代理），原生端使用 `BilisoundSDKDirect`（直接调 B 站 API 并做 WBI 签名）。切换逻辑在 `apps/mobile/api/bilisound.ts`。
-- **两个 Server 的区别**: `server-cf` 是 B 站 API 代理（核心后端）。
+- **SDK 双模式**: Web 端使用 `BilisoundSDKRemote`（通过 server-cf 代理），原生端使用 `BilisoundSDKDirect`（直接调 B 站 API 并做 WBI 签名）。应用侧边界与平台切换位于 `apps/mobile/features/bilibili/client.ts`。
+- **服务端定位**: `server-cf` 是当前唯一服务端，负责 Web 端的 B 站 API、图片与媒体资源代理。
 - **平台分叉**: `.web.ts` 后缀文件为 Web 专属实现，同名无后缀文件供原生端使用。
 
 架构细节参见 **[agent-doc/architecture.md](agent-doc/architecture.md)**。
+
+`agent-doc/` 用于导航与解释设计，源码是当前实现事实的最终权威。引用具体文件或符号前必须确认其仍然存在。
 
 ## Where to Look
 

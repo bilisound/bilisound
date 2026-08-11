@@ -1,5 +1,7 @@
 # Bilisound 架构
 
+> 本文用于导航与解释设计；源码是当前实现事实的最终权威。引用具体文件或符号前应确认其仍然存在。
+
 ## 包依赖关系
 
 ```
@@ -8,56 +10,62 @@ apps/mobile ──── depends on ────> @bilisound/sdk
      │                                  │ BilisoundSDKDirect (原生端)
      │                                  │ BilisoundSDKRemote (Web 端)
      │                                  │
-     └── depends on ────> @bilisound/player (原生音频播放)
+     └── depends on ────> @bilisound/player (跨平台音频播放；原生端为 Expo 模块)
 
 apps/server-cf ── depends on ──> @bilisound/sdk (只用 Direct 实现)
 ```
 
 ## 数据流
 
+```text
+用户输入（BV / URL / b23 / 二维码）
+  │
+  ▼
+business/format.ts                         解析输入并选择视频或远程列表路由
+  │
+  ▼
+features/bilibili/client.ts + mappers.ts  B 站访问边界；SDK DTO 转为应用领域模型
+  │
+  ├─ iOS / Android ─> BilisoundSDKDirect ────────────────> B 站网页 / API
+  │
+  └─ Web ──────────> BilisoundSDKRemote / server-cf ────> B 站网页 / API / CDN
+  │
+  ▼
+应用领域模型
+  ├─ playlist ─> features/playlist repository ─> SQLite / IndexedDB
+  └─ playback ─> track-data / track-operations ─> @bilisound/player ─> 音频输出
 ```
-┌──────────┐     ┌──────────────────────┐     ┌──────────────────┐     ┌─────────┐
-│ 用户输入  │────>│  SDK 解析 + 获取元数据  │────>│  Player 播放/下载  │────>│ 音频输出  │
-│ (BV/URL) │     │ (app/mobile/api/)    │     │ (@bilisound/player) │     │         │
-└──────────┘     └──────┬───────────────┘     └──────────────────┘     └─────────┘
-                        │
-          ┌─────────────┴──────────────┐
-          │                            │
-   Platform.OS !== "web"        Platform.OS === "web"
-          │                            │
-   BilisoundSDKDirect          BilisoundSDKRemote
-   (直接调 B 站 API)            (通过 CF Worker 代理)
-   - WBI 签名                   - fetch → /api/internal/*
-   - axios + 缓存
-```
+
+播放队列中的媒体地址可能来自本地缓存，也可能来自 B 站 CDN。Web 端的媒体与图片不能直接携带原生端使用的请求头，因此分别使用 server-cf 的 `/api/internal/resource` 与 `/api/internal/image` 代理。
 
 ## SDK 双模式详解
 
-切换入口: `apps/mobile/api/bilisound.ts`
+`apps/mobile/features/bilibili` 是 mobile 内唯一的 SDK 边界：`client.ts` 负责运行时调用与平台切换，`mappers.ts` 只导入 SDK 类型并将 DTO 收窄为应用领域模型。
 
-### BilisoundSDKDirect (原生端 iOS/Android)
+### BilisoundSDKDirect（原生端 iOS / Android）
 
-- 直接在客户端调用 `api.bilibili.com`
-- 自动处理 WBI 签名 (wbi.ts)
-- 内置 KV 缓存 (axios 请求级)
-- CDN URL 过滤 (排除 HKG 节点)
-- 跨域无障碍 (原生 HTTP 不受浏览器 CORS 限制)
+- 直接在客户端访问 B 站网页与 `api.bilibili.com`
+- 自动处理 WBI 签名
+- 支持注入 `CacheProvider`；mobile 当前未配置缓存提供者，默认实现不缓存
+- `getResourceUrl` 支持按设置过滤 CDN URL；过滤关闭或无匹配节点时使用原始候选地址
+- 原生 HTTP 不受浏览器 CORS 限制
 
-### BilisoundSDKRemote (Web 端)
+### BilisoundSDKRemote（Web 端）
 
-- 所有 B 站 API 调用转发到 Cloudflare Worker 的 `/api/internal/*`
-- Worker 上复用 `BilisoundSDKDirect` 实例
-- Web 客户端只需知道 Worker 地址 (`EXPO_PUBLIC_API_URL`)
-- 解决浏览器 CORS + Referer 校验问题
+- 短链接、元数据和远程列表等 SDK 请求转发到 Cloudflare Worker 的 `/api/internal/*`
+- 媒体与图片地址由 `features/bilibili/client.ts` 直接构造成 Worker 代理 URL
+- Worker 内复用 `BilisoundSDKDirect`，并注入 Cloudflare KV 缓存（TTL 3600 秒）
+- Web 客户端只需知道 Worker 地址（`EXPO_PUBLIC_API_URL`）
+- 解决浏览器 CORS、Referer 与受限请求头问题
 
-## 两个 Server 的定位
+## Server 定位
 
-### server-cf (Cloudflare Worker) — API 代理
+### server-cf（Cloudflare Worker）— Web 代理
 
-- **职责**: 为 Web 端代理所有 B 站 API 请求
-- **端点**: `/api/internal/resolve-b23`, `/api/internal/metadata`, `/api/internal/resource`, `/api/internal/user-list`, `/api/internal/image`, `/api/internal/app/update`
-- **为什么需要**: 浏览器无法直接调 `api.bilibili.com`（CORS/Referer 限制）
-- **技术栈**: itty-router + `@bilisound/sdk` (Direct 模式)
+- **职责**: 为 Web 端代理 B 站 API、图片和支持 Range 的媒体资源
+- **端点**: `/api/internal/resolve-b23`, `/api/internal/metadata`, `/api/internal/resource`, `/api/internal/user-list`, `/api/internal/user-list-all`, `/api/internal/image`, `/api/internal/app/update`
+- **为什么需要**: 浏览器无法稳定直连 B 站 API 与 CDN（CORS、Referer 和受限请求头）
+- **技术栈**: itty-router + `@bilisound/sdk` Direct 模式 + Cloudflare KV
 
 ## 平台分叉策略
 
@@ -105,9 +113,10 @@ apps/server-cf ── depends on ──> @bilisound/sdk (只用 Direct 实现)
 
 ### packages/player
 
-- expo-modules-core (原生模块桥接)
-- iOS: Swift
-- Android: Kotlin (Media3 / ExoPlayer)
+- expo-modules-core（原生模块桥接）
+- iOS: Swift / AVQueuePlayer
+- Android: Kotlin / Media3 / ExoPlayer
+- Web: TypeScript / HTMLAudioElement 实现
 
 ### apps/server-cf
 

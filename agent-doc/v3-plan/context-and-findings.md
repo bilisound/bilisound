@@ -1,53 +1,50 @@
 # Context and Findings
 
-This document summarizes the coupling findings that motivated the Bilisound v3 planning work.
+> This is the historical baseline that motivated the v3 plan, not a description of the current
+> tree. Epics 1–5 have since been delivered; use [README.md](./README.md) for current status and
+> the implementation records in [epic-breakdown.md](./epic-breakdown.md) for current boundaries.
 
 ## Background
 
-Bilisound v2 already has recognizable modules such as `app`, `components`, `business`, `storage`, `store`, `api`, and package-level `@bilisound/player` / `@bilisound/sdk` boundaries. The main issue is not that no structure exists. The issue is that several high-impact capabilities are reachable from too many layers.
+Bilisound v2 already had recognizable `app`, `components`, `business`, `storage`, `store`, and
+`api` modules plus package-level `@bilisound/player` / `@bilisound/sdk` boundaries. The problem
+was that several high-impact capabilities were reachable from too many layers.
 
-The most visible examples are player operations, SDK response types, storage schema types, settings state, and download/cache orchestration.
+The baseline analysis found player operations, SDK response types, storage schema types, settings
+state, and download/cache orchestration leaking across UI, business, and persistence layers.
 
-## High-Confidence Findings
+## Original Baseline Findings
 
-1. `@bilisound/player` leaks into many layers.
+1. `@bilisound/player` leaked into routes, components, hooks, business logic, stores, and storage
+   helpers.
+2. `business/playlist/handler/*` coordinated metadata, resource URLs, cache checks, queue
+   replacement, player mutation, settings, errors, and persistence despite living under playlist.
+3. Mobile emulated shuffle by physically mutating the queue in
+   `apps/mobile/business/playlist/shuffle.ts`.
+4. `components/video-detail/*` consumed `@bilisound/sdk` response types directly.
+5. `components/song-item.tsx` consumed SQLite `PlaylistDetail` rows directly.
+6. The old `store/settings.ts` mixed appearance, download, resource, and diagnostics policy.
+7. `store/download.ts` contained task scheduling and other stores mixed state mutation with
+   business policy.
 
-   Direct player usage appears in route files, components, hooks, business logic, store logic, and storage helpers. This makes player API changes expensive and forces UI/business code to know platform limitations.
+These statements describe the pre-refactor baseline. Removed paths are retained here only to
+explain why the delivered boundaries were introduced.
 
-2. `business/playlist/handler/*` is an application-service hotspot.
+## Delivered Responses
 
-   The module name suggests playlist handling, but the implementation coordinates metadata fetching, resource URL resolution, cache checks, queue replacement, player mutation, settings reads, error reporting, and persistence. It is closer to playback orchestration than playlist domain logic.
+| Baseline coupling                     | Delivered boundary                                                              |
+| ------------------------------------- | ------------------------------------------------------------------------------- |
+| Cross-platform queue and shuffle gaps | `packages/player` owns canonical queue and playback order                       |
+| Route-level playback orchestration    | `apps/mobile/features/playback` owns playback use cases                         |
+| SDK calls and DTOs outside a boundary | `apps/mobile/features/bilibili` owns SDK access, app models, and mapping        |
+| Settings store used as policy API     | `apps/mobile/features/config` exposes selectors and policy readers              |
+| SQLite rows used as domain models     | `apps/mobile/features/playlist` owns playlist models, repository, and use cases |
 
-3. Shuffle is modeled as physical queue mutation in mobile app code.
+See the delivered status and verification records in `epic-breakdown.md` rather than re-running
+these migrations.
 
-   `apps/mobile/business/playlist/shuffle.ts` currently uses `getTracks`, `deleteTracks`, `addTracks`, `jump`, and `seek` to emulate shuffle/restore. This shape appears to be a compromise for iOS rather than a product-level model. Android Media3 ExoPlayer supports native shuffle, so the cross-platform abstraction should live in `@bilisound/player`.
+## Remaining Current Finding
 
-4. SDK DTOs reach UI components.
-
-   `components/video-detail/*` uses `GetMetadataResponse` and derived page item types. This makes UI components depend on SDK response shape instead of app-owned models.
-
-5. UI components depend on storage schema types.
-
-   `components/song-item.tsx` accepts `PlaylistDetail` from SQLite schema. Call sites that do not naturally have `PlaylistDetail` must manually construct placeholder fields.
-
-6. Settings are mixed by storage location and semantic level.
-
-   `store/settings.ts` stores appearance preferences, download behavior, resource request policy, and diagnostics flags in one persisted Zustand store. Multiple UI and business modules directly read `useSettingsStore` or `useSettingsStore.getState()`.
-
-7. Store actions contain domain/service logic.
-
-   `store/download.ts` includes a task scheduler in `pickTask()`. `store/history.ts` includes history de-duplication, move-to-front, and max-size policy. These are useful rules, but their current location blurs state mutation and business policy.
-
-## Positive Findings
-
-1. SDK direct/remote switching is already centralized in `api/bilisound.ts`.
-
-2. No obvious store-to-API dependency was observed.
-
-3. The current module names provide useful migration anchors, even when their responsibilities need to be split.
-
-## Current Interpretation
-
-The v3 plan should treat `player`, `config`, `bilibili data`, `playback orchestration`, `playlist`, and `cache/download` as separate workstreams.
-
-The first implementation workstream should focus on `packages/player`, because several mobile-layer workarounds exist to compensate for missing player-level abstractions.
+Epic 6 (Cache and Download) is the next business refactor. Cache and download responsibilities
+remain split across `apps/mobile/business/download.ts`, `apps/mobile/storage/cache-status.ts`, and
+`apps/mobile/features/playback/cache.ts`; the target boundary is `apps/mobile/features/cache`.

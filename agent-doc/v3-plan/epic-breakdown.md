@@ -99,10 +99,10 @@ DiagnosticsConfig:
 > Android (video detail, playback, history, create playlist) and Web (metadata proxy, image proxy,
 > download URLs, remote playlists).
 
-Scope:
+Original migration scope（Epic 3 交付前）：
 
 ```txt
-apps/mobile/api/bilisound.ts
+apps/mobile/api/bilisound.ts  # 已由 apps/mobile/features/bilibili/client.ts 取代
 @bilisound/sdk consumers
 components/video-detail/*
 app/video/[id].tsx
@@ -164,7 +164,7 @@ routes/components/business -/-> direct SDK calls
 routes/components/business -/-> duplicate Bilibili image/resource URL construction
 ```
 
-## Upcoming Epics
+## Delivered and Next Epics
 
 ### Epic 4: Playback Orchestration
 
