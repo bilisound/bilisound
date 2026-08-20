@@ -2,20 +2,20 @@ packages:
   - "apps/*"
   - "packages/*"
 catalog:
-  "@cloudflare/workers-types": ^4.20260118.0
+  "@cloudflare/workers-types": ^4.20260702.1
   "@types/jest": ^29.5.14
-  "@types/node": ^24.10.9
+  "@types/node": ^24.13.3
   "@types/node-fetch": ^2.6.13
-  "@types/react": ~19.2.14
-  axios: ^1.7.9
+  "@types/react": ~19.2.18
+  axios: ^1.19.0
   expo-module-scripts: 56.0.3
   expo-modules-core: ~57.0.7
-  itty-router: ^5.0.22
+  itty-router: ^5.0.24
   md5: ^2.3.0
   react-native: 0.86.0
   tsdown: ^0.19.0
   typescript: ~6.0.3
-  wrangler: ^4.59.2
+  wrangler: ^4.124.0
 allowBuilds:
   "@parcel/watcher": true
   core-js: true
@@ -39,6 +39,19 @@ minimumReleaseAgeExclude:
   - "@expo/ui@57.0.8"
   - expo-constants@57.0.8
   - expo-router@57.0.9
+  - "@expo/cli@57.0.17"
+  - "@expo/fingerprint@0.20.9"
+  - "@expo/local-build-cache-provider@57.0.7"
+  - "@expo/metro-config@57.0.9"
+  - "@expo/prebuild-config@57.0.13"
+  - "@expo/router-server@57.0.7"
+  - expo-asset@57.0.13
+  - expo-constants@57.0.13
+  - expo-file-system@57.0.5
+  - expo-modules-core@57.0.12
+  - expo-modules-jsi@57.0.5
+  - expo@57.0.15
+publicHoistPattern:
+  - "@expo/config-plugins"
 patchedDependencies:
-  '@tamagui/alert-dialog@2.4.2': patches/@tamagui__alert-dialog@2.4.2.patch
-  expo-modules-jsi@57.0.4: patches/expo-modules-jsi@57.0.4.patch
+  "@tamagui/alert-dialog@2.4.2": patches/@tamagui__alert-dialog@2.4.2.patch

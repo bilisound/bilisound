@@ -14,14 +14,14 @@
     "spell:fix": "cspell lint --show-suggestions --no-must-find-files ."
   },
   "devDependencies": {
-    "cspell": "^10.0.0",
-    "prettier": "^3.8.0",
-    "skills": "^1.5.9",
-    "skills-npm": "^1.1.1",
-    "turbo": "^2.10.6"
+    "cspell": "^10.0.1",
+    "prettier": "^3.9.6",
+    "skills": "^1.5.23",
+    "skills-npm": "^1.2.0",
+    "turbo": "^2.10.11"
   },
   "engines": {
     "node": ">=22.0.0"
   },
-  "packageManager": "pnpm@11.7.0+sha512.19cc852c120c7125760f2443ee6be0ca5b40f9f50598de1a09a1f177503e010e57c23c77646e01e761de59bf874fb22a3398c33ab9691fc13eb946b6f0f4d620"
+  "packageManager": "pnpm@11.22.0"
 }

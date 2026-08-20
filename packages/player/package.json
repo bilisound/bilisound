@@ -10,7 +10,6 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
     "open:ios": "xed ../../apps/player-example/ios",
     "open:android": "open -a \"Android Studio\" ../../apps/player-example/android"
   },
@@ -30,11 +29,12 @@
   "devDependencies": {
     "@types/jest": "catalog:",
     "@types/react": "catalog:",
-    "eslint": "^9.39.4",
-    "expo": "~57.0.8",
+    "eslint": "^9.39.5",
+    "expo": "~57.0.15",
     "expo-module-scripts": "catalog:",
     "expo-modules-core": "catalog:",
-    "react-native": "catalog:",
+    "react": "19.2.3",
+    "react-native": "^0.86.2",
     "typescript": "catalog:"
   },
   "peerDependencies": {
@@ -42,5 +42,5 @@
     "react": "*",
     "react-native": "*"
   },
-  "packageManager": "pnpm@11.7.0+sha512.19cc852c120c7125760f2443ee6be0ca5b40f9f50598de1a09a1f177503e010e57c23c77646e01e761de59bf874fb22a3398c33ab9691fc13eb946b6f0f4d620"
+  "packageManager": "pnpm@11.22.0"
 }
