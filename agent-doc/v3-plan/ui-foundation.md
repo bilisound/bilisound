@@ -86,6 +86,8 @@ The first public components are:
 ```txt
 Button      primary/secondary/ghost/link variants, sm/md/lg sizes, icon/text forms, default/rounded shapes, disabled states
 TextInput   sm/md/lg sizes, invalid and disabled states
+Text        2xs-6xl sizes, bold/semiBold/italic/underline/strikeThrough/highlight variants, truncation, muted body base color
+Heading     semantic h1-h6 tags on web via Tamagui `render`, legacy Gluestack size-to-tag mapping, header accessibility role on native
 Slider      controlled/uncontrolled values, multiple thumbs, disabled states
 Switch      semantic controlled/uncontrolled control plus non-semantic SwitchVisual
 Icon        locally bundled SVG registry generated from selected `@iconify-json` packages

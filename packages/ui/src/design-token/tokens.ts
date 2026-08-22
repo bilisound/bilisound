@@ -77,6 +77,7 @@ export function createBodyFont(family: string = isWeb ? DEFAULT_WEB_FONT_FAMILY 
   return createFont({
     family,
     size: {
+      "2xs": 10,
       xs: 12,
       sm: 14,
       base: 16,
@@ -84,9 +85,14 @@ export function createBodyFont(family: string = isWeb ? DEFAULT_WEB_FONT_FAMILY 
       xl: 20,
       "2xl": 24,
       "3xl": 30,
+      // Display sizes cover the legacy Gluestack text scale (text-4xl…text-6xl).
+      "4xl": 36,
+      "5xl": 48,
+      "6xl": 60,
       true: 16,
     },
     lineHeight: {
+      "2xs": 14,
       xs: 16,
       sm: 20,
       base: 24,
@@ -94,6 +100,9 @@ export function createBodyFont(family: string = isWeb ? DEFAULT_WEB_FONT_FAMILY 
       xl: 28,
       "2xl": 32,
       "3xl": 36,
+      "4xl": 40,
+      "5xl": 48,
+      "6xl": 60,
       true: 24,
     },
     weight: {
@@ -101,6 +110,8 @@ export function createBodyFont(family: string = isWeb ? DEFAULT_WEB_FONT_FAMILY 
       5: "500",
       6: "600",
       7: "700",
+      8: "800",
+      9: "900",
       true: "400",
     },
     letterSpacing: {
@@ -111,6 +122,9 @@ export function createBodyFont(family: string = isWeb ? DEFAULT_WEB_FONT_FAMILY 
       xl: -0.2,
       "2xl": -0.4,
       "3xl": -0.6,
+      "4xl": -0.9,
+      "5xl": -1.2,
+      "6xl": -1.6,
       true: 0,
     },
   });
