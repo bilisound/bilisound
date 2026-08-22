@@ -14,43 +14,43 @@
 
 ### P0 — 排版与原子
 
-| 组件 | mobile 源 | 复刻要点 |
-|------|-----------|----------|
-| `Text` | [`apps/mobile/components/ui/text`](../../apps/mobile/components/ui/text) | 通用文本，`isTruncated/bold/size` 等排版变体；`ui` 的 `Label` 不能替代 |
-| `Heading` | [`apps/mobile/components/ui/heading`](../../apps/mobile/components/ui/heading) | `H1-H6` 语义标题，`Expo` 兼容 |
+| 已完成？ | 组件      | mobile 源                                                                      | 复刻要点                                                               |
+| -------- | --------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| ✅       | `Text`    | [`apps/mobile/components/ui/text`](../../apps/mobile/components/ui/text)       | 通用文本，`isTruncated/bold/size` 等排版变体；`ui` 的 `Label` 不能替代 |
+| ✅       | `Heading` | [`apps/mobile/components/ui/heading`](../../apps/mobile/components/ui/heading) | `H1-H6` 语义标题，`Expo` 兼容                                          |
 
 ### P0 — 布局原语
 
-| 组件 | mobile 源 | 复刻要点 |
-|------|-----------|----------|
-| `HStack` / `VStack` | [`apps/mobile/components/ui/hstack`](../../apps/mobile/components/ui/hstack) / [`apps/mobile/components/ui/vstack`](../../apps/mobile/components/ui/vstack) | `space/reversed` flex 原语，全局布局基石 |
-| `DualScrollView` | [`apps/mobile/components/dual-scroll-view.tsx`](../../apps/mobile/components/dual-scroll-view.tsx) | 响应式双栏骨架（`sm` 分栏），纯布局，不含业务 |
+| 已完成？ | 组件                | mobile 源                                                                                                                                                   | 复刻要点                                      |
+| -------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+|          | `HStack` / `VStack` | [`apps/mobile/components/ui/hstack`](../../apps/mobile/components/ui/hstack) / [`apps/mobile/components/ui/vstack`](../../apps/mobile/components/ui/vstack) | `space/reversed` flex 原语，全局布局基石      |
+|          | `DualScrollView`    | [`apps/mobile/components/dual-scroll-view.tsx`](../../apps/mobile/components/dual-scroll-view.tsx)                                                          | 响应式双栏骨架（`sm` 分栏），纯布局，不含业务 |
 
 > `Box`（[`apps/mobile/components/ui/box`](../../apps/mobile/components/ui/box)）不复刻：其在 mobile 仅为 `View + boxStyle(tva)` 的 NativeWind 薄壳，用于透传 `className`；`packages/ui` 基于 Tamagui，`View`/`Stack` 已具备 styled 能力（`backgroundColor`/`padding`/`borderRadius` 等直接为 props），无需再包一层 `Box`。
 
 ### P1 — 表单与交互
 
-| 组件 | mobile 源 | 复刻要点 |
-|------|-----------|----------|
-| `FormControl` | [`apps/mobile/components/ui/form-control`](../../apps/mobile/components/ui/form-control) | `Label + HelperText + ErrorText` 标准组合；`ui` 目前只有 `LabelError` |
-| `Pressable` | [`apps/mobile/components/ui/pressable`](../../apps/mobile/components/ui/pressable) | 通用按压层，需保留 `android-ripple` 处理（见 [`android-ripple.ts`](../../apps/mobile/components/ui/android-ripple.ts)） |
-| `Input` / `Textarea` Chrome | [`apps/mobile/components/ui/input`](../../apps/mobile/components/ui/input) / [`textarea`](../../apps/mobile/components/ui/textarea) | 带 `Slot/Icon` 的输入容器；`ui-next/TextField` 是其无 NativeWind 平替，复刻时二选一，按 [`migrate-to-plain-stylesheet`](../skills/migrate-to-plain-stylesheet/SKILL.md) 采用 `StyleSheet` 版 |
-| `TextField` / `TextareaField` | [`apps/mobile/components/ui-next/text-field.tsx`](../../apps/mobile/components/ui-next/text-field.tsx) / [`textarea-field.tsx`](../../apps/mobile/components/ui-next/textarea-field.tsx) | `StyleSheet + useUiNextColors` 实现，`sm/md/lg/xl` 与 `invalid/disabled/left/right` 能力，应作为 `TextInput/TextArea` 的下一代形态进入 `ui` |
+| 已完成？ | 组件                          | mobile 源                                                                                                                                                                                | 复刻要点                                                                                                                                                                                     |
+| -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|          | `FormControl`                 | [`apps/mobile/components/ui/form-control`](../../apps/mobile/components/ui/form-control)                                                                                                 | `Label + HelperText + ErrorText` 标准组合；`ui` 目前只有 `LabelError`                                                                                                                        |
+|          | `Pressable`                   | [`apps/mobile/components/ui/pressable`](../../apps/mobile/components/ui/pressable)                                                                                                       | 通用按压层，需保留 `android-ripple` 处理（见 [`android-ripple.ts`](../../apps/mobile/components/ui/android-ripple.ts)）                                                                      |
+|          | `Input` / `Textarea` Chrome   | [`apps/mobile/components/ui/input`](../../apps/mobile/components/ui/input) / [`textarea`](../../apps/mobile/components/ui/textarea)                                                      | 带 `Slot/Icon` 的输入容器；`ui-next/TextField` 是其无 NativeWind 平替，复刻时二选一，按 [`migrate-to-plain-stylesheet`](../skills/migrate-to-plain-stylesheet/SKILL.md) 采用 `StyleSheet` 版 |
+|          | `TextField` / `TextareaField` | [`apps/mobile/components/ui-next/text-field.tsx`](../../apps/mobile/components/ui-next/text-field.tsx) / [`textarea-field.tsx`](../../apps/mobile/components/ui-next/textarea-field.tsx) | `StyleSheet + useUiNextColors` 实现，`sm/md/lg/xl` 与 `invalid/disabled/left/right` 能力，应作为 `TextInput/TextArea` 的下一代形态进入 `ui`                                                  |
 
 ### P1 — 反馈与状态
 
-| 组件 | mobile 源 | 复刻要点 |
-|------|-----------|----------|
-| `Skeleton` / `SkeletonText` | [`apps/mobile/components/ui/skeleton`](../../apps/mobile/components/ui/skeleton) / [`skeleton-text.tsx`](../../apps/mobile/components/skeleton-text.tsx) | 骨架屏，`SkeletonText` 为 `VStack + Skeleton` 组合 |
-| `Toast` / `NotifyToast` | [`apps/mobile/components/notify-toast.tsx`](../../apps/mobile/components/notify-toast.tsx) | `success/info/warning/error` 纯 UI 提示 |
-| `ErrorContent` | [`apps/mobile/components/error-content.tsx`](../../apps/mobile/components/error-content.tsx) | 通用错误/空状态占位（图标 + 文案） |
+| 已完成？ | 组件                        | mobile 源                                                                                                                                                | 复刻要点                                           |
+| -------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+|          | `Skeleton` / `SkeletonText` | [`apps/mobile/components/ui/skeleton`](../../apps/mobile/components/ui/skeleton) / [`skeleton-text.tsx`](../../apps/mobile/components/skeleton-text.tsx) | 骨架屏，`SkeletonText` 为 `VStack + Skeleton` 组合 |
+|          | `Toast` / `NotifyToast`     | [`apps/mobile/components/notify-toast.tsx`](../../apps/mobile/components/notify-toast.tsx)                                                               | `success/info/warning/error` 纯 UI 提示            |
+|          | `ErrorContent`              | [`apps/mobile/components/error-content.tsx`](../../apps/mobile/components/error-content.tsx)                                                             | 通用错误/空状态占位（图标 + 文案）                 |
 
 ### P2 — 浮层
 
-| 组件 | mobile 源 | 复刻要点 |
-|------|-----------|----------|
-| `Actionsheet` | [`apps/mobile/components/ui/actionsheet`](../../apps/mobile/components/ui/actionsheet) | 底部动作面板容器；`ui` 的 `ActionMenu` 已有 Sheet 交互，但原生 `Actionsheet` 结构未搬 |
-| `Menu` | [`apps/mobile/components/ui/menu`](../../apps/mobile/components/ui/menu) | 锚点浮层菜单，与 `ActionMenu` 互补 |
+| 已完成？ | 组件          | mobile 源                                                                              | 复刻要点                                                                              |
+| -------- | ------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+|          | `Actionsheet` | [`apps/mobile/components/ui/actionsheet`](../../apps/mobile/components/ui/actionsheet) | 底部动作面板容器；`ui` 的 `ActionMenu` 已有 Sheet 交互，但原生 `Actionsheet` 结构未搬 |
+|          | `Menu`        | [`apps/mobile/components/ui/menu`](../../apps/mobile/components/ui/menu)               | 锚点浮层菜单，与 `ActionMenu` 互补                                                    |
 
 ## 3. 特殊项：`Layout` 不应原样复刻
 
