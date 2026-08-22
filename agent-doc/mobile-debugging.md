@@ -76,7 +76,7 @@ agent-device open moe.bilisound.app.dev --platform android --session bilisound-t
 watchman watch-project <仓库根目录>
 ```
 
-   出现 `Recrawled this watch N times` 警告即命中本问题。
+出现 `Recrawled this watch N times` 警告即命中本问题。
 
 2. 确认代码改动真的进了 bundle（`agent-device metro reload` 不生效 ≠ 代码无效，先验证）：
 

@@ -104,19 +104,19 @@ apply-playlist.tsx → quickCreatePlaylist() (写入数据库，source.subType =
 
 以下文件通过 `UserListMode` 类型传播**自动获得支持**，添加新 mode 时不需要改动：
 
-| 文件                                      | 原因                                            |
-| ----------------------------------------- | ----------------------------------------------- |
-| `packages/sdk/src/sdk/base.ts`            | 抽象方法签名泛型接受 `UserListMode`             |
-| `packages/sdk/src/sdk/remote.ts`          | 仅将 mode 作为字符串参数传递给服务端            |
-| `apps/server-cf/route/bilisound.ts`       | `mode as UserListMode` 直接转发给 SDK           |
-| `apps/mobile/features/bilibili/*`         | 唯一 SDK adapter；DTO 到应用模型的映射落点      |
+| 文件                                      | 原因                                               |
+| ----------------------------------------- | -------------------------------------------------- |
+| `packages/sdk/src/sdk/base.ts`            | 抽象方法签名泛型接受 `UserListMode`                |
+| `packages/sdk/src/sdk/remote.ts`          | 仅将 mode 作为字符串参数传递给服务端               |
+| `apps/server-cf/route/bilisound.ts`       | `mode as UserListMode` 直接转发给 SDK              |
+| `apps/mobile/features/bilibili/*`         | 唯一 SDK adapter；DTO 到应用模型的映射落点         |
 | `apps/mobile/typings/playlist.ts`         | `PlaylistSource.subType` 使用 `RemotePlaylistMode` |
-| `apps/mobile/business/playlist/update.ts` | 通过 feature boundary 同步远程播放列表          |
-| `apps/mobile/business/qrcode.ts`          | 调用 `resolveVideoAndJump()`，无 mode 特定逻辑  |
-| `apps/mobile/app/barcode.tsx`             | 调用 `handleQrCode()`，无 mode 特定逻辑         |
-| `apps/mobile/store/apply-playlist.ts`     | 接受任意 `PlaylistSource`                       |
-| `apps/mobile/storage/sqlite/schema.ts`    | `source` 字段存储 JSON 字符串，无需 schema 变更 |
-| `apps/mobile/storage/sqlite/playlist.ts`  | `quickCreatePlaylist()` 泛型处理 source         |
+| `apps/mobile/business/playlist/update.ts` | 通过 feature boundary 同步远程播放列表             |
+| `apps/mobile/business/qrcode.ts`          | 调用 `resolveVideoAndJump()`，无 mode 特定逻辑     |
+| `apps/mobile/app/barcode.tsx`             | 调用 `handleQrCode()`，无 mode 特定逻辑            |
+| `apps/mobile/store/apply-playlist.ts`     | 接受任意 `PlaylistSource`                          |
+| `apps/mobile/storage/sqlite/schema.ts`    | `source` 字段存储 JSON 字符串，无需 schema 变更    |
+| `apps/mobile/storage/sqlite/playlist.ts`  | `quickCreatePlaylist()` 泛型处理 source            |
 
 ## 注意事项
 

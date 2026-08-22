@@ -46,17 +46,15 @@ export function buildPlaylistImportPlans(input: unknown): PlaylistImportPlan[] {
   return exported.meta.map(meta => {
     const tracks = exported.detail
       .filter(track => String(track.playlistId) === String(meta.id))
-      .map(
-        (track): PlayableItem => ({
-          author: track.author,
-          bvid: track.bvid,
-          duration: track.duration,
-          episode: track.episode,
-          title: track.title,
-          imgUrl: track.imgUrl,
-          extendedData: track.extendedData,
-        }),
-      );
+      .map((track): PlayableItem => ({
+        author: track.author,
+        bvid: track.bvid,
+        duration: track.duration,
+        episode: track.episode,
+        title: track.title,
+        imgUrl: track.imgUrl,
+        extendedData: track.extendedData,
+      }));
 
     return {
       playlist: {

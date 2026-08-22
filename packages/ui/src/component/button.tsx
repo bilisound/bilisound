@@ -64,9 +64,7 @@ export function Button({
       ref={ref}
       unstyled
       {...frameStyles}
-      {...(isWeb
-        ? { "aria-label": resolvedAccessibilityLabel }
-        : { accessibilityLabel: resolvedAccessibilityLabel })}
+      {...(isWeb ? { "aria-label": resolvedAccessibilityLabel } : { accessibilityLabel: resolvedAccessibilityLabel })}
       controlSize={isLink && !isIconOnly ? undefined : size}
       hasIconAndLabel={Boolean(icon && !isIconOnly)}
       iconOnly={isIconOnly}

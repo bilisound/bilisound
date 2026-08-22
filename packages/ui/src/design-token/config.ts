@@ -34,10 +34,7 @@ export interface CreateBilisoundConfigOptions {
   userPalette?: ThemePalette;
 }
 
-export function createBilisoundConfig({
-  fontFamily,
-  userPalette = classicPalette,
-}: CreateBilisoundConfigOptions = {}) {
+export function createBilisoundConfig({ fontFamily, userPalette = classicPalette }: CreateBilisoundConfigOptions = {}) {
   const bodyFont = createBodyFont(fontFamily);
 
   return createTamagui({
