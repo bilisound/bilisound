@@ -23,8 +23,8 @@
 
 | 已完成？ | 组件                | mobile 源                                                                                                                                                   | 复刻要点                                      |
 | -------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-|          | `HStack` / `VStack` | [`apps/mobile/components/ui/hstack`](../../apps/mobile/components/ui/hstack) / [`apps/mobile/components/ui/vstack`](../../apps/mobile/components/ui/vstack) | `space/reversed` flex 原语，全局布局基石      |
-|          | `DualScrollView`    | [`apps/mobile/components/dual-scroll-view.tsx`](../../apps/mobile/components/dual-scroll-view.tsx)                                                          | 响应式双栏骨架（`sm` 分栏），纯布局，不含业务 |
+| ✅       | `HStack` / `VStack` | [`apps/mobile/components/ui/hstack`](../../apps/mobile/components/ui/hstack) / [`apps/mobile/components/ui/vstack`](../../apps/mobile/components/ui/vstack) | `space/reversed` flex 原语，全局布局基石      |
+| ✅       | `DualScrollView`    | [`apps/mobile/components/dual-scroll-view.tsx`](../../apps/mobile/components/dual-scroll-view.tsx)                                                          | 响应式双栏骨架（`sm` 分栏），纯布局，不含业务 |
 
 > `Box`（[`apps/mobile/components/ui/box`](../../apps/mobile/components/ui/box)）不复刻：其在 mobile 仅为 `View + boxStyle(tva)` 的 NativeWind 薄壳，用于透传 `className`；`packages/ui` 基于 Tamagui，`View`/`Stack` 已具备 styled 能力（`backgroundColor`/`padding`/`borderRadius` 等直接为 props），无需再包一层 `Box`。
 

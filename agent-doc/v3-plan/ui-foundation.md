@@ -88,6 +88,8 @@ Button      primary/secondary/ghost/link variants, sm/md/lg sizes, icon/text for
 TextInput   sm/md/lg sizes, invalid and disabled states
 Text        2xs-6xl sizes, bold/semiBold/italic/underline/strikeThrough/highlight variants, truncation, muted body base color
 Heading     semantic h1-h6 tags on web via Tamagui `render`, legacy Gluestack size-to-tag mapping, header accessibility role on native
+DualScrollView responsive two-column scrolling skeleton, header pane hidden below gtSm (661px), host-provided safe-area insets, caller-owned list column
+HStack      horizontal layout primitive, xs-4xl gap scale via `space`, `reversed` row-reverse
 Slider      controlled/uncontrolled values, multiple thumbs, disabled states
 Switch      semantic controlled/uncontrolled control plus non-semantic SwitchVisual
 Icon        locally bundled SVG registry generated from selected `@iconify-json` packages
@@ -95,6 +97,7 @@ ActionMenu  Tamagui Sheet presentation, responsive one/two-column items, hidden 
 Modal       Tamagui headless Dialog composition with xs/sm/md/lg/full sizing and accessible title/description parts
 AlertDialog Tamagui headless AlertDialog composition with explicit action/cancel semantics and matching responsive sizing
 DropdownSelect TextInput-compatible chrome, controlled/uncontrolled single-value selection, ActionMenu below 640px, anchored dropdown from 640px
+VStack      vertical layout primitive, xs-4xl gap scale via `space`, `reversed` column-reverse
 ```
 
 The Slider keeps Tamagui's keyboard and accessibility behavior. A host using a vertical Slider on iOS must pass complete safe-area `insets` to `BilisoundProvider`.
