@@ -23,13 +23,6 @@ describe("extractThemeBaseColors native", () => {
 
     const colors = await extractThemeBaseColors({ uri: "file://avatar.png" });
 
-    expect(colors.debugColors).toEqual([
-      { label: "vibrant", color: "#111111", selectedAs: "primary" },
-      { label: "dominant", color: "#222222" },
-      { label: "average", color: "#333333", selectedAs: "accent" },
-      { label: "primary", color: "#444444" },
-      { label: "secondary", color: "#555555" },
-      { label: "detail", color: "#666666" },
-    ]);
+    expect(colors.debugColors).toEqual(["#111111", "#222222", "#333333", "#444444", "#555555", "#666666"]);
   });
 });

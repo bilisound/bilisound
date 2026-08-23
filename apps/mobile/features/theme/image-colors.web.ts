@@ -7,15 +7,7 @@ export interface ExtractThemeBaseColorsInput {
 export interface ExtractedThemeBaseColors {
   primaryBase: string;
   accentBase: string;
-  debugColors?: ExtractedThemeDebugColor[];
-}
-
-export interface ExtractedThemeDebugColor {
-  label: string;
-  color: string;
-  weight?: number;
-  count?: number;
-  selectedAs?: "primary" | "accent";
+  debugColors?: string[];
 }
 
 export async function extractThemeBaseColors(input: ExtractThemeBaseColorsInput): Promise<ExtractedThemeBaseColors> {
@@ -57,22 +49,11 @@ export async function extractThemeBaseColors(input: ExtractThemeBaseColorsInput)
   );
   const primaryBase = colors[0] ?? "#14b8a6";
   const accentBase = colors.find(color => color !== colors[0]) ?? colors[0] ?? "#3b82f6";
-  const totalCount = sortedBuckets.reduce((sum, bucket) => sum + bucket.count, 0);
 
   return {
     primaryBase,
     accentBase,
-    debugColors: sortedBuckets.slice(0, 12).map((bucket, index) => {
-      const color = colors[index];
-      const selectedAs = color === primaryBase ? "primary" : color === accentBase ? "accent" : undefined;
-      return {
-        label: `bucket ${index + 1}`,
-        color,
-        count: bucket.count,
-        weight: totalCount > 0 ? bucket.count / totalCount : undefined,
-        ...(selectedAs ? { selectedAs } : {}),
-      };
-    }),
+    debugColors: colors.slice(0, 12),
   };
 }
 

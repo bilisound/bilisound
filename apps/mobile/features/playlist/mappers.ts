@@ -1,3 +1,5 @@
+import type { PlaylistSource } from "~/typings/playlist";
+
 import type {
   PlaylistDetail as PlaylistDetailRow,
   PlaylistDetailInsert as PlaylistDetailInsertRow,
@@ -6,7 +8,6 @@ import type {
 } from "~/storage/sqlite/schema";
 
 import type { PlayableItem, Playlist, PlaylistCreateInput, PlaylistTrack, PlaylistUpdate } from "./models";
-import { decodePlaylistSource, encodePlaylistSource } from "./source-codec";
 
 export function toPlaylist(row: PlaylistMetaRow): Playlist {
   return {
@@ -16,7 +17,7 @@ export function toPlaylist(row: PlaylistMetaRow): Playlist {
     amount: row.amount,
     imgUrl: row.imgUrl,
     description: row.description,
-    source: decodePlaylistSource(row.source),
+    source: row.source ? (JSON.parse(row.source) as PlaylistSource) : null,
     filterRules: row.filterRules,
     extendedData: row.extendedData,
   };
@@ -43,7 +44,7 @@ export function toPlaylistMetaInsert(input: PlaylistCreateInput, amount: number)
     amount,
     imgUrl: input.imgUrl,
     description: input.description,
-    source: encodePlaylistSource(input.source),
+    source: input.source ? JSON.stringify(input.source) : input.source,
     filterRules: input.filterRules,
     extendedData: input.extendedData,
   };
@@ -54,7 +55,7 @@ export function toPlaylistMetaUpdate(update: PlaylistUpdate): Partial<PlaylistMe
   return {
     id,
     ...fields,
-    ...(source === undefined ? {} : { source: encodePlaylistSource(source) }),
+    ...(source === undefined ? {} : { source: source ? JSON.stringify(source) : source }),
   };
 }
 

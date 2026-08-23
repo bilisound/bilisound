@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import type { PlayableItem, PlaylistCreateInput } from "./models";
-import { decodePlaylistSource } from "./source-codec";
+import type { PlaylistSource } from "~/typings/playlist";
 
 const playlistExportMetaSchema = z.object({
   id: z.number().optional(),
@@ -62,7 +62,7 @@ export function buildPlaylistImportPlans(input: unknown): PlaylistImportPlan[] {
         color: meta.color,
         imgUrl: meta.imgUrl || tracks[0]?.imgUrl || null,
         description: meta.description,
-        source: decodePlaylistSource(meta.source),
+        source: meta.source ? (JSON.parse(meta.source) as PlaylistSource) : null,
         filterRules: meta.filterRules,
         extendedData: meta.extendedData,
       },

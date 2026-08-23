@@ -7,15 +7,7 @@ export interface ExtractThemeBaseColorsInput {
 export interface ExtractedThemeBaseColors {
   primaryBase: string;
   accentBase: string;
-  debugColors?: ExtractedThemeDebugColor[];
-}
-
-export interface ExtractedThemeDebugColor {
-  label: string;
-  color: string;
-  weight?: number;
-  count?: number;
-  selectedAs?: "primary" | "accent";
+  debugColors?: string[];
 }
 
 const nativeDebugColorLabels = [
@@ -42,7 +34,7 @@ export async function extractThemeBaseColors(input: ExtractThemeBaseColorsInput)
     return {
       primaryBase,
       accentBase,
-      debugColors: getNativeDebugColors(result, primaryBase, accentBase),
+      debugColors: getNativeDebugColors(result),
     };
   }
 
@@ -52,7 +44,7 @@ export async function extractThemeBaseColors(input: ExtractThemeBaseColorsInput)
     return {
       primaryBase,
       accentBase,
-      debugColors: getNativeDebugColors(result, primaryBase, accentBase),
+      debugColors: getNativeDebugColors(result),
     };
   }
 
@@ -62,11 +54,9 @@ export async function extractThemeBaseColors(input: ExtractThemeBaseColorsInput)
   };
 }
 
-function getNativeDebugColors(result: object, primaryBase: string, accentBase: string): ExtractedThemeDebugColor[] {
+function getNativeDebugColors(result: object): string[] {
   return nativeDebugColorLabels.flatMap(label => {
     const color = (result as Partial<Record<(typeof nativeDebugColorLabels)[number], string>>)[label];
-    if (!color) return [];
-    const selectedAs = color === primaryBase ? "primary" : color === accentBase ? "accent" : undefined;
-    return [{ label, color, ...(selectedAs ? { selectedAs } : {}) }];
+    return color ? [color] : [];
   });
 }

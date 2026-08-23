@@ -135,7 +135,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
                 </>
               )}
               <Text className="flex-shrink-0 text-sm opacity-50 text-typography-700 ">
-                {formatDate(data.publishedAt, "yyyy-MM-dd")}
+                {formatDate(data.publishedAt)}
               </Text>
             </>
           ) : (

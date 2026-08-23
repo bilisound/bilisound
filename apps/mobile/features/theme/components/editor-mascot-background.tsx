@@ -130,17 +130,16 @@ export function EditorMascotBackground({
     imageHeightRef,
   ]);
 
-  const handleChange = useMemo(() => {
-    return (patch: Partial<YuruCharaLayout>) => {
+  const handleChange = useCallback(
+    (patch: Partial<YuruCharaLayout>) => {
       onChange?.(patch);
-    };
-  }, [onChange]);
+    },
+    [onChange],
+  );
 
-  const handleOverlayLayout = useMemo(() => {
-    return (event: LayoutChangeEvent) => {
-      const { width, height } = event.nativeEvent.layout;
-      if (width > 0 && height > 0) setOverlaySize({ width, height });
-    };
+  const handleOverlayLayout = useCallback((event: LayoutChangeEvent) => {
+    const { width, height } = event.nativeEvent.layout;
+    if (width > 0 && height > 0) setOverlaySize({ width, height });
   }, []);
 
   const handleReset = useCallback(() => {

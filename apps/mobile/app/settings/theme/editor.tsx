@@ -35,7 +35,6 @@ import {
   withYuruCharaDefaults,
 } from "~/features/theme/editor";
 import { extractThemeBaseColors } from "~/features/theme/image-colors";
-import type { ExtractedThemeDebugColor } from "~/features/theme/image-colors";
 import { hexFromCssColor } from "~/features/theme/package-schema";
 import { findUserTheme, useThemeRegistry } from "~/features/theme/registry";
 import { themeStorage } from "~/features/theme/storage";
@@ -807,12 +806,12 @@ function formatOpacityPercent(value: number) {
   return String(Math.round(value * 1000) / 10);
 }
 
-function getUniqueDebugColorValues(colors: ExtractedThemeDebugColor[]) {
+function getUniqueDebugColorValues(colors: string[]) {
   const seen = new Set<string>();
-  return colors.flatMap(item => {
-    const color = normalizeHex(item.color, item.color);
-    if (seen.has(color)) return [];
-    seen.add(color);
-    return [color];
+  return colors.filter(color => {
+    const normalized = normalizeHex(color, color);
+    if (seen.has(normalized)) return false;
+    seen.add(normalized);
+    return true;
   });
 }
