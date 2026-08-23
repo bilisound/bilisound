@@ -15,7 +15,8 @@ import {
   FormControlLabel,
   FormControlLabelText,
 } from "~/components/ui/form-control";
-import { AlertCircleIcon, CheckIcon } from "~/components/ui/icon";
+import AlertCircleIcon from "~/assets/icons/alert-circle.svg";
+import CheckIcon from "~/assets/icons/check.svg";
 import { TextareaField, TextField } from "~/components/ui-next";
 import {
   addToPlaylist,

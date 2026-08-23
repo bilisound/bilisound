@@ -20,7 +20,7 @@ import { formatSecond } from "~/utils/datetime";
 import { SPEED_PRESETS } from "~/components/main-bottom-sheet/constants";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "~/components/ui/checkbox";
-import { CheckIcon } from "~/components/ui/icon";
+import CheckIcon from "~/assets/icons/check.svg";
 import { SpeedControlPanel } from "./speed-control-panel";
 import { useDownloadMenuItem } from "~/hooks/useDownloadMenuItem";
 import { ActionMenu, ActionMenuItem } from "~/components/action-menu";

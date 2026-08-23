@@ -8,7 +8,6 @@ import {
   getMinOriginalScaleForOnePixel,
   getYuruCharaAssetId,
   getYuruCharaRenderMetrics,
-  removeYuruCharaFromTheme,
   withYuruCharaDefaults,
 } from "../editor";
 import type { ThemeAsset, UserTheme } from "../types";
@@ -99,30 +98,6 @@ describe("theme editor helpers", () => {
 
   it("adds a revision to replacement yuru-chara asset ids", () => {
     expect(getYuruCharaAssetId("mint", 123)).toBe("mint-yuru-chara-123");
-  });
-
-  it("removes yuru-chara layout and extracted colors without changing the palette", () => {
-    const themeWithYuruChara: UserTheme = {
-      ...baseTheme,
-      yuruChara: {
-        imageAssetId: "asset-1",
-        imageWidth: 800,
-        imageHeight: 600,
-        align: "right",
-        verticalAlign: "bottom",
-        originalScale: 100,
-        opacity: 0.4,
-        offsetX: 0,
-        offsetY: 0,
-        extractedColors: ["#986846", "#bcbac6"],
-      },
-    };
-
-    const updated = removeYuruCharaFromTheme(themeWithYuruChara, 300);
-
-    expect(updated.yuruChara).toBeUndefined();
-    expect(updated.palette).toBe(themeWithYuruChara.palette);
-    expect(updated.updatedAt).toBe(300);
   });
 
   it("creates a yuru-chara removal draft without marking the theme saved", () => {

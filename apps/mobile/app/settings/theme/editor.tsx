@@ -16,7 +16,7 @@ import {
   FormControlLabel,
   FormControlLabelText,
 } from "~/components/ui/form-control";
-import { AlertCircleIcon } from "~/components/ui/icon";
+import AlertCircleIcon from "~/assets/icons/alert-circle.svg";
 import { Slider, SliderFilledTrack, SliderThumb, SliderTrack } from "~/components/ui/slider";
 import { Text } from "~/components/ui/text";
 import { TextField } from "~/components/ui-next";

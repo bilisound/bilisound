@@ -19,11 +19,8 @@ export interface HistoryProps {
 }
 
 export interface HistoryMethods {
-  setHistoryList: (historyList: HistoryItem[]) => void;
   appendHistoryList: (historyItem: HistoryItem) => void;
   clearHistoryList: () => void;
-  swapHistoryList: (index1: number, index2?: number) => void;
-  removeHistoryList: (index: number) => void;
   repairHistoryList: () => void;
 }
 
@@ -53,7 +50,6 @@ const useHistoryStore = create<HistoryProps & HistoryMethods>()(
           log.debug("历史记录列表不需要修复");
         }
       },
-      setHistoryList: historyList => set(() => ({ historyList })),
       appendHistoryList: historyItem => {
         let historyList = get().historyList;
 
@@ -80,19 +76,6 @@ const useHistoryStore = create<HistoryProps & HistoryMethods>()(
       },
       clearHistoryList: () => {
         set(() => ({ historyList: [] }));
-      },
-      swapHistoryList: (index1, index2 = 0) => {
-        const historyList = get().historyList;
-        [historyList[index1], historyList[index2]] = [historyList[index2], historyList[index1]];
-
-        set(() => ({ historyList }));
-      },
-
-      removeHistoryList: index => {
-        const historyList = get().historyList;
-        historyList.splice(index, 1);
-
-        set(() => ({ historyList }));
       },
     }),
     {

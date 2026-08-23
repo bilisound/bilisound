@@ -5,9 +5,9 @@ import { router } from "expo-router";
 
 import {
   clearApplyPlaylistDraft,
-  getApplyPlaylistDraft,
   replaceApplyPlaylistDraft,
   useApplyPlaylistDraft,
+  useApplyPlaylistDraftStore,
 } from "../apply-draft";
 import { openAddPlaylistPage } from "../misc";
 
@@ -70,7 +70,7 @@ it("replaces the whole draft and clears omitted optional fields", () => {
     name: "Local copy",
   });
 
-  expect(getApplyPlaylistDraft()).toEqual({
+  expect(useApplyPlaylistDraftStore.getState().draft).toEqual({
     playlistDetail: [item],
     name: "Local copy",
     description: "",
@@ -86,7 +86,7 @@ it("clears retained playlist items after the workflow succeeds", () => {
 
   clearApplyPlaylistDraft();
 
-  expect(getApplyPlaylistDraft()).toEqual({
+  expect(useApplyPlaylistDraftStore.getState().draft).toEqual({
     playlistDetail: [],
     name: "",
     description: "",
@@ -105,7 +105,7 @@ it("clears the draft when its route begins returning", async () => {
   await act(async () => {
     renderer = TestRenderer.create(React.createElement(React.StrictMode, null, React.createElement(DraftConsumer)));
   });
-  expect(getApplyPlaylistDraft().playlistDetail).toEqual([item]);
+  expect(useApplyPlaylistDraftStore.getState().draft.playlistDetail).toEqual([item]);
 
   const { navigationListeners } = jest.requireMock("expo-router") as {
     navigationListeners: Map<string, () => void>;
@@ -114,7 +114,7 @@ it("clears the draft when its route begins returning", async () => {
     navigationListeners.get("beforeRemove")?.();
   });
 
-  expect(getApplyPlaylistDraft()).toEqual({
+  expect(useApplyPlaylistDraftStore.getState().draft).toEqual({
     playlistDetail: [],
     name: "",
     description: "",

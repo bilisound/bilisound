@@ -28,7 +28,7 @@ const emptyDraft: ApplyPlaylistDraft = {
   description: "",
 };
 
-const useApplyPlaylistDraftStore = create<ApplyPlaylistDraftState>()(() => ({
+export const useApplyPlaylistDraftStore = create<ApplyPlaylistDraftState>()(() => ({
   draft: emptyDraft,
 }));
 
@@ -46,10 +46,6 @@ export function replaceApplyPlaylistDraft(input: ApplyPlaylistDraftInput) {
 
 export function clearApplyPlaylistDraft() {
   useApplyPlaylistDraftStore.setState({ draft: emptyDraft });
-}
-
-export function getApplyPlaylistDraft() {
-  return useApplyPlaylistDraftStore.getState().draft;
 }
 
 export function useApplyPlaylistDraft() {

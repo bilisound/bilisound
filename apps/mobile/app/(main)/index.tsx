@@ -12,7 +12,7 @@ import {
 } from "~/components/ui/form-control";
 import { TextField, TextFieldAction, useUiNextColors } from "~/components/ui-next";
 import log from "~/utils/logger";
-import { AlertCircleIcon } from "~/components/ui/icon";
+import AlertCircleIcon from "~/assets/icons/alert-circle.svg";
 import React from "react";
 import { router } from "expo-router";
 import { resolveVideo, resolveVideoAndJump } from "~/business/format";

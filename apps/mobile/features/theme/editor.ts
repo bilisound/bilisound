@@ -75,14 +75,6 @@ export function getYuruCharaContainScale(
   return Math.min(100, (viewportSize.width / imageSize.width) * 100, (viewportSize.height / imageSize.height) * 100);
 }
 
-export function removeYuruCharaFromTheme(theme: UserTheme, updatedAt: number): UserTheme {
-  return {
-    ...theme,
-    yuruChara: undefined,
-    updatedAt,
-  };
-}
-
 function normalizeThemeName(name: string): string {
   const trimmed = name.trim();
   if (!trimmed) {

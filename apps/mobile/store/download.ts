@@ -34,7 +34,6 @@ export interface DownloadMethods {
   addDownloadItem: (key: string, downloadItem: Omit<DownloadItem, "count">) => void;
   updateDownloadItemPartial: (key: string, downloadItem: Partial<DownloadItem>) => void;
   removeDownloadItem: (key: string) => void;
-  clearDownloadItem: () => void;
   cancelAll: () => Promise<void>;
   pickTask: () => void;
   addProcessTask: (id: string) => void;
@@ -48,7 +47,6 @@ const useDownloadStore = create<DownloadProps & DownloadMethods>()((set, get) =>
   count: 0,
   processTasks: [],
   downloadWorker: undefined,
-  abortController: new AbortController(),
   addDownloadItem: (key, downloadItem) => {
     const downloadList = new Map(get().downloadList);
     const count = get().count + 1;
@@ -67,9 +65,6 @@ const useDownloadStore = create<DownloadProps & DownloadMethods>()((set, get) =>
     const downloadList = new Map(get().downloadList);
     downloadList.delete(key);
     set(() => ({ downloadList }));
-  },
-  clearDownloadItem: () => {
-    set(() => ({ downloadList: new Map() }));
   },
   cancelAll: async () => {
     set(() => ({ downloadList: new Map() }));
