@@ -2,7 +2,7 @@ import { Text } from "~/components/ui/text";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Layout, LayoutButton } from "~/components/layout";
-import { useIsNarrowWidth } from "~/hooks/useIsNarrowWidth";
+import { useWindowSize } from "~/hooks/useWindowSize";
 import { useForm, Controller } from "react-hook-form";
 import {
   FormControl,
@@ -21,7 +21,7 @@ import { BRAND } from "~/constants/branding";
 
 export default function MainScreen() {
   const edgeInsets = useTabSafeAreaInsets();
-  const isNarrowWidth = useIsNarrowWidth();
+  const isNarrowWidth = useWindowSize().height < 480;
   const { colorValue } = useUiNextColors();
 
   const {

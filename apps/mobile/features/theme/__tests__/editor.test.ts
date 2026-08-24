@@ -255,7 +255,7 @@ describe("theme editor helpers", () => {
       { width: 390, height: 844 },
     );
 
-    expect(metrics).toEqual({ width: 200, height: 150, contentFit: "fill", usesFullscreenFrame: false });
+    expect(metrics).toEqual({ width: 200, height: 150, contentFit: "fill" });
   });
 
   it("allows yuru-chara scale down to one rendered pixel", () => {
@@ -277,7 +277,7 @@ describe("theme editor helpers", () => {
       { width: 390, height: 844 },
     );
 
-    expect(metrics).toEqual({ width: 1, height: 1, contentFit: "fill", usesFullscreenFrame: false });
+    expect(metrics).toEqual({ width: 1, height: 1, contentFit: "fill" });
   });
 
   it("uses loaded image dimensions when stored original dimensions are missing", () => {
@@ -297,7 +297,7 @@ describe("theme editor helpers", () => {
       { width: 4000, height: 5000 },
     );
 
-    expect(metrics).toEqual({ width: 1320, height: 1650, contentFit: "fill", usesFullscreenFrame: false });
+    expect(metrics).toEqual({ width: 1320, height: 1650, contentFit: "fill" });
   });
 
   it("creates a disposable preview URL for web blob assets", () => {

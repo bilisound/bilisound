@@ -18,7 +18,7 @@ import { Heading } from "~/components/ui/heading";
 import { Text } from "~/components/ui/text";
 import { useConfirm } from "~/hooks/useConfirm";
 import log from "~/utils/logger";
-import { handleQrCode } from "~/business/qrcode";
+import { resolveVideoAndJump } from "~/business/format";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { Icon } from "~/components/icon";
 import { BRAND } from "~/constants/branding";
@@ -61,13 +61,8 @@ export default function Page() {
     log.debug(`捕捉到了条形码。type: ${args.type}, data: ${args.data}`);
     // alert(`Bar code with type ${args.type} and data ${args.data} has been scanned!`);
     try {
-      const errorMessage = await handleQrCode(args.data);
-      if (errorMessage) {
-        showUnsupportedWarning(errorMessage);
-        log.debug(`扫码操作失败，原因：${errorMessage}`);
-      } else {
-        log.debug("扫码操作成功");
-      }
+      await resolveVideoAndJump(args.data, true);
+      log.debug("扫码操作成功");
     } catch (e) {
       log.error(`扫码操作失败，原因：${e}`);
       showUnsupportedWarning();

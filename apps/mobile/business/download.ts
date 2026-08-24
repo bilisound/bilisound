@@ -6,8 +6,8 @@ import { getMediaResource, getVideoUrl } from "~/features/bilibili";
 import log from "~/utils/logger";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
 import { isCacheExists, setCacheExists } from "~/storage/cache-status";
-import { extractAudioFile } from "~/business/mp4";
 import { File } from "expo-file-system";
+import { Mp4 } from "mp4.js/dist";
 
 function registerDownloadWorker() {
   const { downloadWorker, setDownloadWorker } = useDownloadStore.getState();
@@ -152,7 +152,11 @@ export async function downloadResource(bvid: string, episode: number) {
 
   // 提取 m4a
   try {
-    await extractAudioFile(new File(downloadTargetFileUrl), new File(checkUrl));
+    const from = new Date().getTime();
+    const stream = await new File(downloadTargetFileUrl).bytes();
+    const m4aBytes = Mp4.extractAudio(stream);
+    new File(checkUrl).write(m4aBytes);
+    log.debug(prefix + `提取操作结束，操作用时 ${(new Date().getTime() - from) / 1000}s`);
   } catch (e) {
     log.error(prefix + "视频转码失败！");
     log.error(`result：${e}`);

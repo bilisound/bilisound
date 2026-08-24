@@ -4,7 +4,9 @@ import { consoleTransport, fileAsyncTransport, logger } from "react-native-logs"
 
 import { BILISOUND_LOG_URI } from "~/constants/file";
 import { VERSION } from "~/constants/releasing";
-import { matchOldRegex, matchRegex } from "~/utils/logger-common";
+
+const matchRegex = /^bilisound_log_(.+)_(\d{1,2})-(\d{1,2})-(\d+).log$/;
+const matchOldRegex = /^bilisound_log_(\d{1,2})-(\d{1,2})-(\d+).log$/;
 
 const log = logger.createLogger({
   levels: {

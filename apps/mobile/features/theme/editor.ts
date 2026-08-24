@@ -6,7 +6,6 @@ export interface YuruCharaRenderMetrics {
   width: number;
   height: number;
   contentFit: "cover" | "contain" | "fill";
-  usesFullscreenFrame: boolean;
 }
 
 export function buildSavedUserTheme(
@@ -65,7 +64,7 @@ export function createYuruCharaUploadDraft(
   };
 }
 
-export function getYuruCharaContainScale(
+function getYuruCharaContainScale(
   imageSize: { width: number; height: number },
   viewportSize: { width: number; height: number },
 ): number {
@@ -115,7 +114,6 @@ export function getYuruCharaRenderMetrics(
     width: Math.round(Math.max(1, imageWidth * scale)),
     height: Math.round(Math.max(1, imageHeight * scale)),
     contentFit: "fill",
-    usesFullscreenFrame: false,
   };
 }
 

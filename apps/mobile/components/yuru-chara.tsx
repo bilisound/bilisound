@@ -57,14 +57,6 @@ export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
     const layout = userTheme?.yuruChara;
     if (!layout) return null;
     const metrics = getYuruCharaRenderMetrics(layout, frame, loadedImageSize);
-    if (metrics.usesFullscreenFrame) {
-      return [
-        styles.base,
-        { width: metrics.width, height: metrics.height },
-        styles.fullscreenFrame,
-        { marginLeft: -metrics.width / 2 },
-      ];
-    }
 
     return [
       styles.base,
@@ -136,9 +128,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 10,
   },
-  fullscreenFrame: { left: "50%", top: 0 },
-  left: { left: 0 },
   right: { right: 0 },
+  left: { left: 0 },
   top: { top: 0 },
   bottom: { bottom: 0 },
   defaultBottom: { bottom: 120 },

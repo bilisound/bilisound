@@ -315,18 +315,6 @@ export function EditorMascotBackground({
     const effectiveLayout = layout ?? withYuruCharaDefaults({} as UserTheme);
     const metrics = getYuruCharaRenderMetrics(effectiveLayout, frame, loadedImageSize);
 
-    if (metrics.usesFullscreenFrame) {
-      return {
-        contentFit: metrics.contentFit,
-        opacity: effectiveLayout.opacity,
-        className: `${mascotClassName} left-1/2 top-0`,
-        style: [
-          { width: metrics.width, height: metrics.height },
-          { marginLeft: -metrics.width / 2 },
-        ] as StyleProp<ViewStyle>,
-      };
-    }
-
     return {
       contentFit: metrics.contentFit,
       opacity: effectiveLayout.opacity,

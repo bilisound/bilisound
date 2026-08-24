@@ -22,7 +22,9 @@ import { Heading } from "~/components/ui/heading";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { useConfirm } from "~/hooks/useConfirm";
 import Toast from "react-native-toast-message";
-import { matchOldRegex, matchRegex } from "~/utils/logger-common";
+
+const matchRegex = /^bilisound_log_(.+)_(\d{1,2})-(\d{1,2})-(\d+).log$/;
+const matchOldRegex = /^bilisound_log_(\d{1,2})-(\d{1,2})-(\d+).log$/;
 
 export default function Page() {
   const edgeInsets = useSafeAreaInsets();
