@@ -1,7 +1,3 @@
-export function simpleCopy<T>(input: T): T {
-  return JSON.parse(JSON.stringify(input));
-}
-
 export function padArrayToColumns<T>(array: T[], columns: number): (T | null)[] {
   if (columns <= 0) return array.slice();
 

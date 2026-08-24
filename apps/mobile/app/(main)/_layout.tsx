@@ -5,7 +5,6 @@ import React from "react";
 import { TabSafeAreaContext } from "~/hooks/useTabSafeAreaInsets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { breakpoints } from "~/constants/styles";
-import { simpleCopy } from "~/utils/misc";
 import { YuruChara } from "~/components/yuru-chara";
 import { useAppearanceConfig } from "~/features/config";
 import { toggle, useCurrentTrack, useIsPlaying, usePlaybackState } from "@bilisound/player";
@@ -287,7 +286,7 @@ function CurrentPlaying() {
 
 export default function TabLayout() {
   const edgeInsets = useSafeAreaInsets();
-  const edgeInsetsTab = simpleCopy(edgeInsets);
+  const edgeInsetsTab = structuredClone(edgeInsets);
   const windowDimensions = useWindowSize();
   const { showYuruChara } = useAppearanceConfig();
   const { colorValue } = useRawThemeValues();
