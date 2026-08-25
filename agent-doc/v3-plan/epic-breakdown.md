@@ -533,9 +533,10 @@ scheduler details directly.
 ```
 
 Phase 2 audit of residual UI-layer coupling and the frozen feature API is recorded in
-[phase-2-audit.md](./phase-2-audit.md). Its "Epic 7 Admission Criteria" section lists
-the concrete closures still open (Epic 6 runtime verification, UI -> ~/storage/playlist,
-business-ish stores, player wrapper decision, business/format + check-release homes).
+[phase-2-audit.md](./phase-2-audit.md). All five admission criteria are met. The Epic 7
+framework decision (full Tamagui, retire NativeWind/gluestack), responsive strategy
+(md/768px sidebar switch), and slice breakdown are recorded in
+[epic-7-plan.md](./epic-7-plan.md).
 
 Goals:
 
