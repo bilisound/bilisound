@@ -11,8 +11,8 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
 | 5. Playlist Domain        | **Delivered** | app-owned models, SQLite mappers, versioned exchange DTO, and Promise-based native/Web repository contract                                               |
-| 6. Cache and Download     | In progress   | Slices A+B delivered (cache status repository, audio cache file management); download scheduler migration still open                                      |
-| 7. UI Rewrite             | Planned       | requires Epics 1–6 boundaries to be stable                                                                                                               |
+| 6. Cache and Download     | **Delivered** | cache status + audio cache + download scheduler in `features/cache`; verified tsc/jest/eslint/android+web export; runtime verification still open      |
+| 7. UI Rewrite             | Planned       | Phase 2 audit done ([phase-2-audit.md](./phase-2-audit.md)); admission criteria open — Epic 6 runtime verification + residual coupling closure          |
 
 Delivered epics keep their full scope/goals below under **Delivered Epics** so the handoff
 record stays in one place. Planned epics are listed under **Upcoming Epics**.
@@ -531,6 +531,11 @@ Epics 1-6 should provide stable enough feature boundaries that UI screens do not
 need to import player internals, SDK DTOs, SQLite rows, storage keys, or download
 scheduler details directly.
 ```
+
+Phase 2 audit of residual UI-layer coupling and the frozen feature API is recorded in
+[phase-2-audit.md](./phase-2-audit.md). Its "Epic 7 Admission Criteria" section lists
+the concrete closures still open (Epic 6 runtime verification, UI -> ~/storage/playlist,
+business-ish stores, player wrapper decision, business/format + check-release homes).
 
 Goals:
 
