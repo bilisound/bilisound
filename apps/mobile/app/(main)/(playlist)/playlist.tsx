@@ -37,7 +37,7 @@ import { breakpoints } from "~/constants/styles";
 import { useConfirm } from "~/hooks/useConfirm";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { useWindowSize } from "~/hooks/useWindowSize";
-import { invalidateOnQueueStatus, PLAYLIST_ON_QUEUE, playlistStorage } from "~/storage/playlist";
+import { getQueueOwnerPlaylistId, invalidateQueueOwnership } from "~/features/playback";
 import { deletePlaylistMeta, getPlaylistMetas, type Playlist } from "~/features/playlist";
 import { usePlaylistViewConfig, useSettingsActions } from "~/features/config";
 import { exportPlaylistToFile, exportPlaylistToLLMFile, importPlaylistFromFile } from "~/utils/exchange/playlist";
@@ -240,9 +240,8 @@ export default function Page() {
       await queryClient.refetchQueries({ queryKey: ["playlist_meta_apply"] });
 
       // 清空当前播放队列隶属歌单的状态机
-      const got: { value?: { id: number } } = JSON.parse(playlistStorage.getString(PLAYLIST_ON_QUEUE) || "{}");
-      if (got?.value?.id === displayTrack?.id) {
-        invalidateOnQueueStatus();
+      if (getQueueOwnerPlaylistId() === displayTrack?.id) {
+        invalidateQueueOwnership();
       }
 
       Toast.show({

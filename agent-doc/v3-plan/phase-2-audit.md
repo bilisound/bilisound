@@ -65,16 +65,23 @@ components/main-bottom-sheet/components/speed-control-panel.tsx  usePlaybackSpee
 should be absorbed into a feature (`features/playback` or a dedicated hook) before the UI
 rewrite freezes view models.
 
-### 3. UI -> ~/storage/playlist (2 sites, playback orchestration leaking)
+### 3. UI -> ~/storage/playlist — **closed** (2026-08-25)
+
+Resolved by adding `features/playback/queue-ownership.ts` and exposing
+`getQueueOwnerPlaylistId`, `invalidateQueueOwnership`, and
+`usePlaylistRestoreLoopOnceFlag` from the playback surface. The two UI sites now
+import from `~/features/playback`; zero `~/storage/playlist` references remain in
+`app/`, `components/`, or `hooks/`.
 
 ```txt
-app/(main)/(playlist)/playlist.tsx                  invalidateOnQueueStatus, PLAYLIST_ON_QUEUE, playlistStorage
-components/main-bottom-sheet/components/player-control-buttons.tsx  usePlaylistRestoreLoopOnceFlag
+features/playback/queue-ownership.ts  # owns queue-ownership marker + loop-restore flag
+features/playback/index.ts            # re-exports the three symbols
 ```
 
-These read the queue-ownership marker and the loop-restore flag directly from MMKV. They
-are `features/playback` orchestration details. Small, well-scoped follow-up: expose
-playback-owned selectors/hooks and stop UI from touching `~/storage/playlist`.
+Persisted data stable: `playlist_on_queue` key, `storage-playlist` MMKV id, and
+`{ value?: { id } }` JSON shape unchanged. `features/playback` internals
+(`track-operations`, `cache`) still consume `~/storage/playlist` directly as the
+legitimate orchestration boundary.
 
 ### 4. UI -> ~/business (4 sites, business/ has only 2 modules left)
 
@@ -125,6 +132,8 @@ features/playback   playEpisode, playPlaylist, playNextTrack, appendPlaylistToCu
                     toggleShuffleMode
                     registerPlaybackBackgroundEvents
                     usePlaylistPlayer
+                    getQueueOwnerPlaylistId, invalidateQueueOwnership,
+                    usePlaylistRestoreLoopOnceFlag
 
 features/player     app-side wrapper re-exporting @bilisound/player public API
                     (useCurrentTrack, useIsPlaying, usePlaybackState, usePlaybackOrder,
@@ -169,7 +178,7 @@ Use the project Expo Dev Client (`moe.bilisound.app.dev`), not Expo Go.
 Epic 7 (UI Rewrite) is appropriate to start once:
 
 1. Epic 6 runtime verification passes (above).
-2. Residual #3 (UI -> ~/storage/playlist) is closed — small, well-scoped.
+2. ~~Residual #3 (UI -> ~/storage/playlist) is closed~~ — **closed**.
 3. Residual #2 business-ish stores (history, playback-speed) have a feature home, or are
    explicitly deferred with a documented reason.
 4. ~~Residual #1 (player direct imports) has a decision~~ — **closed**: `features/player`

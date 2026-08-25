@@ -11,13 +11,12 @@ import {
   useRepeatMode,
   useShuffleMode,
 } from "~/features/player";
-import { usePlaylistRestoreLoopOnceFlag } from "~/storage/playlist";
 import React, { useState } from "react";
 import { isLoading } from "~/components/main-bottom-sheet/utils";
 import { useProgressSecond } from "~/hooks/useProgressSecond";
 import Toast from "react-native-toast-message";
 import { DEBUG_COLOR, REPEAT_MODE } from "~/components/main-bottom-sheet/constants";
-import { playNextTrack, toggleShuffleMode } from "~/features/playback";
+import { playNextTrack, toggleShuffleMode, usePlaylistRestoreLoopOnceFlag } from "~/features/playback";
 import { View } from "react-native";
 import { Button, ButtonOuter } from "~/components/ui/button";
 import { Icon } from "~/components/icon";

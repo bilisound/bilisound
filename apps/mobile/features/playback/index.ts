@@ -32,6 +32,9 @@ export {
 // 随机播放模式切换（持久化用户偏好）
 export { toggleShuffleMode } from "./shuffle";
 
+// 队列隶属歌单状态访问（UI 不直接读 storage/playlist）
+export { getQueueOwnerPlaylistId, invalidateQueueOwnership, usePlaylistRestoreLoopOnceFlag } from "./queue-ownership";
+
 // 后台播放事件
 export { registerPlaybackBackgroundEvents } from "./background";
 
