@@ -1,9 +1,19 @@
 import { v4 } from "uuid";
 import { persist } from "zustand/middleware";
+import { create } from "zustand";
 
 import { createStorage } from "~/storage/zustand";
-import log from "../utils/logger";
-import { create } from "zustand";
+import log from "~/utils/logger";
+
+/**
+ * features/playback/history — 播放/访问历史记录（feature 内部）。
+ *
+ * 历史记录是播放会话周边的本地状态，归 features/playback 编排边界。
+ * UI 层通过 usePlaybackHistory 订阅列表、通过 appendPlaybackHistory 写入，
+ * 不再直接 import ~/store/history。
+ *
+ * 持久化契约稳定：zustand persist name "history-store"、createStorage 不变。
+ */
 
 export interface HistoryItem {
   name: string;
@@ -14,11 +24,11 @@ export interface HistoryItem {
   key: string;
 }
 
-export interface HistoryProps {
+interface HistoryProps {
   historyList: HistoryItem[];
 }
 
-export interface HistoryMethods {
+interface HistoryMethods {
   appendHistoryList: (historyItem: HistoryItem) => void;
   clearHistoryList: () => void;
   repairHistoryList: () => void;
@@ -85,4 +95,19 @@ const useHistoryStore = create<HistoryProps & HistoryMethods>()(
   ),
 );
 
-export default useHistoryStore;
+/**
+ * 追加一条历史记录（非响应式，适合事件回调调用）
+ */
+export function appendPlaybackHistory(item: HistoryItem) {
+  useHistoryStore.getState().appendHistoryList(item);
+}
+
+/**
+ * 订阅历史记录列表与维护方法
+ */
+export function usePlaybackHistory() {
+  const historyList = useHistoryStore(state => state.historyList);
+  const clearHistoryList = useHistoryStore(state => state.clearHistoryList);
+  const repairHistoryList = useHistoryStore(state => state.repairHistoryList);
+  return { historyList, clearHistoryList, repairHistoryList };
+}

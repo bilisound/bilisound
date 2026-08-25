@@ -3,7 +3,7 @@ import { useShallow } from "zustand/shallow";
 import { InsidePageContext } from "~/components/main-bottom-sheet/utils";
 import { useCurrentTrack } from "~/features/player";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
-import { usePlaybackSpeedStore } from "~/store/playback-speed";
+import { usePlaybackSpeed } from "~/features/playback";
 import { useBottomSheetStore } from "~/store/bottom-sheet";
 import { router } from "expo-router";
 import { openAddPlaylistPage } from "~/features/playlist";
@@ -39,13 +39,7 @@ export function PlayerControlMenu() {
         setShowSpeedActionSheet: state.setShowSpeedActionSheet,
       })),
     );
-  const { speedValue, retainPitch, applySpeed } = usePlaybackSpeedStore(
-    useShallow(state => ({
-      speedValue: state.speedValue,
-      retainPitch: state.retainPitch,
-      applySpeed: state.applySpeed,
-    })),
-  );
+  const { speedValue, retainPitch, applySpeed } = usePlaybackSpeed();
 
   const menuItems: ActionMenuItem[] = [
     {

@@ -35,6 +35,10 @@ export { toggleShuffleMode } from "./shuffle";
 // 队列隶属歌单状态访问（UI 不直接读 storage/playlist）
 export { getQueueOwnerPlaylistId, invalidateQueueOwnership, usePlaylistRestoreLoopOnceFlag } from "./queue-ownership";
 
+// 播放速度与历史（原 ~/store/playback-speed、~/store/history）
+export { usePlaybackSpeed } from "./playback-speed";
+export { appendPlaybackHistory, usePlaybackHistory, type HistoryItem } from "./history";
+
 // 后台播放事件
 export { registerPlaybackBackgroundEvents } from "./background";
 

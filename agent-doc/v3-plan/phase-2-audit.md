@@ -50,20 +50,37 @@ the legitimate player orchestration boundary (target architecture allows
 Epic 7 may later narrow this surface to a handpicked view-model API instead of a full
 re-export; the import seam is now stable enough to do that without a broad refactor.
 
-### 2. UI -> ~/store (Zustand, ~10 sites)
+### 2. UI -> ~/store (Zustand) — **closed for business-ish stores** (2026-08-25)
+
+`history` and `playback-speed` carried business semantics and are now absorbed into
+`features/playback`. `bottom-sheet` and `error-message` remain pure UI interaction state
+and are explicitly deferred (see decision below).
 
 ```txt
-app/history.tsx, app/video/[id].tsx                 useHistoryStore        (history — has business semantics)
-app/(main)/_layout.tsx, components/main-bottom-sheet/*  useBottomSheetStore (pure UI state)
-components/error-toast-host.tsx                      useErrorMessageStore    (pure UI state)
-components/main-bottom-sheet/components/player-control-menu.tsx  usePlaybackSpeedStore (business-ish)
-components/main-bottom-sheet/components/speed-control-panel.tsx  usePlaybackSpeedStore
+features/playback/history.ts          # usePlaybackHistory() + appendPlaybackHistory() + HistoryItem
+features/playback/playback-speed.ts   # usePlaybackSpeed()
+features/playback/index.ts            # re-exports the above
 ```
 
-`bottom-sheet` and `error-message` are pure UI interaction state and may stay in a future
-`shared/` or remain as-is. `history` and `playback-speed` carry business semantics and
-should be absorbed into a feature (`features/playback` or a dedicated hook) before the UI
-rewrite freezes view models.
+Consumers migrated:
+```txt
+app/history.tsx                                   usePlaybackHistory()
+app/video/[id].tsx                                appendPlaybackHistory() (non-reactive, event callback)
+components/main-bottom-sheet/components/speed-control-panel.tsx   usePlaybackSpeed()
+components/main-bottom-sheet/components/player-control-menu.tsx   usePlaybackSpeed()
+```
+
+Persisted data stable: history zustand persist name `history-store` and `createStorage`
+unchanged; the store file moved into the feature but the persisted shape is identical.
+`playback-speed` was in-memory only, no migration needed.
+
+Deferred (pure UI interaction state, no business semantics):
+```txt
+~/store/bottom-sheet.ts     # bottom-sheet open/close state; stays until shared/ exists
+~/store/error-message.ts    # transient toast message; stays until shared/ exists
+```
+These two are acceptable for Epic 7 to consume via a `shared/` wrapper or to leave as
+localized UI state; they do not leak business policy into UI.
 
 ### 3. UI -> ~/storage/playlist — **closed** (2026-08-25)
 
@@ -134,6 +151,9 @@ features/playback   playEpisode, playPlaylist, playNextTrack, appendPlaylistToCu
                     usePlaylistPlayer
                     getQueueOwnerPlaylistId, invalidateQueueOwnership,
                     usePlaylistRestoreLoopOnceFlag
+                    usePlaybackSpeed
+                    usePlaybackHistory, appendPlaybackHistory
+                    type HistoryItem
 
 features/player     app-side wrapper re-exporting @bilisound/player public API
                     (useCurrentTrack, useIsPlaying, usePlaybackState, usePlaybackOrder,
@@ -179,8 +199,8 @@ Epic 7 (UI Rewrite) is appropriate to start once:
 
 1. Epic 6 runtime verification passes (above).
 2. ~~Residual #3 (UI -> ~/storage/playlist) is closed~~ — **closed**.
-3. Residual #2 business-ish stores (history, playback-speed) have a feature home, or are
-   explicitly deferred with a documented reason.
+3. ~~Residual #2 business-ish stores (history, playback-speed) have a feature home~~ — **closed**;
+   `bottom-sheet` and `error-message` explicitly deferred as pure UI state.
 4. ~~Residual #1 (player direct imports) has a decision~~ — **closed**: `features/player`
    wrapper introduced; UI imports from `~/features/player`, no direct `@bilisound/player`
    in `app/`/`components/`/`hooks/`. Epic 7 may later narrow the re-export to a view-model

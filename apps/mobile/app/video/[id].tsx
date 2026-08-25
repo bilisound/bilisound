@@ -13,10 +13,9 @@ import { ErrorContent } from "~/components/error-content";
 import { DualScrollView } from "~/components/dual-scroll-view";
 
 import { getVideoMetadata } from "~/features/bilibili";
-import { playEpisode } from "~/features/playback";
+import { appendPlaybackHistory, playEpisode } from "~/features/playback";
 import { openAddPlaylistPage } from "~/features/playlist";
 import { convertToHTTPS } from "~/utils/string";
-import useHistoryStore from "~/store/history";
 import log from "~/utils/logger";
 
 import { LongPressActions, PageMenu, MetaData, handleAddPlaylist, type PageItem } from "~/components/video-detail";
@@ -41,11 +40,9 @@ export default function Page() {
   });
 
   // 增加历史记录条目
-  const appendHistoryList = useHistoryStore(state => state.appendHistoryList);
-
   useEffect(() => {
     if (data && !noHistory) {
-      appendHistoryList({
+      appendPlaybackHistory({
         authorName: data.owner.name,
         id: data.bvid,
         name: data.title,
@@ -54,7 +51,7 @@ export default function Page() {
         key: v4(),
       });
     }
-  }, [appendHistoryList, data, noHistory]);
+  }, [data, noHistory]);
 
   return (
     <GestureHandlerRootView>
