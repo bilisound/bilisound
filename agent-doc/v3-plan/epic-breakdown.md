@@ -398,38 +398,61 @@ utils/migration/playlist.ts            — legacy one-time DB migration
 
 ### Epic 6: Cache and Download
 
-> Status: **in progress** — Slices A+B delivered (cache status repository and audio cache
-> file management). Download scheduler migration (Slice C) and consumer cleanup
-> (Slice D/E) remain open.
+> Status: **delivered** — cache status repository, audio cache file management, download
+> scheduler, and download use cases now live in `features/cache`. UI routes and hooks no
+> longer import `store/download` or `business/download`.
 
 Scope:
 
 ```txt
-business/download.ts
-store/download.ts
-storage/cache-status.ts                  # done — moved into features/cache
-hooks/useDownloadMenuItem.ts
-business/playlist/handler/cache.ts       # superseded by features/playback/cache.ts (Epic 4)
+business/download.ts                  # done — moved into features/cache/download.ts (+ web stub)
+business/download.web.ts              # done — moved into features/cache/download.web.ts
+business/__tests__/download.test.ts   # done — moved into features/cache/__tests__/download.test.ts
+store/download.ts                     # done — split into download-store.ts + download-scheduler.ts
+storage/cache-status.ts               # done — moved into features/cache/cache-status.ts
+hooks/useDownloadMenuItem.ts          # done — consumes features/cache surface
+components/download-button.tsx        # done — consumes features/cache surface
+app/download.tsx, app/(main)/settings.tsx # done — useDownloadList hook
+features/playback/cache.ts            # done — downloadResourceNow from features/cache
+business/playlist/handler/cache.ts   # superseded by features/playback/cache.ts (Epic 4)
 ```
 
 Goals:
 
-1. Move download scheduling out of Zustand store actions.
-2. Separate audio cache from future image cache concerns.
+1. Move download scheduling out of Zustand store actions. — **done** (Slice C)
+2. Separate audio cache from future image cache concerns. — **done** (audio modules isolated; image cache deferred)
 3. Provide cache status repositories and hooks. — **done** (Slice A)
-4. Keep cache independent from player. — **done for file management** (Slice B)
+4. Keep cache independent from player. — **done** (Slice B + C)
 
-Implementation record (Slices A+B, 2026-08-25):
+Implementation record (Slices A–D, 2026-08-25):
 
 ```txt
-features/cache/index.ts        # public feature surface
-features/cache/cache-status.ts # MMKV cache status + useCacheExists hook (was storage/cache-status.ts)
-features/cache/audio-cache.ts  # getCacheAudioPath / getAudioCacheSize / cleanAudioCache (was utils/file.ts)
-features/cache/migration.ts    # migrateCacheStatus one-time migration (was utils/migration/cache-status.ts)
+features/cache/index.ts              # public feature surface
+features/cache/cache-status.ts        # MMKV cache status + useCacheExists hook (was storage/cache-status.ts)
+features/cache/audio-cache.ts        # getCacheAudioPath / getAudioCacheSize / cleanAudioCache (was utils/file.ts)
+features/cache/migration.ts          # migrateCacheStatus one-time migration (was utils/migration/cache-status.ts)
+features/cache/download-store.ts     # Zustand download state only (was store/download.ts); no scheduling
+features/cache/download-scheduler.ts # concurrent pickTask loop + worker registration (extracted from store actions)
+features/cache/download.ts           # addDownloadTask / downloadResource / downloadResourceNow / pickDownloadTask / useDownloadList (was business/download.ts)
+features/cache/download.web.ts        # web stub: web uses getDownloadUrl, no local scheduling
+features/cache/__tests__/download.test.ts # cancellation regression (was business/__tests__/download.test.ts)
 ```
 
+Scheduler split: `store/download.ts` previously held both task state and the `pickTask`
+scheduling loop with worker registration. Slice C separates them —
+`download-store.ts` keeps only observable task state (`downloadList`, `addDownloadItem`,
+`updateDownloadItemPartial`, `removeDownloadItem`, `cancelAll`); `download-scheduler.ts`
+owns the concurrent limit (`MAX_CONCURRENT = 5`), the `processTasks` in-flight list, and
+`registerDownloadWorker` / `pickTask`. `download.ts` registers `downloadResource` as the
+worker at module load, preserving the original wiring without a Zustand action.
+
+UI surface: `useDownloadList()` returns `{ downloadList, cancelAll }`; `DownloadItem` is
+re-exported from the feature index. Routes no longer touch `store/download`.
+
 Persisted data kept stable: MMKV `cache-status` store id, `${bvid}_${episode}` key format,
-`CACHE_STATUS_VERSION` marker, and `{id}_{episode}.m4a` file naming are unchanged.
+`CACHE_STATUS_VERSION` marker, and `{id}_{episode}.m4a` file naming are unchanged. The
+download task list was always in-memory (Zustand, no persistence), so the store split
+needs no migration.
 
 Player decoupling: `getAudioCacheSize` / `cleanAudioCache` accept `keepKeys` instead of
 reading the player queue. Queue-aware orchestration lives in `features/playback/cache.ts`:
@@ -445,30 +468,26 @@ Deleted:
 storage/cache-status.ts
 utils/migration/cache-status.ts
 utils/file.ts getCacheAudioPath / countSize / cleanAudioCache
+business/download.ts
+business/download.web.ts
+business/__tests__/download.test.ts
+store/download.ts
 ```
 
-Also removed a stale `~/business/mp4` mock from `business/__tests__/download.test.ts`;
-the module was inlined by an earlier commit and the test was already failing before this
-slice (verified against a stashed baseline).
-
-Remaining (Slice C+):
-
-```txt
-store/download.ts            # pickTask scheduling loop + worker registration -> download scheduler module
-business/download.ts         # addDownloadTask / downloadResource / downloadResourceNow -> features/cache
-hooks/useDownloadMenuItem.ts # consume feature surface only
-app/download.tsx, app/(main)/settings.tsx -> consume feature surface
-```
+Also removed a stale `~/business/mp4` mock from the download test; the module was inlined
+by an earlier commit and the test was already failing before this epic (verified against a
+stashed baseline).
 
 Verification (passed):
 
 ```txt
 pnpm -C apps/mobile exec tsc --noEmit   # only pre-existing expo-image errors, identical to baseline
-pnpm -C apps/mobile exec jest business/__tests__/download.test.ts \
+pnpm -C apps/mobile exec jest features/cache/__tests__/download.test.ts \
   features/playback/__tests__/track-operations.test.ts features/playlist/__tests__ --runInBand
   # 5 suites / 21 tests clean
 pnpm -C apps/mobile exec eslint <changed files>
 EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform android --clear
+EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform web --clear
 git diff --check -- apps/mobile
 ```
 
@@ -476,9 +495,19 @@ Coupling reduced:
 
 ```txt
 components/hooks/playback -/-> storage/cache-status direct MMKV access
+components/hooks/routes   -/-> store/download Zustand internals
+components/hooks/routes   -/-> business/download
 features/cache            -/-> @bilisound/player (queue reads parameterized as keepKeys)
 routes (settings/data)    -/-> utils/file cache policy; uses features/playback orchestration
 utils/file                -/-> cache storage and player queue knowledge
+download scheduling       -/-> no longer inside Zustand store actions
+```
+
+Remaining follow-up (not blocking Epic 7):
+
+```txt
+image cache support        # structure ready in features/cache; no image cache yet
+download task persistence  # currently in-memory only; persisting across launches is a later decision
 ```
 
 ### Epic 7: UI Rewrite (after business foundation)

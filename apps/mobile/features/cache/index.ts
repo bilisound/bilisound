@@ -14,5 +14,15 @@ export { getCacheStatusKey, useCacheExists, isCacheExists, setCacheExists, delet
 // 音频缓存文件
 export { getCacheAudioPath, getAudioCacheSize, cleanAudioCache } from "./audio-cache";
 
+// 下载用例与列表订阅
+export {
+  addDownloadTask,
+  downloadResource,
+  downloadResourceNow,
+  pickDownloadTask,
+  useDownloadList,
+  type DownloadItem,
+} from "./download";
+
 // 一次性迁移
 export { migrateCacheStatus } from "./migration";

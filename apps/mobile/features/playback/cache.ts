@@ -3,13 +3,18 @@ import * as Player from "@bilisound/player";
 import { Platform } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
 
-import { cleanAudioCache, deleteCacheStatus, getAudioCacheSize, getCacheStatusKey } from "~/features/cache";
+import {
+  cleanAudioCache,
+  deleteCacheStatus,
+  downloadResourceNow,
+  getAudioCacheSize,
+  getCacheStatusKey,
+} from "~/features/cache";
 import { PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 import { getDownloadPolicy } from "~/features/config";
 import useErrorMessageStore from "~/store/error-message";
 import log from "~/utils/logger";
-import { downloadResourceNow } from "~/business/download";
 
 import { refreshCurrentTrack } from "./track-operations";
 

@@ -1,22 +1,29 @@
-import useDownloadStore from "~/store/download";
-import * as FileSystem from "expo-file-system/legacy";
 import { filesize } from "filesize";
-import { getMediaResource, getVideoUrl } from "~/features/bilibili";
-import log from "~/utils/logger";
-import { USER_AGENT_BILIBILI } from "~/constants/network";
-import { getCacheAudioPath, isCacheExists, setCacheExists } from "~/features/cache";
 import { File } from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { Mp4 } from "mp4.js/dist";
 
-function registerDownloadWorker() {
-  const { downloadWorker, setDownloadWorker } = useDownloadStore.getState();
-  if (downloadWorker !== downloadResource) {
-    setDownloadWorker(downloadResource);
-  }
+import { getMediaResource, getVideoUrl } from "~/features/bilibili";
+import { USER_AGENT_BILIBILI } from "~/constants/network";
+import log from "~/utils/logger";
+
+import { isCacheExists, setCacheExists } from "./cache-status";
+import { getCacheAudioPath } from "./audio-cache";
+import { useDownloadStore, type DownloadItem } from "./download-store";
+import { pickTask, registerDownloadWorker } from "./download-scheduler";
+
+export type { DownloadItem };
+
+/**
+ * 确保调度器已注册下载执行器。
+ * 与原 business/download 模块加载副作用保持一致：仅注册一次。
+ */
+function ensureWorker() {
+  registerDownloadWorker(downloadResource);
 }
 
 export function addDownloadTask(bvid: string, episode: number, title: string) {
-  registerDownloadWorker();
+  ensureWorker();
   const prefix = `[${bvid} / ${episode}] `;
   const { addDownloadItem, downloadList } = useDownloadStore.getState();
 
@@ -64,7 +71,7 @@ export function addDownloadTask(bvid: string, episode: number, title: string) {
 }
 
 export async function downloadResource(bvid: string, episode: number) {
-  registerDownloadWorker();
+  ensureWorker();
   const prefix = `[${bvid} / ${episode}] `;
   const { updateDownloadItemPartial, removeDownloadItem } = useDownloadStore.getState();
 
@@ -178,8 +185,17 @@ export async function downloadResourceNow(bvid: string, episode: number, title: 
 }
 
 export function pickDownloadTask() {
-  registerDownloadWorker();
-  useDownloadStore.getState().pickTask();
+  ensureWorker();
+  pickTask();
 }
 
-registerDownloadWorker();
+/**
+ * 供 UI 订阅下载列表与取消全部操作。
+ */
+export function useDownloadList() {
+  const downloadList = useDownloadStore(state => state.downloadList);
+  const cancelAll = useDownloadStore(state => state.cancelAll);
+  return { downloadList, cancelAll };
+}
+
+ensureWorker();

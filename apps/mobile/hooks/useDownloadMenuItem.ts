@@ -1,10 +1,8 @@
-import useDownloadStore from "~/store/download";
 import type { TrackData } from "@bilisound/player";
 import { Platform } from "react-native";
-import { downloadResourceNow } from "~/business/download";
+import { downloadResourceNow, getCacheAudioPath, useCacheExists, useDownloadList } from "~/features/cache";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import Toast from "react-native-toast-message";
-import { getCacheAudioPath, useCacheExists } from "~/features/cache";
 import { getDownloadUrl } from "~/features/bilibili";
 import { getResourcePolicy } from "~/features/config";
 import { bv2av } from "~/utils/vendors/av-bv";
@@ -17,7 +15,7 @@ export function useDownloadMenuItem(
   currentTrack: TrackData | null | undefined,
   closeCallback: () => void,
 ): ActionMenuItem[] {
-  const { downloadList } = useDownloadStore();
+  const { downloadList } = useDownloadList();
   const id = currentTrack?.extendedData?.id;
   const episode = currentTrack?.extendedData?.episode;
   const currentItemDownload = id && episode != null ? downloadList.get(`${id}_${episode}`) : undefined;

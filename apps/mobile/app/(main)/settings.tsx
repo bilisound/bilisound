@@ -8,13 +8,13 @@ import { useDiagnosticsConfig, useDownloadConfig, useResourceConfig, useSettings
 import { Layout } from "~/components/layout";
 import { useTabSafeAreaInsets } from "~/hooks/useTabSafeAreaInsets";
 import { FEATURE_DOWNLOAD_MANAGER } from "~/constants/feature";
-import useDownloadStore, { DownloadItem } from "~/store/download";
+import { useDownloadList, type DownloadItem } from "~/features/cache";
 import { Text } from "~/components/ui/text";
 import { BRAND } from "~/constants/branding";
 import { SettingSwitch } from "~/components/settings-switch";
 
 function useDownloadDescriptionText() {
-  const { downloadList } = useDownloadStore();
+  const { downloadList } = useDownloadList();
   const builtList: DownloadItem[] = Array.from(downloadList.values()).sort((a, b) => a.startTime - b.startTime);
   const displayList = builtList.filter(e => e.status === 1 || e.status === 0);
 

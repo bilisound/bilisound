@@ -2,14 +2,15 @@ import type { MediaResource } from "~/features/bilibili";
 
 describe("downloadResource cancellation", () => {
   afterEach(() => {
-    jest.dontMock("~/store/download");
+    jest.dontMock("../download-store");
+    jest.dontMock("../cache-status");
+    jest.dontMock("../audio-cache");
+    jest.dontMock("../download-scheduler");
     jest.dontMock("~/features/bilibili");
-    jest.dontMock("~/utils/file");
     jest.dontMock("expo-file-system/legacy");
     jest.dontMock("expo-file-system");
     jest.dontMock("filesize");
     jest.dontMock("~/utils/logger");
-    jest.dontMock("~/features/cache");
     jest.resetModules();
   });
 
@@ -28,21 +29,23 @@ describe("downloadResource cancellation", () => {
     const downloadList = new Map<string, object>([["BV1test_1", {}]]);
     const storeState = {
       downloadList,
-      downloadWorker: undefined as ((id: string, episode: number) => Promise<unknown>) | undefined,
-      setDownloadWorker: jest.fn((worker: (id: string, episode: number) => Promise<unknown>) => {
-        storeState.downloadWorker = worker;
-      }),
       updateDownloadItemPartial: jest.fn(),
-      removeDownloadItem: jest.fn(),
     };
 
-    jest.doMock("~/store/download", () => ({
+    jest.doMock("../download-store", () => ({
       __esModule: true,
-      default: { getState: () => storeState },
+      useDownloadStore: { getState: () => storeState },
     }));
     jest.doMock("~/features/bilibili", () => ({
       getMediaResource,
       getVideoUrl: jest.fn(() => "https://www.bilibili.com/video/BV1test"),
+    }));
+    jest.doMock("../cache-status", () => ({
+      isCacheExists: jest.fn(),
+      setCacheExists: jest.fn(),
+    }));
+    jest.doMock("../audio-cache", () => ({
+      getCacheAudioPath: jest.fn(() => "file:///cache/BV1test_1.m4a"),
     }));
     jest.doMock("expo-file-system/legacy", () => ({ createDownloadResumable }));
     jest.doMock("expo-file-system", () => ({ File: jest.fn() }));
@@ -51,11 +54,7 @@ describe("downloadResource cancellation", () => {
       __esModule: true,
       default: { debug: jest.fn(), error: jest.fn(), info: jest.fn(), warn: jest.fn() },
     }));
-    jest.doMock("~/features/cache", () => ({
-      getCacheAudioPath: jest.fn(() => "file:///cache/BV1test_1.m4a"),
-      isCacheExists: jest.fn(),
-      setCacheExists: jest.fn(),
-    }));
+
     let downloadResource!: (bvid: string, episode: number) => Promise<void>;
     jest.isolateModules(() => {
       ({ downloadResource } = jest.requireActual("../download"));

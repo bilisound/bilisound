@@ -1,6 +1,6 @@
 import { Layout } from "~/components/layout";
 import { Text } from "~/components/ui/text";
-import useDownloadStore, { DownloadItem } from "~/store/download";
+import { useDownloadList, type DownloadItem } from "~/features/cache";
 import { ActivityIndicator, View } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { filesize } from "filesize";
@@ -62,7 +62,7 @@ function DownloadEntry({ item }: DownloadEntryProps) {
 }
 
 export default function Page() {
-  const { downloadList, cancelAll } = useDownloadStore();
+  const { downloadList, cancelAll } = useDownloadList();
   const { colorValue } = useRawThemeValues();
 
   const builtList: DownloadItem[] = Array.from(downloadList.values()).sort((a, b) => a.startTime - b.startTime);
