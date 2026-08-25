@@ -100,22 +100,40 @@ Persisted data stable: `playlist_on_queue` key, `storage-playlist` MMKV id, and
 (`track-operations`, `cache`) still consume `~/storage/playlist` directly as the
 legitimate orchestration boundary.
 
-### 4. UI -> ~/business (4 sites, business/ has only 2 modules left)
+### 4. UI -> ~/business — **closed** (2026-08-25)
+
+`business/format.ts` and `business/check-release.ts` found feature homes; the `business/`
+directory is deleted entirely. Zero `~/business/*` references remain in `app/`,
+`components/`, or `hooks/`.
 
 ```txt
-app/barcode.tsx, app/(main)/index.tsx               resolveVideo, resolveVideoAndJump  (~/business/format)
-app/settings/about.tsx, app/_layout.tsx            checkLatestVersion, downloadApk    (~/business/check-release)
+features/bilibili/url-resolver.ts  # resolveVideo + resolveVideoAndJump + UserListParseResult
+features/bilibili/index.ts          # re-exports the above
+features/config/release.ts         # checkLatestVersion + downloadApk + CheckLatestVersionReturns
+features/config/index.ts           # re-exports the above
 ```
 
-`business/` now contains only `format.ts` (Bilibili URL parse + route jump) and
-`check-release.ts` (version check + APK download). Neither has a feature home. Decide:
-move `format` into `features/bilibili` (URL resolution) or `features/playback` (jump);
-move `check-release` into `features/config` or a dedicated update module.
+Rationale:
+- `format` resolves Bilibili URLs/IDs and jumps to the matching route. URL resolution is
+  the Bilibili data boundary's job; the jump follows the `features/playlist/openAddPlaylistPage`
+  navigation-helper precedent (a feature may own a route jump for results it understands).
+- `check-release` is app-level runtime capability (version check + APK install), placed
+  under `features/config` alongside diagnostics. It still consumes `~/api/release`
+  (server-cf `/internal/app/update`) as its data source; moving that client is out of
+  scope here.
+
+Consumers migrated:
+```txt
+app/barcode.tsx, app/(main)/index.tsx           resolveVideo/resolveVideoAndJump -> ~/features/bilibili
+app/settings/about.tsx, app/_layout.tsx         checkLatestVersion/downloadApk -> ~/features/config
+components/check-update-dialog.tsx              CheckLatestVersionReturns -> ~/features/config
+```
 
 ### No SDK / api leakage
 
-`@bilisound/sdk` and `~/api` have zero hits in `app/`, `components/`, `hooks/`. Epic 3
-holds cleanly.
+`@bilisound/sdk` has zero hits in `app/`, `components/`, `hooks/` (Epic 3 holds).
+`~/api/release` is now consumed only inside `features/config/release.ts` (the application
+update metadata client); it is no longer reached directly from UI layers.
 
 ## Frozen Feature Use-Case API
 
@@ -126,13 +144,17 @@ this point requires updating this file.
 features/bilibili   getDownloadUrl, getFullRemotePlaylist, getMediaResource,
                     getOnlineMediaResourceUrl, getRemotePlaylist, getVideoImageUrl,
                     getVideoMetadata, getVideoUrl, resolveShortUrl
-                    types: MediaResource, RemotePlaylist*, VideoMetadata, VideoEpisode, ...
+                    resolveVideo, resolveVideoAndJump
+                    types: MediaResource, RemotePlaylist*, VideoMetadata, VideoEpisode,
+                           UserListParseResult, ...
 
 features/config     useAppearanceConfig, usePlaylistViewConfig, useDownloadConfig,
                     useResourceConfig, useDiagnosticsConfig, useSettingsActions
                     getDownloadPolicy, getResourcePolicy, getDiagnosticsConfig
+                    checkLatestVersion, downloadApk
                     rehydrateSettings
-                    types: AppearanceConfig, PlaylistViewConfig, DownloadConfig, ...
+                    types: AppearanceConfig, PlaylistViewConfig, DownloadConfig,
+                           CheckLatestVersionReturns, ...
 
 features/cache      getCacheAudioPath, getAudioCacheSize, cleanAudioCache
                     getCacheStatusKey, useCacheExists, isCacheExists, setCacheExists, deleteCacheStatus
@@ -205,9 +227,9 @@ Epic 7 (UI Rewrite) is appropriate to start once:
    wrapper introduced; UI imports from `~/features/player`, no direct `@bilisound/player`
    in `app/`/`components/`/`hooks/`. Epic 7 may later narrow the re-export to a view-model
    API.
-5. Residual #4 (`business/format`, `business/check-release`) has a feature home or is
-   explicitly moved to `shared/`.
+5. ~~Residual #4 (business/format, business/check-release) has a feature home~~ — **closed**;
+   `business/` directory deleted.
 
-Residual #4 can be decided as the first Epic 7 step rather than blocking, as long
-as the decision is recorded here. Residual #2 and #3 are cheap enough to close before
-starting the rewrite so view models do not inherit MMKV/store coupling.
+Only #1 (Epic 6 runtime verification) remains open. All four UI-layer residual couplings
+(#1 player, #2 store, #3 storage/playlist, #4 business) are closed; UI no longer imports
+`@bilisound/player`, `~/store/*` (business-ish), `~/storage/*`, or `~/business/*` directly.

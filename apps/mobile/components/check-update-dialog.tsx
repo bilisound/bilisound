@@ -10,7 +10,7 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Heading } from "~/components/ui/heading";
 import { Text } from "~/components/ui/text";
-import { CheckLatestVersionReturns } from "~/business/check-release";
+import type { CheckLatestVersionReturns } from "~/features/config";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { BRAND } from "~/constants/branding";
 

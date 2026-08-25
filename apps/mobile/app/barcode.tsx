@@ -18,7 +18,7 @@ import { Heading } from "~/components/ui/heading";
 import { Text } from "~/components/ui/text";
 import { useConfirm } from "~/hooks/useConfirm";
 import log from "~/utils/logger";
-import { resolveVideoAndJump } from "~/business/format";
+import { resolveVideoAndJump } from "~/features/bilibili";
 import { Button, ButtonOuter, ButtonText } from "~/components/ui/button";
 import { Icon } from "~/components/icon";
 import { BRAND } from "~/constants/branding";

@@ -15,7 +15,7 @@ import log from "~/utils/logger";
 import AlertCircleIcon from "~/assets/icons/alert-circle.svg";
 import React from "react";
 import { router } from "expo-router";
-import { resolveVideo, resolveVideoAndJump } from "~/business/format";
+import { resolveVideo, resolveVideoAndJump } from "~/features/bilibili";
 import { Icon } from "~/components/icon";
 import { BRAND } from "~/constants/branding";
 

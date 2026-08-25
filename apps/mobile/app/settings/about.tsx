@@ -8,7 +8,7 @@ import { Image } from "expo-image";
 import { SettingMenuItem } from "~/components/setting-menu";
 import Toast from "react-native-toast-message";
 import log from "~/utils/logger";
-import { checkLatestVersion, CheckLatestVersionReturns, downloadApk } from "~/business/check-release";
+import { checkLatestVersion, type CheckLatestVersionReturns, downloadApk } from "~/features/config";
 import CheckUpdateDialog from "~/components/check-update-dialog";
 import { router } from "expo-router";
 import { BRAND } from "~/constants/branding";

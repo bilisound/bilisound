@@ -15,6 +15,8 @@ export {
   getVideoUrl,
   resolveShortUrl,
 } from "./client";
+export { resolveVideo, resolveVideoAndJump } from "./url-resolver";
+export type { UserListParseResult } from "./url-resolver";
 export type {
   MediaResource,
   RemotePlaylistEpisode,

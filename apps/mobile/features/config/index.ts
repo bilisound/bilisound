@@ -14,6 +14,8 @@ export {
   useSettingsActions,
 } from "./selectors";
 export { getDownloadPolicy, getResourcePolicy, getDiagnosticsConfig } from "./policies";
+export { checkLatestVersion, downloadApk } from "./release";
+export type { CheckLatestVersionReturns } from "./release";
 export type {
   AppearanceConfig,
   PlaylistViewConfig,

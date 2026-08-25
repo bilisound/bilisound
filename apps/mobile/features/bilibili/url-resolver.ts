@@ -1,7 +1,17 @@
 import { router } from "expo-router";
 
-import { resolveShortUrl, type RemotePlaylistMode } from "~/features/bilibili";
 import log from "~/utils/logger";
+
+import { resolveShortUrl } from "./client";
+import type { RemotePlaylistMode } from "./models";
+
+/**
+ * features/bilibili/url-resolver — Bilibili 输入解析与跳转。
+ *
+ * 将用户输入（av/BV 号、b23 短链、space 列表/收藏夹链接）解析为可定位
+ * 资源的标识，并跳转到对应路由。解析逻辑属于 Bilibili 数据边界；
+ * 跳转沿用 features/playlist 的 openAddPlaylistPage 导航 helper 先例。
+ */
 
 export const B23_REGEX = /https?:\/\/b23\.tv\/([a-zA-Z0-9]+)/;
 export const USER_LIST_URL_REGEX = /^\/(\d+)\/channel\/(seriesdetail|collectiondetail)$/;

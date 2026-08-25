@@ -1,7 +1,15 @@
-import { RELEASE_CHANNEL } from "~/constants/releasing";
 import ReactNativeBlobUtil from "react-native-blob-util";
+
 import { BRAND } from "~/constants/branding";
+import { RELEASE_CHANNEL } from "~/constants/releasing";
 import { getUpdate } from "~/api/release";
+
+/**
+ * features/config/release — 应用版本更新检查与 APK 安装。
+ *
+ * 属于 config 的应用级运行时能力（与 diagnostics 同层）。通过
+ * ~/api/release 获取应用更新元数据（server-cf /internal/app/update）。
+ */
 
 export interface CheckLatestVersionReturns {
   isLatest: boolean;

@@ -24,7 +24,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ErrorToastHost } from "~/components/error-toast-host";
 import { EDITOR_MASCOT_PORTAL_HOST } from "~/features/theme/components/editor-mascot-background";
 import CheckUpdateDialog from "~/components/check-update-dialog";
-import { checkLatestVersion, downloadApk } from "~/business/check-release";
+import { checkLatestVersion, downloadApk } from "~/features/config";
 import { VERSION } from "~/constants/releasing";
 import { MainBottomSheet } from "~/components/main-bottom-sheet";
 
