@@ -1,4 +1,4 @@
-import { useCurrentTrack } from "@bilisound/player";
+import { useCurrentTrack } from "~/features/player";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { shadow } from "~/constants/styles";

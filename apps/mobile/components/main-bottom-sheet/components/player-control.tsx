@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { InsidePageContext } from "~/components/main-bottom-sheet/utils";
-import { useCurrentTrack } from "@bilisound/player";
+import { useCurrentTrack } from "~/features/player";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import { useBottomSheetStore } from "~/store/bottom-sheet";
 import { router } from "expo-router";

@@ -10,7 +10,7 @@ import {
   useIsPlaying,
   useRepeatMode,
   useShuffleMode,
-} from "@bilisound/player";
+} from "~/features/player";
 import { usePlaylistRestoreLoopOnceFlag } from "~/storage/playlist";
 import React, { useState } from "react";
 import { isLoading } from "~/components/main-bottom-sheet/utils";

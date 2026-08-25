@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { getProgress, PlaybackProgress } from "@bilisound/player";
+import { getProgress, PlaybackProgress } from "~/features/player";
 
 const progressListeners: Set<() => void> = new Set();
 let previousProgress: PlaybackProgress = {

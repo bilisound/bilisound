@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useShallow } from "zustand/shallow";
 import { InsidePageContext } from "~/components/main-bottom-sheet/utils";
-import { useCurrentTrack } from "@bilisound/player";
+import { useCurrentTrack } from "~/features/player";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";
 import { usePlaybackSpeedStore } from "~/store/playback-speed";
 import { useBottomSheetStore } from "~/store/bottom-sheet";

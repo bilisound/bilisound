@@ -1,4 +1,4 @@
-import type { TrackData } from "@bilisound/player";
+import type { TrackData } from "~/features/player";
 import { Platform } from "react-native";
 import { downloadResourceNow, getCacheAudioPath, useCacheExists, useDownloadList } from "~/features/cache";
 import { useActionSheetStore } from "~/components/main-bottom-sheet/stores";

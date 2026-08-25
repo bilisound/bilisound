@@ -3,7 +3,7 @@ import { Linking, Platform } from "react-native";
 import { router } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import Toast from "react-native-toast-message";
-import { pause } from "@bilisound/player";
+import { pause } from "~/features/player";
 import type { VideoMetadata } from "~/features/bilibili";
 
 import { LayoutButton } from "~/components/layout";

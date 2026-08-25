@@ -7,7 +7,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import { seek, useCurrentTrack } from "@bilisound/player";
+import { seek, useCurrentTrack } from "~/features/player";
 import { useProgressSecond } from "~/hooks/useProgressSecond";
 import { isLoading } from "~/components/main-bottom-sheet/utils";
 import { View } from "react-native";

@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from "react";
 import { InsidePageContext } from "~/components/main-bottom-sheet/utils";
-import { jump, toggle, usePlaybackOrder, useQueue } from "@bilisound/player";
+import { jump, toggle, usePlaybackOrder, useQueue } from "~/features/player";
 import { FlashList } from "@shopify/flash-list";
 import { useBottomSheetScrollableCreator } from "@gorhom/bottom-sheet";
 import { View } from "react-native";

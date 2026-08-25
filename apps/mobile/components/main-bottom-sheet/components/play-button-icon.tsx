@@ -1,4 +1,4 @@
-import { useCurrentTrack, useIsPlaying } from "@bilisound/player";
+import { useCurrentTrack, useIsPlaying } from "~/features/player";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import React, { useEffect } from "react";

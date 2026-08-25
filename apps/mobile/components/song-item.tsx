@@ -7,11 +7,11 @@ import { useCacheExists } from "~/features/cache";
 import type { SongListItem } from "~/features/playlist";
 import { formatSecond } from "~/utils/datetime";
 
-import * as Player from "@bilisound/player";
+import * as Player from "~/features/player";
 
 import React from "react";
 import { Pressable } from "~/components/ui/pressable";
-import { useCurrentTrack, useIsPlaying, usePlaybackState } from "@bilisound/player";
+import { useCurrentTrack, useIsPlaying, usePlaybackState } from "~/features/player";
 import { shadow } from "~/constants/styles";
 import { Icon } from "~/components/icon";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";

@@ -1,4 +1,4 @@
-import { useCurrentTrack } from "@bilisound/player";
+import { useCurrentTrack } from "~/features/player";
 import { useProgressSecond } from "~/hooks/useProgressSecond";
 import { formatSecond } from "~/utils/datetime";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";

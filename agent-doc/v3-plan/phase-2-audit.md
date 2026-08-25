@@ -28,33 +28,27 @@ features/playlist  -/-> features/playback, features/player                     O
 Audit scope: `app/`, `components/`, `hooks/`. Patterns matched against the forbidden
 direction in [target-architecture.md](./target-architecture.md).
 
-### 1. UI -> @bilisound/player (largest residual, ~13 sites)
+### 1. UI -> @bilisound/player — **closed** (2026-08-25)
 
-Player hooks and controls are consumed directly across the player UI surface. There is
-no `features/player` app-side wrapper yet (target architecture proposes one).
+Resolved by introducing `apps/mobile/features/player/index.ts` as the app-side wrapper.
+All 15 UI-layer import sites (routes, components, hooks) now import from
+`~/features/player`; zero `@bilisound/player` references remain in `app/`,
+`components/`, or `hooks/`.
 
 ```txt
-app/(main)/_layout.tsx                              toggle, useCurrentTrack, useIsPlaying, usePlaybackState
-app/(main)/(playlist)/meta/[id].tsx                 import * as Player
-components/song-item.tsx                             * as Player; useCurrentTrack, useIsPlaying, usePlaybackState
-components/video-detail/PageMenu.tsx                pause
-components/main-bottom-sheet/utils.tsx              type TrackData
-components/main-bottom-sheet/components/player-control.tsx        useCurrentTrack
-components/main-bottom-sheet/components/player-queue-list.tsx     jump, toggle, usePlaybackOrder, useQueue
-components/main-bottom-sheet/components/player-control-menu.tsx   useCurrentTrack
-components/main-bottom-sheet/components/player-progress-timer.tsx useCurrentTrack
-components/main-bottom-sheet/components/player-control-buttons.tsx (multiple)
-components/main-bottom-sheet/components/player-picture.tsx         useCurrentTrack
-components/main-bottom-sheet/components/player-progress-bar.tsx    seek, useCurrentTrack
-components/main-bottom-sheet/components/play-button-icon.tsx       useCurrentTrack, useIsPlaying
-hooks/useProgressSecond.ts                           getProgress, PlaybackProgress
-hooks/useDownloadMenuItem.ts                          type TrackData
+features/player/index.ts   # curated re-export of @bilisound/player public API
+                           # future app-side semantics (telemetry, error boundary,
+                           # view model mapping) live here, not in the player package
 ```
 
-Epic 1 made these player hooks stable and cross-platform. Whether a `features/player`
-wrapper is introduced before Epic 7, or the stable hooks are accepted as the public
-player surface during the UI rewrite, is an open decision. Either way, the UI rewrite
-should not carry `import * as Player` or direct engine mechanics.
+The wrapper is currently a curated `export *` re-export. This deliberately keeps a single
+app-side import seam so future player API changes or app-side instrumentation touch one
+module. `features/playback` continues to import `@bilisound/player` directly because it is
+the legitimate player orchestration boundary (target architecture allows
+`playback -> player`).
+
+Epic 7 may later narrow this surface to a handpicked view-model API instead of a full
+re-export; the import seam is now stable enough to do that without a broad refactor.
 
 ### 2. UI -> ~/store (Zustand, ~10 sites)
 
@@ -132,6 +126,13 @@ features/playback   playEpisode, playPlaylist, playNextTrack, appendPlaylistToCu
                     registerPlaybackBackgroundEvents
                     usePlaylistPlayer
 
+features/player     app-side wrapper re-exporting @bilisound/player public API
+                    (useCurrentTrack, useIsPlaying, usePlaybackState, usePlaybackOrder,
+                    useQueue, useRepeatMode, useShuffleMode, seek, jump, toggle, prev,
+                    next, pause, getProgress, getRepeatMode, setRepeatMode,
+                    RepeatMode, ShuffleMode, TrackData, PlaybackProgress, ...)
+                    UI imports from here, not from @bilisound/player.
+
 features/playlist   getPlaylistMetas, getPlaylistMeta, deletePlaylistMeta, setPlaylistMeta,
                     insertPlaylistMeta, getPlaylistDetail, deletePlaylistDetail, addToPlaylist,
                     syncPlaylistAmount, replacePlaylistDetail, quickCreatePlaylist,
@@ -143,11 +144,9 @@ features/playlist   getPlaylistMetas, getPlaylistMeta, deletePlaylistMeta, setPl
                            PlaylistCreateInput, PlaylistUpdate, PlaylistExport, PlaylistImportPlan, ...
 ```
 
-The player public hooks (`useCurrentTrack`, `useIsPlaying`, `usePlaybackState`,
-`usePlaybackOrder`, `useQueue`, `seek`, `jump`, `toggle`, `pause`, `getProgress`,
-`RepeatMode`, `ShuffleMode`, `setQueueWithOptions`, ...) are stable from Epic 1 but are
-currently imported directly from `@bilisound/player`. A `features/player` wrapper decision
-is open (see residual #1).
+The player public surface is stable from Epic 1 and now reached via `features/player`.
+Epic 7 may narrow this re-export to a handpicked view-model API. `features/playback`
+still imports `@bilisound/player` directly as the legitimate orchestration boundary.
 
 ## Epic 6 Runtime Verification Todo
 
@@ -173,11 +172,13 @@ Epic 7 (UI Rewrite) is appropriate to start once:
 2. Residual #3 (UI -> ~/storage/playlist) is closed — small, well-scoped.
 3. Residual #2 business-ish stores (history, playback-speed) have a feature home, or are
    explicitly deferred with a documented reason.
-4. Residual #1 (player direct imports) has a decision: introduce `features/player`
-   wrapper, or accept stable player hooks as the public surface for the UI rewrite.
+4. ~~Residual #1 (player direct imports) has a decision~~ — **closed**: `features/player`
+   wrapper introduced; UI imports from `~/features/player`, no direct `@bilisound/player`
+   in `app/`/`components/`/`hooks/`. Epic 7 may later narrow the re-export to a view-model
+   API.
 5. Residual #4 (`business/format`, `business/check-release`) has a feature home or is
    explicitly moved to `shared/`.
 
-Residual #1 and #4 can be decided as the first Epic 7 step rather than blocking, as long
+Residual #4 can be decided as the first Epic 7 step rather than blocking, as long
 as the decision is recorded here. Residual #2 and #3 are cheap enough to close before
 starting the rewrite so view models do not inherit MMKV/store coupling.

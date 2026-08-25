@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Toast from "react-native-toast-message";
-import * as Player from "@bilisound/player";
+import * as Player from "~/features/player";
 
 import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "~/components/ui/checkbox";
 import {
