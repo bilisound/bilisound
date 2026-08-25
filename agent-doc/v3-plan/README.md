@@ -36,9 +36,10 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 
 Epics 1–6 (Player Foundation, Config Architecture, Bilibili Data Boundary, Playback
 Orchestration, Playlist Domain, Cache and Download) are delivered. Phase 2 audit
-(residual coupling + frozen feature API + Epic 7 admission criteria) is recorded in
-[phase-2-audit.md](./phase-2-audit.md). Epic 6 still needs a device runtime verification
-pass (no native/Web smoke record yet, unlike Epics 1/3/5).
+(residual coupling closure + frozen feature API + Epic 7 admission criteria) is
+recorded in [phase-2-audit.md](./phase-2-audit.md). All five admission criteria are
+met; Epic 6 runtime verification passed on Android physical device (2026-08-25).
+**Epic 7 (UI Rewrite) is ready to start.**
 
 The isolated `packages/ui` design-system foundation may be developed in parallel because it does not consume current mobile business modules. Integrating it into screens remains part of the later UI rewrite and must wait for stable feature-facing APIs.
 

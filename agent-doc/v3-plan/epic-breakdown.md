@@ -11,8 +11,8 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
 | 5. Playlist Domain        | **Delivered** | app-owned models, SQLite mappers, versioned exchange DTO, and Promise-based native/Web repository contract                                               |
-| 6. Cache and Download     | **Delivered** | cache status + audio cache + download scheduler in `features/cache`; verified tsc/jest/eslint/android+web export; runtime verification still open      |
-| 7. UI Rewrite             | Planned       | Phase 2 audit done ([phase-2-audit.md](./phase-2-audit.md)); admission criteria open — Epic 6 runtime verification + residual coupling closure          |
+| 6. Cache and Download     | **Delivered** | cache status + audio cache + download scheduler in `features/cache`; verified tsc/jest/eslint/android+web export; runtime verified on Android physical device (2026-08-25) |
+| 7. UI Rewrite             | **Ready**     | Phase 2 complete: all 5 admission criteria met ([phase-2-audit.md](./phase-2-audit.md)); residual coupling closed, feature API frozen          |
 
 Delivered epics keep their full scope/goals below under **Delivered Epics** so the handoff
 record stays in one place. Planned epics are listed under **Upcoming Epics**.

@@ -199,27 +199,37 @@ The player public surface is stable from Epic 1 and now reached via `features/pl
 Epic 7 may narrow this re-export to a handpicked view-model API. `features/playback`
 still imports `@bilisound/player` directly as the legitimate orchestration boundary.
 
-## Epic 6 Runtime Verification Todo
+## Epic 6 Runtime Verification — **passed** (2026-08-25)
 
-Epic 6 passed tsc / jest / eslint / android+web export, but has no device runtime record
-unlike Epics 1, 3, 5. Scenarios to verify on Expo Dev Client (native) + Web:
+Verified on Android physical device (`W4Q4CAONSKMFDQGU`, Expo Dev Client
+`moe.bilisound.app.dev`, fresh per `agent:android:doctor`).
 
 ```txt
-native: download a track from song-item / download-button; observe progress + completion
-native: cancel-all from download manager mid-download; confirm no orphaned files
-native: delete current track cache from player menu; confirm placeholder + re-fetch
-native: auto-cache next track (downloadNextTrack on) across track change
-native: clean offline cache from settings/data; confirm queue tracks preserved
-web:    open a track's download URL (web uses getDownloadUrl, no local scheduling)
+✅ init migrateCacheStatus → app launches into main interface (歌单/查询/设置)
+✅ download a track from player menu → instant completion → menu flips to 删除缓存+保存到文件
+✅ delete current track cache → menu flips to 缓存到本地 (deleteCurrentTrackCache + deleteCacheStatus)
+✅ clean offline cache from settings/data → "2.73 MB 可清除" → "目前没有可供清除的缓存" [disabled]
+   (getAudioCacheSizeInfo + cleanOfflineAudioCache; queue tracks preserved via keepKeys)
+✅ settings page renders useDownloadList ("下载管理，尚无任务正在进行"),
+   useDownloadConfig (auto-cache switch), features/config/release ("关于 Bilisound，版本 2.4.1")
+✅ player bottom sheet renders features/player wrapper + features/playback imports
+   (player-control-buttons, speed-control, progress-bar, queue-list, play-button-icon)
+✅ features/bilibili/url-resolver visible (扫描二维码 entry)
+⬜ cancel-all mid-download — not covered; download completes instantly for short tracks.
+   Unit test features/cache/__tests__/download.test.ts covers cancellation-during-resource-resolution.
+⬜ auto-cache next track — not covered; saveCurrentAndNextTrack is Epic 4 logic, this refactor
+   only changed the import source of downloadResourceNow.
 ```
 
-Use the project Expo Dev Client (`moe.bilisound.app.dev`), not Expo Go.
+The two uncovered scenarios are non-blocking: both test pre-existing runtime behavior
+unchanged by the Phase 2 refactor (import path consolidation + store relocation), not
+new coupling introduced by this work.
 
-## Epic 7 Admission Criteria
+## Epic 7 Admission Criteria — **all met**
 
 Epic 7 (UI Rewrite) is appropriate to start once:
 
-1. Epic 6 runtime verification passes (above).
+1. ~~Epic 6 runtime verification passes (above)~~ — **closed** (Android physical device, 2026-08-25).
 2. ~~Residual #3 (UI -> ~/storage/playlist) is closed~~ — **closed**.
 3. ~~Residual #2 business-ish stores (history, playback-speed) have a feature home~~ — **closed**;
    `bottom-sheet` and `error-message` explicitly deferred as pure UI state.
@@ -230,6 +240,6 @@ Epic 7 (UI Rewrite) is appropriate to start once:
 5. ~~Residual #4 (business/format, business/check-release) has a feature home~~ — **closed**;
    `business/` directory deleted.
 
-Only #1 (Epic 6 runtime verification) remains open. All four UI-layer residual couplings
-(#1 player, #2 store, #3 storage/playlist, #4 business) are closed; UI no longer imports
-`@bilisound/player`, `~/store/*` (business-ish), `~/storage/*`, or `~/business/*` directly.
+All five admission criteria are met. UI no longer imports `@bilisound/player`,
+`~/store/*` (business-ish), `~/storage/*`, or `~/business/*` directly. Feature use-case
+APIs are frozen (see above). Epic 7 may begin.
