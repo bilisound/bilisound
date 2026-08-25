@@ -9,8 +9,7 @@ describe("downloadResource cancellation", () => {
     jest.dontMock("expo-file-system");
     jest.dontMock("filesize");
     jest.dontMock("~/utils/logger");
-    jest.dontMock("~/storage/cache-status");
-    jest.dontMock("~/business/mp4");
+    jest.dontMock("~/features/cache");
     jest.resetModules();
   });
 
@@ -45,9 +44,6 @@ describe("downloadResource cancellation", () => {
       getMediaResource,
       getVideoUrl: jest.fn(() => "https://www.bilibili.com/video/BV1test"),
     }));
-    jest.doMock("~/utils/file", () => ({
-      getCacheAudioPath: jest.fn(() => "file:///cache/BV1test_1.m4a"),
-    }));
     jest.doMock("expo-file-system/legacy", () => ({ createDownloadResumable }));
     jest.doMock("expo-file-system", () => ({ File: jest.fn() }));
     jest.doMock("filesize", () => ({ filesize: jest.fn(() => "0 B") }));
@@ -55,12 +51,11 @@ describe("downloadResource cancellation", () => {
       __esModule: true,
       default: { debug: jest.fn(), error: jest.fn(), info: jest.fn(), warn: jest.fn() },
     }));
-    jest.doMock("~/storage/cache-status", () => ({
+    jest.doMock("~/features/cache", () => ({
+      getCacheAudioPath: jest.fn(() => "file:///cache/BV1test_1.m4a"),
       isCacheExists: jest.fn(),
       setCacheExists: jest.fn(),
     }));
-    jest.doMock("~/business/mp4", () => ({ extractAudioFile: jest.fn() }));
-
     let downloadResource!: (bvid: string, episode: number) => Promise<void>;
     jest.isolateModules(() => {
       ({ downloadResource } = jest.requireActual("../download"));

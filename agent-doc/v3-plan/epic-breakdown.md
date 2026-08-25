@@ -11,7 +11,7 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 | 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
 | 5. Playlist Domain        | **Delivered** | app-owned models, SQLite mappers, versioned exchange DTO, and Promise-based native/Web repository contract                                               |
-| 6. Cache and Download     | Planned       |                                                                                                                                                          |
+| 6. Cache and Download     | In progress   | Slices A+B delivered (cache status repository, audio cache file management); download scheduler migration still open                                      |
 | 7. UI Rewrite             | Planned       | requires Epics 1–6 boundaries to be stable                                                                                                               |
 
 Delivered epics keep their full scope/goals below under **Delivered Epics** so the handoff
@@ -398,24 +398,88 @@ utils/migration/playlist.ts            — legacy one-time DB migration
 
 ### Epic 6: Cache and Download
 
-> Status: planned.
+> Status: **in progress** — Slices A+B delivered (cache status repository and audio cache
+> file management). Download scheduler migration (Slice C) and consumer cleanup
+> (Slice D/E) remain open.
 
 Scope:
 
 ```txt
 business/download.ts
 store/download.ts
-storage/cache-status.ts
+storage/cache-status.ts                  # done — moved into features/cache
 hooks/useDownloadMenuItem.ts
-business/playlist/handler/cache.ts
+business/playlist/handler/cache.ts       # superseded by features/playback/cache.ts (Epic 4)
 ```
 
 Goals:
 
 1. Move download scheduling out of Zustand store actions.
 2. Separate audio cache from future image cache concerns.
-3. Provide cache status repositories and hooks.
-4. Keep cache independent from player.
+3. Provide cache status repositories and hooks. — **done** (Slice A)
+4. Keep cache independent from player. — **done for file management** (Slice B)
+
+Implementation record (Slices A+B, 2026-08-25):
+
+```txt
+features/cache/index.ts        # public feature surface
+features/cache/cache-status.ts # MMKV cache status + useCacheExists hook (was storage/cache-status.ts)
+features/cache/audio-cache.ts  # getCacheAudioPath / getAudioCacheSize / cleanAudioCache (was utils/file.ts)
+features/cache/migration.ts    # migrateCacheStatus one-time migration (was utils/migration/cache-status.ts)
+```
+
+Persisted data kept stable: MMKV `cache-status` store id, `${bvid}_${episode}` key format,
+`CACHE_STATUS_VERSION` marker, and `{id}_{episode}.m4a` file naming are unchanged.
+
+Player decoupling: `getAudioCacheSize` / `cleanAudioCache` accept `keepKeys` instead of
+reading the player queue. Queue-aware orchestration lives in `features/playback/cache.ts`:
+
+```txt
+getAudioCacheSizeInfo()   # getTracks -> keepKeys -> features/cache
+cleanOfflineAudioCache()  # getTracks -> keepKeys -> features/cache
+```
+
+Deleted:
+
+```txt
+storage/cache-status.ts
+utils/migration/cache-status.ts
+utils/file.ts getCacheAudioPath / countSize / cleanAudioCache
+```
+
+Also removed a stale `~/business/mp4` mock from `business/__tests__/download.test.ts`;
+the module was inlined by an earlier commit and the test was already failing before this
+slice (verified against a stashed baseline).
+
+Remaining (Slice C+):
+
+```txt
+store/download.ts            # pickTask scheduling loop + worker registration -> download scheduler module
+business/download.ts         # addDownloadTask / downloadResource / downloadResourceNow -> features/cache
+hooks/useDownloadMenuItem.ts # consume feature surface only
+app/download.tsx, app/(main)/settings.tsx -> consume feature surface
+```
+
+Verification (passed):
+
+```txt
+pnpm -C apps/mobile exec tsc --noEmit   # only pre-existing expo-image errors, identical to baseline
+pnpm -C apps/mobile exec jest business/__tests__/download.test.ts \
+  features/playback/__tests__/track-operations.test.ts features/playlist/__tests__ --runInBand
+  # 5 suites / 21 tests clean
+pnpm -C apps/mobile exec eslint <changed files>
+EXPO_PUBLIC_ENV=development pnpm -C apps/mobile exec expo export --platform android --clear
+git diff --check -- apps/mobile
+```
+
+Coupling reduced:
+
+```txt
+components/hooks/playback -/-> storage/cache-status direct MMKV access
+features/cache            -/-> @bilisound/player (queue reads parameterized as keepKeys)
+routes (settings/data)    -/-> utils/file cache policy; uses features/playback orchestration
+utils/file                -/-> cache storage and player queue knowledge
+```
 
 ### Epic 7: UI Rewrite (after business foundation)
 

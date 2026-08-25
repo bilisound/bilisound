@@ -7,9 +7,8 @@ import type { TrackData } from "@bilisound/player";
 import { clearQueuePlaybackOrder, setQueuePlayingMode } from "~/storage/queue";
 import { getMediaResource, getVideoImageUrl, getVideoMetadata, getVideoUrl } from "~/features/bilibili";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
-import { getCacheAudioPath } from "~/utils/file";
+import { getCacheAudioPath, isCacheExists, getCacheStatusKey } from "~/features/cache";
 import log from "~/utils/logger";
-import { isCacheExists, getCacheStatusKey } from "~/storage/cache-status";
 import { URI_EXPIRE_DURATION } from "~/constants/playback";
 import { getPlaylistDetail, type PlayableItem } from "~/features/playlist";
 import {

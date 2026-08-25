@@ -6,7 +6,7 @@ import log, { deleteOldLogContent } from "./logger";
 import { getDiagnosticsConfig, rehydrateSettings } from "~/features/config";
 
 import { BILISOUND_LOG_URI, BILISOUND_OFFLINE_URI, BILISOUND_PROCESS_URI } from "~/constants/file";
-import { handleCacheStatus } from "~/utils/migration/cache-status";
+import { migrateCacheStatus } from "~/features/cache";
 import { handlePlaylist } from "~/utils/migration/playlist";
 import { loadTrackData } from "~/features/playback";
 import { loadPlaceholderAudio } from "~/constants/playback";
@@ -51,7 +51,7 @@ export default async function init() {
 
   // 缓存初始化
   try {
-    await handleCacheStatus();
+    await migrateCacheStatus();
     log.debug("缓存初始化成功");
   } catch (e) {
     log.error(`缓存初始化失败。原因：${e}`);

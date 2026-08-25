@@ -3,7 +3,7 @@ import * as Player from "@bilisound/player";
 import { Platform } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
 
-import { deleteCacheStatus } from "~/storage/cache-status";
+import { cleanAudioCache, deleteCacheStatus, getAudioCacheSize, getCacheStatusKey } from "~/features/cache";
 import { PLAYLIST_RESTORE_LOOP_ONCE, playlistStorage } from "~/storage/playlist";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 import { getDownloadPolicy } from "~/features/config";
@@ -45,6 +45,28 @@ export async function saveCurrentAndNextTrack() {
     tasks.push(downloadResourceNow(nextId, nextEpisode, nextTitle ?? "未知曲目"));
   }
   await Promise.all(tasks);
+}
+
+/**
+ * 当前播放队列引用的缓存 key 列表，用于缓存清理时排除队列曲目
+ */
+async function getQueueCacheKeys(): Promise<string[]> {
+  const tracks = await getTracks();
+  return tracks.map(track => getCacheStatusKey(track.extendedData!.id, track.extendedData!.episode));
+}
+
+/**
+ * 统计离线缓存占用空间（排除当前播放队列后可清除的部分）
+ */
+export async function getAudioCacheSizeInfo() {
+  return getAudioCacheSize(await getQueueCacheKeys());
+}
+
+/**
+ * 清除未被当前播放队列引用的离线音频缓存
+ */
+export async function cleanOfflineAudioCache() {
+  await cleanAudioCache(await getQueueCacheKeys());
 }
 
 /**

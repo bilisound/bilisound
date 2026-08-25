@@ -1,13 +1,8 @@
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import * as Player from "@bilisound/player";
-import path from "path-browserify";
 
-import { BILISOUND_OFFLINE_URI, BILISOUND_PROCESS_URI } from "~/constants/file";
-import { cacheStatusStorage } from "~/storage/cache-status";
-// 注意：cleanAudioCache 中直接使用 cacheStatusStorage.remove()，因为 key 是从文件名解析的
 import log from "~/utils/logger";
-import { getTracks } from "@bilisound/player";
 import { Platform } from "react-native";
 
 export async function saveTextFile(name: string, content: string, mimeType = "text/plain") {
@@ -69,67 +64,6 @@ export async function saveAudioFile(location: string, replaceFileName: string) {
     await FileSystem.deleteAsync(targetLocation);
   }
   return true;
-}
-
-interface CheckDirectorySizeOptions {
-  fileFilter?: (fileName: string, index: number, fileList: string[]) => boolean;
-}
-
-async function checkDirectorySizeByUri(uri: string, options: CheckDirectorySizeOptions = {}) {
-  let items = (await FileSystem.readDirectoryAsync(uri)).map(e => {
-    return uri + "/" + encodeURI(e);
-  });
-  if (options.fileFilter) {
-    items = items.filter(options.fileFilter);
-  }
-  let totalSize = 0;
-  for (let i = 0; i < items.length; i++) {
-    const meta = await FileSystem.getInfoAsync(items[i]);
-    if (meta.exists) {
-      totalSize += meta.size;
-    }
-  }
-  return totalSize;
-}
-
-export async function countSize() {
-  if (Platform.OS === "web") {
-    return { cacheSize: 0, cacheFreeSize: 0 };
-  }
-
-  const tracks = await getTracks();
-  const cacheSize = await checkDirectorySizeByUri(BILISOUND_OFFLINE_URI);
-  const cacheFreeSize = await checkDirectorySizeByUri(BILISOUND_OFFLINE_URI, {
-    fileFilter(fileName) {
-      const name = path.parse(uriToPath(fileName)).name;
-      return !tracks.find(e => `${e.extendedData!.id}_${e.extendedData!.episode}` === name);
-    },
-  });
-  return { cacheSize, cacheFreeSize };
-}
-
-export async function cleanAudioCache() {
-  const tracks = await getTracks();
-  const items = (await FileSystem.readDirectoryAsync(BILISOUND_OFFLINE_URI))
-    .map(e => {
-      return BILISOUND_OFFLINE_URI + "/" + encodeURI(e);
-    })
-    .filter(fileName => {
-      const name = path.parse(uriToPath(fileName)).name;
-      return !tracks.find(e => `${e.extendedData!.id}_${e.extendedData!.episode}` === name);
-    });
-  for (let i = 0; i < items.length; i++) {
-    const name = path.parse(uriToPath(items[i])).name;
-    await FileSystem.deleteAsync(items[i]);
-    cacheStatusStorage.remove(name);
-  }
-}
-
-export function getCacheAudioPath(id: string, episode: number, isTemp = false) {
-  if (isTemp) {
-    return `${BILISOUND_PROCESS_URI}/${id}_${episode}.tmp`;
-  }
-  return `${BILISOUND_OFFLINE_URI}/${id}_${episode}.m4a`;
 }
 
 export function uriToPath(uri: string) {

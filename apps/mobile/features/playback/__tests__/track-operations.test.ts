@@ -7,9 +7,8 @@ describe("appendPlaylistToCurrentQueue", () => {
     jest.dontMock("~/storage/queue");
     jest.dontMock("~/features/bilibili");
     jest.dontMock("~/constants/network");
-    jest.dontMock("~/utils/file");
     jest.dontMock("~/utils/logger");
-    jest.dontMock("~/storage/cache-status");
+    jest.dontMock("~/features/cache");
     jest.dontMock("~/constants/playback");
     jest.dontMock("~/features/playlist");
     jest.dontMock("~/storage/playlist");
@@ -40,12 +39,12 @@ describe("appendPlaylistToCurrentQueue", () => {
       getVideoUrl: jest.fn(),
     }));
     jest.doMock("~/constants/network", () => ({ USER_AGENT_BILIBILI: "test-agent" }));
-    jest.doMock("~/utils/file", () => ({ getCacheAudioPath: jest.fn() }));
     jest.doMock("~/utils/logger", () => ({
       __esModule: true,
       default: { debug: jest.fn(), error: jest.fn(), info: jest.fn(), warn: jest.fn() },
     }));
-    jest.doMock("~/storage/cache-status", () => ({
+    jest.doMock("~/features/cache", () => ({
+      getCacheAudioPath: jest.fn(),
       getCacheStatusKey: jest.fn(),
       isCacheExists: jest.fn(() => false),
     }));

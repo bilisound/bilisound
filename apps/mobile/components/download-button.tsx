@@ -1,5 +1,5 @@
 import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/button";
-import { isCacheExists } from "~/storage/cache-status";
+import { isCacheExists } from "~/features/cache";
 import { addDownloadTask, pickDownloadTask } from "~/business/download";
 import Toast from "react-native-toast-message";
 import React, { memo } from "react";

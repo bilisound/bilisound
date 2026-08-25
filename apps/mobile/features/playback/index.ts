@@ -22,7 +22,12 @@ export {
 export { saveTrackData, loadTrackData } from "./queue-persistence";
 
 // 缓存协调
-export { saveCurrentAndNextTrack, deleteCurrentTrackCache } from "./cache";
+export {
+  saveCurrentAndNextTrack,
+  deleteCurrentTrackCache,
+  getAudioCacheSizeInfo,
+  cleanOfflineAudioCache,
+} from "./cache";
 
 // 随机播放模式切换（持久化用户偏好）
 export { toggleShuffleMode } from "./shuffle";

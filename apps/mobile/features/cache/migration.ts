@@ -1,10 +1,15 @@
 import * as FileSystem from "expo-file-system/legacy";
 
 import { BILISOUND_OFFLINE_URI } from "~/constants/file";
-import { CACHE_STATUS_VERSION, cacheStatusStorage } from "~/storage/cache-status";
 import log from "~/utils/logger";
 
-export async function handleCacheStatus() {
+import { CACHE_STATUS_VERSION, cacheStatusStorage } from "./cache-status";
+
+/**
+ * 一次性迁移：将存量离线音频文件录入缓存状态存储。
+ * 保留 CACHE_STATUS_VERSION 标记与既有 key 格式，不得破坏已缓存用户的记录。
+ */
+export async function migrateCacheStatus() {
   if ((cacheStatusStorage.getNumber(CACHE_STATUS_VERSION) || 0) >= 1) {
     return;
   }

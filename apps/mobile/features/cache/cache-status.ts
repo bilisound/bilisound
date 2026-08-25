@@ -8,6 +8,7 @@ export interface CacheMetadata {
 export const CACHE_STATUS_VERSION = "cache_status_version";
 
 // 键格式：[BV 号]_[分 P 编号]
+// MMKV 实例为 feature 内部实现细节，外部请使用下方导出的访问函数
 export const cacheStatusStorage = createMMKV({ id: "cache-status" });
 
 /**

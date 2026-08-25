@@ -3,7 +3,7 @@ import { ActivityIndicator, View } from "react-native";
 
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { Text } from "~/components/ui/text";
-import { useCacheExists } from "~/storage/cache-status";
+import { useCacheExists } from "~/features/cache";
 import type { SongListItem } from "~/features/playlist";
 import { formatSecond } from "~/utils/datetime";
 

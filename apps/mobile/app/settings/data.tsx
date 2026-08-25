@@ -3,7 +3,7 @@ import { filesize } from "filesize";
 import React from "react";
 
 import { exportPlaylistToFile } from "~/utils/exchange/playlist";
-import { cleanAudioCache, countSize } from "~/utils/file";
+import { cleanOfflineAudioCache, getAudioCacheSizeInfo } from "~/features/playback";
 import { Layout } from "~/components/layout";
 import { SettingMenuItem } from "~/components/setting-menu";
 import { Platform } from "react-native";
@@ -11,7 +11,7 @@ import { Platform } from "react-native";
 export default function Page() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["count_size"],
-    queryFn: countSize,
+    queryFn: getAudioCacheSizeInfo,
     staleTime: 30000,
   });
 
@@ -30,7 +30,7 @@ export default function Page() {
               : "占用空间统计中……"
           }
           onPress={async () => {
-            await cleanAudioCache();
+            await cleanOfflineAudioCache();
             await refetch();
           }}
           disabled={!data || data.cacheFreeSize <= 0}

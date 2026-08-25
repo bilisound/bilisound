@@ -1,11 +1,10 @@
 import useDownloadStore from "~/store/download";
-import { getCacheAudioPath } from "~/utils/file";
 import * as FileSystem from "expo-file-system/legacy";
 import { filesize } from "filesize";
 import { getMediaResource, getVideoUrl } from "~/features/bilibili";
 import log from "~/utils/logger";
 import { USER_AGENT_BILIBILI } from "~/constants/network";
-import { isCacheExists, setCacheExists } from "~/storage/cache-status";
+import { getCacheAudioPath, isCacheExists, setCacheExists } from "~/features/cache";
 import { File } from "expo-file-system";
 import { Mp4 } from "mp4.js/dist";
 
