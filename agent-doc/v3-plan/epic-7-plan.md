@@ -8,13 +8,46 @@
 
 **Full Tamagui adoption.** `packages/ui` (Tamagui-based) becomes the sole UI framework.
 NativeWind and gluestack-ui are removed during the rewrite — screens are rebuilt, not
-migrated. Slice 0 installs `@tamagui/core` + `@bilisound/ui` peer deps into `apps/mobile`
-and wires `BilisoundProvider` into the root layout.
+migrated.
 
 Rationale: `packages/ui` already invests in Tamagui tokens, recipes, components, stories,
 and DOM-component bridge. Splitting the framework would waste that work and create two
 parallel design systems. The README's "re-evaluate Nativewind and gluestack-ui" rule is
 resolved: both are retired.
+
+## Project Strategy — `apps/mobile-next` greenfield
+
+Rather than modifying `apps/mobile` in place, Epic 7 creates a **new** `apps/mobile-next`
+Expo project. The UI layer (`app/`, `components/`) is written from scratch with Tamagui.
+The non-UI infrastructure is copied from `apps/mobile` so the frozen feature APIs resolve
+without cross-app imports:
+
+```txt
+apps/mobile-next/
+  features/         copied from apps/mobile (bilibili, config, cache, player, playback,
+                    playlist, theme) — Phase 2 frozen, no sync needed except critical fixes
+  utils/            copied (logger, file, init, migration, exchange, string, datetime, vendors)
+  constants/        copied (branding, feature, file, network, platform, playback, releasing, styles, web)
+  storage/          copied (playlist, queue, sqlite, zustand)
+  store/            copied (bottom-sheet, error-message — pure UI state, deferred)
+  api/              copied (release, common)
+  hooks/            copied where non-UI (useWindowSize, useTabSafeAreaInsets, useConfirm, ...)
+  app/              NEW — Expo Router routes, Tamagui only
+  components/        NEW — Tamagui components only, no gluestack/NativeWind
+  package.json      clean: no NativeWind/gluestack/CssInterop/tailwind; add @bilisound/ui + @tamagui/core
+  app.config.ts     different bundle id (avoid dev client clash with apps/mobile)
+  tsconfig.json     ~/* alias, no tailwind path
+  babel.config.js   Tamagui compiler, no NativeWind
+  metro.config.js   no NativeWind resolver, no CssInterop
+```
+
+During the port, `apps/mobile` remains the live app. `apps/mobile-next` is developed and
+verified independently. Feature-layer critical fixes are cherry-picked to mobile-next
+manually (expected to be rare — Phase 2 APIs are frozen).
+
+**Final swap**: when mobile-next is feature-complete, `apps/mobile` is deleted and
+`apps/mobile-next` is renamed to `apps/mobile` (bundle id and config reverted to
+production values). The old `apps/mobile` commit history is preserved in git.
 
 ## Responsive Strategy
 
@@ -36,63 +69,70 @@ sm 640 / md 768 / lg 1024 / xl 1280 / 2xl 1536
 
 ## Slice Breakdown
 
-### Slice 0 — Component gaps + framework wiring
+### Slice 0 — Scaffold mobile-next + component gaps + framework wiring
 
 Scope:
 ```txt
-packages/ui   complete P1/P2 gaps from ui-component-gap.md:
-              FormControl, Pressable, TextField, TextareaField, Toast/NotifyToast,
-              ErrorContent, Skeleton/SkeletonText, Menu, Actionsheet
-packages/ui   new PageShell (de-businessed layout.tsx: safeArea, maxWidth, header 64px,
-              a11y focus — no router.back, no MainBottomSheetCloseHost)
-apps/mobile   install @tamagui/core + @bilisound/ui peer deps
-apps/mobile   wire BilisoundProvider into root _layout.tsx
+apps/mobile-next  scaffold new Expo project (package.json, app.config.ts, tsconfig,
+                  babel, metro — clean, no NativeWind/gluestack/tailwind)
+apps/mobile-next  copy non-UI infrastructure from apps/mobile:
+                  features/, utils/, constants/, storage/, store/, api/, non-UI hooks/
+apps/mobile-next  install @bilisound/ui + @tamagui/core + @bilisound/player + @bilisound/sdk
+apps/mobile-next  wire BilisoundProvider into root _layout.tsx
+packages/ui      complete P1/P2 gaps from ui-component-gap.md:
+                  FormControl, Pressable, TextField, TextareaField, Toast/NotifyToast,
+                  ErrorContent, Skeleton/SkeletonText, Menu, Actionsheet
+packages/ui      new PageShell (de-businessed layout.tsx: safeArea, maxWidth, header 64px,
+                  a11y focus — no router.back, no MainBottomSheetCloseHost)
+apps/mobile-next  minimal smoke route (e.g. a temp index screen) proving Tamagui renders
 ```
 
 Goals:
-1. All layout/page prerequisites available in `packages/ui`.
-2. `apps/mobile` can import `@bilisound/ui` and render Tamagui.
-3. No screen content changed yet; existing gluestack screens still render.
+1. `apps/mobile-next` is a bootable Expo dev client with Tamagui + frozen features.
+2. All layout/page prerequisites available in `packages/ui`.
+3. `apps/mobile` is untouched and remains the live app.
+4. Bundle id differs from `apps/mobile` to avoid dev client clash.
 
-Verification: `packages/ui` typecheck + storybook; `apps/mobile` tsc + expo export.
+Verification: `apps/mobile-next` tsc + expo export (android); `packages/ui` typecheck.
+No device smoke needed yet (no real screens).
 
-### Slice 1 — Responsive app shell + navigation
+### Slice 1 — Responsive app shell + navigation (in mobile-next)
 
 Scope:
 ```txt
-apps/mobile/app/(main)/_layout.tsx   replace Expo Router Tabs with ResponsiveAppShell
-packages/ui or apps/mobile            ResponsiveAppShell component:
-  < md:  bottom tab bar (歌单/查询/设置) + bottom-sheet player
+apps/mobile-next/app/(main)/_layout.tsx  ResponsiveAppShell (new, no Expo Router Tabs)
+packages/ui or apps/mobile-next          ResponsiveAppShell component:
+  < md:  bottom tab bar (歌单/查询/设置) + bottom-sheet player slot
   >= md: left sidebar nav + main content area + persistent player panel slot
-apps/mobile                           AppLayout wraps PageShell with router.back + CloseHost
+apps/mobile-next                         AppLayout wraps PageShell with router.back + CloseHost
 ```
 
 Goals:
 1. Navigation switches at md (768px): bottom tab → sidebar.
 2. Main content area has a slot for persistent player (filled in Slice 2).
-3. No page content rewritten; existing screens render inside the new shell.
+3. Placeholder screens render inside the new shell (real page content in Slice 3+).
 4. Yuru-chara and safe-area behavior preserved.
 
 Verification: device screenshot at phone width + tablet width; sidebar/tab visible.
 
-### Slice 2 — Player panel responsive
+### Slice 2 — Player panel responsive (in mobile-next)
 
 Scope:
 ```txt
-apps/mobile/components/main-bottom-sheet/*   responsive behavior split:
-  < md:  bottom sheet (current behavior preserved)
+apps/mobile-next/components/  new player panel (not copied from main-bottom-sheet):
+  < md:  bottom sheet (re-implemented with Tamagui Sheet, not @gorhom/bottom-sheet)
   >= md: persistent side panel or bottom mini-player + expandable queue
-features/playback                             player panel view model if needed
+features/playback             player panel view model if needed
 ```
 
 Goals:
 1. Player controls/queue/progress accessible without bottom sheet on tablet/PC.
-2. Phone behavior unchanged (bottom sheet).
+2. Phone behavior preserved (bottom sheet, but Tamagui-based).
 3. `features/player` wrapper hooks consumed; no direct `@bilisound/player` in components.
 
 Verification: device screenshot — player visible on tablet without opening sheet.
 
-### Slice 3+ — Screen rewrite (one slice per screen or group)
+### Slice 3+ — Screen rewrite (in mobile-next, one slice per screen or group)
 
 Each screen rebuilds with `packages/ui` components + frozen feature APIs. Order follows
 user value + dependency:
@@ -115,17 +155,18 @@ Goals per slice:
 
 Verification: device screenshot at phone + tablet width; a11y snapshot; tsc + expo export.
 
-### Slice 4 — NativeWind/gluestack removal + cleanup
+### Slice 4 — Final swap + old project removal
 
 Scope:
 ```txt
-apps/mobile   remove NativeWind dependency, gluestack-ui dependency, global.css
-apps/mobile   remove components/ui/* (gluestack wrappers) after all screens migrated
-apps/mobile   remove nativewind polyfill, CssInterop registration
+apps/mobile        delete (git preserves history)
+apps/mobile-next   rename to apps/mobile (git mv)
+apps/mobile        revert bundle id + app.config to production values
+pnpm-workspace     update if needed
 ```
 
-Goal: `apps/mobile` has zero NativeWind/gluestack dependency; `@bilisound/ui` is the
-sole UI framework.
+Goal: `apps/mobile` is the Tamagui-only app; no NativeWind/gluestack dependency anywhere.
+The old project's commit history is preserved in git.
 
 Verification: `package.json` clean; tsc + expo export (android + web); device smoke.
 
