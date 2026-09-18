@@ -1,8 +1,8 @@
 # Context and Findings
 
 > This is the historical baseline that motivated the v3 plan, not a description of the current
-> tree. Epics 1–5 have since been delivered; use [README.md](./README.md) for current status and
-> the implementation records in [epic-breakdown.md](./epic-breakdown.md) for current boundaries.
+> tree. Use the [Status Overview](./epic-breakdown.md#status-overview) for current status and the
+> implementation records in [epic-breakdown.md](./epic-breakdown.md) for current boundaries.
 
 ## Background
 
@@ -43,7 +43,11 @@ explain why the delivered boundaries were introduced.
 See the delivered status and verification records in `epic-breakdown.md` rather than re-running
 these migrations.
 
-## Remaining Current Finding
+## Remaining Finding at the Epic 5 Handoff
+
+Epic 6 has since delivered `apps/mobile/features/cache`; see
+[epic-breakdown.md](./epic-breakdown.md#epic-6-cache-and-download). The finding below is kept as
+recorded at that time.
 
 Epic 6 (Cache and Download) is the next business refactor. Cache and download responsibilities
 remain split across `apps/mobile/business/download.ts`, `apps/mobile/storage/cache-status.ts`, and

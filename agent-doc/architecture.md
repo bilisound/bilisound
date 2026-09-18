@@ -21,7 +21,7 @@ apps/server-cf ── depends on ──> @bilisound/sdk (只用 Direct 实现)
 用户输入（BV / URL / b23 / 二维码）
   │
   ▼
-business/format.ts                         解析输入并选择视频或远程列表路由
+features/bilibili/url-resolver.ts          解析输入并选择视频或远程列表路由
   │
   ▼
 features/bilibili/client.ts + mappers.ts  B 站访问边界；SDK DTO 转为应用领域模型
@@ -58,12 +58,26 @@ features/bilibili/client.ts + mappers.ts  B 站访问边界；SDK DTO 转为应�
 - Web 客户端只需知道 Worker 地址（`EXPO_PUBLIC_API_URL`）
 - 解决浏览器 CORS、Referer 与受限请求头问题
 
+## 分层约束（apps/mobile）
+
+UI 层（`app/`、`components/`、`hooks/`）只通过 `~/features/*` 访问业务能力，不直接 import `@bilisound/player`、`@bilisound/sdk`、`~/storage/*` 或 `~/api/*`。v3 把播放、歌单、配置、缓存和 B 站数据拆成用例 API，UI 重写（Epic 7）只消费这些 API；UI 直接接触播放器内部、SDK DTO 或存储 key，会把耦合带进新界面。
+
+- 播放器能力从 `features/player`（`@bilisound/player` 的应用侧重导出）获取。播放编排在 `features/playback`，它直接使用 `@bilisound/player` 与 `~/storage/playlist`。
+- `store/` 只放无业务语义的 UI 交互状态；业务状态放进对应 feature。
+- 例外：`features/theme` 没有 `index.ts`，UI 目前直接引用其模块文件。
+- 公开 API 以各 feature 的 `index.ts` 和 [phase-2-audit.md 的冻结 API](v3-plan/phase-2-audit.md#frozen-feature-use-case-api) 为准。
+- 没有 lint 规则强制这条约束。改动 UI 层后在仓库根目录自查，应无输出：
+
+```bash
+grep -rnE 'from "(@bilisound/(player|sdk)|~/storage/|~/api/)' apps/mobile/app apps/mobile/components apps/mobile/hooks
+```
+
 ## Server 定位
 
 ### server-cf（Cloudflare Worker）— Web 代理
 
 - **职责**: 为 Web 端代理 B 站 API、图片和支持 Range 的媒体资源
-- **端点**: `/api/internal/resolve-b23`, `/api/internal/metadata`, `/api/internal/resource`, `/api/internal/user-list`, `/api/internal/user-list-all`, `/api/internal/image`, `/api/internal/app/update`
+- **端点**: 完整列表、参数与 Referer 规则见 [apps/server-cf/README.md](../apps/server-cf/README.md#api-端点)；mobile 侧的代理 URL 在 `features/bilibili/client.ts` 构造
 - **为什么需要**: 浏览器无法稳定直连 B 站 API 与 CDN（CORS、Referer 和受限请求头）
 - **技术栈**: itty-router + `@bilisound/sdk` Direct 模式 + Cloudflare KV
 
@@ -71,16 +85,15 @@ features/bilibili/client.ts + mappers.ts  B 站访问边界；SDK DTO 转为应�
 
 项目使用 Expo 的 `.web.ts` 后缀约定进行平台特定实现：
 
-| 文件              | 平台                 |
-| ----------------- | -------------------- |
-| `download.ts`     | iOS/Android          |
-| `download.web.ts` | Web                  |
-| `init.ts`         | iOS/Android          |
-| `init.web.ts`     | Web                  |
-| `playlist.ts`     | iOS/Android (SQLite) |
-| `playlist.web.ts` | Web (IndexedDB)      |
-| `logger.ts`       | iOS/Android          |
-| `logger.web.ts`   | Web                  |
+| 文件（相对 `apps/mobile/`）                      | 平台                |
+| ------------------------------------------------ | ------------------- |
+| `features/cache/download.ts` / `download.web.ts` | 原生下载 / Web 存根 |
+| `utils/init.ts` / `init.web.ts`                  | 原生 / Web 启动流程 |
+| `storage/sqlite/playlist.ts` / `playlist.web.ts` | SQLite / IndexedDB  |
+| `features/playlist/repository.ts` / `.web.ts`    | 原生 / Web 歌单仓库 |
+| `utils/logger.ts` / `logger.web.ts`              | 文件日志 / Web 日志 |
+
+以上是示例，不是完整清单。同名文件可能出现在多个目录（例如 `storage/playlist.ts` 是 MMKV 播放上下文，与 `storage/sqlite/playlist.ts` 无关），引用时写完整路径。完整清单用 `find apps/mobile -path '*/node_modules' -prune -o \( -name '*.web.ts*' -o -name '*.native.ts*' \) -print` 查询；少数组件使用 `.native.tsx` + `.web.tsx` 分叉。
 
 运行时也通过 `Platform.OS === "web"` 做分支判断。
 
@@ -118,12 +131,6 @@ features/bilibili/client.ts + mappers.ts  B 站访问边界；SDK DTO 转为应�
 - Android: Kotlin / Media3 / ExoPlayer
 - Web: TypeScript / HTMLAudioElement 实现
 
-### apps/server-cf
-
-- Cloudflare Workers
-- itty-router
-- @bilisound/sdk (Direct 模式 + KV 缓存)
-
 ## 当前 UI 栈的过渡状态
 
 mobile 端同时存在三代 UI 代码，判断该往哪写之前先确认落点：
@@ -134,4 +141,4 @@ mobile 端同时存在三代 UI 代码，判断该往哪写之前先确认落点
 | `components/ui-next/*`          | 无 NativeWind / Gluestack 的本地 RN 组件，mobile 内新共享组件落点 |
 | `packages/ui` (`@bilisound/ui`) | v3 Tamagui 组件库，独立演进，暂未接入 mobile                      |
 
-`className` / NativeWind 与 Gluestack 在 mobile 中仍有可观存量，属于预期状态而非待修 bug。是否整体替换属于 v3 UI 重写阶段的决定，见 [v3-plan/README.md](v3-plan/README.md)。
+`className` / NativeWind 与 Gluestack 在 mobile 中仍有可观存量，属于预期状态而非待修 bug。Epic 7 已决定由 `packages/ui`（Tamagui）取代 NativeWind 与 Gluestack，并在新的 `apps/mobile-next` 中重写界面、而非原地迁移 `apps/mobile`，见 [v3-plan/epic-7-plan.md](v3-plan/epic-7-plan.md)。在 `apps/mobile` 上的业务改动仍不借机替换 UI 技术，规则见 [v3-plan/README.md](v3-plan/README.md#ui-framework-replacement-is-a-later-decision)。

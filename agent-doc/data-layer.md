@@ -34,45 +34,12 @@ Web
 
 ### 表结构
 
-**playlist_meta** — 歌单元数据
+列定义以 `storage/sqlite/schema.ts` 为准；原生端的实际建表语句在迁移状态机里（见下节）。从 schema 看不出的约定：
 
-| 列              | 类型       | 说明                                |
-| --------------- | ---------- | ----------------------------------- |
-| `id`            | INTEGER PK | 自增主键                            |
-| `title`         | TEXT       | 标题                                |
-| `color`         | TEXT       | 主题色                              |
-| `amount`        | INTEGER    | 曲目数量                            |
-| `img_url`       | TEXT       | 封面 URL                            |
-| `description`   | TEXT       | 描述文本                            |
-| `source`        | TEXT       | 来源信息 JSON (PlaylistSource 类型) |
-| `filter_rules`  | TEXT       | 过滤规则                            |
-| `extended_data` | TEXT       | 扩展数据 (JSON)                     |
-
-**playlist_detail** — 歌单曲目
-
-| 列              | 类型       | 说明                    |
-| --------------- | ---------- | ----------------------- |
-| `id`            | INTEGER PK | 自增主键                |
-| `playlist_id`   | INTEGER FK | 外键 → playlist_meta.id |
-| `author`        | TEXT       | UP主名称                |
-| `bvid`          | TEXT       | BV号                    |
-| `duration`      | INTEGER    | 时长 (秒)               |
-| `episode`       | INTEGER    | 分P编号                 |
-| `title`         | TEXT       | 曲目标题                |
-| `img_url`       | TEXT       | 封面                    |
-| `extended_data` | TEXT       | 扩展数据 (JSON)         |
-
-**theme_profile** — 原生端用户主题元数据
-
-| 列                | 类型    | 说明            |
-| ----------------- | ------- | --------------- |
-| `id`              | TEXT PK | 主题 ID         |
-| `name`            | TEXT    | 主题名称        |
-| `created_at`      | INTEGER | 创建时间        |
-| `updated_at`      | INTEGER | 更新时间        |
-| `palette_json`    | TEXT    | 调色板 JSON     |
-| `yuru_chara_json` | TEXT    | 看板娘布局 JSON |
-| `image_asset_id`  | TEXT    | 主题图片资源 ID |
+- `playlist_meta.amount` 是冗余的曲目数。`addToPlaylist` 与 `deletePlaylistDetail` 不会更新它，调用方需要再调用 `syncPlaylistAmount`；`replacePlaylistDetail` 与 `clonePlaylist` 会自行更新。
+- `playlist_meta.source` 存 `PlaylistSource`（`typings/playlist.ts`）的 JSON 字符串，编解码在 `features/playlist/mappers.ts`；`extended_data` 也是 JSON 文本。
+- 删除歌单时 `deletePlaylistMeta` 显式删除对应的 `playlist_detail` 行，不依赖外键级联。
+- `theme_profile` 只存在于原生端 SQLite；Web 端的主题元数据与图片 Blob 存在 IndexedDB 的 `themeProfile` / `themeAsset` 对象存储。
 
 ### 迁移
 
@@ -80,19 +47,20 @@ Web
 - 原生端实际迁移入口是 `apps/mobile/utils/migration/playlist.ts`。它读取 MMKV 中的 `playlist_db_version`，执行手写的 SQLite 建表 / ALTER / 数据修复状态机；当前目标版本为 5。
 - Web 端由 `storage/sqlite/init-web.ts` 的 IndexedDB `upgrade` 回调按数据库版本创建对象存储；当前版本为 2。
 - 修改结构化存储时，必须同时更新 schema 与对应平台的实际迁移路径，不能只运行 Drizzle Kit。
+- 原生端启动迁移的顺序以 `apps/mobile/utils/init.ts` 为准：歌单库迁移之后还有 `features/cache/migration.ts`（按 `CACHE_STATUS_VERSION` 把存量离线音频录入缓存标记）；播放队列恢复时，`features/playback/queue-persistence.ts` 会调用 `utils/migration/legacy-queue.ts` 与 `utils/migration/shuffle-queue.ts` 处理旧版队列文件与随机播放 key。
 
 ## MMKV
 
-**位置**: `apps/mobile/storage/`
+**位置**: `apps/mobile/storage/`；缓存标记位于 `apps/mobile/features/cache/`。
 
 MMKV 用于简单状态的快速持久化。Web 端通过 `react-native-mmkv` 的 Web 实现提供对应 KV 存储。
 
-| MMKV 实例 ID       | 文件              | 当前存储内容                                                            |
-| ------------------ | ----------------- | ----------------------------------------------------------------------- |
-| `storage-queue`    | `queue.ts`        | canonical 队列、当前索引、数据版本、随机偏好与 canonical index 播放顺序 |
-| `storage-playlist` | `playlist.ts`     | 当前队列所属歌单、歌单 DB 迁移版本、单曲循环恢复标记及旧版迁移数据      |
-| `cache-status`     | `cache-status.ts` | BV + 分 P → 本地缓存标记                                                |
-| `storage-zustand`  | `zustand.ts`      | Zustand persist 通用适配器（superjson 序列化）                          |
+| MMKV 实例 ID       | 文件                             | 当前存储内容                                                            |
+| ------------------ | -------------------------------- | ----------------------------------------------------------------------- |
+| `storage-queue`    | `queue.ts`                       | canonical 队列、当前索引、数据版本、随机偏好与 canonical index 播放顺序 |
+| `storage-playlist` | `playlist.ts`                    | 当前队列所属歌单、歌单 DB 迁移版本、单曲循环恢复标记及旧版迁移数据      |
+| `cache-status`     | `features/cache/cache-status.ts` | BV + 分 P → 本地缓存标记                                                |
+| `storage-zustand`  | `zustand.ts`                     | Zustand persist 通用适配器（superjson 序列化）                          |
 
 `storage/queue.ts` 的 `queue_list_backup` key 为兼容旧数据而保留；当前存储的是随机播放顺序 `number[]`，不再是备份队列。
 
@@ -100,20 +68,20 @@ MMKV 用于简单状态的快速持久化。Web 端通过 `react-native-mmkv` �
 
 ## Zustand
 
-**位置**: `apps/mobile/store/`、`apps/mobile/features/config/`，以及各 feature 内的局部 store。
+业务状态在各 `apps/mobile/features/<domain>/` 内；`apps/mobile/store/` 只保留无业务语义的 UI 交互状态。store 默认只在内存中，只有显式使用 `persist` 与 `storage/zustand.ts` 的 `createStorage()` 才会写入 MMKV（`storage-zustand` 实例）。当前持久化的 store：
 
-| Store / 状态   | 文件                               | 用途                           | 持久化 |
-| -------------- | ---------------------------------- | ------------------------------ | ------ |
-| settings       | `features/config/store.ts`         | 应用设置与资源、下载、诊断策略 | MMKV   |
-| download       | `store/download.ts`                | 当前下载任务列表与状态         | 否     |
-| bottom-sheet   | `store/bottom-sheet.ts`            | 底部弹出面板状态               | 否     |
-| apply draft    | `features/playlist/apply-draft.ts` | 创建 / 加入歌单过程的临时草稿  | 否     |
-| error-message  | `store/error-message.ts`           | 全局错误消息提示               | 否     |
-| features       | `store/features.ts`                | 功能开关                       | MMKV   |
-| history        | `store/history.ts`                 | 播放历史                       | MMKV   |
-| playback-speed | `store/playback-speed.ts`          | 当前播放速度与保留音高状态     | 否     |
+| persist 名       | 文件                           | 内容                                                                                |
+| ---------------- | ------------------------------ | ----------------------------------------------------------------------------------- |
+| `settings-store` | `features/config/store.ts`     | 应用设置；feature 外只通过 `features/config` 的 selectors（响应式）或 policies 读取 |
+| `history-store`  | `features/playback/history.ts` | 播放历史                                                                            |
 
-Zustand store 只有显式使用 `persist` 与 `storage/zustand.ts` 适配器时才会写入 MMKV。
+persist 名就是已上线的存储 key，改名或改变存储结构都需要迁移。完整 store 列表不在此维护，用下面的命令查找：
+
+```bash
+grep -rln 'from "zustand"' apps/mobile --include='*.ts' --include='*.tsx' --exclude-dir=node_modules
+```
+
+用户主题持久化在 SQLite `theme_profile` / IndexedDB，`features/theme/registry.ts` 的 store 只是内存缓存。
 
 ## 文件系统（原生端）
 

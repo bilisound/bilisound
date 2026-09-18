@@ -3,6 +3,8 @@
 本文件是所有 AI agent 的统一入口。**Compatible with**: Claude Code, opencode, OpenAI Codex, Gemini CLI。
 
 > **IMPORTANT**: 优先「检索式」推理，而非「预训练记忆」式推理。项目约定请从 `agent-doc/` 检索阅读，不要凭通用知识臆测本仓库的结构与规则。
+>
+> `agent-doc/devlogs/` 是历史记录，默认不读取、不检索，也不作为当前行为依据；按需读取的条件见 [agent-doc/README.md](agent-doc/README.md#历史资料)。
 
 Bilisound 是一个第三方音视频客户端，采用 monorepo 结构，支持 iOS、Android 和 Web 平台。项目旨在提供一个纯净、专注的音视频播放体验，特别是针对播放列表和离线使用的场景。
 
@@ -26,7 +28,7 @@ bilisound/
 │   └── ui/                ← @bilisound/ui — v3 Tamagui 组件库与独立 Expo 展示项目
 ```
 
-- **apps/mobile**: Expo 客户端。源文件按功能分目录：`app/`（路由页面）、`components/`、`business/`、`store/`、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。
+- **apps/mobile**: Expo 客户端。源文件按功能分目录：`app/`（路由页面）、`features/`（业务功能边界，如 bilibili、config、cache、player、playback、playlist、theme）、`components/`、`store/`（仅纯 UI 交互状态）、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。旧的 `business/` 目录已删除，新业务逻辑放进对应 `features/<domain>/`。
 - **apps/server-cf**: Cloudflare Worker，为 Web 端代理 B 站 API 请求。入口 `index.ts`，路由在 `route/bilisound.ts`。
 - **packages/sdk**: 运行时无关的核心逻辑，发布为 `@bilisound/sdk`（TypeScript → `dist/`）。
 - **packages/player**: Expo 原生音频播放模块（iOS/Android/Kotlin + Swift + Web shim），发布为 `@bilisound/player`。
@@ -78,7 +80,7 @@ bilisound/
 - Before diagnosing Android Gradle failures, verify `java -version`, `javac -version`, `jlink --version`, and `pnpm -C apps/mobile exec ./android/gradlew --version` all resolve to JDK 21.
 
 - Root build: `pnpm build` — runs Turborepo builds (e.g., `packages/sdk`).
-- Lint all: `pnpm lint` — runs package lint tasks.
+- Lint all: `pnpm lint` — runs the `lint` script of packages that define one (`packages/player`, `packages/ui`). `apps/mobile` has no `lint` script, so its ESLint is not covered; see [agent-doc/verification.md](agent-doc/verification.md).
 - Format: `pnpm format` — Prettier write across repo.
 - Mobile dev: `pnpm -C apps/mobile start` (Expo dev client), `pnpm -C apps/mobile ios`, `pnpm -C apps/mobile android`, `pnpm -C apps/mobile web`.
 - Mobile release: `pnpm -C apps/mobile build:android`, `pnpm -C apps/mobile build:web`.
@@ -124,6 +126,7 @@ bilisound/
 ## Testing Guidelines
 
 - Current status: no required CI tests.
+- `apps/mobile` has Jest suites under `**/__tests__/`. `pnpm -C apps/mobile test` runs `jest --watchAll` and never exits; run targeted suites with `--watchAll=false` as described in [agent-doc/verification.md](agent-doc/verification.md).
 
 ## Commit & Pull Request Guidelines
 

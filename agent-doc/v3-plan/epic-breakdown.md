@@ -4,15 +4,15 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 
 ## Status Overview
 
-| Epic                      | Status        | Notes                                                                                                                                                    |
-| ------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Player Foundation      | **Delivered** | player-owned occurrence order, transport routing, and atomic queue transaction; verified on iOS Simulator, physical Android, and Web                     |
-| 2. Config Architecture    | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered) |
-| 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                |
-| 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                       |
-| 5. Playlist Domain        | **Delivered** | app-owned models, SQLite mappers, versioned exchange DTO, and Promise-based native/Web repository contract                                               |
+| Epic                      | Status        | Notes                                                                                                                                                                      |
+| ------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Player Foundation      | **Delivered** | player-owned occurrence order, transport routing, and atomic queue transaction; verified on iOS Simulator, physical Android, and Web                                       |
+| 2. Config Architecture    | **Delivered** | facade + consumer migration; storage-key split still open, see [config-architecture.md](./config-architecture.md#implementation-status-facade-delivered)                   |
+| 3. Bilibili Data Boundary | **Delivered** | `features/bilibili` boundary; verified on Android and Web                                                                                                                  |
+| 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                                         |
+| 5. Playlist Domain        | **Delivered** | app-owned models, SQLite mappers, versioned exchange DTO, and Promise-based native/Web repository contract                                                                 |
 | 6. Cache and Download     | **Delivered** | cache status + audio cache + download scheduler in `features/cache`; verified tsc/jest/eslint/android+web export; runtime verified on Android physical device (2026-08-25) |
-| 7. UI Rewrite             | **Ready**     | Phase 2 complete: all 5 admission criteria met ([phase-2-audit.md](./phase-2-audit.md)); residual coupling closed, feature API frozen          |
+| 7. UI Rewrite             | **Ready**     | Phase 2 complete: all 5 admission criteria met ([phase-2-audit.md](./phase-2-audit.md)); residual coupling closed, feature API frozen                                      |
 
 Delivered epics keep their full scope/goals below under **Delivered Epics** so the handoff
 record stays in one place. Planned epics are listed under **Upcoming Epics**.
@@ -512,16 +512,17 @@ download task persistence  # currently in-memory only; persisting across launche
 
 ### Epic 7: UI Rewrite (after business foundation)
 
-> Status: planned.
+> Status: **ready to start** — framework decision, `apps/mobile-next` greenfield strategy, and
+> slice breakdown are in [epic-7-plan.md](./epic-7-plan.md).
 
 Scope:
 
 ```txt
 packages/ui
-apps/mobile/app/*
-apps/mobile/components/*
+apps/mobile-next/app/*          # new Tamagui UI; apps/mobile is not migrated in place
+apps/mobile-next/components/*
 feature-facing UI wrappers and view models
-current UI framework usage such as Nativewind and gluestack-ui
+retiring Nativewind and gluestack-ui (apps/mobile is replaced at the final swap)
 ```
 
 Prerequisite:
@@ -558,12 +559,15 @@ Non-goals for earlier epics: see the UI technology rule in [README.md](./README.
 
 ## Suggested Execution Order
 
-1. Player Foundation. — **done**
-2. Config Architecture facade and migration design. — **done**
-3. Bilibili Data Boundary sample on video detail. — **done**
-4. Playback Orchestration after player APIs are available. — **done**
-5. Playlist Domain migration. — **done**
+Completion status is tracked only in the [Status Overview](#status-overview).
+
+1. Player Foundation.
+2. Config Architecture facade and migration design.
+3. Bilibili Data Boundary sample on video detail.
+4. Playback Orchestration after player APIs are available.
+5. Playlist Domain migration.
 6. Cache and Download migration.
-7. UI Rewrite preparation and UI framework re-evaluation.
+7. UI Rewrite preparation and UI framework decision ([phase-2-audit.md](./phase-2-audit.md), [epic-7-plan.md](./epic-7-plan.md)).
+8. UI Rewrite (Epic 7) in `apps/mobile-next`.
 
 Some planning work can happen in parallel, but implementation should avoid changing player mechanics, playback orchestration, and playlist storage in the same patch.

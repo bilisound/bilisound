@@ -5,7 +5,7 @@ This guide is for future agent sessions working on Bilisound v3.
 ## Before Starting
 
 1. Read `agent-doc/README.md` and the existing architecture docs.
-2. Read all files in `agent-doc/v3-plan`.
+2. Read `agent-doc/v3-plan/README.md`, then the documents for the epic or area in scope. Completed records such as `context-and-findings.md` and `epic-1-macos-verification-handoff.md` are read on demand.
 3. Inspect `git status --short --branch` before editing.
 4. Do not overwrite unrelated user or agent changes.
 5. Keep each task scoped to one epic where possible.
@@ -19,9 +19,8 @@ Check `git branch -a` and ask the user which branch the task belongs on. Recent 
 
 ## Recommended First Workstream
 
-Check the [Status Overview](./epic-breakdown.md#status-overview) first. Epics 1–5
-(Player Foundation, Config Architecture, Bilibili Data Boundary, Playback Orchestration,
-Playlist Domain) are delivered. Epic 6 (Cache and Download) is the next business refactor.
+Check the [Status Overview](./epic-breakdown.md#status-overview) first and start from the
+first epic that is not delivered. For the UI rewrite, follow [epic-7-plan.md](./epic-7-plan.md).
 
 Player Foundation now provides:
 
@@ -88,14 +87,14 @@ Start with a facade in `features/config` before changing persisted storage layou
 
 Files likely involved:
 
+```txt
 apps/mobile/features/bilibili
-apps/mobile/components/video-detail/\*
+apps/mobile/components/video-detail/*
 apps/mobile/app/video/[id].tsx
 apps/mobile/app/remote-list.tsx
 apps/mobile/app/download-web.tsx
 packages/sdk
-
-````
+```
 
 Do not change SDK behavior while extending this boundary. Consume its app-owned models and
 public functions; keep playlist/player orchestration outside `features/bilibili`.
@@ -113,17 +112,18 @@ Does this remove route-level imports from storage/api/player?
 Does this move business policy out of Zustand store actions?
 Does this preserve persisted user data?
 Does this make a future UI rewrite easier without mixing in UI framework replacement?
-````
+```
 
 ## Verification Notes
 
-There is no required CI test suite documented for the repository. Prefer the smallest relevant verification command for the touched package.
+There is no required CI test suite documented for the repository. Prefer the smallest relevant verification command for the touched package; mobile Jest, ESLint, and tsc usage is in [../verification.md](../verification.md).
 
 Potential commands:
 
 ```txt
 pnpm -C packages/player build
-pnpm -C apps/mobile lint
+pnpm -C apps/mobile exec jest <feature>/__tests__ --watchAll=false
+pnpm -C apps/mobile exec eslint <changed-files>
 pnpm -C packages/sdk build
 ```
 

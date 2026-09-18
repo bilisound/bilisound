@@ -22,11 +22,11 @@
 
 只收录本仓库特有的叫法。通用库（Zustand、Drizzle、MMKV、Expo Router 等）不在此列，用到哪个看 `package.json`。
 
-| 术语             | 说明                                                                |
-| ---------------- | ------------------------------------------------------------------- |
-| **Direct SDK**   | `BilisoundSDKDirect` — 原生端直接从客户端调 B 站 API，自带 WBI 签名 |
-| **Remote SDK**   | `BilisoundSDKRemote` — Web 端通过 server-cf 代理调 B 站 API         |
-| **歌单交换格式** | 导入导出使用 TOML，实现在 `apps/mobile/utils/exchange/`             |
+| 术语             | 说明                                                                                                                                                                      |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Direct SDK**   | `BilisoundSDKDirect` — 原生端直接从客户端调 B 站 API，自带 WBI 签名                                                                                                       |
+| **Remote SDK**   | `BilisoundSDKRemote` — Web 端通过 server-cf 代理调 B 站 API                                                                                                               |
+| **歌单交换格式** | 导入导出使用 TOML：文件读写与 TOML 编解码在 `apps/mobile/utils/exchange/`，带版本的数据结构与校验（`playlistExportSchema`）在 `apps/mobile/features/playlist/exchange.ts` |
 
 ## URL / ID 格式速查
 

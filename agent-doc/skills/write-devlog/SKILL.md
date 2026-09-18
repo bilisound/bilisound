@@ -13,13 +13,13 @@ description: Use when the user asks to write a devlog, development log, 开发�
 
 例如：
 
-- `20260517-image-generation.md`
-- `20260516-admin-web-ui.md`
+- `20260601-expo-sdk-56-upgrade.md`
+- `20260702-direct-mascot-editor.md`
 
 ## 文档结构
 
 ````markdown
-# AI Gateway - YYYYMMDD Topic 标题
+# Bilisound - YYYYMMDD Topic 标题
 
 ## 背景
 
@@ -33,7 +33,7 @@ description: Use when the user asks to write a devlog, development log, 开发�
 
 说明做了什么。代码片段使用 ` ```ts ` 等标记。
 
-使用文件路径引用：`packages/core/src/config.ts:42`
+使用文件路径引用：`apps/mobile/features/theme/editor.ts:42`
 
 ### 2. 另一个变更
 
@@ -41,12 +41,12 @@ description: Use when the user asks to write a devlog, development log, 开发�
 
 ## 验证
 
-列出跑过的命令和结果：
+列出跑过的命令和结果（可用命令见 `agent-doc/verification.md`）：
 
 ```bash
-bun test
-bunx tsc --noEmit
-bun build ...
+pnpm -C apps/mobile exec jest <path> --watchAll=false
+pnpm -C apps/mobile exec expo export --platform android --clear
+git diff --check -- <changed-files>
 ```
 
 ## 提交
@@ -62,5 +62,5 @@ bun build ...
 - 从 `git log` 获取实际的 commit hash
 - 从 `git diff` 获取实际的改动内容
 - 代码片段要准确，不要凭空编造
-- 保持与其他 devlog 一致的风格（参考 `agent-docs/devlogs/` 下已有文件）
+- 保持与其他 devlog 一致的风格（参考 `agent-doc/devlogs/` 下已有文件）
 - 用中文写文档内容

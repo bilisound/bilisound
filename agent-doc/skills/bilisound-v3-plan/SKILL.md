@@ -25,6 +25,10 @@ agent-doc/v3-plan/target-architecture.md
 agent-doc/v3-plan/epic-breakdown.md
 agent-doc/v3-plan/player-foundation.md
 agent-doc/v3-plan/config-architecture.md
+agent-doc/v3-plan/phase-2-audit.md
+agent-doc/v3-plan/epic-7-plan.md
+agent-doc/v3-plan/ui-foundation.md
+agent-doc/v3-plan/ui-component-gap.md
 agent-doc/v3-plan/agent-handoff-guide.md
 ```
 
@@ -34,20 +38,21 @@ If the user says something like `我要做 player` or `继续 v3 的配置部分
 
 Use this routing table when the user names a v3 area.
 
-| User intent                                                             | Read first                                       | Likely scope                                                                                   |
-| ----------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| Player, shuffle, queue, ExoPlayer, AVQueuePlayer, repeat mode           | `player-foundation.md`                           | `packages/player`, `apps/mobile/features/playback`                                             |
-| Settings, config, preferences, debug mode, storage migration            | `config-architecture.md`                         | `apps/mobile/features/config`                                                                  |
-| SDK, Bilibili data, metadata, remote list, DTO leakage                  | `target-architecture.md`, `epic-breakdown.md`    | `apps/mobile/features/bilibili`, `packages/sdk`, `apps/server-cf`                              |
-| Playback, play playlist, play episode, queue restore, playlist-to-queue | `target-architecture.md`, `player-foundation.md` | `apps/mobile/features/playback`, `packages/player`                                             |
-| Playlist CRUD, playlist detail, SongItem schema coupling                | `target-architecture.md`, `epic-breakdown.md`    | `apps/mobile/features/playlist`, `apps/mobile/storage/sqlite`                                  |
-| Cache, download scheduler, audio/image cache                            | `epic-breakdown.md`                              | target `apps/mobile/features/cache`; current `business/download.ts`, `storage/cache-status.ts` |
+| User intent                                                             | Read first                                                                      | Likely scope                                                                             |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Player, shuffle, queue, ExoPlayer, AVQueuePlayer, repeat mode           | `player-foundation.md`                                                          | `packages/player`, `apps/mobile/features/playback`                                       |
+| Settings, config, preferences, debug mode, storage migration            | `config-architecture.md`                                                        | `apps/mobile/features/config`                                                            |
+| SDK, Bilibili data, metadata, remote list, DTO leakage                  | `target-architecture.md`, `epic-breakdown.md`                                   | `apps/mobile/features/bilibili`, `packages/sdk`, `apps/server-cf`                        |
+| Playback, play playlist, play episode, queue restore, playlist-to-queue | `target-architecture.md`, `player-foundation.md`                                | `apps/mobile/features/playback`, `packages/player`                                       |
+| Playlist CRUD, playlist detail, SongItem schema coupling                | `target-architecture.md`, `epic-breakdown.md`                                   | `apps/mobile/features/playlist`, `apps/mobile/storage/sqlite`                            |
+| Cache, download scheduler, audio/image cache                            | `epic-breakdown.md`                                                             | `apps/mobile/features/cache`                                                             |
+| UI rewrite, Tamagui, `packages/ui`, `apps/mobile-next`, screens         | `epic-7-plan.md`, `phase-2-audit.md`, `ui-foundation.md`, `ui-component-gap.md` | `apps/mobile-next`, `packages/ui`; consume the frozen feature APIs in `phase-2-audit.md` |
 
 ## Working Rules
 
 1. Preserve the staged plan and its delivered boundaries.
 
-   Epics 1–5 are delivered. Treat `features/config`, `features/bilibili`, `features/playback`, and `features/playlist` plus the player foundation as current architecture; do not restart those migrations. Epic 6 (Cache and Download) is the next business refactor.
+   Epic status is maintained only in the Status Overview of `agent-doc/v3-plan/epic-breakdown.md`; check it instead of relying on this skill. Treat the boundaries of delivered epics (the `apps/mobile/features/*` modules and the player foundation) as current architecture; do not restart those migrations.
 
 2. Prefer a narrow task boundary.
 
@@ -88,16 +93,15 @@ When the user asks to work on a v3 area, answer or proceed with this shape:
 
 ## Implementation Priority
 
-The current default priority is Epic 6 (Cache and Download), unless the user names another area:
+The default priority is the first epic in the Status Overview that is not delivered, unless the user names another area. For Epic 7 (UI Rewrite), follow the slice order in `epic-7-plan.md`:
 
 ```txt
-target: apps/mobile/features/cache
-current: apps/mobile/business/download.ts
-current: apps/mobile/storage/cache-status.ts
-current: apps/mobile/features/playback/cache.ts
+new UI:        apps/mobile-next (greenfield; apps/mobile stays the live app until the final swap)
+components:    packages/ui (Tamagui)
+business APIs: frozen feature use-case APIs recorded in phase-2-audit.md
 ```
 
-Player Foundation and the Config, Bilibili, Playback, and Playlist boundaries are already delivered. Changes in those areas should extend or repair the existing boundaries rather than re-run their original migrations.
+Changes in delivered areas should extend or repair the existing boundaries rather than re-run their original migrations.
 
 ## Handoff Discipline
 

@@ -14,6 +14,8 @@ The current mobile UI is tightly coupled to player mechanics, SQLite rows, SDK D
 
 This is the canonical statement of the rule; other documents in this directory reference it instead of restating it.
 
+**Resolved for Epic 7:** [epic-7-plan.md](./epic-7-plan.md) records the decision — `packages/ui` (Tamagui) replaces Nativewind and gluestack-ui, and the UI is rebuilt in a new `apps/mobile-next` project instead of migrating `apps/mobile` in place. The rule below still governs business or bug-fix work in `apps/mobile`: do not use it to replace UI technology there.
+
 After the business refactor epics are complete, the project can rebuild the app UI from scratch. That later phase may re-evaluate Nativewind and gluestack-ui, including dropping them if they no longer fit the desired v3 UI architecture. UI technology replacement is intentionally a later decision, not part of the foundation refactor unless a small change is required to reduce business coupling.
 
 Concretely: do not replace Nativewind or gluestack-ui while working on Player Foundation, Config, Bilibili Data Boundary, Playback Orchestration, Playlist Domain, or Cache and Download, unless a local UI edit is necessary to remove business coupling. Business work should make UI replacement possible; UI technology replacement should not drive or obscure the business boundary work.
@@ -35,12 +37,10 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 
 ## Current Working Assumption
 
-Epics 1–6 (Player Foundation, Config Architecture, Bilibili Data Boundary, Playback
-Orchestration, Playlist Domain, Cache and Download) are delivered. Phase 2 audit
-(residual coupling closure + frozen feature API + Epic 7 admission criteria) is
-recorded in [phase-2-audit.md](./phase-2-audit.md). All five admission criteria are
-met; Epic 6 runtime verification passed on Android physical device (2026-08-25).
-**Epic 7 (UI Rewrite) is ready to start.**
+Epic status is maintained only in the [Status Overview](./epic-breakdown.md#status-overview);
+other documents link to it instead of restating it. The Phase 2 audit (residual coupling
+closure, frozen feature API, Epic 7 admission criteria) is recorded in
+[phase-2-audit.md](./phase-2-audit.md), and the UI rewrite plan in [epic-7-plan.md](./epic-7-plan.md).
 
 The isolated `packages/ui` design-system foundation may be developed in parallel because it does not consume current mobile business modules. Integrating it into screens remains part of the later UI rewrite and must wait for stable feature-facing APIs.
 
