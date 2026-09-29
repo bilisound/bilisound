@@ -190,12 +190,13 @@ export function pickDownloadTask() {
 }
 
 /**
- * 供 UI 订阅下载列表与取消全部操作。
+ * 供 UI 订阅下载列表与取消操作。
  */
 export function useDownloadList() {
   const downloadList = useDownloadStore(state => state.downloadList);
+  const cancel = useDownloadStore(state => state.cancel);
   const cancelAll = useDownloadStore(state => state.cancelAll);
-  return { downloadList, cancelAll };
+  return { downloadList, cancel, cancelAll };
 }
 
 ensureWorker();

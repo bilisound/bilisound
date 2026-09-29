@@ -27,6 +27,8 @@ interface DownloadStoreState {
   addDownloadItem: (key: string, downloadItem: Omit<DownloadItem, "count">) => void;
   updateDownloadItemPartial: (key: string, downloadItem: Partial<DownloadItem>) => void;
   removeDownloadItem: (key: string) => void;
+  /** 取消单个下载任务：移除后，进行中的下载会在下一次进度回调时自行终止。 */
+  cancel: (key: string) => void;
   cancelAll: () => Promise<void>;
 }
 
@@ -55,6 +57,9 @@ export const useDownloadStore = create<DownloadStoreState>()((set, get) => ({
     const downloadList = new Map(get().downloadList);
     downloadList.delete(key);
     set(() => ({ downloadList }));
+  },
+  cancel: key => {
+    get().removeDownloadItem(key);
   },
   cancelAll: async () => {
     set(() => ({ downloadList: new Map() }));
