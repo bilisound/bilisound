@@ -47,6 +47,9 @@ export { updatePlaylist } from "./update";
 // 导航辅助
 export { openAddPlaylistPage } from "./misc";
 
+// 列表过滤（v2 列表页内联 Fuse 逻辑提取，配置不变）
+export { filterPlaylistsByQuery } from "./filter";
+
 // Hooks
 export { usePlaylistEditor } from "./use-playlist-editor";
 export { usePlaylistSearch } from "./use-playlist-search";
