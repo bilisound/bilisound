@@ -76,8 +76,12 @@ export type {
   ModalTitleProps,
   ModalTriggerProps,
 } from "./modal";
+export { PageShell } from "./page-shell";
+export type { PageShellProps } from "./page-shell";
 export { Slider } from "./slider";
 export type { SliderProps } from "./slider";
+export { StateContent } from "./state-content";
+export type { StateContentProps } from "./state-content";
 export { Switch, SwitchVisual } from "./switch";
 export type { SwitchProps, SwitchVisualProps } from "./switch";
 export { Text } from "./text";
