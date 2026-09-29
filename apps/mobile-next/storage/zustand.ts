@@ -1,0 +1,22 @@
+import { createMMKV } from "react-native-mmkv";
+import * as superJson from "superjson";
+import { PersistStorage } from "zustand/middleware";
+
+export const zustandStorage = createMMKV({ id: "mobile-next-storage-zustand" });
+
+export function createStorage<T>() {
+  const storage: PersistStorage<T> = {
+    getItem: name => {
+      const str = zustandStorage.getString(name);
+      if (!str) return null;
+      return superJson.parse(str);
+    },
+    setItem: (name, value) => {
+      zustandStorage.set(name, superJson.stringify(value));
+    },
+    removeItem: name => {
+      zustandStorage.remove(name);
+    },
+  };
+  return storage;
+}

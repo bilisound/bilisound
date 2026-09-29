@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1724682304419,
+      "tag": "0000_mighty_mac_gargan",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1725034897661,
+      "tag": "0001_watery_sage",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1729585413241,
+      "tag": "0002_stiff_captain_midlands",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1782568494476,
+      "tag": "0003_unknown_the_professor",
+      "breakpoints": true
+    }
+  ]
+}

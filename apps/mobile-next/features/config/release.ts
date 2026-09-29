@@ -1,0 +1,78 @@
+import ReactNativeBlobUtil from "react-native-blob-util";
+
+import { BRAND } from "~/constants/branding";
+import { RELEASE_CHANNEL } from "~/constants/releasing";
+import { getUpdate } from "~/api/release";
+
+/**
+ * features/config/release — 应用版本更新检查与 APK 安装。
+ *
+ * 属于 config 的应用级运行时能力（与 diagnostics 同层）。通过
+ * ~/api/release 获取应用更新元数据（server-cf /internal/app/update）。
+ */
+
+export interface CheckLatestVersionReturns {
+  isLatest: boolean;
+  currentVersion: string;
+  latestVersion: string;
+  extraInfo: string;
+  downloadPage: string;
+  downloadUrl: string;
+}
+
+export async function checkLatestVersion(currentVersion: string) {
+  switch (RELEASE_CHANNEL) {
+    case "android_github":
+    case "android_github_beta":
+    case "android_github_stg": {
+      // stg 走 pre-release channel，其余走正式版
+      const nightly = RELEASE_CHANNEL === "android_github_stg";
+      const { data: result } = await getUpdate(nightly);
+      // 服务端在「无可用发布」时返回 data: null，此时视为已是最新，不提示更新
+      if (!result) {
+        return {
+          isLatest: true,
+          currentVersion,
+          latestVersion: currentVersion,
+          extraInfo: "",
+          downloadPage: "",
+          downloadUrl: "",
+        };
+      }
+      return {
+        isLatest: currentVersion === result.version,
+        currentVersion,
+        latestVersion: result.version,
+        extraInfo: result.info,
+        downloadPage: result.downloadPage,
+        downloadUrl: result.downloadUrl,
+      };
+    }
+    default: {
+      return {
+        isLatest: true,
+        currentVersion,
+        latestVersion: currentVersion,
+        extraInfo: "",
+        downloadPage: "",
+        downloadUrl: "",
+      };
+    }
+  }
+}
+
+export function downloadApk(url: string, version: string) {
+  const android = ReactNativeBlobUtil.android;
+  return ReactNativeBlobUtil.config({
+    addAndroidDownloads: {
+      useDownloadManager: true,
+      title: ` ${BRAND} 更新`,
+      description: `版本 ${version}`,
+      mime: "application/vnd.android.package-archive",
+      mediaScannable: true,
+      notification: true,
+    },
+  })
+    .fetch("GET", url)
+    .then(res => android.actionViewIntent(res.path(), "application/vnd.android.package-archive"));
+}

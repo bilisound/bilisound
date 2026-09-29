@@ -1,0 +1,1 @@
+ALTER TABLE `playlist_meta` ADD `filter_rules` text;

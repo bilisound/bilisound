@@ -1,0 +1,16 @@
+node_modules/
+.expo/
+dist/
+web-build/
+android/
+ios/
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.apk
+*.aab
+*.tsbuildinfo
+expo-env.d.ts
+playlist.db
