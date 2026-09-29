@@ -24,9 +24,10 @@ import { padArrayToColumns } from "~/utils/misc";
 /**
  * 歌单列表页，搬运自 v2 `apps/mobile/app/(main)/(playlist)/playlist.tsx`。
  *
- * 保留:搜索过滤、网格偏好切换、创建/导入入口、长按（修改信息/导出/删除）、
- * 删除确认与队列归属清理。v2 的扫码入口与「修改封面」依赖未在本任务的
- * 路由范围内（barcode / utils/cover-picker），故未包含。
+ * 保留:搜索过滤、网格偏好切换、扫码入口、创建/导入入口、长按
+ * （修改信息/修改封面/导出/删除）、删除确认与队列归属清理。
+ * 「修改封面」与 v2 相同：仅本地歌单（无 source）且曲目数 > 0 时展示，
+ * 跳转 `/utils/cover-picker`。
  */
 export default function PlaylistScreen() {
   const queryClient = useQueryClient();
@@ -120,6 +121,18 @@ export default function PlaylistScreen() {
       onPress: () => {
         if (activePlaylist) {
           router.push(`/playlist/meta/${activePlaylist.id}`);
+        }
+      },
+    },
+    {
+      id: "editCover",
+      text: "修改封面",
+      icon: "fa6-solid:images",
+      // 与 v2 相同：在线歌单的封面跟随上游，只有本地歌单且有曲目时才能改。
+      show: !activePlaylist?.source && (activePlaylist?.amount ?? 0) > 0,
+      onPress: () => {
+        if (activePlaylist) {
+          router.push(`/utils/cover-picker?listId=${activePlaylist.id}`);
         }
       },
     },
@@ -239,6 +252,13 @@ export default function PlaylistScreen() {
             shape="rounded"
             variant="ghost"
             onPress={() => toggle("showPlaylistInGrid")}
+          />
+          <Button
+            aria-label="扫描二维码"
+            icon="uil:qrcode-scan"
+            shape="rounded"
+            variant="ghost"
+            onPress={() => router.navigate("/barcode")}
           />
           <Button
             aria-label="添加或导入歌单"

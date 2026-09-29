@@ -50,6 +50,9 @@ export { openAddPlaylistPage } from "./misc";
 // 列表过滤（v2 列表页内联 Fuse 逻辑提取，配置不变）
 export { filterPlaylistsByQuery } from "./filter";
 
+// 封面候选（v2 详情页头图组 / 封面选择页共用的去重取法）
+export { collectUniqueCoverImages } from "./cover";
+
 // Hooks
 export { usePlaylistEditor } from "./use-playlist-editor";
 export { usePlaylistSearch } from "./use-playlist-search";

@@ -6,13 +6,16 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native";
 
 import { notify, reportError } from "~/components/feedback";
+import { DownloadButton } from "~/components/download-button";
 import { PlaylistImagesGroup } from "~/components/playlist-images-group";
+import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
 import { getVideoImageUrl } from "~/features/bilibili";
-import { updatePlaylist, type Playlist } from "~/features/playlist";
+import { updatePlaylist, type Playlist, type PlaylistTrack } from "~/features/playlist";
 import { convertToRelativeTime } from "~/utils/datetime";
 
 export interface PlaylistDetailHeaderProps {
   meta: Playlist;
+  detail: PlaylistTrack[];
   images: string[];
   showPlayButton: boolean;
   onPlay: () => void;
@@ -22,10 +25,10 @@ export interface PlaylistDetailHeaderProps {
  * 歌单详情头部，由 v2 `apps/mobile/components/playlist-detail/Header.tsx` 搬运。
  *
  * 保留全部业务行为：封面/拼图、`N 首歌曲 + 上次同步` 文案、播放按钮、
+ * 批量下载按钮（FEATURE_MASS_DOWNLOAD 开关，Web 端自身不渲染）、
  * 在线歌单同步（进度回调 + 弹窗 + 失败提示）、描述展示。
- * v2 的批量下载按钮依赖下载管理器页面，不属于本任务范围，未迁移（见任务报告）。
  */
-export function PlaylistDetailHeader({ meta, images, showPlayButton, onPlay }: PlaylistDetailHeaderProps) {
+export function PlaylistDetailHeader({ meta, detail, images, showPlayButton, onPlay }: PlaylistDetailHeaderProps) {
   const queryClient = useQueryClient();
   const theme = useTheme();
   const [syncing, setSyncing] = useState(false);
@@ -93,6 +96,11 @@ export function PlaylistDetailHeader({ meta, images, showPlayButton, onPlay }: P
           <Button icon="fa6-solid:play" shape="rounded" onPress={onPlay}>
             播放
           </Button>
+          {FEATURE_MASS_DOWNLOAD ? (
+            <DownloadButton
+              items={detail.map(track => ({ id: track.bvid, episode: track.episode, title: track.title }))}
+            />
+          ) : null}
           {source ? (
             <Button
               aria-label="同步在线歌单"

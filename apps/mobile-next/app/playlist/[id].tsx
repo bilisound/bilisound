@@ -18,7 +18,13 @@ import { PlaylistFilterField } from "~/components/playlist-filter-field";
 import { PlaylistTrackRow } from "~/components/playlist-track-row";
 import { getVideoImageUrl } from "~/features/bilibili";
 import { usePlaylistPlayer } from "~/features/playback";
-import { getPlaylistDetail, getPlaylistMeta, usePlaylistEditor, usePlaylistSearch } from "~/features/playlist";
+import {
+  collectUniqueCoverImages,
+  getPlaylistDetail,
+  getPlaylistMeta,
+  usePlaylistEditor,
+  usePlaylistSearch,
+} from "~/features/playlist";
 
 interface ConfirmRequest {
   title: string;
@@ -30,8 +36,8 @@ interface ConfirmRequest {
  * 歌单详情页，搬运自 v2 `apps/mobile/app/(main)/(playlist)/detail/[id].tsx`。
  *
  * 保留:曲目搜索过滤、播放/替换队列确认、多选批量（长按进入、全选/反选/复制/删除）、
- * 在线歌单同步（头部组件内）、编辑态返回拦截。v2 的「修改封面」依赖
- * utils/cover-picker 路由，不在本任务范围。
+ * 「修改封面」（跳转 utils/cover-picker，仅本地歌单且曲目数 > 0 时展示）、
+ * 「批量管理」、头部批量下载、在线歌单同步（头部组件内）、编辑态返回拦截。
  */
 export default function PlaylistDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -91,6 +97,14 @@ export default function PlaylistDetailScreen() {
       onPress: () => router.push(`/playlist/meta/${id}`),
     },
     {
+      id: "editCover",
+      text: "修改封面",
+      icon: "fa6-solid:images",
+      // 与 v2 相同：在线歌单的封面跟随上游，只有本地歌单且有曲目时才能改。
+      show: !meta?.source && (meta?.amount ?? 0) > 0,
+      onPress: () => router.push(`/utils/cover-picker?listId=${id}`),
+    },
+    {
       id: "editMass",
       text: "批量管理",
       icon: "fa6-solid:list-check",
@@ -140,7 +154,7 @@ export default function PlaylistDetailScreen() {
       );
     }
 
-    const images = Array.from(new Set(playlistDetail.map(track => track.imgUrl)));
+    const images = collectUniqueCoverImages(playlistDetail);
     const hasTracks = playlistDetail.length > 0;
 
     return (
@@ -149,6 +163,7 @@ export default function PlaylistDetailScreen() {
           edgeInsets={{ left: 0, right: 0, top: 0, bottom: 0 }}
           header={
             <PlaylistDetailHeader
+              detail={playlistDetail}
               images={images}
               meta={meta}
               showPlayButton={hasTracks}
@@ -182,6 +197,7 @@ export default function PlaylistDetailScreen() {
                   <View $gtSm={{ display: "none" }}>
                     <View paddingHorizontal="$4">
                       <PlaylistDetailHeader
+                        detail={playlistDetail}
                         images={images}
                         meta={meta}
                         showPlayButton={hasTracks}
