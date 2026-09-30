@@ -1,0 +1,55 @@
+diff --git a/build/typed-routes/index.js b/build/typed-routes/index.js
+index 52289a13ee7ba16b36d73463857753928ed81c62..8dd4d0048c7961175507138a118b4b75aaa65370 100644
+--- a/build/typed-routes/index.js
++++ b/build/typed-routes/index.js
+@@ -28,29 +28,40 @@ function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.r
+         if (!process.env.EXPO_ROUTER_APP_ROOT)
+             return;
+         let shouldRegenerate = false;
+-        let relativePath = node_path_1.default.relative(process.env.EXPO_ROUTER_APP_ROOT, filePath);
+-        const isInsideAppRoot = !relativePath.startsWith('../');
++        // NOTE: Metro reports changed files relative to its project root (`config.projectRoot`), not
++        // as absolute paths, while `EXPO_ROUTER_APP_ROOT` is absolute. Resolve the path before
++        // comparing the two, otherwise files outside of the app directory are mistaken for routes
++        // (and on Windows a relative path prefix is `..\`, which never equals `'../'`).
++        const appRoot = node_path_1.default.resolve(process.env.EXPO_ROUTER_APP_ROOT);
++        const absoluteFilePath = node_path_1.default.isAbsolute(filePath)
++            ? filePath
++            : node_path_1.default.resolve(filePath);
++        const relativePath = node_path_1.default.relative(appRoot, absoluteFilePath);
++        const isInsideAppRoot = relativePath !== '' &&
++            relativePath !== '..' &&
++            !relativePath.startsWith(`..${node_path_1.default.sep}`) &&
++            !node_path_1.default.isAbsolute(relativePath);
+         const basename = node_path_1.default.basename(relativePath);
+         if (!isInsideAppRoot)
+             return;
+-        // require.context paths always start with './' when relative to the root
+-        relativePath = `./${relativePath}`;
++        // require.context paths always start with './' and use forward slashes, even on Windows
++        const contextKey = `./${relativePath.split(node_path_1.default.sep).join('/')}`;
+         if (type === 'delete') {
+-            ctx.__delete(relativePath);
+-            if (routeFiles.has(relativePath)) {
+-                routeFiles.delete(relativePath);
++            ctx.__delete(contextKey);
++            if (routeFiles.has(contextKey)) {
++                routeFiles.delete(contextKey);
+                 shouldRegenerate = true;
+             }
+         }
+         else if (type === 'add') {
+-            ctx.__add(relativePath);
++            ctx.__add(contextKey);
+             if ((0, routing_1.isTypedRoute)(basename)) {
+-                routeFiles.add(relativePath);
++                routeFiles.add(contextKey);
+                 shouldRegenerate = true;
+             }
+         }
+         else {
+-            shouldRegenerate = routeFiles.has(relativePath);
++            shouldRegenerate = routeFiles.has(contextKey);
+         }
+         if (shouldRegenerate) {
+             // TODO(@kitten): This was altered from `regenerateFn(outputDir, ctx)` which, as per the types, is incorrect

@@ -4,6 +4,9 @@ import type * as StoreModule from "../store";
 
 import type { SettingsProps } from "../types";
 
+// Release installation is unrelated to persisted settings and requires a native runtime.
+jest.mock("../release", () => ({ checkLatestVersion: jest.fn(), downloadApk: jest.fn() }));
+
 const v2Settings: SettingsProps = {
   useLegacyID: true,
   downloadNextTrack: false,

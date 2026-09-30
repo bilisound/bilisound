@@ -100,7 +100,7 @@ export async function playEpisode(id: string, episode: number) {
 export async function refreshTrack(trackData: TrackData) {
   const { extendedData } = trackData;
   if (!extendedData) {
-    log.error("无法替换曲目 " + trackData.uri + "，因为缺乏必要的元数据！！");
+    log.error("无法替换曲目，因为缺乏必要的元数据");
     return trackData;
   }
   const id = extendedData.id;

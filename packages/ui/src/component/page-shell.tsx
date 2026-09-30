@@ -125,13 +125,14 @@ export function PageShell({
           ) : null}
           <Text
             ref={titleRef}
-            accessibilityLabel={title}
+            aria-label={title}
             color="$text"
             numberOfLines={1}
+            role="heading"
             semiBold
             size="lg"
             textAlign="center"
-            {...(isWeb ? { role: "heading" as const } : { accessibilityRole: "header" as const })}
+            {...(isWeb ? ({ "aria-level": 1 } as object) : null)}
           >
             {title}
           </Text>

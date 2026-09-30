@@ -1,7 +1,7 @@
 import * as DocumentPicker from "expo-document-picker";
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
-import { createElement, useEffect, useMemo, useState } from "react";
+import { createElement, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Image as ReactNativeImage, Platform, StyleSheet, View } from "react-native";
 import type { ViewStyle } from "react-native";
@@ -9,18 +9,26 @@ import type { ViewStyle } from "react-native";
 import { Button, HStack, Slider, StateContent, Text, TextInput, VStack } from "@bilisound/ui";
 import { AppLayout } from "~/components/app-layout";
 import { notify } from "~/components/feedback";
-import { formatOpacityPercent, formatScalePercent } from "~/components/settings-format";
+import { formatOpacityPercent } from "~/components/settings-format";
+import { SettingsColorPicker } from "~/components/settings-color-picker";
 import { SettingsSectionTitle } from "~/components/settings-menu";
 import { exportUserTheme } from "~/components/settings-theme-file";
+import {
+  OFFSET_SLIDER_LIMIT,
+  SCALE_LIMIT,
+  getOffsetSliderValue,
+  resolveScaleEntry,
+} from "~/components/theme-editor-input";
+import { NumberEntry } from "~/components/theme-editor-number-entry";
 import { generateTailwindScale } from "~/features/theme/color-scale";
 import {
   buildSavedUserTheme,
-  clampOriginalScale,
   clampYuruCharaOpacity,
   createThemeAssetPreview,
   createYuruCharaRemovalDraft,
   createYuruCharaUploadDraft,
   getYuruCharaAssetId,
+  getMinOriginalScaleForOnePixel,
   getYuruCharaRenderMetrics,
   withYuruCharaDefaults,
 } from "~/features/theme/editor";
@@ -86,6 +94,9 @@ export default function ThemeEditorScreen() {
   const [pendingAsset, setPendingAsset] = useState<Omit<ThemeAsset, "themeId"> | null>(null);
   const [pendingAssetDeletion, setPendingAssetDeletion] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loadedImageSize, setLoadedImageSize] = useState<{ width: number; height: number } | null>(null);
+  const [positionEditing, setPositionEditing] = useState(false);
+  const positionSnapshotRef = useRef<YuruCharaForm | null>(null);
 
   useEffect(() => {
     if (!loaded) {
@@ -137,13 +148,17 @@ export default function ThemeEditorScreen() {
     };
   }, [id, loaded, themes]);
 
+  useEffect(() => {
+    setLoadedImageSize(null);
+  }, [assetUri]);
+
   const previewLayout = useMemo(
     () => (theme?.yuruChara ? withYuruCharaDefaults(theme, yuruChara) : null),
     [theme, yuruChara],
   );
   const previewMetrics = useMemo(
-    () => (previewLayout ? getYuruCharaRenderMetrics(previewLayout, viewportSize, null) : null),
-    [previewLayout, viewportSize],
+    () => (previewLayout ? getYuruCharaRenderMetrics(previewLayout, viewportSize, loadedImageSize) : null),
+    [previewLayout, viewportSize, loadedImageSize],
   );
 
   if (!theme) {
@@ -160,6 +175,29 @@ export default function ThemeEditorScreen() {
 
   function patchYuruChara(patch: Partial<YuruCharaForm>) {
     setYuruChara(current => ({ ...current, ...patch }));
+  }
+
+  function startPositionEditing() {
+    positionSnapshotRef.current = yuruChara;
+    setPositionEditing(true);
+  }
+
+  function cancelPositionEditing() {
+    const snapshot = positionSnapshotRef.current;
+    if (snapshot) {
+      setYuruChara(snapshot);
+    }
+    positionSnapshotRef.current = null;
+    setPositionEditing(false);
+  }
+
+  function finishPositionEditing() {
+    positionSnapshotRef.current = null;
+    setPositionEditing(false);
+  }
+
+  function resetPositionEditing() {
+    patchYuruChara({ offsetX: 0, offsetY: 0, originalScale: 100 });
   }
 
   function swapBaseColors() {
@@ -265,13 +303,19 @@ export default function ThemeEditorScreen() {
 
   const previewPrimary = safeGenerateTailwindScale(primaryBase, theme.palette.primary);
   const previewAccent = safeGenerateTailwindScale(accentBase, theme.palette.accent);
+  const previewImageWidth = previewLayout?.imageWidth || loadedImageSize?.width || 0;
+  const previewImageHeight = previewLayout?.imageHeight || loadedImageSize?.height || 0;
+  const scaleMin = getMinOriginalScaleForOnePixel(previewImageWidth, previewImageHeight);
+  const anchorLabel =
+    anchorGrid.find(item => item.align === yuruChara.align && item.verticalAlign === yuruChara.verticalAlign)?.label ??
+    "未知";
 
   return (
     <AppLayout back title="编辑主题">
       <SettingsSectionTitle>基础</SettingsSectionTitle>
       <VStack gap="$4" paddingHorizontal="$4">
         <Field label="主题名称">
-          <TextInput accessibilityLabel="主题名称" placeholder="请输入主题名称" value={name} onChangeText={setName} />
+          <TextInput aria-label="主题名称" placeholder="请输入主题名称" value={name} onChangeText={setName} />
         </Field>
         <Field label="Primary 主色">
           <ColorField candidates={extractedColors} title="Primary 主色" value={primaryBase} onChange={setPrimaryBase} />
@@ -290,21 +334,23 @@ export default function ThemeEditorScreen() {
 
       <SettingsSectionTitle>看板娘</SettingsSectionTitle>
       <VStack gap="$4" paddingHorizontal="$4">
-        <HStack gap="$3">
-          <Button icon="fa6-solid:image" onPress={() => void pickImage()}>
-            {assetUri ? "替换图片并自动取色" : "上传图片并自动取色"}
-          </Button>
-          {assetUri ? (
-            <Button
-              color="negative"
-              icon="fa6-solid:trash"
-              variant="outline"
-              onPress={() => void deleteYuruCharaImage()}
-            >
-              删除图片
+        {positionEditing ? null : (
+          <HStack gap="$3">
+            <Button icon="fa6-solid:image" onPress={() => void pickImage()}>
+              {assetUri ? "替换图片并自动取色" : "上传图片并自动取色"}
             </Button>
-          ) : null}
-        </HStack>
+            {assetUri ? (
+              <Button
+                color="negative"
+                icon="fa6-solid:trash"
+                variant="outline"
+                onPress={() => void deleteYuruCharaImage()}
+              >
+                删除图片
+              </Button>
+            ) : null}
+          </HStack>
+        )}
         {assetUri && previewLayout && previewMetrics ? (
           <YuruCharaPreview
             align={yuruChara.align}
@@ -315,7 +361,76 @@ export default function ThemeEditorScreen() {
             uri={assetUri}
             verticalAlign={yuruChara.verticalAlign}
             width={previewMetrics.width}
+            onImageSize={setLoadedImageSize}
           />
+        ) : null}
+        {assetUri ? (
+          positionEditing ? (
+            <>
+              <VStack backgroundColor="$surfaceMuted" borderRadius="$3" gap="$1" padding="$3">
+                <Text semiBold size="sm">
+                  调整位置和大小
+                </Text>
+                <Text color="$textMuted" size="sm">
+                  拖动滑杆调整，或输入数值精确调整
+                </Text>
+                <Text color="$textMuted" size="sm">
+                  基准：{anchorLabel}
+                </Text>
+              </VStack>
+              <EditableSliderField
+                accessibilityLabel="看板娘缩放数值"
+                label="缩放（%）"
+                value={yuruChara.originalScale}
+                onCommit={value => patchYuruChara({ originalScale: resolveScaleEntry(value, scaleMin) })}
+              >
+                <Slider
+                  accessibilityLabel="看板娘缩放"
+                  max={SCALE_LIMIT}
+                  min={scaleMin}
+                  step={1}
+                  value={[resolveScaleEntry(yuruChara.originalScale, scaleMin)]}
+                  onValueChange={([value]) => patchYuruChara({ originalScale: resolveScaleEntry(value, scaleMin) })}
+                />
+              </EditableSliderField>
+              <EditableSliderField
+                accessibilityLabel="看板娘水平偏移数值"
+                label="水平偏移"
+                value={yuruChara.offsetX}
+                onCommit={value => patchYuruChara({ offsetX: value })}
+              >
+                <Slider
+                  accessibilityLabel="看板娘水平偏移"
+                  max={OFFSET_SLIDER_LIMIT}
+                  min={-OFFSET_SLIDER_LIMIT}
+                  step={1}
+                  value={[getOffsetSliderValue(yuruChara.offsetX)]}
+                  onValueChange={([value]) => patchYuruChara({ offsetX: value })}
+                />
+              </EditableSliderField>
+              <EditableSliderField
+                accessibilityLabel="看板娘垂直偏移数值"
+                label="垂直偏移"
+                value={yuruChara.offsetY}
+                onCommit={value => patchYuruChara({ offsetY: value })}
+              >
+                <Slider
+                  accessibilityLabel="看板娘垂直偏移"
+                  max={OFFSET_SLIDER_LIMIT}
+                  min={-OFFSET_SLIDER_LIMIT}
+                  step={1}
+                  value={[getOffsetSliderValue(yuruChara.offsetY)]}
+                  onValueChange={([value]) => patchYuruChara({ offsetY: value })}
+                />
+              </EditableSliderField>
+            </>
+          ) : (
+            <HStack>
+              <Button icon="fa6-solid:arrows-up-down-left-right" variant="outline" onPress={startPositionEditing}>
+                调整位置和大小
+              </Button>
+            </HStack>
+          )
         ) : null}
         {assetUri ? (
           <>
@@ -336,48 +451,38 @@ export default function ThemeEditorScreen() {
                 onValueChange={([value]) => patchYuruChara({ opacity: clampYuruCharaOpacity(value) })}
               />
             </SliderField>
-            <SliderField label="缩放" suffix={formatScalePercent(yuruChara.originalScale)}>
-              <Slider
-                accessibilityLabel="看板娘缩放"
-                max={300}
-                min={5}
-                step={1}
-                value={[yuruChara.originalScale]}
-                onValueChange={([value]) => patchYuruChara({ originalScale: clampOriginalScale(value) })}
-              />
-            </SliderField>
-            <SliderField label="水平偏移" suffix={String(Math.round(yuruChara.offsetX))}>
-              <Slider
-                accessibilityLabel="看板娘水平偏移"
-                max={300}
-                min={-300}
-                step={1}
-                value={[yuruChara.offsetX]}
-                onValueChange={([value]) => patchYuruChara({ offsetX: value })}
-              />
-            </SliderField>
-            <SliderField label="垂直偏移" suffix={String(Math.round(yuruChara.offsetY))}>
-              <Slider
-                accessibilityLabel="看板娘垂直偏移"
-                max={300}
-                min={-300}
-                step={1}
-                value={[yuruChara.offsetY]}
-                onValueChange={([value]) => patchYuruChara({ offsetY: value })}
-              />
-            </SliderField>
           </>
         ) : null}
       </VStack>
 
-      <HStack gap="$3" padding="$4">
-        <Button disabled={saving} flex={1} icon="fa6-solid:floppy-disk" onPress={() => void handleSave()}>
-          保存
-        </Button>
-        <Button color="neutral" flex={1} icon="fa6-solid:share" variant="outline" onPress={() => void handleExport()}>
-          导出
-        </Button>
-      </HStack>
+      {positionEditing ? (
+        <HStack gap="$3" padding="$4">
+          <Button
+            color="neutral"
+            flex={1}
+            icon="fa6-solid:rotate-left"
+            variant="outline"
+            onPress={resetPositionEditing}
+          >
+            重置
+          </Button>
+          <Button color="negative" flex={1} icon="fa6-solid:xmark" variant="outline" onPress={cancelPositionEditing}>
+            取消
+          </Button>
+          <Button flex={1} icon="fa6-solid:check" onPress={finishPositionEditing}>
+            完成
+          </Button>
+        </HStack>
+      ) : (
+        <HStack gap="$3" padding="$4">
+          <Button disabled={saving} flex={1} icon="fa6-solid:floppy-disk" onPress={() => void handleSave()}>
+            保存
+          </Button>
+          <Button color="neutral" flex={1} icon="fa6-solid:share" variant="outline" onPress={() => void handleExport()}>
+            导出
+          </Button>
+        </HStack>
+      )}
     </AppLayout>
   );
 }
@@ -409,6 +514,32 @@ function SliderField({ children, label, suffix }: { children: ReactNode; label: 
   );
 }
 
+function EditableSliderField({
+  accessibilityLabel,
+  children,
+  label,
+  onCommit,
+  value,
+}: {
+  accessibilityLabel: string;
+  children: ReactNode;
+  label: string;
+  onCommit: (value: number) => void;
+  value: number;
+}) {
+  return (
+    <VStack gap="$1">
+      <HStack alignItems="center" gap="$2" justifyContent="space-between">
+        <Text color="$textMuted" size="sm">
+          {label}
+        </Text>
+        <NumberEntry accessibilityLabel={accessibilityLabel} value={value} onCommit={onCommit} />
+      </HStack>
+      {children}
+    </VStack>
+  );
+}
+
 function ColorField({
   candidates,
   onChange,
@@ -421,17 +552,42 @@ function ColorField({
   value: string;
 }) {
   const swatchColor = safeHex(value, "#14b8a6");
+  const [pickerVisible, setPickerVisible] = useState(false);
+  const [pickerDraft, setPickerDraft] = useState(swatchColor);
+
+  function openNativePicker() {
+    setPickerDraft(swatchColor);
+    setPickerVisible(true);
+  }
+
+  function confirmNativePicker() {
+    onChange(safeHex(pickerDraft, swatchColor));
+    setPickerVisible(false);
+  }
 
   return (
     <VStack gap="$2">
+      <Text color="$textMuted" size="sm">
+        {Platform.OS === "web" ? "点击色块调用浏览器 / 系统调色板" : "点击色块打开调色板，确定后应用"}
+      </Text>
       <HStack alignItems="center" gap="$3">
         {Platform.OS === "web" ? (
           createWebColorInput({ color: swatchColor, title, onChange })
         ) : (
-          <HStack backgroundColor={swatchColor} borderRadius="$2" height={40} width={40} />
+          <VStack
+            aria-label={`打开 ${title} 调色板`}
+            role="button"
+            backgroundColor={swatchColor}
+            borderColor="$border"
+            borderRadius="$2"
+            borderWidth={1}
+            height={40}
+            width={40}
+            onPress={openNativePicker}
+          />
         )}
         <TextInput
-          accessibilityLabel={`${title} Hex 值`}
+          aria-label={`${title} Hex 值`}
           flex={1}
           placeholder="Hex（可选）"
           value={value}
@@ -443,15 +599,17 @@ function ColorField({
           <Text color="$textMuted" size="sm">
             从图片提取的颜色
           </Text>
-          <HStack flexWrap="wrap" gap="$2">
+          <HStack role="group" aria-label={`${title} 图片取色`} flexWrap="wrap" gap="$2">
             {candidates.map(color => {
               const selected = safeHex(color, color) === swatchColor;
               return (
                 <VStack
                   key={color}
-                  accessibilityLabel={`选择颜色 ${color}`}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
+                  aria-label={`选择颜色 ${color}`}
+                  role="button"
+                  {...(Platform.OS === "web"
+                    ? { render: createElement("button", { type: "button", "aria-pressed": selected }) }
+                    : { accessibilityState: { selected } })}
                   backgroundColor={color}
                   borderColor={selected ? "$primaryBorder" : "$border"}
                   borderRadius="$3"
@@ -465,6 +623,16 @@ function ColorField({
           </HStack>
         </VStack>
       ) : null}
+      {Platform.OS === "web" ? null : (
+        <SettingsColorPicker
+          title={title}
+          visible={pickerVisible}
+          value={pickerDraft}
+          onChange={setPickerDraft}
+          onCancel={() => setPickerVisible(false)}
+          onConfirm={confirmNativePicker}
+        />
+      )}
     </VStack>
   );
 }
@@ -514,7 +682,16 @@ function AnchorGrid({
   verticalAlign: YuruCharaVerticalAlign;
 }) {
   return (
-    <VStack alignSelf="flex-start" borderColor="$border" borderRadius="$3" borderWidth={1} gap="$1" padding="$1">
+    <VStack
+      role="group"
+      aria-label="图片位置锚点"
+      alignSelf="flex-start"
+      borderColor="$border"
+      borderRadius="$3"
+      borderWidth={1}
+      gap="$1"
+      padding="$1"
+    >
       {[0, 1, 2].map(row => (
         <HStack key={row} gap="$1">
           {anchorGrid.slice(row * 3, row * 3 + 3).map(item => {
@@ -522,9 +699,12 @@ function AnchorGrid({
             return (
               <VStack
                 key={`${item.align}-${item.verticalAlign}`}
-                accessibilityLabel={`图片位置锚点：${item.label}`}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
+                aria-label={`图片位置锚点：${item.label}`}
+                role="button"
+                // Real buttons provide Enter/Space activation without a second event path.
+                {...(Platform.OS === "web"
+                  ? { render: createElement("button", { type: "button", "aria-pressed": selected }) }
+                  : { accessibilityState: { selected } })}
                 alignItems="center"
                 backgroundColor={selected ? "$primaryTintPress" : "$surfaceMuted"}
                 borderRadius="$2"
@@ -554,6 +734,7 @@ function YuruCharaPreview({
   offsetX,
   offsetY,
   opacity,
+  onImageSize,
   uri,
   verticalAlign,
   width,
@@ -563,6 +744,7 @@ function YuruCharaPreview({
   offsetX: number;
   offsetY: number;
   opacity: number;
+  onImageSize?: (size: { width: number; height: number } | null) => void;
   uri: string;
   verticalAlign: YuruCharaVerticalAlign;
   width: number;
@@ -592,7 +774,12 @@ function YuruCharaPreview({
           vertical,
         ]}
       >
-        <Image contentFit="fill" source={{ uri }} style={styles.previewImage} />
+        <Image
+          contentFit="fill"
+          source={{ uri }}
+          style={styles.previewImage}
+          onLoad={event => onImageSize?.(getLoadedImageSize(event))}
+        />
       </View>
     </View>
   );
@@ -624,6 +811,14 @@ function getWebImageSize(file: File): Promise<{ width: number; height: number }>
     };
     image.src = url;
   });
+}
+
+/** 与 v2 一致：存储尺寸缺失时用实际加载出的图片尺寸兜底，动态缩放下限才准确。 */
+function getLoadedImageSize(event: unknown): { width: number; height: number } | null {
+  const source = (event as { source?: { width?: unknown; height?: unknown } })?.source;
+  const width = typeof source?.width === "number" ? source.width : 0;
+  const height = typeof source?.height === "number" ? source.height : 0;
+  return width > 0 && height > 0 ? { width, height } : null;
 }
 
 function safeHex(value: string | undefined, fallback: string): string {

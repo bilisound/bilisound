@@ -1,8 +1,12 @@
 # Epic 7 Plan — UI Rewrite
 
-> Status: **ready to start** (2026-08-25). Phase 2 admission criteria all met; feature
-> use-case APIs frozen. This document records the framework decision, responsive strategy,
-> and slice breakdown.
+> Implementation status: see the [Status Overview](./epic-breakdown.md#status-overview) and
+> [Mobile Next Handoff](./mobile-next-handoff.md). Phase 2 admission criteria are met;
+> feature use-case APIs remain frozen. This document records the framework decision,
+> responsive strategy, and slice breakdown.
+>
+> **Current delivery boundary:** retain `apps/mobile` unchanged. Final swap/removal below is
+> a future proposal, not authorized by the current mobile-next development task.
 
 ## Framework Decision
 

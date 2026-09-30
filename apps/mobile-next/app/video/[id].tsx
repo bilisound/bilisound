@@ -18,7 +18,8 @@ import { convertToHTTPS } from "~/utils/string";
 import log from "~/utils/logger";
 
 /**
- * 视频详情页：元数据 + 分 P 列表，点击播放、长按加入歌单（搬运 v2 `video/[id].tsx`）。
+ * 视频详情页：元数据 + 分 P 列表，点击播放（点击当前曲目为播放/暂停切换）、
+ * 长按打开分 P 菜单（加入歌单 / 缓存到本地）（搬运 v2 `video/[id].tsx`）。
  *
  * `noHistory` 传入时不写访问历史（供播放中跳转等场景避让）。
  */
@@ -77,9 +78,10 @@ export default function VideoDetailScreen() {
                 }
                 renderItem={({ item }) => (
                   <DiscoverySongItem
+                    bvid={data.bvid}
                     duration={item.duration}
                     onLongPress={() => setDisplayTrack(item)}
-                    onPress={() => void handlePlay(data.bvid, item)}
+                    onRequestPlay={() => void handlePlay(data.bvid, item)}
                     page={item.page}
                     title={item.displayTitle}
                   />

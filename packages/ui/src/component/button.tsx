@@ -30,6 +30,7 @@ export interface ButtonProps extends Omit<
   color?: ButtonColor;
   icon?: IconName;
   iconPosition?: ButtonIconPosition;
+  numberOfLines?: number;
   ref?: Ref<View>;
   shape?: ButtonShape;
   size?: ControlSize;
@@ -39,11 +40,13 @@ export interface ButtonProps extends Omit<
 export function Button({
   "aria-label": ariaLabel,
   accessibilityLabel,
+  accessibilityState,
   children,
   color = "primary",
   disabled,
   icon,
   iconPosition = "start",
+  numberOfLines,
   ref,
   shape = "default",
   size = "md",
@@ -64,7 +67,17 @@ export function Button({
       ref={ref}
       unstyled
       {...frameStyles}
-      {...(isWeb ? { "aria-label": resolvedAccessibilityLabel } : { accessibilityLabel: resolvedAccessibilityLabel })}
+      {...(isWeb
+        ? { "aria-label": resolvedAccessibilityLabel, accessibilityState }
+        : {
+            accessibilityLabel: resolvedAccessibilityLabel,
+            // The native view keeps its "disabled" state until an update carries the key
+            // again (RN Android BaseViewManager.setViewState only resets View.isEnabled when
+            // accessibilityState has a "disabled" boolean), while Tamagui's disabled variant
+            // only emits aria-disabled when true. So send the resolved boolean every render,
+            // which also covers true -> undefined (prop removed).
+            accessibilityState: { ...accessibilityState, disabled: disabled === true },
+          })}
       controlSize={isLink && !isIconOnly ? undefined : size}
       hasIconAndLabel={Boolean(icon && !isIconOnly)}
       iconOnly={isIconOnly}
@@ -75,7 +88,14 @@ export function Button({
     >
       {iconPosition === "start" && buttonIcon}
       {!isIconOnly && (
-        <ButtonLabel unstyled {...labelStyles} controlSize={isLink ? "md" : size}>
+        <ButtonLabel
+          unstyled
+          {...labelStyles}
+          controlSize={isLink ? "md" : size}
+          numberOfLines={numberOfLines}
+          flexShrink={1}
+          minWidth={0}
+        >
           {children}
         </ButtonLabel>
       )}

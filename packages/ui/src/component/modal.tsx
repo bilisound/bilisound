@@ -1,6 +1,6 @@
 import { createContext, forwardRef, useContext } from "react";
 import type { ComponentProps, ReactNode } from "react";
-import type { TamaguiElement } from "@tamagui/core";
+import type { TamaguiElement, TamaguiTextElement } from "@tamagui/core";
 import { Dialog } from "@tamagui/dialog";
 import type { DialogHandle, DialogProps } from "@tamagui/dialog";
 
@@ -148,13 +148,15 @@ export type ModalFooterProps = ComponentProps<typeof ModalFooterFrame>;
 export const ModalFooter = ModalFooterFrame;
 
 export type ModalTitleProps = Omit<ComponentProps<typeof ModalTitleFrame>, "unstyled">;
-export const ModalTitle = forwardRef<TamaguiElement, ModalTitleProps>(function ModalTitle(props, ref) {
+// Dialog.Title renders a text element, so the forwarded ref is a TamaguiTextElement —
+// typing it as TamaguiElement would only type-check through a bivariant relation.
+export const ModalTitle = forwardRef<TamaguiTextElement, ModalTitleProps>(function ModalTitle(props, ref) {
   return <ModalTitleFrame ref={ref} {...props} unstyled />;
 });
 ModalTitle.displayName = "ModalTitle";
 
 export type ModalDescriptionProps = Omit<ComponentProps<typeof ModalDescriptionFrame>, "unstyled">;
-export const ModalDescription = forwardRef<TamaguiElement, ModalDescriptionProps>(
+export const ModalDescription = forwardRef<TamaguiTextElement, ModalDescriptionProps>(
   function ModalDescription(props, ref) {
     return <ModalDescriptionFrame ref={ref} {...props} unstyled />;
   },

@@ -7,6 +7,7 @@ ios/
 .env
 .env.*
 !.env.example
+!.env.development
 *.keystore
 *.jks
 *.apk

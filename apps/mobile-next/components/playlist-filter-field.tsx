@@ -1,5 +1,5 @@
 import { Button, Icon, Text, TextInput } from "@bilisound/ui";
-import { useTheme, View } from "@tamagui/core";
+import { isWeb, useTheme, View } from "@tamagui/core";
 
 export interface PlaylistFilterFieldProps {
   value: string;
@@ -32,8 +32,9 @@ export function PlaylistFilterField({
         <Icon name="fa6-solid:filter" size={16} color={theme.primaryText.get()} />
         <View flex={1} minWidth={0}>
           <TextInput
-            accessibilityHint={accessibilityHint}
-            accessibilityLabel={accessibilityLabel}
+            aria-label={accessibilityLabel}
+            // Web 没有可引用的描述节点，hint 保持 native-only（RN 未提供 aria-describedby）。
+            {...(isWeb ? null : { accessibilityHint: accessibilityHint })}
             onChangeText={onChangeText}
             placeholder={placeholder}
             size="md"

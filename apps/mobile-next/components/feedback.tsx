@@ -21,9 +21,23 @@ export function FeedbackHost() {
     useErrorMessageStore.getState().setMessage(null);
   }, [message]);
   const render = ({ text1, text2 }: { text1?: string; text2?: string }) => (
-    <HStack backgroundColor="$surface" borderColor="$border" borderWidth={1} borderRadius="$4" padding="$3" gap="$2" maxWidth="95%" accessibilityRole="alert">
-      <VStack flex={1} gap="$1"><Text>{text1}</Text>{text2 ? <Text size="sm">{text2}</Text> : null}</VStack>
-      <Button variant="ghost" size="sm" accessibilityLabel="关闭提示" onPress={() => Toast.hide()}>关闭</Button>
+    <HStack
+      backgroundColor="$surface"
+      borderColor="$border"
+      borderWidth={1}
+      borderRadius="$4"
+      padding="$3"
+      gap="$2"
+      maxWidth="95%"
+      role="alert"
+    >
+      <VStack flex={1} gap="$1">
+        <Text>{text1}</Text>
+        {text2 ? <Text size="sm">{text2}</Text> : null}
+      </VStack>
+      <Button variant="ghost" size="sm" accessibilityLabel="关闭提示" onPress={() => Toast.hide()}>
+        关闭
+      </Button>
     </HStack>
   );
   return <Toast config={{ success: render, error: render, info: render }} topOffset={insets.top + 12} />;

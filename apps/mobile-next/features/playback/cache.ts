@@ -95,7 +95,6 @@ export async function deleteCurrentTrackCache() {
     await Player.setRepeatMode(RepeatMode.OFF);
   }
 
-  console.log(currentTrack);
   log.debug("进行曲目替换操作");
   try {
     await Player.replaceTrack(currentTrackIndex, currentTrack);

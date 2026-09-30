@@ -6,8 +6,8 @@
  * storage/playlist 的 MMKV 中。UI 层通过此模块访问，不再直接 import
  * ~/storage/playlist。
  *
- * 持久化契约稳定：PLAYLIST_ON_QUEUE 的 "playlist_on_queue" key、
- * "storage-playlist" MMKV id、{ value?: { id } } JSON 形状保持不变。
+ * 保留 PLAYLIST_ON_QUEUE 的 "playlist_on_queue" key 与 { value?: { id } } JSON 形状；
+ * MMKV 实例使用 mobile-next 命名空间，避免与旧客户端共享存储。
  */
 
 import { PLAYLIST_ON_QUEUE, playlistStorage, usePlaylistRestoreLoopOnceFlag } from "~/storage/playlist";

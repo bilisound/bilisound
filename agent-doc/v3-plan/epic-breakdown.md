@@ -12,7 +12,7 @@ This document splits Bilisound v3 into handoff-sized workstreams.
 | 4. Playback Orchestration | **Delivered** | `features/playback` use-case boundary; see [below](#epic-4-playback-orchestration)                                                                                         |
 | 5. Playlist Domain        | **Delivered** | app-owned models, SQLite mappers, versioned exchange DTO, and Promise-based native/Web repository contract                                                                 |
 | 6. Cache and Download     | **Delivered** | cache status + audio cache + download scheduler in `features/cache`; verified tsc/jest/eslint/android+web export; runtime verified on Android physical device (2026-08-25) |
-| 7. UI Rewrite             | **Ready**     | Phase 2 complete: all 5 admission criteria met ([phase-2-audit.md](./phase-2-audit.md)); residual coupling closed, feature API frozen                                      |
+| 7. UI Rewrite             | **In progress** | Independent `apps/mobile-next` port; current implementation and verification are tracked in [mobile-next-handoff.md](./mobile-next-handoff.md). `apps/mobile` remains intact. |
 
 Delivered epics keep their full scope/goals below under **Delivered Epics** so the handoff
 record stays in one place. Planned epics are listed under **Upcoming Epics**.
@@ -512,8 +512,11 @@ download task persistence  # currently in-memory only; persisting across launche
 
 ### Epic 7: UI Rewrite (after business foundation)
 
-> Status: **ready to start** — framework decision, `apps/mobile-next` greenfield strategy, and
-> slice breakdown are in [epic-7-plan.md](./epic-7-plan.md).
+> Status: **in progress** — `apps/mobile-next` is being integrated and independently verified.
+> Current accepted increments and remaining runtime gates are in
+> [mobile-next-handoff.md](./mobile-next-handoff.md). The framework decision and slice breakdown
+> remain in [epic-7-plan.md](./epic-7-plan.md); neither partial acceptance nor passing unit tests
+> declares the full epic delivered.
 
 Scope:
 

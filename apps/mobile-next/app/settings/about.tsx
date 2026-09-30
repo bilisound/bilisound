@@ -1,8 +1,10 @@
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { Platform, StyleSheet } from "react-native";
 
 import { Text, VStack } from "@bilisound/ui";
 import { AppLayout } from "~/components/app-layout";
+import { SettingsMenuItem } from "~/components/settings-menu";
 import { BRAND } from "~/constants/branding";
 import { RELEASE_CHANNEL, VERSION } from "~/constants/releasing";
 import type { ReleaseChannel } from "~/constants/releasing";
@@ -28,6 +30,16 @@ export default function AboutScreen() {
           {`版本 ${VERSION} ・ ${releaseChannelDict[RELEASE_CHANNEL ?? "unknown"]}`}
         </Text>
       </VStack>
+      <SettingsMenuItem
+        icon="fa6-solid:award"
+        title="开源软件许可证"
+        onPress={() => router.navigate("/settings/license")}
+      />
+      <SettingsMenuItem
+        icon="fa6-solid:face-kiss-wink-heart"
+        title="致谢"
+        onPress={() => router.navigate("/settings/credit")}
+      />
       <VStack backgroundColor="$surfaceMuted" borderRadius="$4" gap="$2" marginHorizontal="$4" padding="$4">
         <Text color="$text" semiBold size="sm">
           Bilisound Next 开发版

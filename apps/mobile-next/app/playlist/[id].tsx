@@ -250,6 +250,7 @@ export default function PlaylistDetailScreen() {
   return (
     <AppLayout
       back
+      scroll={false}
       title="查看详情"
       actions={
         editor.editing ? (

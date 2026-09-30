@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import type { ViewProps } from "react-native";
 
 import BgCornerClassic from "~/assets/images/bg-corner-classic.svg";
@@ -127,7 +127,7 @@ function getLoadedImageSize(event: unknown): { width: number; height: number } |
 
 const styles = StyleSheet.create({
   base: {
-    position: "absolute",
+    position: Platform.OS === "web" ? "fixed" : "absolute",
     zIndex: 10,
   },
   right: { right: 0 },

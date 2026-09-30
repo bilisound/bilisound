@@ -8,7 +8,10 @@ import { Image } from "expo-image";
 
 import { getVideoImageUrl, getVideoUrl, type VideoMetadata } from "~/features/bilibili";
 import { openAddPlaylistPage } from "~/features/playlist";
-import { buildVideoPlaylistDraft } from "~/features/bilibili/discovery";
+import { buildVideoPlaylistDraft, videoEpisodesToDownloadItems } from "~/features/bilibili/discovery";
+import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
+import { useWindowSize } from "~/hooks/useWindowSize";
+import { DownloadButton } from "~/components/download-button";
 import { openDownloadWebEntry } from "~/components/discovery-download";
 import { formatDate } from "~/utils/datetime";
 
@@ -17,6 +20,8 @@ import { formatDate } from "~/utils/datetime";
  *
  * 宽屏时作为 DualScrollView 左栏（showFullMeta 直接展开简介），
  * 窄屏时作为列表头（折叠简介，点击展开）。
+ * 操作区与 v2 MetaData 一致：下载（native 批量缓存到本地 / Web 下载链接）、
+ * 创建歌单、查看所属合集。
  */
 export interface DiscoveryVideoMetaProps {
   data: VideoMetadata;
@@ -25,6 +30,8 @@ export interface DiscoveryVideoMetaProps {
 
 export function DiscoveryVideoMeta({ data, showFullMeta = false }: DiscoveryVideoMetaProps) {
   const [expanded, setExpanded] = useState(false);
+  const { width } = useWindowSize();
+  const showFullText = width >= 768;
   const showFullDescription = showFullMeta || expanded;
   const coverUrl = getVideoImageUrl(data.coverUrl, getVideoUrl(data.bvid));
 
@@ -101,9 +108,16 @@ export function DiscoveryVideoMeta({ data, showFullMeta = false }: DiscoveryVide
         )}
         <View flexDirection="row" flexWrap="wrap" gap="$2" style={{ marginTop: 16 }}>
           {Platform.OS === "web" ? (
-            <Button icon="fa6-solid:download" onPress={() => openDownloadWebEntry(data)} shape="rounded">
-              下载
+            <Button
+              accessibilityLabel="下载"
+              icon="fa6-solid:download"
+              onPress={() => openDownloadWebEntry(data)}
+              shape="rounded"
+            >
+              {showFullText ? "下载" : null}
             </Button>
+          ) : FEATURE_MASS_DOWNLOAD ? (
+            <DownloadButton items={videoEpisodesToDownloadItems(data)} />
           ) : null}
           <Button
             icon="fa6-solid:plus"

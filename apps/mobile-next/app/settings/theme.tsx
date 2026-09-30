@@ -1,4 +1,4 @@
-import { useTheme } from "@tamagui/core";
+import { isWeb, useTheme } from "@tamagui/core";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -287,11 +287,34 @@ function ThemeCard({
 }) {
   const theme = useTheme();
   const selectedColor = "$primaryOnSolid" as const;
+
+  const handleKeyDown = (event: {
+    currentTarget?: unknown;
+    key?: string;
+    preventDefault?: () => void;
+    target?: unknown;
+  }) => {
+    // The card renders as a div on web, so Enter/Space have to be handled here.
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+    event.preventDefault?.();
+    onPress();
+  };
+
   return (
     <HStack
-      accessibilityLabel={title}
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
+      role="button"
+      aria-label={title}
+      // A two-choice card behaves as a toggle button: `aria-pressed` is valid on
+      // `role="button"`, while `aria-checked` would fake a radio without its
+      // arrow-key conventions. Native keeps the existing selected state.
+      {...(isWeb ? ({ "aria-pressed": selected } as object) : { accessibilityState: { selected } })}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
       alignItems="center"
       backgroundColor={selected ? "$primarySolid" : "$surfaceMuted"}
       borderRadius="$4"

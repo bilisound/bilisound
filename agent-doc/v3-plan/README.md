@@ -32,7 +32,8 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 6. [UI Foundation](./ui-foundation.md)
 7. [Phase 2 Audit](./phase-2-audit.md) — UI rewrite preparation: residual coupling + frozen API + Epic 7 admission criteria
 8. [Epic 7 Plan](./epic-7-plan.md) — framework decision, responsive strategy, slice breakdown
-9. [Agent Handoff Guide](./agent-handoff-guide.md)
+9. [Mobile Next Implementation Handoff](./mobile-next-handoff.md) — current Epic 7 integration contracts, verification, and remaining work
+10. [Agent Handoff Guide](./agent-handoff-guide.md)
 10. [Epic 1 macOS / iOS Verification Handoff](./epic-1-macos-verification-handoff.md) — completed on iPhone 17 Simulator; retained as the reproducible verification record
 
 ## Current Working Assumption

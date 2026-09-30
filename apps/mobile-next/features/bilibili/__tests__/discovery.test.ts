@@ -8,6 +8,7 @@ import {
   normalizeVideoQuery,
   remoteEpisodesNeedAuthorFallback,
   remoteEpisodesToPlaylistItems,
+  videoEpisodesToDownloadItems,
 } from "../discovery";
 
 const metadata: VideoMetadata = {
@@ -180,5 +181,18 @@ describe("video draft mapping", () => {
       description: "Video description",
     });
     expect("source" in draft).toBe(false);
+  });
+});
+
+describe("video download item mapping", () => {
+  it("maps every episode to a download task entry (v2 MetaData downloadItems)", () => {
+    expect(videoEpisodesToDownloadItems(metadata)).toEqual([
+      { id: "BV1example", episode: 1, title: "P1 Part one" },
+      { id: "BV1example", episode: 2, title: "P2 Part two" },
+    ]);
+  });
+
+  it("returns an empty list for videos without episodes", () => {
+    expect(videoEpisodesToDownloadItems({ ...metadata, episodes: [] })).toEqual([]);
   });
 });

@@ -1,7 +1,14 @@
 import {
-  AlertDialog, AlertDialogPortal, AlertDialogBackdrop, AlertDialogContent,
-  AlertDialogHeader, AlertDialogTitle, AlertDialogBody, AlertDialogDescription,
-  AlertDialogFooter, Button,
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogBackdrop,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogBody,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  Button,
 } from "@bilisound/ui";
 
 export interface ConfirmDialogProps {
@@ -13,16 +20,34 @@ export interface ConfirmDialogProps {
   onClose: (confirmed: boolean) => void;
 }
 
-export function ConfirmDialog({ open, title, description, confirmText = "确定", cancelText = "取消", onClose }: ConfirmDialogProps) {
+export function ConfirmDialog({
+  open,
+  title,
+  description,
+  confirmText = "确定",
+  cancelText = "取消",
+  onClose,
+}: ConfirmDialogProps) {
   return (
-    <AlertDialog open={open} onOpenChange={value => { if (!value) onClose(false); }}>
+    <AlertDialog
+      open={open}
+      onOpenChange={value => {
+        if (!value) onClose(false);
+      }}
+    >
       <AlertDialogPortal>
         <AlertDialogBackdrop />
         <AlertDialogContent>
-          <AlertDialogHeader><AlertDialogTitle>{title}</AlertDialogTitle></AlertDialogHeader>
-          <AlertDialogBody><AlertDialogDescription>{description}</AlertDialogDescription></AlertDialogBody>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{title}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <AlertDialogDescription>{description}</AlertDialogDescription>
+          </AlertDialogBody>
           <AlertDialogFooter>
-            <Button variant="ghost" color="neutral" onPress={() => onClose(false)}>{cancelText}</Button>
+            <Button variant="ghost" color="neutral" onPress={() => onClose(false)}>
+              {cancelText}
+            </Button>
             <Button onPress={() => onClose(true)}>{confirmText}</Button>
           </AlertDialogFooter>
         </AlertDialogContent>

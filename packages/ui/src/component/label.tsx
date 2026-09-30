@@ -30,7 +30,7 @@ export function LabelError({ children, ref, ...props }: LabelErrorProps) {
   const theme = useTheme();
 
   return (
-    <LabelErrorFrame ref={ref} role="alert" accessibilityLiveRegion="polite" {...props}>
+    <LabelErrorFrame ref={ref} role="alert" aria-live="polite" {...props}>
       <Icon aria-hidden name="ion:alert-circle" size={16} color={theme.danger.get()} />
       <LabelErrorText>{children}</LabelErrorText>
     </LabelErrorFrame>

@@ -1,6 +1,6 @@
 import { createContext, forwardRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { ComponentProps, ReactNode } from "react";
-import { Animated, StyleSheet } from "react-native";
+import { Animated, Platform, StyleSheet } from "react-native";
 import { AnimatedView, useAnimatedNumber, useAnimatedNumberStyle } from "@tamagui/animations-react-native";
 import type { TamaguiElement } from "@tamagui/core";
 import { AlertDialog as TamaguiAlertDialog } from "@tamagui/alert-dialog";
@@ -28,6 +28,12 @@ const AlertDialogSizeContext = createContext<AlertDialogSize>("md");
 const AlertDialogAnimationContext = createContext(false);
 const alertDialogAnimationDuration = 250;
 const alertDialogUnmountDelay = alertDialogAnimationDuration + 50;
+
+// Native modal Sheets render through a Tamagui portal stacked above the base 100000 layer
+// (parent sheet zIndex 1e5 + 1, then the z-index-stack layer offset -> ~105002), so an alert
+// opened on top of a Sheet must exceed that to be painted and hit-tested first.
+// Web keeps its own stacking through Dialog.Portal's `stackZIndex: 1e5`.
+const alertDialogNativeZIndex = 200000;
 
 export function AlertDialog({
   children,
@@ -127,6 +133,7 @@ export function AlertDialogPortal({ children, ...props }: AlertDialogPortalProps
       height="100%"
       maxHeight="100%"
       maxWidth="100%"
+      zIndex={Platform.OS === "web" ? undefined : alertDialogNativeZIndex}
       {...props}
       unstyled
     >

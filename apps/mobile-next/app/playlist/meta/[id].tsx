@@ -1,5 +1,5 @@
 import { Button, Checkbox, Label, LabelError, StateContent, TextArea, TextInput } from "@bilisound/ui";
-import { View } from "@tamagui/core";
+import { isWeb, View } from "@tamagui/core";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -188,8 +188,9 @@ export default function PlaylistMetaScreen() {
               <View flexDirection="row" gap="$3" alignItems="flex-start">
                 <View flex={1} minWidth={0}>
                   <TextInput
-                    accessibilityHint="输入歌单显示名称"
-                    accessibilityLabel="歌单名称"
+                    aria-label="歌单名称"
+                    // Web 没有可引用的描述节点，hint 保持 native-only（RN 未提供 aria-describedby）。
+                    {...(isWeb ? null : { accessibilityHint: "输入歌单显示名称" })}
                     invalid={"title" in errors}
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -215,8 +216,9 @@ export default function PlaylistMetaScreen() {
             name="description"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextArea
-                accessibilityHint="输入歌单备注信息"
-                accessibilityLabel="备注"
+                aria-label="备注"
+                // Web 没有可引用的描述节点，hint 保持 native-only（RN 未提供 aria-describedby）。
+                {...(isWeb ? null : { accessibilityHint: "输入歌单备注信息" })}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 placeholder="可以在这里设置歌单的备注"
@@ -230,7 +232,7 @@ export default function PlaylistMetaScreen() {
         {source ? (
           <View gap="$2">
             <Label>绑定在线歌单</Label>
-            <TextInput accessibilityLabel="绑定在线歌单" disabled value={source.originalTitle} />
+            <TextInput aria-label="绑定在线歌单" disabled value={source.originalTitle} />
             <Button alignSelf="stretch" disabled={cloning} onPress={() => void handleClone()}>
               {cloning ? "正在创建副本……" : "创建解绑副本"}
             </Button>

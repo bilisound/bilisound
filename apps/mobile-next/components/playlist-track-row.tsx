@@ -1,5 +1,5 @@
 import { Icon, Text } from "@bilisound/ui";
-import { useTheme, View } from "@tamagui/core";
+import { isWeb, useTheme, View } from "@tamagui/core";
 import { ActivityIndicator, Pressable } from "react-native";
 
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
@@ -58,7 +58,15 @@ export function PlaylistTrackRow({
       accessibilityRole="button"
       accessibilityLabel={`第 ${typeof index === "number" ? index : data.episode} 首，${data.title}`}
       accessibilityHint={isChecking ? "切换选中状态" : "播放该曲目，长按进入多选"}
-      accessibilityState={isChecking ? { selected: isChecked } : undefined}
+      // Web silently drops `accessibilityState`, and `aria-selected` is invalid on
+      // a button role; the edit-mode row is a toggle button, so expose the checked
+      // state as `aria-pressed`. The plain row stays a plain button (no toggle
+      // semantics), while native keeps the existing selected state.
+      {...(isChecking
+        ? isWeb
+          ? ({ "aria-pressed": isChecked } as object)
+          : { accessibilityState: { selected: isChecked } }
+        : null)}
       onPress={handlePress}
       onLongPress={onLongPress}
       style={({ pressed }) => ({
@@ -96,7 +104,7 @@ export function PlaylistTrackRow({
         </View>
       </View>
 
-      {isChecking ? <SelectionCircle checked={isChecked} color={theme.primarySolid.get()} /> : null}
+      {isChecking ? <SelectionCircle checked={isChecked} color={theme.primaryOnSolid.get()} /> : null}
       {!isChecking && isActiveTrack ? <PlayingIndicator /> : null}
     </Pressable>
   );

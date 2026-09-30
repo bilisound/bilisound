@@ -54,4 +54,5 @@ minimumReleaseAgeExclude:
 publicHoistPattern:
   - "@expo/config-plugins"
 patchedDependencies:
+  "@expo/router-server@57.0.7": patches/@expo__router-server@57.0.7.patch
   "@tamagui/alert-dialog@2.4.2": patches/@tamagui__alert-dialog@2.4.2.patch

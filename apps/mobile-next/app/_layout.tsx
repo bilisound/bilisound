@@ -14,11 +14,15 @@ import { findUserTheme, useThemeRegistry } from "~/features/theme/registry";
 import init from "~/utils/init";
 import { AppShell } from "~/components/app-shell";
 import { FeedbackHost } from "~/components/feedback";
+import { SettingsMascot } from "~/components/settings-mascot";
 
 export { ErrorBoundary } from "expo-router";
 
 const queryClient = new QueryClient();
 let initialization: Promise<unknown> | undefined;
+
+// Restoring the queue emits native events before async initialization finishes.
+registerPlaybackBackgroundEvents();
 
 function App() {
   const appearance = useColorScheme() === "dark" ? "dark" : "light";
@@ -35,27 +39,67 @@ function App() {
     initialization ??= (async () => {
       await init();
       await useThemeRegistry.getState().loadThemes();
-      registerPlaybackBackgroundEvents();
-    })().catch(cause => { initialization = undefined; throw cause; });
-    initialization.then(() => { if (active) setReady(true); }).catch(cause => {
-      if (active) setError(cause instanceof Error ? cause.message : String(cause));
-      void SplashScreen.hideAsync();
+    })().catch(cause => {
+      initialization = undefined;
+      throw cause;
     });
-    return () => { active = false; };
+    initialization
+      .then(() => {
+        if (active) setReady(true);
+      })
+      .catch(cause => {
+        if (active) setError(cause instanceof Error ? cause.message : String(cause));
+        void SplashScreen.hideAsync();
+      });
+    return () => {
+      active = false;
+    };
   }, [attempt]);
 
-  useEffect(() => { if (userTheme) updateUserTheme(userTheme.palette); }, [userTheme]);
+  useEffect(() => {
+    if (userTheme) updateUserTheme(userTheme.palette);
+  }, [userTheme]);
 
   return (
-    <BilisoundProvider appearance={appearance} theme={userTheme ? "user" : theme === "red" ? "red" : "classic"} insets={insets}>
+    <BilisoundProvider
+      appearance={appearance}
+      theme={userTheme ? "user" : theme === "red" ? "red" : "classic"}
+      insets={insets}
+    >
       <StatusBar style={appearance === "dark" ? "light" : "dark"} />
-      {ready ? <AppShell><Stack screenOptions={{ headerShown: false }} /><FeedbackHost /></AppShell> :
-        <StateContent title={error ? "启动失败" : "正在初始化"} description={error} loading={!error}
-          onRetry={error ? () => { setError(undefined); setAttempt(value => value + 1); } : undefined} />}
+      {ready ? (
+        <AppShell>
+          <Stack screenOptions={{ headerShown: false }} />
+          <FeedbackHost />
+        </AppShell>
+      ) : (
+        <StateContent
+          title={error ? "启动失败" : "正在初始化"}
+          description={error}
+          loading={!error}
+          onRetry={
+            error
+              ? () => {
+                  setError(undefined);
+                  setAttempt(value => value + 1);
+                }
+              : undefined
+          }
+        />
+      )}
+      {ready ? <SettingsMascot /> : null}
     </BilisoundProvider>
   );
 }
 
 export default function RootLayout() {
-  return <GestureHandlerRootView style={{ flex: 1 }}><SafeAreaProvider><QueryClientProvider client={queryClient}><App /></QueryClientProvider></SafeAreaProvider></GestureHandlerRootView>;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
 }

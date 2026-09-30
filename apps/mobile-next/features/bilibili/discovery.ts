@@ -45,6 +45,13 @@ export interface EpisodePlaylistDraft {
   description: string;
 }
 
+/** 批量下载任务条目（结构等价于 features/cache addDownloadTask 的入参） */
+export interface DiscoveryDownloadItem {
+  id: string;
+  episode: number;
+  title: string;
+}
+
 export interface RemotePlaylistDraft {
   playlistDetail: DiscoveryPlaylistItem[];
   name: string;
@@ -108,6 +115,17 @@ export function videoEpisodesToPlaylistItems(
     episode: episode.page,
     title: episode.title,
     imgUrl: metadata.coverUrl,
+  }));
+}
+
+/**
+ * 视频全部分 P → 批量下载任务条目（字段搬运自 v2 video-detail/MetaData 的 downloadItems）。
+ */
+export function videoEpisodesToDownloadItems(metadata: VideoMetadata): DiscoveryDownloadItem[] {
+  return metadata.episodes.map(episode => ({
+    id: metadata.bvid,
+    episode: episode.page,
+    title: episode.displayTitle,
   }));
 }
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, HStack, Text, TextInput, VStack } from "@bilisound/ui";
-import { View } from "@tamagui/core";
+import { isWeb, View } from "@tamagui/core";
 import { router } from "expo-router";
 
 import { AppLayout } from "~/components/app-layout";
@@ -73,8 +73,9 @@ export default function QueryScreen() {
           <HStack alignItems="center" gap="$2">
             <View flex={1}>
               <TextInput
-                accessibilityHint="输入后点击查询按钮打开音视频详情"
-                accessibilityLabel="视频链接或 ID"
+                aria-label="视频链接或 ID"
+                // Web 没有可引用的描述节点，hint 保持 native-only（RN 未提供 aria-describedby）。
+                {...(isWeb ? null : { accessibilityHint: "输入后点击查询按钮打开音视频详情" })}
                 autoCapitalize="none"
                 autoCorrect={false}
                 invalid={Boolean(inputError)}

@@ -13,10 +13,22 @@ import {
   type VideoMetadata,
 } from "~/features/bilibili";
 import { buildEpisodePlaylistDraft, buildVideoPlaylistDraft } from "~/features/bilibili/discovery";
+import {
+  getCacheAudioPath,
+  getCacheStatusKey,
+  useCacheExists,
+  useDownloadList,
+  type DownloadItem,
+} from "~/features/cache";
+import { getResourcePolicy } from "~/features/config";
+import { pause } from "~/features/player";
 import { openAddPlaylistPage } from "~/features/playlist";
 import { notify } from "~/components/feedback";
-import { openDownloadWebEntry } from "~/components/discovery-download";
+import { cacheEpisodeToLocal, openDownloadWebEntry, type EpisodeCacheOutcome } from "~/components/discovery-download";
 import { formatSecond } from "~/utils/datetime";
+import { saveAudioFile, uriToPath } from "~/utils/file";
+import log from "~/utils/logger";
+import { bv2av } from "~/utils/vendors/av-bv";
 
 function MenuHeader({ image, title, subtitle }: { image: string; title: string; subtitle: string }) {
   return (
@@ -37,8 +49,9 @@ function MenuHeader({ image, title, subtitle }: { image: string; title: string; 
 /**
  * discovery-video-menu — 视频详情页头部「更多操作」菜单。
  *
- * 搬运 v2 PageMenu：添加到歌单（整个视频）、下载（仅 Web）、在浏览器打开、
- * 复制视频链接；native 本地缓存 / 批量下载入口留待下载管理器切片。
+ * 搬运 v2 PageMenu：添加到歌单（整个视频）、下载（仅 Web）、在浏览器打开
+ * （先暂停播放，v2 行为）、复制视频链接；native 的批量下载入口在
+ * discovery-video-meta 的下载按钮（v2 MetaData 同款位置）。
  */
 export function DiscoveryVideoMenu({ data }: { data: VideoMetadata }) {
   const [open, setOpen] = useState(false);
@@ -72,8 +85,10 @@ export function DiscoveryVideoMenu({ data }: { data: VideoMetadata }) {
       icon: "fa6-solid:link",
       iconSize: 16,
       async action() {
-        setOpen(false);
+        // v2：跳转浏览器前先暂停播放，避免外链与播放器同时出声
+        await pause();
         await Linking.openURL(videoUrl);
+        setOpen(false);
       },
     },
     {
@@ -119,9 +134,55 @@ export function DiscoveryVideoMenu({ data }: { data: VideoMetadata }) {
 }
 
 /**
- * discovery-episode-menu — 长按分 P 的操作菜单（搬运 v2 LongPressActions 的可搬运部分）。
+ * 下载任务文案（v2 useDownloadMenuItem 同款：排队中 / 下载中 (x%) / 缓存到本地）。
  *
- * `episode` 为空时菜单关闭；长按单曲「添加到歌单」只添加该分 P。
+ * 额外区分「本地处理中」与「下载失败」（v2 会一直显示下载中），
+ * 避免失败任务在菜单里被误报成仍在下载。
+ */
+function formatCacheTaskText(task: DownloadItem | undefined): string {
+  if (!task) {
+    return "缓存到本地";
+  }
+  if (task.status === 0) {
+    return "排队中……";
+  }
+  if (task.status === 2) {
+    return "本地处理中";
+  }
+  if (task.status === 3) {
+    return "下载失败";
+  }
+  // v2 同款算式：总字节未知（0）时退化为 0%
+  const percent = Math.round((task.progress.totalBytesWritten / task.progress.totalBytesExpectedToWrite) * 100 || 0);
+  return `下载中 (${percent}%)`;
+}
+
+/** 把真实下载结果转成用户提示：只有确实产出缓存才说「已缓存到本地」，取消/重复入队都不误报成功 */
+function notifyCacheOutcome(outcome: EpisodeCacheOutcome, title: string) {
+  switch (outcome) {
+    case "downloaded":
+      notify(`「${title}」已缓存到本地`);
+      break;
+    case "already-cached":
+      notify("该分 P 已在本地缓存");
+      break;
+    case "queued":
+      notify("该分 P 已在下载队列中");
+      break;
+    case "cancelled":
+      notify("下载已取消");
+      break;
+  }
+}
+
+/**
+ * discovery-episode-menu — 长按分 P 的操作菜单（搬运 v2 LongPressActions / useDownloadMenuItem）。
+ *
+ * 顺序与 v2 一致：下载（native 缓存到本地 / Web 下载）→ 保存到文件（native 且已缓存）→
+ * 添加到歌单 → 取消。缓存到本地期间菜单保持打开并实时显示进度；已在队列中的任务不可重复触发。
+ *
+ * v2 的「删除缓存」有意不搬运：v2 该项实际删除的是当前播放曲目的缓存（v2 自身缺陷，
+ * 对未播放分 P 并不生效），当前曲目路径由播放器面板菜单覆盖。
  */
 export interface DiscoveryEpisodeMenuProps {
   data?: VideoMetadata;
@@ -131,19 +192,55 @@ export interface DiscoveryEpisodeMenuProps {
 
 export function DiscoveryEpisodeMenu({ data, episode, onClose }: DiscoveryEpisodeMenuProps) {
   const videoUrl = data ? getVideoUrl(data.bvid) : undefined;
+  const cached = useCacheExists(data?.bvid, episode?.page);
+  const { downloadList } = useDownloadList();
+  const downloadTask = data && episode ? downloadList.get(getCacheStatusKey(data.bvid, episode.page)) : undefined;
 
   const menuItems: ActionMenuItem[] =
     data && episode
       ? [
-          {
-            text: "添加到歌单",
-            icon: "fa6-solid:plus",
-            iconSize: 16,
-            action() {
-              onClose();
-              openAddPlaylistPage(buildEpisodePlaylistDraft(data, episode));
-            },
-          },
+          ...(Platform.OS !== "web" && !cached
+            ? [
+                {
+                  text: formatCacheTaskText(downloadTask),
+                  icon: "fa6-solid:download",
+                  iconSize: 18,
+                  disabled: Boolean(downloadTask),
+                  async action() {
+                    const title = episode.displayTitle;
+                    try {
+                      notifyCacheOutcome(await cacheEpisodeToLocal(data.bvid, episode.page, title), title);
+                    } catch (cause) {
+                      log.error(`缓存分 P 失败，原因：${cause}`);
+                      notify(`下载失败：${cause instanceof Error ? cause.message : String(cause)}`, true);
+                    }
+                  },
+                } satisfies ActionMenuItem,
+              ]
+            : []),
+          ...(Platform.OS !== "web" && cached
+            ? [
+                {
+                  text: "保存到文件",
+                  icon: "fa6-solid:floppy-disk",
+                  iconSize: 18,
+                  async action() {
+                    onClose();
+                    // 目标一律取长按的分 P（而非当前播放曲目），与 v2 useDownloadMenuItem 的公式一致
+                    const { useLegacyID } = getResourcePolicy();
+                    const fileName = `[${useLegacyID ? "av" + bv2av(data.bvid) : data.bvid}] [P${episode.page}] ${episode.title}.m4a`;
+                    try {
+                      await saveAudioFile(uriToPath(getCacheAudioPath(data.bvid, episode.page, false)), fileName);
+                      // 底层（Android SAF / iOS 分享面板）在用户取消时不会回报确认信息，不能宣称「已保存」
+                      notify("保存或分享操作已结束");
+                    } catch (cause) {
+                      log.error(`文件未保存：${cause}`);
+                      notify(`文件未保存：${cause instanceof Error ? cause.message : String(cause)}`, true);
+                    }
+                  },
+                } satisfies ActionMenuItem,
+              ]
+            : []),
           ...(Platform.OS === "web"
             ? [
                 {
@@ -157,6 +254,15 @@ export function DiscoveryEpisodeMenu({ data, episode, onClose }: DiscoveryEpisod
                 } satisfies ActionMenuItem,
               ]
             : []),
+          {
+            text: "添加到歌单",
+            icon: "fa6-solid:plus",
+            iconSize: 16,
+            action() {
+              onClose();
+              openAddPlaylistPage(buildEpisodePlaylistDraft(data, episode));
+            },
+          },
           {
             text: "取消",
             icon: "fa6-solid:xmark",
