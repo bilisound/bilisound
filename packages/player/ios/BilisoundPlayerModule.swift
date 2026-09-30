@@ -10,6 +10,7 @@ public class BilisoundPlayerModule: Module {
     private var timeObserverToken: Any?
     private var artworkCache: [String: MPMediaItemArtwork] = [:]
     private var repeatMode: Int = 0  // 0: OFF, 1: ONE, 2: ALL
+    private var retainPitch = true
     private let playbackOrderManager = PlaybackOrderManager()
     private var remoteCommandTargets: [(command: MPRemoteCommand, target: Any)] = []
 
@@ -240,11 +241,17 @@ public class BilisoundPlayerModule: Module {
                 return
             }
 
-            // Set pitch algorithm
+            self.retainPitch = retainPitch
             currentItem.audioTimePitchAlgorithm = retainPitch ? .timeDomain : .varispeed
 
-            // Set playback rate
-            player.rate = speed
+            // play() resumes at defaultRate (1.0 unless set), and assigning a non-zero rate starts playback,
+            // so remember the speed for later play() calls and only apply it immediately while playing.
+            if #available(iOS 16.0, tvOS 16.0, *) {
+                player.defaultRate = speed
+            }
+            if player.rate != 0 {
+                player.rate = speed
+            }
 
             promise.resolve()
         }
@@ -1344,6 +1351,7 @@ public class BilisoundPlayerModule: Module {
         asset = AVURLAsset(url: url, options: options)
 
         let item = AVPlayerItem(asset: asset)
+        item.audioTimePitchAlgorithm = retainPitch ? .timeDomain : .varispeed
 
         // Add KVO observer for item status
         // item.addObserver(
