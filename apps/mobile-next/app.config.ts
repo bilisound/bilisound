@@ -29,6 +29,7 @@ const config: ExpoConfig = {
   plugins: [
     "../../packages/ui/plugins/withAndroidTheme",
     "./plugins/with-ios-scene-lifecycle",
+    "./plugins/with-android-kotlin-jvm-target",
     ["react-native-edge-to-edge", { android: { enforceNavigationBarContrast: false } }],
     ["expo-splash-screen", { image: "./assets/images/icon-dev.png", imageWidth: 200, backgroundColor: "#ffffff" }],
     "expo-router",
