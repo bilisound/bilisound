@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { BackHandler, FlatList, Linking, Platform } from "react-native";
 import { Button, Checkbox, HStack, Slider, StateContent, Text, VStack } from "@bilisound/ui";
 import { Sheet } from "@tamagui/sheet";
@@ -50,10 +50,44 @@ import { orderQueue } from "~/features/playback/queue-view";
 
 const repeatNames = ["顺序播放", "单曲循环", "列表循环"];
 
+type QueueItem = ReturnType<typeof orderQueue>[number];
+
+async function run(action: () => Promise<unknown>) {
+  try {
+    await action();
+  } catch (error) {
+    reportError(error);
+  }
+}
+
+// FlatList re-invokes renderItem for every mounted row whenever it re-renders, and the progress tick re-renders
+// the panel every second. Without memo that rebuilds the whole queue each tick and stalls the JS thread.
+const QueueRow = memo(function QueueRow({ item, index, active }: { item: QueueItem; index: number; active: boolean }) {
+  return (
+    <VStack paddingHorizontal="$3" paddingBottom="$2">
+      <Button
+        variant={active ? "solid" : "ghost"}
+        justifyContent="flex-start"
+        numberOfLines={1}
+        accessibilityLabel={`播放 ${item.track.title ?? "未知曲目"}`}
+        onPress={() =>
+          void run(async () =>
+            (await getCurrentTrackIndex()) === item.canonicalIndex ? toggle() : jump(item.canonicalIndex),
+          )
+        }
+      >
+        {index + 1}. {item.track.title ?? "未知曲目"}
+      </Button>
+    </VStack>
+  );
+});
+
 function PlayerContent({ onClose }: { onClose?: () => void }) {
   const current = useCurrentTrack();
   const queue = useQueue();
   const order = usePlaybackOrder();
+  // Keeps item identity stable across renders so QueueRow's memo holds.
+  const orderedQueue = useMemo(() => orderQueue(queue, order), [queue, order]);
   const playing = useIsPlaying();
   const repeat = useRepeatMode();
   const shuffle = useShuffleMode();
@@ -85,14 +119,6 @@ function PlayerContent({ onClose }: { onClose?: () => void }) {
   const download = current?.extendedData
     ? downloadList.get(`${current.extendedData.id}_${current.extendedData.episode}`)
     : undefined;
-
-  async function run(action: () => Promise<unknown>) {
-    try {
-      await action();
-    } catch (error) {
-      reportError(error);
-    }
-  }
 
   async function commitSeek(value: number) {
     sliding.current = false;
@@ -319,27 +345,13 @@ function PlayerContent({ onClose }: { onClose?: () => void }) {
   return (
     <>
       <FlatList
-        data={orderQueue(queue, order)}
+        data={orderedQueue}
         keyExtractor={item => String(item.canonicalIndex)}
         ListHeaderComponent={header}
         contentContainerStyle={{ paddingBottom: 24 }}
         keyboardShouldPersistTaps="handled"
         renderItem={({ item, index }) => (
-          <VStack paddingHorizontal="$3" paddingBottom="$2">
-            <Button
-              variant={item.canonicalIndex === currentIndex ? "solid" : "ghost"}
-              justifyContent="flex-start"
-              numberOfLines={1}
-              accessibilityLabel={`播放 ${item.track.title ?? "未知曲目"}`}
-              onPress={() =>
-                void run(async () =>
-                  (await getCurrentTrackIndex()) === item.canonicalIndex ? toggle() : jump(item.canonicalIndex),
-                )
-              }
-            >
-              {index + 1}. {item.track.title ?? "未知曲目"}
-            </Button>
-          </VStack>
+          <QueueRow item={item} index={index} active={item.canonicalIndex === currentIndex} />
         )}
       />
       <ConfirmDialog
