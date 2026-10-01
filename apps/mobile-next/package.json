@@ -46,7 +46,7 @@
     "drizzle-orm": "^0.45.2",
     "drizzle-zod": "^0.8.3",
     "entities": "^8.0.0",
-    "expo": "~57.0.15",
+    "expo": "~57.0.26",
     "expo-asset": "~57.0.13",
     "expo-build-properties": "~57.0.13",
     "expo-camera": "~57.0.4",

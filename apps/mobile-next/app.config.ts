@@ -28,6 +28,7 @@ const config: ExpoConfig = {
   web: { bundler: "metro", favicon: "./assets/images/favicon.png" },
   plugins: [
     "../../packages/ui/plugins/withAndroidTheme",
+    "./plugins/with-ios-scene-lifecycle",
     ["react-native-edge-to-edge", { android: { enforceNavigationBarContrast: false } }],
     ["expo-splash-screen", { image: "./assets/images/icon-dev.png", imageWidth: 200, backgroundColor: "#ffffff" }],
     "expo-router",
