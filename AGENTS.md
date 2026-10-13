@@ -58,6 +58,7 @@ bilisound/
 | 验证命令、既有 tsc / ESLint 失败          | [agent-doc/verification.md](agent-doc/verification.md)                                                         |
 | 图片资源、看板娘、PNG/SVG 渲染坑          | [agent-doc/assets-and-images.md](agent-doc/assets-and-images.md)                                               |
 | v3 分层改造计划、史诗任务、交接文档       | [agent-doc/v3-plan/README.md](agent-doc/v3-plan/README.md)                                                     |
+| 改用 Koi 设计系统（暂缓）、用户主题色兼容 | [agent-doc/v3-plan/koi-design-system.md](agent-doc/v3-plan/koi-design-system.md)                               |
 | Player 模块 API                           | [packages/player/README.md](packages/player/README.md)                                                         |
 | CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)                                                           |
 | 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)                                                                     |

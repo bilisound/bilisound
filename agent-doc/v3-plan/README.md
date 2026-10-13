@@ -34,7 +34,8 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 8. [Epic 7 Plan](./epic-7-plan.md) — framework decision, responsive strategy, slice breakdown
 9. [Mobile Next Implementation Handoff](./mobile-next-handoff.md) — current Epic 7 integration contracts, verification, and remaining work
 10. [Agent Handoff Guide](./agent-handoff-guide.md)
-10. [Epic 1 macOS / iOS Verification Handoff](./epic-1-macos-verification-handoff.md) — completed on iPhone 17 Simulator; retained as the reproducible verification record
+11. [Epic 1 macOS / iOS Verification Handoff](./epic-1-macos-verification-handoff.md) — completed on iPhone 17 Simulator; retained as the reproducible verification record
+12. [Koi Design System Adoption](./koi-design-system.md) — deferred: replacing `@bilisound/ui`'s look with the Koi design system
 
 ## Current Working Assumption
 
