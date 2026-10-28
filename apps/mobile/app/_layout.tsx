@@ -1,10 +1,9 @@
-import { Stack } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SystemUI from "expo-system-ui";
 import "~/global.css";
 import { GluestackUIProvider } from "~/components/ui/gluestack-ui-provider";
 import React, { useEffect, useRef, useState } from "react";
 import { Linking, Platform, useColorScheme } from "react-native";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router/react-navigation";
 import { SystemBars } from "react-native-edge-to-edge";
 import { useFonts } from "expo-font";
 import log from "~/utils/logger";
@@ -40,7 +39,7 @@ darkTheme.colors.primary = "#00ba9d";
 const queryClient = new QueryClient();
 
 export const unstable_settings = {
-  initialRouteName: "(main)",
+  anchor: "(main)",
 };
 
 registerPlaybackBackgroundEvents();

@@ -17,6 +17,7 @@ const v2Settings: SettingsProps = {
 describe("settings-store v2 compatibility", () => {
   afterEach(() => {
     jest.dontMock("~/storage/zustand");
+    jest.dontMock("react-native-blob-util");
     jest.resetModules();
   });
 
@@ -32,6 +33,9 @@ describe("settings-store v2 compatibility", () => {
     jest.doMock("~/storage/zustand", () => ({
       createStorage: () => ({ getItem, setItem, removeItem }),
     }));
+    // `react-native-blob-util` throws while importing if its native module is absent, and this
+    // test only exercises the settings store pulled in by the same barrel module.
+    jest.doMock("react-native-blob-util", () => ({}));
 
     let config!: typeof ConfigModule;
     let store!: typeof StoreModule;

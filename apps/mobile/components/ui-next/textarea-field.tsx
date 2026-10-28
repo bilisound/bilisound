@@ -1,5 +1,14 @@
 import { Ref, useState } from "react";
-import { StyleProp, StyleSheet, TextInput, TextInputProps, TextStyle, View, ViewStyle } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  type TextInputInstance,
+  TextInputProps,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native";
 
 import { useUiNextColors } from "~/components/ui-next/theme/colors";
 
@@ -10,7 +19,7 @@ export interface TextareaFieldProps extends Omit<TextInputProps, "style" | "edit
   inputStyle?: StyleProp<TextStyle>;
   disabled?: boolean;
   invalid?: boolean;
-  ref?: Ref<TextInput>;
+  ref?: Ref<TextInputInstance>;
   size?: TextareaFieldSize;
 }
 

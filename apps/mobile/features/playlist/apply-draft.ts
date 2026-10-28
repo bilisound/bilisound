@@ -52,9 +52,12 @@ export function useApplyPlaylistDraft() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    return navigation.addListener("beforeRemove", () => {
+    // `beforeRemove` was removed in Expo Router SDK 58; `removed` fires once the route actually unmounts.
+    const unsubscribe = navigation.addListener("removed", () => {
       clearApplyPlaylistDraft();
     });
+
+    return () => queueMicrotask(unsubscribe);
   }, [navigation]);
 
   return useApplyPlaylistDraftStore(state => state.draft);

@@ -8,7 +8,7 @@ export function normalizeWebTextStyle(
   const flattened = StyleSheet.flatten(style as StyleProp<TextStyle>);
 
   if (!flattened) {
-    return flattened;
+    return undefined;
   }
 
   if (typeof flattened.lineHeight !== "number") {

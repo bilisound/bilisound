@@ -9,10 +9,10 @@ catalog:
   "@types/react": ~19.2.18
   axios: ^1.19.0
   expo-module-scripts: 56.0.3
-  expo-modules-core: ~57.0.7
+  expo-modules-core: ~58.0.27
   itty-router: ^5.0.24
   md5: ^2.3.0
-  react-native: 0.86.0
+  react-native: 0.88.0
   tsdown: ^0.19.0
   typescript: ~6.0.3
   wrangler: ^4.124.0
@@ -36,24 +36,15 @@ minimumReleaseAgeExclude:
   - "@storybook/react-vite@10.5.4"
   - "@storybook/react@10.5.4"
   - storybook@10.5.4
-  - "@expo/ui@57.0.8"
-  - expo-constants@57.0.8
-  - expo-router@57.0.9
-  - "@expo/cli@57.0.17"
-  - "@expo/fingerprint@0.20.9"
-  - "@expo/local-build-cache-provider@57.0.7"
-  - "@expo/metro-config@57.0.9"
-  - "@expo/prebuild-config@57.0.13"
-  - "@expo/router-server@57.0.7"
-  - expo-asset@57.0.13
-  - expo-constants@57.0.13
-  - expo-file-system@57.0.5
-  - expo-modules-core@57.0.12
-  - expo-modules-jsi@57.0.5
-  - expo@57.0.15
+  - "@expo/cli@58.1.16"
+  - babel-preset-expo@58.0.21
+  - expo-dev-client@58.0.16
+  - expo-dev-launcher@58.0.16
+  - expo-modules-core@58.0.27
+  - expo-router@58.0.27
+  - expo@58.0.20
 publicHoistPattern:
   - "@expo/config-plugins"
 patchedDependencies:
-  "@expo/router-server@57.0.7": patches/@expo__router-server@57.0.7.patch
-  "@expo/router-server@57.0.11": patches/@expo__router-server@57.0.11.patch
+  "@expo/router-server@58.0.18": patches/@expo__router-server@58.0.18.patch
   "@tamagui/alert-dialog@2.4.2": patches/@tamagui__alert-dialog@2.4.2.patch

@@ -1,7 +1,11 @@
 import { createContext, forwardRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { ComponentProps, ReactNode } from "react";
-import { Animated, Platform, StyleSheet } from "react-native";
-import { AnimatedView, useAnimatedNumber, useAnimatedNumberStyle } from "@tamagui/animations-react-native";
+import { Animated, Platform, StyleSheet, View } from "react-native";
+import {
+  AnimatedView as TamaguiAnimatedView,
+  useAnimatedNumber,
+  useAnimatedNumberStyle,
+} from "@tamagui/animations-react-native";
 import type { TamaguiElement } from "@tamagui/core";
 import { AlertDialog as TamaguiAlertDialog } from "@tamagui/alert-dialog";
 import type { AlertDialogProps as TamaguiAlertDialogProps } from "@tamagui/alert-dialog";
@@ -16,6 +20,16 @@ import {
   AlertDialogHeaderFrame,
   AlertDialogTitleFrame,
 } from "../recipe/alert-dialog";
+
+/**
+ * React Native 0.88 types `Animated.AnimatedComponent` as taking a *props* type, while
+ * `@tamagui/animations-react-native` still declares `Animated.AnimatedComponent<typeof View>`.
+ * Mapping that function type leaves the animated view's props without `children`/`pointerEvents`,
+ * so declare the props from `View` directly.
+ */
+const AnimatedView = TamaguiAnimatedView as unknown as React.ComponentType<
+  Animated.AnimatedProps<ComponentProps<typeof View>>
+>;
 
 export type AlertDialogSize = "xs" | "sm" | "md" | "lg" | "full";
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import type { Text as ReactNativeText } from "react-native";
-import { AccessibilityInfo, findNodeHandle, InteractionManager, Platform, ScrollView } from "react-native";
+import { AccessibilityInfo, findNodeHandle, Platform, ScrollView } from "react-native";
 import type { EdgeInsets } from "react-native-safe-area-context";
 import { isWeb, View } from "@tamagui/core";
 
@@ -64,9 +64,9 @@ export function PageShell({
     }
 
     let active = true;
-    let interaction: { cancel?: () => void } | undefined;
+    let idleHandle: number | undefined;
     const timeout = setTimeout(() => {
-      interaction = InteractionManager.runAfterInteractions(() => {
+      idleHandle = requestIdleCallback(() => {
         if (!active) {
           return;
         }
@@ -81,7 +81,7 @@ export function PageShell({
     return () => {
       active = false;
       clearTimeout(timeout);
-      interaction?.cancel?.();
+      cancelIdleCallback(idleHandle);
     };
   }, [title]);
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Dispatch, Ref, SetStateAction } from "react";
 import { Animated, Easing } from "react-native";
-import type { View, ViewProps } from "react-native";
+import type { ViewInstance, ViewProps } from "react-native";
 import { isWeb } from "@tamagui/core";
 import type { GetProps } from "@tamagui/core";
 import { useSwitch } from "@tamagui/switch-headless";
@@ -17,7 +17,7 @@ const webButtonProps: Record<string, unknown> = isWeb ? { type: "button" } : {};
 export interface SwitchVisualProps extends Omit<ViewProps, "children"> {
   checked: boolean;
   disabled?: boolean;
-  ref?: Ref<View>;
+  ref?: Ref<ViewInstance>;
 }
 
 export type SwitchProps = Omit<
@@ -25,7 +25,7 @@ export type SwitchProps = Omit<
   "children" | "onPress" | "ref" | "render" | "type" | "visuallyDisabled" | keyof HeadlessSwitchExtraProps
 > &
   HeadlessSwitchExtraProps & {
-    ref?: Ref<View>;
+    ref?: Ref<ViewInstance>;
   };
 
 export function SwitchVisual({ checked, disabled, ref, style, ...props }: SwitchVisualProps) {
@@ -110,7 +110,9 @@ export function Switch({
       value,
     } satisfies HeadlessSwitchProps,
     [checked, setCheckedFromInteraction],
-    ref ?? null,
+    // `@tamagui/switch-headless` still types this ref against the View *component* type, which
+    // React Native 0.88 no longer resolves to the host instance.
+    (ref ?? null) as Parameters<typeof useSwitch>[2],
   );
 
   return (

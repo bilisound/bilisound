@@ -1,8 +1,7 @@
 import { Icon } from "~/components/icon";
-import { usePreventRemove } from "expo-router/react-navigation";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, usePreventRemove } from "expo-router";
 import React, { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { DualScrollView } from "~/components/dual-scroll-view";

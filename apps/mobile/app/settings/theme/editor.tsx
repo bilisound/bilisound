@@ -510,7 +510,7 @@ export default function ThemeEditorPage() {
         <View className="p-4 pt-2">
           <View className="flex-row gap-3">
             <ButtonOuter className="flex-1">
-              <Button className="gap-3" onPress={form.handleSubmit(handleSubmit)} disabled={!!errors.name}>
+              <Button className="gap-3" onPress={() => void form.handleSubmit(handleSubmit)()} disabled={!!errors.name}>
                 <ButtonMonIcon name={"fa6-solid:floppy-disk"} />
                 <ButtonText>保存</ButtonText>
               </Button>

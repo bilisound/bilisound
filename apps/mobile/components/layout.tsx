@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, ReactNode, useEffect, useRef } from "react";
-import { AccessibilityInfo, findNodeHandle, InteractionManager, Platform, StyleSheet, View } from "react-native";
+import { AccessibilityInfo, findNodeHandle, Platform, StyleSheet, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -35,9 +35,9 @@ export function Layout({
     }
 
     let active = true;
-    let interaction: { cancel?: () => void } | undefined;
+    let idleHandle: number | undefined;
     const timeout = setTimeout(() => {
-      interaction = InteractionManager.runAfterInteractions(() => {
+      idleHandle = requestIdleCallback(() => {
         if (!active) {
           return;
         }
@@ -54,7 +54,7 @@ export function Layout({
     return () => {
       active = false;
       clearTimeout(timeout);
-      interaction?.cancel?.();
+      cancelIdleCallback(idleHandle);
     };
   }, [titleText]);
 

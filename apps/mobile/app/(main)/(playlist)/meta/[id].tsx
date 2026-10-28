@@ -286,7 +286,7 @@ export default function Page() {
             </FormControl>
           )}
           <ButtonOuter>
-            <Button variant="solid" onPress={handleSubmit(onSubmit)} disabled={!!errors.title}>
+            <Button variant="solid" onPress={() => void handleSubmit(onSubmit)()} disabled={!!errors.title}>
               <ButtonText>保存</ButtonText>
             </Button>
           </ButtonOuter>

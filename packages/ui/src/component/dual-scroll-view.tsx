@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { ScrollView } from "react-native";
 import { styled, View } from "@tamagui/core";
@@ -27,7 +27,7 @@ export interface DualScrollViewProps {
   /** Static left column content, rendered inside its own ScrollView from `gtSm`. */
   header: ReactNode;
   /** Extra style merged into the header pane's content container. */
-  headerContainerStyle?: StyleProp<ViewStyle>;
+  headerContainerStyle?: ComponentProps<typeof View>["style"];
   /**
    * Renders the right-hand scrolling column. Receives the computed
    * `contentContainerStyle` so the caller can spread it onto its own

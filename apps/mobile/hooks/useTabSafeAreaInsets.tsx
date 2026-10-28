@@ -1,6 +1,6 @@
 import { createContext, forwardRef, useContext } from "react";
 import { EdgeInsets } from "react-native-safe-area-context";
-import { View, ViewProps, ViewStyle } from "react-native";
+import { View, type ViewInstance, ViewProps, ViewStyle } from "react-native";
 
 export const TabSafeAreaContext = createContext<EdgeInsets>({ bottom: 0, left: 0, right: 0, top: 0 });
 
@@ -19,7 +19,7 @@ export function useTabSafeAreaInsets(styleValue = false) {
   return edgeInsets;
 }
 
-export const TabSafeAreaView = forwardRef<View, ViewProps>(({ children, style, ...props }, ref) => {
+export const TabSafeAreaView = forwardRef<ViewInstance, ViewProps>(({ children, style, ...props }, ref) => {
   const safeAreaStyle = useTabSafeAreaInsets(true);
   return (
     <View ref={ref} style={[safeAreaStyle, style]} {...props}>

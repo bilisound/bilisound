@@ -28,13 +28,13 @@
   "homepage": "https://github.com/bilisound/player#readme",
   "devDependencies": {
     "@types/jest": "catalog:",
-    "@types/react": "catalog:",
+    "@types/react": "~19.3.0",
     "eslint": "^9.39.5",
-    "expo": "~57.0.15",
+    "expo": "~58.0.20",
     "expo-module-scripts": "catalog:",
     "expo-modules-core": "catalog:",
-    "react": "19.2.3",
-    "react-native": "^0.86.2",
+    "react": "19.3.0",
+    "react-native": "^0.88.0",
     "typescript": "catalog:"
   },
   "peerDependencies": {

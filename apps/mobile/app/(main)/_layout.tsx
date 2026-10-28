@@ -1,6 +1,6 @@
 import { Tabs, TabList, TabTrigger, TabSlot, TabTriggerSlotProps } from "expo-router/ui";
 import { Text } from "~/components/ui/text";
-import { ActivityIndicator, View, Pressable, Platform, StyleSheet } from "react-native";
+import { ActivityIndicator, View, type ViewInstance, Pressable, Platform, StyleSheet } from "react-native";
 import React from "react";
 import { TabSafeAreaContext } from "~/hooks/useTabSafeAreaInsets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -19,7 +19,7 @@ import { router } from "expo-router";
 import { useWindowSize } from "~/hooks/useWindowSize";
 import { IS_ANDROID_RIPPLE_ENABLED } from "~/constants/platform";
 
-type TabTriggerChildProps = TabTriggerSlotProps & {
+type TabTriggerChildProps = Omit<TabTriggerSlotProps, "ref"> & {
   iconName: string;
   title: string;
 };
@@ -33,7 +33,7 @@ const TabTriggerChild = ({
   className: _className,
   ref,
   ...props
-}: TabTriggerChildProps & { ref?: React.Ref<View> }) => {
+}: TabTriggerChildProps & { ref?: React.Ref<ViewInstance> }) => {
   const { colorValue } = useRawThemeValues();
   const { width } = useWindowSize();
   const isSide = width >= breakpoints.sm;

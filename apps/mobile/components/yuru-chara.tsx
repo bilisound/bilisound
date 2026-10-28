@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import React, { forwardRef, useEffect, useMemo, useState } from "react";
-import { StyleSheet, View, ViewProps } from "react-native";
+import { StyleSheet, View, type ViewInstance, ViewProps } from "react-native";
 
 import BgCornerClassic from "~/assets/images/bg-corner-classic.svg";
 import BgCornerRed from "~/assets/images/bg-corner-red.svg";
@@ -10,7 +10,7 @@ import { themeStorage } from "~/features/theme/storage";
 import { useWindowSize } from "~/hooks/useWindowSize";
 import { useAppearanceConfig } from "~/features/config";
 
-export const YuruChara = forwardRef<View, ViewProps>((props, ref) => {
+export const YuruChara = forwardRef<ViewInstance, ViewProps>((props, ref) => {
   const { theme } = useAppearanceConfig();
   const userTheme = useThemeRegistry(state => findUserTheme(state.themes, theme));
   const [assetUri, setAssetUri] = useState<string | null>(null);

@@ -44,10 +44,7 @@ function rgba(rgb: string, opacity = 1) {
 export function useUiNextColors() {
   const { theme: themeSetting } = useAppearanceConfig();
   const themes = useThemeRegistry(state => state.themes);
-  let colorScheme = useColorScheme() ?? "light";
-  if (colorScheme === "unspecified") {
-    colorScheme = "light";
-  }
+  const colorScheme = useColorScheme() ?? "light";
 
   const userTheme = findUserTheme(themes, themeSetting);
   const config = resolveThemeConfig(themeSetting, colorScheme, userTheme);

@@ -113,7 +113,7 @@ export default function MainScreen() {
                   invalid={!!errors.videoUrl}
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  onSubmitEditing={handleSubmit(onSubmit)}
+                  onSubmitEditing={() => void handleSubmit(onSubmit)()}
                   placeholder="粘贴完整链接或带前缀 ID 至此"
                   returnKeyType="search"
                   right={

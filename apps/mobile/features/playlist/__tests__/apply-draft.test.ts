@@ -93,7 +93,7 @@ it("clears retained playlist items after the workflow succeeds", () => {
   });
 });
 
-it("clears the draft when its route begins returning", async () => {
+it("clears the draft when its route is removed", async () => {
   function DraftConsumer() {
     useApplyPlaylistDraft();
     return null;
@@ -111,7 +111,7 @@ it("clears the draft when its route begins returning", async () => {
     navigationListeners: Map<string, () => void>;
   };
   await act(async () => {
-    navigationListeners.get("beforeRemove")?.();
+    navigationListeners.get("removed")?.();
   });
 
   expect(useApplyPlaylistDraftStore.getState().draft).toEqual({

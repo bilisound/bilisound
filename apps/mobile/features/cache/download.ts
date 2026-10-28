@@ -161,7 +161,7 @@ export async function downloadResource(bvid: string, episode: number) {
     const from = new Date().getTime();
     const stream = await new File(downloadTargetFileUrl).bytes();
     const m4aBytes = Mp4.extractAudio(stream);
-    new File(checkUrl).write(m4aBytes);
+    await new File(checkUrl).write(m4aBytes);
     log.debug(prefix + `提取操作结束，操作用时 ${(new Date().getTime() - from) / 1000}s`);
   } catch (e) {
     log.error(prefix + "视频转码失败！");

@@ -1,5 +1,4 @@
-import { ImageProps } from "expo-image/src/Image.types";
-import { Image } from "expo-image";
+import { Image, type ImageProps } from "expo-image";
 import { View } from "react-native";
 import { Text } from "~/components/ui/text";
 import React from "react";

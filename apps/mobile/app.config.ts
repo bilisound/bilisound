@@ -39,7 +39,8 @@ const baseConfig: ExpoConfig = {
   },
   web: {
     bundler: "metro",
-    // output: "static",
+    // SDK 58 defaults `web.output` to "server"; keep the SDK 57 SPA export (`expo export --platform web` → index.html).
+    output: "single",
     favicon: "./assets/images/favicon.png",
   },
   plugins: [
@@ -78,9 +79,9 @@ const baseConfig: ExpoConfig = {
       {
         android: {
           // kotlinVersion: "2.0.0",
-          compileSdkVersion: 36,
-          targetSdkVersion: 36,
-          buildToolsVersion: "36.0.0",
+          compileSdkVersion: 37,
+          targetSdkVersion: 37,
+          buildToolsVersion: "37.0.0",
           usesCleartextTraffic: true,
           enableProguardInReleaseBuilds: true,
         },

@@ -6,6 +6,10 @@
 
 ## [Unreleased]
 
+### 技术改进
+
+- 升级 Expo SDK 到 58（React Native 0.88 / React 19.3）
+
 ## [2.4.1] - 2026-08-06
 
 ### 修改内容

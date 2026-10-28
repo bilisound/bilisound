@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  type TextInputInstance,
   TextInputProps,
   TextStyle,
   View,
@@ -22,7 +23,7 @@ export interface TextFieldProps extends Omit<TextInputProps, "style" | "editable
   right?: ReactNode;
   disabled?: boolean;
   invalid?: boolean;
-  ref?: Ref<TextInput>;
+  ref?: Ref<TextInputInstance>;
   size?: TextFieldSize;
 }
 
