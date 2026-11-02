@@ -36,6 +36,7 @@ Do not treat earlier NativeWind-to-StyleSheet migration work as a blanket v2 sty
 10. [Agent Handoff Guide](./agent-handoff-guide.md)
 11. [Epic 1 macOS / iOS Verification Handoff](./epic-1-macos-verification-handoff.md) — completed on iPhone 17 Simulator; retained as the reproducible verification record
 12. [Koi Design System Adoption](./koi-design-system.md) — deferred: replacing `@bilisound/ui`'s look with the Koi design system
+13. [Android Player Lifecycle Fixes](./player-lifecycle-fixes.md) — planned: Android player service/controller lifecycle and JS queue-restore idempotency fixes, with real-device evidence
 
 ## Current Working Assumption
 
