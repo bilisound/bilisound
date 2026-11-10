@@ -68,8 +68,8 @@ class BilisoundTaskService: HeadlessJsTaskService() {
 
     override fun onHeadlessJsTaskFinish(taskId: Int) {
         Log.i(TAG, "onHeadlessJsTaskFinish: 后台任务结束！taskId: $taskId")
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        stopSelf()
+        // 不在这里 stopForeground/stopSelf：同一时间段可能还有其他 Headless 任务。
+        // RN 基类会在 activeTasks 清空时自行停止服务。
         return super.onHeadlessJsTaskFinish(taskId)
     }
 

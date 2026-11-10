@@ -50,6 +50,7 @@ public class BilisoundPlayerModule: Module {
             "onQueueChange",
             "onTrackChange",
             "onIsPlayingChange",
+            "onShouldShowPlayButtonChange",
             "onDownloadUpdate",
             "onMediaItemTransition",
             "onRepeatModeChange",
@@ -154,6 +155,22 @@ public class BilisoundPlayerModule: Module {
             }
 
             promise.resolve(player.timeControlStatus == .playing)
+        }
+
+        AsyncFunction("getShouldShowPlayButton") { (promise: Promise) in
+            guard let player = self.player else {
+                promise.resolve(true)
+                return
+            }
+
+            // AVPlayer 在缓冲（waitingToPlayAtSpecifiedRate）时仍然表达了播放意图，
+            // 按钮应继续展示「暂停」。
+            promise.resolve(player.timeControlStatus == .paused)
+        }
+
+        AsyncFunction("prepare") { (promise: Promise) in
+            // AVPlayer 在设置 item 或调用 play 时自行准备，没有额外步骤。
+            promise.resolve()
         }
 
         AsyncFunction("getCurrentTrack") { (promise: Promise) in
@@ -891,6 +908,11 @@ public class BilisoundPlayerModule: Module {
                     "onIsPlayingChange",
                     [
                         "isPlaying": isPlaying
+                    ])
+                module?.sendEvent(
+                    "onShouldShowPlayButtonChange",
+                    [
+                        "shouldShowPlayButton": player.timeControlStatus == .paused
                     ])
             }
         }

@@ -16,7 +16,7 @@ import {
   toggle,
   useCurrentTrack,
   useEvents,
-  useIsPlaying,
+  useShouldShowPlayButton,
   usePlaybackOrder,
   useQueue,
   useRepeatMode,
@@ -88,7 +88,7 @@ function PlayerContent({ onClose }: { onClose?: () => void }) {
   const order = usePlaybackOrder();
   // Keeps item identity stable across renders so QueueRow's memo holds.
   const orderedQueue = useMemo(() => orderQueue(queue, order), [queue, order]);
-  const playing = useIsPlaying();
+  const shouldShowPlay = useShouldShowPlayButton();
   const repeat = useRepeatMode();
   const shuffle = useShuffleMode();
   const [restoreLoopOnce] = usePlaylistRestoreLoopOnceFlag();
@@ -233,7 +233,7 @@ function PlayerContent({ onClose }: { onClose?: () => void }) {
               上一首
             </Button>
             <Button disabled={loading || !!restoreLoopOnce} onPress={() => void run(toggle)}>
-              {playing ? "暂停" : "播放"}
+              {shouldShowPlay ? "播放" : "暂停"}
             </Button>
             <Button variant="ghost" accessibilityLabel="下一首" onPress={() => void run(playNextTrack)}>
               下一首
@@ -374,7 +374,7 @@ function PlayerContent({ onClose }: { onClose?: () => void }) {
 export function PlayerPanel({ wide }: { wide: boolean }) {
   const [open, setOpen] = useState(false);
   const current = useCurrentTrack();
-  const playing = useIsPlaying();
+  const shouldShowPlay = useShouldShowPlayButton();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const { duration } = useProgressSecond();
@@ -416,12 +416,12 @@ export function PlayerPanel({ wide }: { wide: boolean }) {
           <Button
             size="sm"
             disabled={loading || !!restoreLoopOnce}
-            accessibilityLabel={playing ? "暂停" : "播放"}
+            accessibilityLabel={shouldShowPlay ? "播放" : "暂停"}
             onPress={() => {
               void toggle().catch(reportError);
             }}
           >
-            {loading ? "加载中" : playing ? "暂停" : "播放"}
+            {loading ? "加载中" : shouldShowPlay ? "播放" : "暂停"}
           </Button>
         </HStack>
       ) : null}

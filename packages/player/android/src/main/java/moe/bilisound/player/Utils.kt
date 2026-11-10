@@ -2,6 +2,7 @@
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
@@ -51,6 +52,23 @@ fun createMediaItemFromTrack(json: String): MediaItem {
         .build()
 
     return testItem
+}
+
+/**
+ * 将曲目携带的请求 header 写入 header bank。
+ *
+ * 在创建 MediaItem 时立即登记，而不是等到切歌时才登记：进程重启后自动恢复的下载、
+ * 以及切歌前对下一首的预加载，都需要在真正发起请求时读到 Referer / User-Agent。
+ */
+fun rememberMediaItemHeaders(mediaItem: MediaItem) {
+    val headersJson = mediaItem.mediaMetadata.extras?.getString("headers") ?: return
+    val headers = try {
+        Json.decodeFromString<Map<String, String>>(headersJson)
+    } catch (e: Exception) {
+        Log.w(TAG, "无法解析曲目 header：$headersJson", e)
+        return
+    }
+    BilisoundPlayerModule.setHeadersOnBank(mediaItem.mediaId, headers)
 }
 
 fun mediaItemToBundle(mediaItem: MediaItem): Bundle {

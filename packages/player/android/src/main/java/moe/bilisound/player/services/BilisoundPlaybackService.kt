@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.core.os.bundleOf
+import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -24,30 +25,14 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
-import kotlinx.serialization.json.Json
 import moe.bilisound.player.BilisoundPlayerModule
 import moe.bilisound.player.PlaybackOrderManager
 import moe.bilisound.player.ERROR_BAD_HTTP_STATUS_CODE
 import moe.bilisound.player.ERROR_GENERIC
 import moe.bilisound.player.ERROR_NETWORK_FAILURE
-import moe.bilisound.player.EVENT_IS_PLAYING_CHANGE
 import moe.bilisound.player.EVENT_PLAYBACK_ERROR
-import moe.bilisound.player.EVENT_PLAYBACK_STATE_CHANGE
-import moe.bilisound.player.EVENT_PLAYING_PROGRESS_CHANGE
 import moe.bilisound.player.EVENT_TRACK_CHANGE
-import moe.bilisound.player.STATE_BUFFERING
-import moe.bilisound.player.STATE_ENDED
-import moe.bilisound.player.STATE_IDLE
-import moe.bilisound.player.STATE_READY
 import moe.bilisound.player.TAG
-import moe.bilisound.player.mediaItemToBundle
 
 class BilisoundPlaybackService : MediaSessionService() {
     companion object {
@@ -64,6 +49,15 @@ class BilisoundPlaybackService : MediaSessionService() {
          */
         private var pendingPlaybackOrder: IntArray? = null
 
+        /**
+         * 一次性的「当前曲目被替换」标记。
+         *
+         * 替换当前曲目会触发 `PLAYLIST_CHANGED` transition，但它并不代表用户切歌。
+         * 记录被替换后的 mediaId，只忽略这一次匹配的 transition；其他情况一律不动，
+         * 避免旧实现的 500 ms 全局时间窗吞掉真实的切歌事件。
+         */
+        private var pendingReplacementMediaId: String? = null
+
         fun replaceMediaItemPreservingPlaybackOrder(index: Int, mediaItem: MediaItem): Boolean {
             val player = checkNotNull(activePlayer) { "Playback service is not ready" }
             require(index in 0 until player.mediaItemCount) { "Invalid media item index: $index" }
@@ -72,7 +66,7 @@ class BilisoundPlaybackService : MediaSessionService() {
             val replacingCurrentItem = index == player.currentMediaItemIndex
             val currentPosition = player.currentPosition.coerceAtLeast(0)
             if (replacingCurrentItem) {
-                BilisoundPlayerModule.beginCurrentItemReplacementTransitionSuppression()
+                pendingReplacementMediaId = mediaItem.mediaId
             }
 
             player.replaceMediaItem(index, mediaItem)
@@ -80,8 +74,26 @@ class BilisoundPlaybackService : MediaSessionService() {
             activePlaybackOrder = playbackOrder
             if (replacingCurrentItem) {
                 player.seekTo(index, currentPosition)
+                // transition 是同步派发的：到这里还没被消费说明这次替换没有产生 transition，
+                // 不能让标记残留下去误伤下一次真实切歌。
+                pendingReplacementMediaId = null
             }
             return replacingCurrentItem
+        }
+
+        /**
+         * 判断当前 transition 是否由 [replaceMediaItemPreservingPlaybackOrder] 触发。
+         */
+        fun consumeReplacementTransition(mediaItem: MediaItem?, reason: Int): Boolean {
+            if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
+                return false
+            }
+            val pending = pendingReplacementMediaId ?: return false
+            if (mediaItem?.mediaId != pending) {
+                return false
+            }
+            pendingReplacementMediaId = null
+            return true
         }
 
         fun setMediaItems(
@@ -177,8 +189,7 @@ class BilisoundPlaybackService : MediaSessionService() {
     }
 
     private var mediaSession: MediaSession? = null
-    private var progressUpdateJob: Job? = null
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
+    private var player: ExoPlayer? = null
 
     // Create your Player and MediaSession in the onCreate lifecycle event
     @OptIn(UnstableApi::class) override fun onCreate() {
@@ -197,11 +208,23 @@ class BilisoundPlaybackService : MediaSessionService() {
         val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
 
         // 使用自定义的 MediaSourceFactory 创建 ExoPlayer
-        val player = ExoPlayer.Builder(this)
+        val exoPlayer = ExoPlayer.Builder(this)
             .setMediaSourceFactory(mediaSourceFactory)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                    .build(),
+                /* handleAudioFocus= */ true,
+            )
+            .setHandleAudioBecomingNoisy(true)
+            .setWakeMode(C.WAKE_MODE_NETWORK)
             .build()
-        installPlaybackOrder(player, 0, C.INDEX_UNSET)
-        activePlayer = player
+        installPlaybackOrder(exoPlayer, 0, C.INDEX_UNSET)
+        activePlayer = exoPlayer
+        player = exoPlayer
+        // 新实例不应继承上一个服务实例残留的替换标记。
+        pendingReplacementMediaId = null
 
         // 设置 sessionActivity
         val intent = packageManager.getLaunchIntentForPackage(packageName)
@@ -210,33 +233,49 @@ class BilisoundPlaybackService : MediaSessionService() {
 
 
         mediaSession = MediaSession
-            .Builder(this, player)
+            .Builder(this, exoPlayer)
             .setId("moe.bilisound.player")
             .setCallback(PlaybackCallback())
             .setSessionActivity(pendingIntent)
             .build()
 
-        player.clearMediaItems()
-        player.prepare()
-        startProgressUpdates()
-        player.addListener(playerListener)
+        exoPlayer.clearMediaItems()
+        exoPlayer.prepare()
+        exoPlayer.addListener(playerListener)
 
+    }
+
+    /**
+     * 幂等释放本服务持有的 player 与 session。
+     *
+     * 服务销毁、以及「未播放时任务被移除」都会走到这里。静态引用只在仍指向本次释放的
+     * player 时清空，避免误清下一个服务实例已经设置好的状态。
+     */
+    private fun releaseAll() {
+        val releasingPlayer = player
+        val releasingSession = mediaSession
+        player = null
+        mediaSession = null
+
+        releasingPlayer?.let {
+            it.removeListener(playerListener)
+            it.stop()
+            it.clearMediaItems()
+            it.release()
+        }
+        releasingSession?.release()
+
+        if (activePlayer === releasingPlayer) {
+            activePlayer = null
+            activePlaybackOrder = null
+            pendingPlaybackOrder = null
+            pendingReplacementMediaId = null
+        }
     }
 
     // Remember to release the player and media session in onDestroy
     override fun onDestroy() {
-        progressUpdateJob?.cancel()
-        coroutineScope.cancel()
-        mediaSession?.run {
-            player.stop()
-            player.clearMediaItems()
-            player.removeListener(playerListener)
-            player.release()
-            release()
-        }
-        mediaSession = null
-        activePlayer = null
-        activePlaybackOrder = null
+        releaseAll()
         super.onDestroy()
     }
 
@@ -248,10 +287,16 @@ class BilisoundPlaybackService : MediaSessionService() {
     fun emitJSEvent(bundle: Bundle) {
         val service = Intent(applicationContext, BilisoundTaskService::class.java)
         service.putExtras(bundle)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            applicationContext.startForegroundService(service)
-        } else {
-            applicationContext.startService(service)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                applicationContext.startForegroundService(service)
+            } else {
+                applicationContext.startService(service)
+            }
+        } catch (e: IllegalStateException) {
+            // ForegroundServiceStartNotAllowedException 是 IllegalStateException 的子类。
+            // 没有前台启动许可时丢弃这次事件，而不是让播放进程崩溃。
+            Log.w(TAG, "无法启动播放事件服务，丢弃本次事件", e)
         }
     }
 
@@ -302,43 +347,8 @@ class BilisoundPlaybackService : MediaSessionService() {
             }
         }
 
-        override fun onPlaybackStateChanged(playbackState: Int) {
-            var type = STATE_IDLE
-            if (playbackState == Player.STATE_IDLE) {
-                type = STATE_IDLE
-            }
-            if (playbackState == Player.STATE_BUFFERING) {
-                type = STATE_BUFFERING
-            }
-            if (playbackState == Player.STATE_READY) {
-                type = STATE_READY
-            }
-            if (playbackState == Player.STATE_ENDED) {
-                type = STATE_ENDED
-            }
-
-            emitJSEvent(
-                bundleOf(
-                    "event" to EVENT_PLAYBACK_STATE_CHANGE,
-                    "data" to bundleOf(
-                        "type" to type
-                    )
-                )
-            )
-        }
-
-        override fun onIsPlayingChanged(isPlaying: Boolean) {
-            emitJSEvent(
-                bundleOf(
-                    "event" to EVENT_IS_PLAYING_CHANGE,
-                    "data" to bundleOf(
-                        "isPlaying" to isPlaying
-                    )
-                )
-            )
-        }
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-            val player = mediaSession?.player as? ExoPlayer ?: return
+            val player = player ?: return
             if (!shuffleModeEnabled) {
                 // Leaving shuffle discards any deferred restore for the abandoned order.
                 clearPendingPlaybackOrder()
@@ -355,8 +365,8 @@ class BilisoundPlaybackService : MediaSessionService() {
 
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            if (BilisoundPlayerModule.isSuppressingCurrentItemReplacementTransition()) {
-                Log.d(TAG, "onMediaItemTransition: suppress current item replacement transition")
+            if (consumeReplacementTransition(mediaItem, reason)) {
+                Log.d(TAG, "onMediaItemTransition: 忽略替换当前曲目产生的 transition")
                 return
             }
             if (mediaItem == null) {
@@ -370,11 +380,6 @@ class BilisoundPlaybackService : MediaSessionService() {
                 )
                 return
             }
-            Log.d(TAG, "onMediaItemTransition: 正在运行 setHeadersOnBank: ${mediaItem.mediaId}")
-            BilisoundPlayerModule.setHeadersOnBank(
-                mediaItem.mediaId,
-                Json.decodeFromString(mediaItem.mediaMetadata.extras?.getString("headers") ?: "{}")
-            )
             emitJSEvent(
                 bundleOf(
                     "event" to EVENT_TRACK_CHANGE,
@@ -385,38 +390,15 @@ class BilisoundPlaybackService : MediaSessionService() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        // 当应用被从「最近任务」中移除时调用
-        // 目前还不能移除用户打开 app 后加载播放列表，不开始播放并直接在「最近任务」中划掉应用，
-        // 最终导致失活的媒体通知，详见 https://github.com/androidx/media/issues/1557
-        mediaSession?.run {
-            if (!player.isPlaying) {
-                mediaSession!!.release()
-                mediaSession = null
-                stopSelf()
-            }
+        // 当应用被从「最近任务」中移除时调用。
+        // 未播放时释放 session 与服务，避免残留一条失活的媒体通知，详见
+        // https://github.com/androidx/media/issues/1557 。
+        // Controller 会在下一次命令时按需重连（见 BilisoundPlayerModule.withController）。
+        if (player?.isPlaying != true) {
+            releaseAll()
+            stopSelf()
         }
         super.onTaskRemoved(rootIntent)
-    }
-
-    private fun startProgressUpdates() {
-        progressUpdateJob?.cancel()
-        progressUpdateJob = coroutineScope.launch {
-            while (isActive) {
-                if (mediaSession?.player?.isPlaying == true) {
-                    emitJSEvent(
-                        bundleOf(
-                            "event" to EVENT_PLAYING_PROGRESS_CHANGE,
-                            "data" to bundleOf(
-                                "duration" to (mediaSession?.player?.duration?.div(1000) ?: 0),
-                                "position" to (mediaSession?.player?.currentPosition?.div(1000) ?: 0),
-                                "buffered" to (mediaSession?.player?.bufferedPosition?.div(1000) ?: 0)
-                            )
-                        )
-                    )
-                }
-                delay(10000) // 延迟 10 秒
-            }
-        }
     }
 }
 

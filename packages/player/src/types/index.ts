@@ -142,6 +142,16 @@ export interface IsPlayingChangeEvent {
   isPlaying: boolean;
 }
 
+/**
+ * 播放/暂停按钮应展示的状态。
+ *
+ * 与 `isPlaying` 不同：缓冲或音频焦点被临时抑制时，播放意图仍然存在，
+ * 按钮应继续展示「暂停」。
+ */
+export interface ShouldShowPlayButtonChangeEvent {
+  shouldShowPlayButton: boolean;
+}
+
 export type DownloadUpdateEvent =
   | {
       type: "DOWNLOAD_CHANGE";
@@ -171,6 +181,7 @@ export interface EventList {
   onQueueChange: null;
   onTrackChange: null;
   onIsPlayingChange: IsPlayingChangeEvent;
+  onShouldShowPlayButtonChange: ShouldShowPlayButtonChangeEvent;
   onDownloadUpdate: DownloadUpdateEvent;
   onRepeatModeChange: RepeatModeChangeEvent;
   onShuffleModeChange: ShuffleModeChangeEvent;
@@ -183,6 +194,7 @@ export interface EventListFunc {
   onQueueChange: (params: null) => void;
   onTrackChange: (params: null) => void;
   onIsPlayingChange: (params: IsPlayingChangeEvent) => void;
+  onShouldShowPlayButtonChange: (params: ShouldShowPlayButtonChangeEvent) => void;
   onDownloadUpdate: (params: DownloadUpdateEvent) => void;
   onRepeatModeChange: (params: RepeatModeChangeEvent) => void;
   onShuffleModeChange: (params: ShuffleModeChangeEvent) => void;

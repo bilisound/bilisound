@@ -8,10 +8,25 @@ import { getDiagnosticsConfig, rehydrateSettings } from "~/features/config";
 import { BILISOUND_LOG_URI, BILISOUND_OFFLINE_URI, BILISOUND_PROCESS_URI } from "~/constants/file";
 import { migrateCacheStatus } from "~/features/cache";
 import { handlePlaylist } from "~/utils/migration/playlist";
-import { loadTrackData } from "~/features/playback";
 import { loadPlaceholderAudio } from "~/constants/playback";
 
-export default async function init() {
+let initialization: Promise<string> | undefined;
+
+/**
+ * 一次性初始化：日志、目录、数据库、缓存与占位资源。
+ *
+ * 多次调用共享同一个 Promise；失败后清空守卫，允许根组件重试。
+ * 播放队列恢复不属于一次性初始化，见 `ensureQueueRestored`。
+ */
+export default function init() {
+  initialization ??= runInitialization().catch(error => {
+    initialization = undefined;
+    throw error;
+  });
+  return initialization;
+}
+
+async function runInitialization() {
   // 日志系统初始化
   await rehydrateSettings();
   log.setSeverity(getDiagnosticsConfig().debugMode ? "debug" : "info");
@@ -57,9 +72,6 @@ export default async function init() {
   } catch (e) {
     log.error(`缓存初始化失败。原因：${e}`);
   }
-
-  // 播放队列初始化
-  await loadTrackData();
 
   // 隐藏 Splash Screen
   await SplashScreen.hideAsync();

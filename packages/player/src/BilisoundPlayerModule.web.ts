@@ -106,9 +106,11 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
     });
     el.addEventListener("play", () => {
       this.emit("onIsPlayingChange", { isPlaying: true });
+      this.emit("onShouldShowPlayButtonChange", { shouldShowPlayButton: false });
     });
     el.addEventListener("pause", () => {
       this.emit("onIsPlayingChange", { isPlaying: false });
+      this.emit("onShouldShowPlayButtonChange", { shouldShowPlayButton: true });
     });
     el.addEventListener("error", e => {
       this.emit("onPlaybackError", {
@@ -333,6 +335,14 @@ class BilisoundPlayerModuleWeb extends NativeModule<EventListFunc> implements Bi
 
   async getIsPlaying(): Promise<boolean> {
     return !this.audioElement.paused;
+  }
+
+  async getShouldShowPlayButton(): Promise<boolean> {
+    return this.audioElement.paused || this.audioElement.ended;
+  }
+
+  async prepare(): Promise<void> {
+    // HTMLAudioElement 在设置 src 或调用 play() 时自行准备，没有额外步骤。
   }
 
   async getCurrentTrack(): Promise<TrackDataInternal | null> {

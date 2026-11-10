@@ -22,10 +22,29 @@ import { refreshTrack } from "./track-operations";
 
 export { saveTrackData } from "./queue-snapshot";
 
+let queueRestore: Promise<boolean> | null = null;
+
 /**
- * 读取播放队列
+ * 确保原生播放队列有内容。
+ *
+ * 每次根组件挂载都调用。只有原生队列为空时才从持久化快照恢复：Activity 重建、
+ * 任务被移除后重开、Headless 冷启动后再回到前台，都以原生侧正在播放的队列为准，
+ * 不会用旧快照覆盖它。
+ *
+ * @returns 本次调用是否真的从快照恢复了队列
  */
-export async function loadTrackData() {
+export function ensureQueueRestored(): Promise<boolean> {
+  queueRestore ??= restoreQueueIfNeeded().finally(() => {
+    queueRestore = null;
+  });
+  return queueRestore;
+}
+
+async function restoreQueueIfNeeded(): Promise<boolean> {
+  if ((await Player.getTracks()).length > 0) {
+    return false;
+  }
+
   // 先清理旧版遗留数据，这样后面读取随机播放顺序时不会遇到旧形状的值
   cleanupLegacyShuffleKeys();
 
@@ -92,6 +111,8 @@ export async function loadTrackData() {
       clearQueuePlaybackOrder();
     }
   }
+
+  return true;
 }
 
 /**

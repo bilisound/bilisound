@@ -2,7 +2,7 @@ import * as Player from "@bilisound/player";
 import { RepeatMode, ShuffleMode } from "@bilisound/player";
 import { Platform } from "react-native";
 
-import type { TrackData } from "@bilisound/player";
+import type { PlaybackErrorEvent, TrackData } from "@bilisound/player";
 
 import { clearQueuePlaybackOrder, setQueuePlayingMode } from "~/storage/queue";
 import { getMediaResource, getVideoImageUrl, getVideoMetadata, getVideoUrl } from "~/features/bilibili";
@@ -129,8 +129,10 @@ export async function refreshTrack(trackData: TrackData) {
 
 /**
  * 预先刷新现在播放的曲目
+ *
+ * @param force 跳过 `shouldRefreshTrack` 判断，强制拉取最新 URL（用于 403/410 恢复）
  */
-export async function refreshCurrentTrack() {
+export async function refreshCurrentTrack(force = false) {
   if (Platform.OS === "web") {
     return;
   }
@@ -142,7 +144,7 @@ export async function refreshCurrentTrack() {
     return currentTrackRefresh.promise;
   }
 
-  const refreshPromise = refreshCurrentTrackOnce(trackData, trackIndex);
+  const refreshPromise = refreshCurrentTrackOnce(trackData, trackIndex, force);
   currentTrackRefresh = { key: refreshKey, promise: refreshPromise };
   try {
     await refreshPromise;
@@ -153,11 +155,11 @@ export async function refreshCurrentTrack() {
   }
 }
 
-async function refreshCurrentTrackOnce(trackData: OptionalTrackData, trackIndex: number) {
+async function refreshCurrentTrackOnce(trackData: OptionalTrackData, trackIndex: number, force: boolean) {
   let restoreLoopOnce = false;
   let shouldResume = false;
 
-  if (!trackData || !shouldRefreshTrack(trackData)) {
+  if (!trackData || !(force || shouldRefreshTrack(trackData))) {
     resumeCurrentTrackAfterRefresh = false;
   } else {
     if ((await Player.getRepeatMode()) === RepeatMode.ONE) {
@@ -205,6 +207,76 @@ async function refreshCurrentTrackOnce(trackData: OptionalTrackData, trackIndex:
 export async function playNextTrack() {
   resumeCurrentTrackAfterRefresh = await Player.getIsPlaying();
   await Player.next();
+}
+
+const MAX_NETWORK_RETRIES = 3;
+let networkRetry: { key: string; attempt: number } | null = null;
+let networkRetryTimer: ReturnType<typeof setTimeout> | null = null;
+
+/**
+ * 切歌后重置错误恢复状态，让下一首重新拥有完整的重试次数。
+ */
+export function resetPlaybackErrorRecovery() {
+  if (networkRetryTimer) {
+    clearTimeout(networkRetryTimer);
+  }
+  networkRetryTimer = null;
+  networkRetry = null;
+}
+
+/**
+ * 消费播放错误并尝试恢复。
+ *
+ * - HTTP 403/410：缓存 URL 已过期，刷新当前曲目 URL 后替换。
+ * - 网络类错误：按 1s / 2s / 4s 退避重试 `prepare()`，最多 3 次。
+ *
+ * 播放错误事件在 Android 由 Headless 任务送达，iOS 由前台监听送达。
+ */
+export async function handlePlaybackError(error: PlaybackErrorEvent) {
+  if (Platform.OS === "web") {
+    return;
+  }
+
+  if (error.type === "ERROR_BAD_HTTP_STATUS_CODE" && (error.code === 403 || error.code === 410)) {
+    log.info(`曲目 URL 已失效（HTTP ${error.code}），正在刷新当前曲目`);
+    resetPlaybackErrorRecovery();
+    try {
+      await refreshCurrentTrack(true);
+    } catch (e) {
+      log.error("刷新失效曲目失败：" + e);
+    }
+    return;
+  }
+
+  if (error.type !== "ERROR_NETWORK_FAILURE") {
+    return;
+  }
+  if (Platform.OS !== "android") {
+    // 只有 Android 暴露了 prepare()；iOS 的失败恢复依赖 replaceTrack 重建 AVPlayerItem。
+    return;
+  }
+
+  const trackData = await Player.getCurrentTrack();
+  const trackIndex = await Player.getCurrentTrackIndex();
+  const key = getTrackRefreshKey(trackIndex, trackData);
+  const attempt = networkRetry?.key === key ? networkRetry.attempt : 0;
+  if (attempt >= MAX_NETWORK_RETRIES) {
+    log.warn(`网络错误重试已达上限（${MAX_NETWORK_RETRIES} 次），不再重试`);
+    return;
+  }
+
+  networkRetry = { key, attempt: attempt + 1 };
+  // 退避重试。清掉上一首遗留的计时器，避免多首曲目重叠重试。
+  if (networkRetryTimer) {
+    clearTimeout(networkRetryTimer);
+  }
+  networkRetryTimer = setTimeout(
+    () => {
+      networkRetryTimer = null;
+      Player.prepare().catch(e => log.warn("重试 prepare 失败：" + e));
+    },
+    1000 * 2 ** attempt,
+  );
 }
 
 /**

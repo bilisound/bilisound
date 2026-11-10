@@ -7,7 +7,7 @@ import {
   ShuffleMode,
   toggle,
   useCurrentTrack,
-  useIsPlaying,
+  useShouldShowPlayButton,
   useRepeatMode,
   useShuffleMode,
 } from "~/features/player";
@@ -24,7 +24,7 @@ import { PlayButtonIcon } from "./play-button-icon";
 
 export function PlayerControlButtons() {
   const { colorValue } = useRawThemeValues();
-  const isPlaying = useIsPlaying();
+  const shouldShowPlay = useShouldShowPlayButton();
   const repeatModeRaw = useRepeatMode();
   const shuffleMode = useShuffleMode();
   const [restoreLoopOnceFlag] = usePlaylistRestoreLoopOnceFlag();
@@ -113,7 +113,7 @@ export function PlayerControlButtons() {
         <ButtonOuter className={`rounded-full ${buttonSize}`}>
           <Button
             disabled={buttonDisabled}
-            aria-label={isPlaying ? "暂停" : "播放"}
+            aria-label={shouldShowPlay ? "播放" : "暂停"}
             className={"rounded-full " + buttonSize}
             onPress={() => toggle()}
           >

@@ -32,6 +32,14 @@ const val EVENT_TRACK_CHANGE = "onTrackChange"
 const val EVENT_IS_PLAYING_CHANGE = "onIsPlayingChange"
 
 /**
+ * 播放/暂停按钮应展示的状态变更
+ *
+ * 与 [EVENT_IS_PLAYING_CHANGE] 的区别：缓冲或音频焦点被抑制时，播放意图
+ * （`playWhenReady`）仍然为 true，按钮应继续展示「暂停」。
+ */
+const val EVENT_SHOULD_SHOW_PLAY_BUTTON_CHANGE = "onShouldShowPlayButtonChange"
+
+/**
  * 播放进度变更
  */
 const val EVENT_PLAYING_PROGRESS_CHANGE = "onPlayingProgressChange"

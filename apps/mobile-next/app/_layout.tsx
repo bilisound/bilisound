@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BilisoundProvider, StateContent, updateUserTheme } from "@bilisound/ui";
 import { StatusBar } from "expo-status-bar";
 import { useAppearanceConfig } from "~/features/config";
-import { registerPlaybackBackgroundEvents } from "~/features/playback";
+import { ensureQueueRestored, registerPlaybackBackgroundEvents } from "~/features/playback";
 import { findUserTheme, useThemeRegistry } from "~/features/theme/registry";
 import init from "~/utils/init";
 import { AppShell } from "~/components/app-shell";
@@ -44,6 +44,10 @@ function App() {
       throw cause;
     });
     initialization
+      .then(async () => {
+        // 每次挂载都确认一次队列：原生队列非空时以原生状态为准，不覆盖正在播放的进度。
+        await ensureQueueRestored();
+      })
       .then(() => {
         if (active) setReady(true);
       })

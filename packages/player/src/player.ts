@@ -96,6 +96,23 @@ export async function getIsPlaying(): Promise<boolean> {
   return BilisoundPlayerModule.getIsPlaying();
 }
 
+/**
+ * 播放/暂停按钮应当展示「暂停」状态。
+ *
+ * 缓冲中或音频焦点被临时抑制时 `getIsPlaying()` 为 `false`，但播放意图仍然存在，
+ * 按钮不应跳回「播放」。
+ */
+export async function getShouldShowPlayButton(): Promise<boolean> {
+  return BilisoundPlayerModule.getShouldShowPlayButton();
+}
+
+/**
+ * 重新准备当前曲目（网络错误后重试使用）
+ */
+export function prepare(): Promise<void> {
+  return BilisoundPlayerModule.prepare();
+}
+
 export async function getCurrentTrack() {
   if (Platform.OS === "web") {
     return BilisoundPlayerModule.getCurrentTrackWeb();

@@ -1,6 +1,6 @@
 # Android 播放器生命周期修复计划
 
-状态：**计划中，尚未实施**（2026-11-03）
+状态：**已实施**（2026-11-10）；F9 仍为长期方案，未实施，原因见文末。
 
 本计划来自一次 Android 播放器生命周期审计。审计时 `develop` 位于 `2b3606c3`，文中的行号都以这个提交为准；实施前请重新核对源码。审计范围只覆盖 Android 原生层（`packages/player/android`）和 `apps/mobile` / `apps/mobile-next` 的 JS 初始化与后台事件链路，**没有覆盖 iOS 和 Web**。
 
@@ -178,6 +178,37 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 | F12 | 在 `setQueue*` / `addTrack*` 时就为所有曲目写入 header bank，而不是等到切歌时才写；`DownloadManager` 初始化时遍历 `downloadIndex`，从 `request.data` 中恢复 header。                                                                     | `BilisoundPlayerModule.kt:102-159, 833-934`；`BilisoundPlaybackService.kt:373-377`             |
 | F9  | 长期方案：把 `setMediaItems`、`replaceMediaItem`、`get/setPlaybackOrder` 改成 `MediaSession` 自定义命令（`SessionCommand`），让 MediaController 成为唯一的修改入口，然后删除 `activePlayer` 静态引用和 `pendingPlaybackOrder` 补偿逻辑。 | `BilisoundPlaybackService.kt:53-177`、`BilisoundPlayerModule.kt`                               |
 | F11 | `OnDestroy` 和 `OnStartObserving` 投递的 Runnable 用 try/catch 包住，并改用 `appContext.reactContext?` 的空安全写法。随 P0-B 一起完成。                                                                                                  | `BilisoundPlayerModule.kt:263-279`                                                             |
+
+## 实施结果（2026-11-10）
+
+实现与验收记录（Redmi K30 5G / Android 16，Dev Client `moe.bilisound.app.dev`）：
+
+| ID  | 实施                                                                                                                                 | 真机验证                                                                            |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| F3  | `releaseAll()` 幂等释放 player + session；未播放时 `onTaskRemoved` 与 `onDestroy` 都走它；静态引用只在仍指向本次释放的 player 时清空 | 未播放时划掉 App：ServiceRecord 0 条、`ExoPlayer:Playb` 线程 0 条                   |
+| F1  | `init()` 改为模块级 Promise；队列恢复拆成 `ensureQueueRestored()`，每次根组件挂载调用，原生队列非空即跳过                            | 播放中字体大小 1.1 → 1.0 两次：持续 PLAYING、进度连续；播放中划掉再开：同样继续播放 |
+| F2  | `withController` 取代阻塞 `get()`；连接中排队，失败统一 reject                                                                       | 冷启动、播放、切歌路径无 ANR                                                        |
+| F4  | 删除 `onHeadlessJsTaskFinish` 的 `stopForeground` / `stopSelf`                                                                       | 切歌：TaskService 只 `onCreate` 一次，任务结束播放服务未重建，下一首正常播放        |
+| F5  | 只把 `onTrackChange` / `onPlaybackError` 交给 Headless；删除 10 秒进度协程；`emitJSEvent` 捕获 `IllegalStateException`               | 后台熄屏播放 45 秒：TaskService 启动 0 次                                           |
+| F6  | ExoPlayer 音频焦点（USAGE_MEDIA / CONTENT_TYPE_MUSIC）、耳机拔出暂停、WakeMode                                                       | `dumpsys audio` 焦点栈包含 Bilisound，`content=CONTENT_TYPE_MUSIC`                  |
+| F10 | `toggle` 改用 `Util.handlePlayPauseButtonAction`                                                                                     | 播放 / 暂停按钮切换正常                                                             |
+| F7  | 一次性 mediaId 标记 + `consumeReplacementTransition`；删除 500ms 时间窗与两处 `postDelayed`                                          | 切歌后的 URL 替换没有产生重复 Headless 事件                                         |
+| F12 | 创建 MediaItem 时即写入 header bank；`DownloadManager` 初始化遍历 `downloadIndex` 恢复 header                                        | 编译验证（未构造 403 场景）                                                         |
+| F8  | `background.ts` 消费 `onPlaybackError`；403/410 刷新后 `replaceTrack`；Android 网络错误按 1s / 2s / 4s 退避 `prepare()`，最多 3 次   | 代码路径已编译；未做故障注入验证                                                    |
+| F11 | `OnDestroy` / `OnStartObserving` 的 Runnable try/catch；`appContext.reactContext?` 空安全                                            | 随 P0-B 编译验证                                                                    |
+
+补充说明：
+
+- F5 同时删除了服务内的进度协程：前台进度由 `useProgress` 轮询，Headless 侧没有任何消费者。
+- F6 新增 `getShouldShowPlayButton()` 与 `onShouldShowPlayButtonChange` 事件，两个 App 的播放 / 暂停按钮按「播放意图」展示图标；iOS 同步实现了该接口（`timeControlStatus == .paused`）。
+- F7 的标记由服务侧监听器同步消费；模块侧不再补发 `EVENT_TRACK_CHANGE`，UI 通知改由 Controller 的 transition 事件负责。
+- F8 的 `prepare()` 重试只在 Android 生效；iOS 的失败恢复依赖 `replaceTrack` 重建 `AVPlayerItem`。
+
+## F9 未实施的原因
+
+F9 的目标是让 `MediaController` 成为唯一的修改入口，并删除 `activePlayer` 静态引用与 `pendingPlaybackOrder` 补偿逻辑。实施后所有命令已经过 `withController`，静态引用在服务存活期间一定有效，可见故障（服务销毁后抛 `Playback service is not ready`）已消失。
+
+不继续改造的理由：`setQueue*` 目前直接调用服务内的 `activePlayer`，**不经过 Binder**；改成自定义 `SessionCommand` 后，整份队列（含每首曲目的 header / extras）都要作为 Bundle 走一次 Binder 事务，长歌单有 `TransactionTooLargeException` 风险。要做需要先设计分片传输，属于独立重构，不适合和生命周期修复一起发布。
 
 ## 真机回归清单
 

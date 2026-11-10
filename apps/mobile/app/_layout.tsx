@@ -2,7 +2,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SystemUI from "expo-system-ui";
 import "~/global.css";
 import { GluestackUIProvider } from "~/components/ui/gluestack-ui-provider";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Linking, Platform, useColorScheme } from "react-native";
 import { SystemBars } from "react-native-edge-to-edge";
 import { useFonts } from "expo-font";
@@ -16,7 +16,7 @@ import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-quer
 import { toastConfig } from "~/components/notify-toast";
 import Toast from "react-native-toast-message";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { registerPlaybackBackgroundEvents } from "~/features/playback";
+import { ensureQueueRestored, registerPlaybackBackgroundEvents } from "~/features/playback";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@gorhom/portal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -80,7 +80,6 @@ export default function RootLayout() {
     Poppins_700Bold,
   });
 
-  const isInitializing = useRef(false);
   const colorScheme = useColorScheme();
   const edgeInsets = useSafeAreaInsets();
 
@@ -96,11 +95,24 @@ export default function RootLayout() {
 
   // 各种初始化操作（程序加载后）
   useEffect(() => {
-    if (!loaded || isInitializing.current) {
+    if (!loaded) {
       return;
     }
-    isInitializing.current = true;
-    init();
+    let active = true;
+    (async () => {
+      try {
+        await init();
+        // 每次挂载都确认一次队列：原生队列非空时以原生状态为准，不覆盖正在播放的进度。
+        await ensureQueueRestored();
+      } catch (e) {
+        if (active) {
+          log.error("初始化失败：" + (e instanceof Error ? e.message : e));
+        }
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, [loaded]);
 
   useEffect(() => {

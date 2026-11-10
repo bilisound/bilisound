@@ -1,4 +1,4 @@
-import { useCurrentTrack, useIsPlaying } from "~/features/player";
+import { useCurrentTrack, useShouldShowPlayButton } from "~/features/player";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import React, { useEffect } from "react";
@@ -9,23 +9,24 @@ import { Icon } from "~/components/icon";
 
 export function PlayButtonIcon({ size = 28 }: { size?: number }) {
   const duration = 200;
-  const isPlaying = useIsPlaying();
+  // 缓冲中或音频焦点被抑制时播放意图仍在，按钮应继续展示「暂停」。
+  const showPause = !useShouldShowPlayButton();
   const { colorValue } = useRawThemeValues();
 
-  const pauseScale = useSharedValue(isPlaying ? 1 : 0);
-  const pauseOpacity = useSharedValue(isPlaying ? 1 : 0);
-  const playScale = useSharedValue(isPlaying ? 0 : 1);
-  const playOpacity = useSharedValue(isPlaying ? 0 : 1);
+  const pauseScale = useSharedValue(showPause ? 1 : 0);
+  const pauseOpacity = useSharedValue(showPause ? 1 : 0);
+  const playScale = useSharedValue(showPause ? 0 : 1);
+  const playOpacity = useSharedValue(showPause ? 0 : 1);
 
   useEffect(() => {
-    pauseScale.value = withTiming(isPlaying ? 1 : 0, { duration, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
-    pauseOpacity.value = withTiming(isPlaying ? 1 : 0, {
+    pauseScale.value = withTiming(showPause ? 1 : 0, { duration, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
+    pauseOpacity.value = withTiming(showPause ? 1 : 0, {
       duration,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
-    playScale.value = withTiming(isPlaying ? 0 : 1, { duration, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
-    playOpacity.value = withTiming(isPlaying ? 0 : 1, { duration, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
-  }, [isPlaying, pauseOpacity, pauseScale, playOpacity, playScale]);
+    playScale.value = withTiming(showPause ? 0 : 1, { duration, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
+    playOpacity.value = withTiming(showPause ? 0 : 1, { duration, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
+  }, [showPause, pauseOpacity, pauseScale, playOpacity, playScale]);
 
   const pauseAnimatedStyle = useAnimatedStyle(() => {
     return {

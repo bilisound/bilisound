@@ -19,7 +19,7 @@ export {
 } from "./track-operations";
 
 // 队列持久化 / 播放会话恢复
-export { saveTrackData, loadTrackData } from "./queue-persistence";
+export { ensureQueueRestored, saveTrackData } from "./queue-persistence";
 
 // 缓存协调
 export {

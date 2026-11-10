@@ -21,6 +21,8 @@ export interface BilisoundPlayerModuleInterface {
   getProgress(): Promise<PlaybackProgress>;
   getPlaybackState(): Promise<PlaybackState>;
   getIsPlaying(): Promise<boolean>;
+  getShouldShowPlayButton(): Promise<boolean>;
+  prepare(): Promise<void>;
   getCurrentTrack(): Promise<TrackDataInternal | null>;
   getCurrentTrackWeb(): Promise<TrackData | null>;
   getCurrentTrackIndex(): Promise<number>;
