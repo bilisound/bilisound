@@ -237,7 +237,7 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 ### 其他发现
 
 - **运行时的 Media3 是 1.9.0**，而不是 `packages/player/android/build.gradle` 声明的 1.4.1。Expo SDK 58 的 `expo-camera` 通过 `androidx.camera:camera-video:1.6.0` → `media3-muxer:1.9.0` 引入版本约束，Gradle 冲突解析选中了 1.9.0（`./gradlew :app:dependencyInsight --dependency androidx.media3:media3-session --configuration debugRuntimeClasspath`）。上文「Media3 1.4.1 的事实」来自 1.4.1 字节码；本轮在 1.9.0 上观察到的行为与之相符，但以后排查或升级应以实际解析的版本为准。
-- **来电期间点「播放」会取消挂断后的自动恢复**（未修复）。播放被音频焦点抑制时，`Util.shouldShowPlayButton` 默认返回 true，按钮显示「播放」；点击后 ExoPlayer 重新申请焦点失败，`playWhenReady` 被置为 false，挂断时即使收到 `handleGain` 也不会恢复。`apps/mobile/CHANGELOG.md` 中「被音频焦点抑制时不再跳回『播放』」与当前实现不符。可选方案：图标展示和 toggle 都改用 `playIfSuppressed = false` 的重载。
+- **来电期间点「播放」会取消挂断后的自动恢复**：**有意保留**（2026-11-16 决定）。播放被音频焦点抑制时，`Util.shouldShowPlayButton` 默认返回 true，按钮显示「播放」；点击后 ExoPlayer 重新申请焦点失败，`playWhenReady` 被置为 false，挂断时即使收到 `handleGain` 也不会恢复。不点击则挂断后自动恢复。这与 Media3 默认语义一致，不要改用 `playIfSuppressed = false` 的重载。`apps/mobile/CHANGELOG.md` 和相关注释已同步改为只承诺「缓冲时不跳回『播放』」。
 - 已有行为，与本计划无关：断网时 `refreshCurrentTrackOnce` 刷新失败会调用 `Player.next()`，连续跳过未缓存的曲目，直到遇到已缓存的曲目（实测 1.5 秒跳了 7 首）。
 - 本轮未覆盖：F2（需要临时注入连接延迟）、F12（需要构造 403）、耳机拔出（模拟器无法模拟）。
 

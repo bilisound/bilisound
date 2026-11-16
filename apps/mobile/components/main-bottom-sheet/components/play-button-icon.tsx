@@ -9,7 +9,7 @@ import { Icon } from "~/components/icon";
 
 export function PlayButtonIcon({ size = 28 }: { size?: number }) {
   const duration = 200;
-  // 缓冲中或音频焦点被抑制时播放意图仍在，按钮应继续展示「暂停」。
+  // 缓冲中播放意图仍在，按钮继续展示「暂停」；被音频焦点抑制（如来电）时按 Media3 语义展示「播放」。
   const showPause = !useShouldShowPlayButton();
   const { colorValue } = useRawThemeValues();
 

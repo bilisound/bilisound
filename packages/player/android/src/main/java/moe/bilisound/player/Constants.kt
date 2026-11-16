@@ -34,8 +34,9 @@ const val EVENT_IS_PLAYING_CHANGE = "onIsPlayingChange"
 /**
  * 播放/暂停按钮应展示的状态变更
  *
- * 与 [EVENT_IS_PLAYING_CHANGE] 的区别：缓冲或音频焦点被抑制时，播放意图
- * （`playWhenReady`）仍然为 true，按钮应继续展示「暂停」。
+ * 与 [EVENT_IS_PLAYING_CHANGE] 的区别：缓冲时播放意图（`playWhenReady`）仍然为 true，
+ * 按钮应继续展示「暂停」。语义沿用 Media3 `Util.shouldShowPlayButton`：被音频焦点等抑制时
+ * （例如来电）展示「播放」，这是有意保留的行为。
  */
 const val EVENT_SHOULD_SHOW_PLAY_BUTTON_CHANGE = "onShouldShowPlayButtonChange"
 
