@@ -58,6 +58,18 @@ const val TAG = "BilisoundPlayerModule"
 
 class BilisoundPlayerModule : Module() {
     companion object {
+        private val MODULE_EVENTS = arrayOf(
+            EVENT_PLAYBACK_STATE_CHANGE,
+            EVENT_PLAYBACK_ERROR,
+            EVENT_QUEUE_CHANGE,
+            EVENT_TRACK_CHANGE,
+            EVENT_IS_PLAYING_CHANGE,
+            EVENT_SHOULD_SHOW_PLAY_BUTTON_CHANGE,
+            EVENT_DOWNLOAD_UPDATE,
+            EVENT_LOOP_MODE_CHANGE,
+            EVENT_SHUFFLE_MODE_CHANGE,
+        )
+
         // 下载管理器相关
         private var downloadNotificationHelper: DownloadNotificationHelper? = null
         private var databaseProvider: DatabaseProvider? = null
@@ -194,7 +206,8 @@ class BilisoundPlayerModule : Module() {
         get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
     private var controllerFuture: ListenableFuture<MediaController>? = null
     private var controller: MediaController? = null
-    private var observing = false
+    /** 当前仍有 JS 订阅者的事件名，只在主线程读写。 */
+    private val observedEvents = mutableSetOf<String>()
     private val pendingControllerActions = mutableListOf<PendingControllerAction>()
     private var pendingSaveFilePromise: Promise? = null
     private var pendingSaveFilePath: String? = null
@@ -259,7 +272,7 @@ class BilisoundPlayerModule : Module() {
                     return@post
                 }
                 controller = connected
-                if (observing) {
+                if (observedEvents.isNotEmpty()) {
                     connected.addListener(playerListener)
                 }
                 drainPendingControllerActions(connected)
@@ -360,21 +373,40 @@ class BilisoundPlayerModule : Module() {
 
 
 
+    private fun startObserving(eventName: String) {
+        val wasObserving = observedEvents.isNotEmpty()
+        observedEvents.add(eventName)
+        if (wasObserving) {
+            return
+        }
+        Log.d(TAG, "开始监听播放器事件（首个订阅：$eventName）")
+        try {
+            controller?.addListener(playerListener)
+            appContext.reactContext?.let {
+                getDownloadManager(it.applicationContext).addListener(downloadListener)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "注册监听器失败", e)
+        }
+    }
+
+    private fun stopObserving(eventName: String) {
+        if (!observedEvents.remove(eventName) || observedEvents.isNotEmpty()) {
+            return
+        }
+        Log.d(TAG, "停止监听播放器事件（最后一个订阅：$eventName）")
+        try {
+            controller?.removeListener(playerListener)
+        } catch (e: Exception) {
+            Log.w(TAG, "移除播放器监听器失败", e)
+        }
+    }
+
     @OptIn(UnstableApi::class)
     override fun definition() = ModuleDefinition {
         Name("BilisoundPlayer")
 
-        Events(
-            EVENT_PLAYBACK_STATE_CHANGE,
-            EVENT_PLAYBACK_ERROR,
-            EVENT_QUEUE_CHANGE,
-            EVENT_TRACK_CHANGE,
-            EVENT_IS_PLAYING_CHANGE,
-            EVENT_SHOULD_SHOW_PLAY_BUTTON_CHANGE,
-            EVENT_DOWNLOAD_UPDATE,
-            EVENT_LOOP_MODE_CHANGE,
-            EVENT_SHUFFLE_MODE_CHANGE,
-        )
+        Events(MODULE_EVENTS)
 
         OnCreate {
             Log.d(TAG, "definition: 执行主程序初始化操作！")
@@ -388,7 +420,7 @@ class BilisoundPlayerModule : Module() {
                 val current = controller
                 controllerFuture = null
                 controller = null
-                observing = false
+                observedEvents.clear()
                 try {
                     current?.removeListener(playerListener)
                 } catch (e: Exception) {
@@ -414,30 +446,15 @@ class BilisoundPlayerModule : Module() {
             }
         }
 
-        OnStartObserving {
-            Log.d(TAG, "definition: 执行监听器初始化操作！")
-            mainHandler.post {
-                observing = true
-                try {
-                    controller?.addListener(playerListener)
-                    appContext.reactContext?.let {
-                        getDownloadManager(it.applicationContext).addListener(downloadListener)
-                    }
-                } catch (e: Exception) {
-                    Log.w(TAG, "注册监听器失败", e)
-                }
+        // Expo 按事件名分别回调 start / stop：某个事件失去最后一个 JS 订阅者时，其他事件可能仍在被订阅。
+        // 所有事件共用一个 playerListener，因此只能在全部事件都没有订阅者时才移除它，
+        // 否则关掉只订阅了部分事件的界面（例如播放器面板）会让前台 UI 收不到任何播放器事件。
+        MODULE_EVENTS.forEach { eventName ->
+            OnStartObserving(eventName) {
+                mainHandler.post { startObserving(eventName) }
             }
-        }
-
-        OnStopObserving {
-            Log.d(TAG, "definition: 执行监听器停止操作！")
-            mainHandler.post {
-                observing = false
-                try {
-                    controller?.removeListener(playerListener)
-                } catch (e: Exception) {
-                    Log.w(TAG, "移除播放器监听器失败", e)
-                }
+            OnStopObserving(eventName) {
+                mainHandler.post { stopObserving(eventName) }
             }
         }
 

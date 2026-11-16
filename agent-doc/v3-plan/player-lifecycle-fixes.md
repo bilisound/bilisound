@@ -1,6 +1,6 @@
 # Android 播放器生命周期修复计划
 
-状态：**已实施**（2026-11-10）；F9 仍为长期方案，未实施，原因见文末。
+状态：**已实施**（2026-11-10）；2026-11-16 在原生 Android 模拟器上二次回归，发现并修复了实施引入的 2 个回归（见[模拟器二次回归](#模拟器二次回归2026-11-16)）；F9 仍为长期方案，未实施，原因见文末。
 
 本计划来自一次 Android 播放器生命周期审计。审计时 `develop` 位于 `2b3606c3`，文中的行号都以这个提交为准；实施前请重新核对源码。审计范围只覆盖 Android 原生层（`packages/player/android`）和 `apps/mobile` / `apps/mobile-next` 的 JS 初始化与后台事件链路，**没有覆盖 iOS 和 Web**。
 
@@ -98,7 +98,7 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
    - **不再调用阻塞式 `get()`**。
 2. 所有 `AsyncFunction` 都改为通过 `withController` 执行，**直连路径也要经过它**：连接成功意味着服务的 `onCreate` 已经执行完毕，`activePlayer` 此时一定不为空。
 3. 给 Controller 注册 `MediaController.Listener.onDisconnected`：把 future 置为 `null`，同时移除 `playerListener`。**不要在断连回调中立即重连**，否则划掉任务后服务会立刻被重新拉起，可能再次产生 #1557 那种残留通知；等到下一次命令时再按需重连。
-4. 重连成功后，如果 JS 侧仍然有事件订阅，要把 `playerListener` 重新挂上去。可以用一个布尔值记录「是否处于 observing 状态」，在 `OnStartObserving` 中置位。
+4. 重连成功后，如果 JS 侧仍然有事件订阅，要把 `playerListener` 重新挂上去。~~可以用一个布尔值记录「是否处于 observing 状态」，在 `OnStartObserving` 中置位。~~ **更正（2026-11-16）**：Expo 的 `OnStartObserving` / `OnStopObserving` 按事件名分别回调，布尔值会在任意一个事件失去订阅者时被清掉；改为按事件名记录订阅集合，见[模拟器二次回归](#模拟器二次回归2026-11-16)。
 5. `OnDestroy` 不再调用 `getController()`，而是直接对已完成的 future 执行 `removeListener` 和 `release()`，并用 try/catch 包住（同时处理 F11）。
 
 **验收**
@@ -192,7 +192,7 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 | F5  | 只把 `onTrackChange` / `onPlaybackError` 交给 Headless；删除 10 秒进度协程；`emitJSEvent` 捕获 `IllegalStateException`               | 后台熄屏播放 45 秒：TaskService 启动 0 次                                           |
 | F6  | ExoPlayer 音频焦点（USAGE_MEDIA / CONTENT_TYPE_MUSIC）、耳机拔出暂停、WakeMode                                                       | `dumpsys audio` 焦点栈包含 Bilisound，`content=CONTENT_TYPE_MUSIC`                  |
 | F10 | `toggle` 改用 `Util.handlePlayPauseButtonAction`                                                                                     | 播放 / 暂停按钮切换正常                                                             |
-| F7  | 一次性 mediaId 标记 + `consumeReplacementTransition`；删除 500ms 时间窗与两处 `postDelayed`                                          | 切歌后的 URL 替换没有产生重复 Headless 事件                                         |
+| F7  | 一次性 mediaId 标记 + `consumeReplacementTransition`；删除 500ms 时间窗与两处 `postDelayed`（2026-11-16 改为「替换调用期间」标志）   | 切歌后的 URL 替换没有产生重复 Headless 事件（仅顺序播放；随机播放的回归见下文）     |
 | F12 | 创建 MediaItem 时即写入 header bank；`DownloadManager` 初始化遍历 `downloadIndex` 恢复 header                                        | 编译验证（未构造 403 场景）                                                         |
 | F8  | `background.ts` 消费 `onPlaybackError`；403/410 刷新后 `replaceTrack`；Android 网络错误按 1s / 2s / 4s 退避 `prepare()`，最多 3 次   | 代码路径已编译；未做故障注入验证                                                    |
 | F11 | `OnDestroy` / `OnStartObserving` 的 Runnable try/catch；`appContext.reactContext?` 空安全                                            | 随 P0-B 编译验证                                                                    |
@@ -203,6 +203,43 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 - F6 新增 `getShouldShowPlayButton()` 与 `onShouldShowPlayButtonChange` 事件，两个 App 的播放 / 暂停按钮按「播放意图」展示图标；iOS 同步实现了该接口（`timeControlStatus == .paused`）。
 - F7 的标记由服务侧监听器同步消费；模块侧不再补发 `EVENT_TRACK_CHANGE`，UI 通知改由 Controller 的 transition 事件负责。
 - F8 的 `prepare()` 重试只在 Android 生效；iOS 的失败恢复依赖 `replaceTrack` 重建 `AVPlayerItem`。
+
+## 模拟器二次回归（2026-11-16）
+
+上面的验证都在 MIUI 真机上完成。本轮在原生 Android 上补做一遍，确认修复不依赖深度定制系统的行为。
+
+环境：Pixel_10 AVD，Android 17（API 37），`google_apis_playstore` x86_64 user build；Dev Client 基于 `c43e53d` 重新 prebuild。
+
+| 场景                                    | 结果                                                                                                                            |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 播放中修改字体大小（Activity 重建两次） | 通过：持续 PLAYING，进度连续                                                                                                    |
+| 播放中划掉 App，再重新打开              | 通过：进程与服务存活，播放不中断；重开后 JS 没有覆盖队列                                                                        |
+| 未播放时划掉 App，再重新打开            | 通过：ServiceRecord 0 条、`ExoPlayer:Playb` 0 条、无残留通知；重开后恢复同一首并可播放                                          |
+| 后台熄屏播放 2.5 分钟                   | 通过：TaskService 只在切歌时启动                                                                                                |
+| 焦点栈 / 模拟来电                       | 通过：焦点栈包含 Bilisound（`CONTENT_TYPE_MUSIC`）；来电时暂停，挂断后自动恢复                                                  |
+| 缓冲中点 toggle（网络限速 GSM）         | 通过：BUFFERING 时点击变为 PAUSED，网络恢复后保持暂停                                                                           |
+| F8 网络错误（断网后 seek 越过缓冲区）   | 通过：按 1s / 2s / 4s 重试 `prepare()` 3 次，随后记录「已达上限」并停在 ERROR，没有循环也没有崩溃。真机验证时没有做这项故障注入 |
+
+### 发现的回归与修复
+
+**R1：关闭播放器面板后，前台 UI 收不到任何播放器事件。** 迷你播放器停在旧曲目和旧图标上，只有 Headless 链路仍在工作。
+
+- 原因：Expo 无参数的 `OnStartObserving` / `OnStopObserving` 使用 `AllEventsFilter`，会**按事件名逐个回调**（见 `expo-modules-core` 的 `EventObservingDefinition`）。P0-B 在 `OnStopObserving` 中移除共享的 `playerListener`，于是任意一个事件失去最后一个订阅者（例如关闭面板），所有事件都会停止派发。修复前 `OnStopObserving` 是空实现，所以这是本计划引入的回归。
+- 修复：`BilisoundPlayerModule` 按事件名注册 start / stop，用 `observedEvents` 记录仍有订阅者的事件。集合从空变为非空时挂上监听器，变空时才移除；Controller 重连时按集合是否为空决定是否重新挂上。
+- 修复后验证：关闭面板不再触发「停止监听」；面板关闭的状态下用 `cmd media_session dispatch next` 切歌 6 次（包括划掉 App 再重开之后），迷你播放器每次都同步更新。划掉 App 时只在最后一个订阅者离开时停止监听，重开后恢复。
+
+**R2：随机播放时，一次切歌产生 3 个 `onTrackChange` Headless 任务。** 每次都会重复执行 `saveTrackData` 和预下载；顺序播放不受影响。
+
+- 原因：替换当前曲目在 ExoPlayer 内部是「插入新条目 + 移除旧条目」。旧条目被移除时，播放器按随机顺序临时选中下一首（`PLAYLIST_CHANGED`，mediaId 不同），随后的 `seekTo` 再切回来（`SEEK`）。F7 的一次性标记只匹配「`PLAYLIST_CHANGED` + 相同 mediaId」，这两次 transition 都没有被消费。旧的 500 ms 时间窗恰好掩盖了这个问题。
+- 修复：`BilisoundPlaybackService` 改用「替换调用期间」标志，在 `replaceMediaItemPreservingPlaybackOrder` 内同步派发的 transition 一律忽略；删除 `pendingReplacementMediaId` 和 `consumeReplacementTransition`。
+- 修复后验证：随机播放切歌 3 次、顺序播放切歌 2 次（其中一次需要联网刷新 URL），每次 TaskService 都只启动 1 次。随机播放时被忽略的 transition 日志正好是 `reason=3`（另一首）加 `reason=2`（切回），与上述机制一致。
+
+### 其他发现
+
+- **运行时的 Media3 是 1.9.0**，而不是 `packages/player/android/build.gradle` 声明的 1.4.1。Expo SDK 58 的 `expo-camera` 通过 `androidx.camera:camera-video:1.6.0` → `media3-muxer:1.9.0` 引入版本约束，Gradle 冲突解析选中了 1.9.0（`./gradlew :app:dependencyInsight --dependency androidx.media3:media3-session --configuration debugRuntimeClasspath`）。上文「Media3 1.4.1 的事实」来自 1.4.1 字节码；本轮在 1.9.0 上观察到的行为与之相符，但以后排查或升级应以实际解析的版本为准。
+- **来电期间点「播放」会取消挂断后的自动恢复**（未修复）。播放被音频焦点抑制时，`Util.shouldShowPlayButton` 默认返回 true，按钮显示「播放」；点击后 ExoPlayer 重新申请焦点失败，`playWhenReady` 被置为 false，挂断时即使收到 `handleGain` 也不会恢复。`apps/mobile/CHANGELOG.md` 中「被音频焦点抑制时不再跳回『播放』」与当前实现不符。可选方案：图标展示和 toggle 都改用 `playIfSuppressed = false` 的重载。
+- 已有行为，与本计划无关：断网时 `refreshCurrentTrackOnce` 刷新失败会调用 `Player.next()`，连续跳过未缓存的曲目，直到遇到已缓存的曲目（实测 1.5 秒跳了 7 首）。
+- 本轮未覆盖：F2（需要临时注入连接延迟）、F12（需要构造 403）、耳机拔出（模拟器无法模拟）。
 
 ## F9 未实施的原因
 
@@ -226,6 +263,9 @@ adb shell dumpsys audio | sed -n '/Audio Focus stack entries/,/^$/p'
 adb logcat -d | grep "Background started FGS"
 # Activity 重建（测完务必恢复为 1.0）
 adb shell settings put system font_scale 1.1
+# 从 App 外部切歌（等同通知栏 / 耳机按键），用于检查前台 UI 与 Headless 事件
+adb shell cmd media_session dispatch next
+adb logcat -d | grep -cE "BilisoundTaskService: onStartCommand"
 ```
 
 | 场景                         | 修复前（2026-11-03 实测）                                         | 修复后的期望                     |
@@ -235,10 +275,12 @@ adb shell settings put system font_scale 1.1
 | 未播放时划掉 App，再重新打开 | 播放器失效（`Playback service is not ready`），旧 player 线程残留 | 队列恢复，可以播放，没有线程残留 |
 | 后台熄屏播放                 | 每 10 秒启动一次 TaskService                                      | 只在切歌时启动                   |
 | 播放时查看焦点栈             | 为空                                                              | 包含 Bilisound                   |
+| 关闭播放器面板后从外部切歌   | 2026-11-16 发现：迷你播放器停在旧曲目（R1）                       | 迷你播放器同步更新               |
+| 随机播放下切歌               | 2026-11-16 发现：一次切歌 3 个 Headless 任务（R2）                | TaskService 只启动 1 次          |
 
 ## 不在本计划范围
 
 - **iOS / Web**：没有审计。P0-C 的 JS 改动在所有平台生效，需要在 iOS 上回归一遍。
-- **升级 Media3**：当前版本 1.4.1 较旧，可以单独评估升级。升级时要重新核对 `onTaskRemoved` 默认行为、通知相关 API 和 `pauseAllPlayersAndStopSelf` 的语义。
+- **升级 Media3**：`build.gradle` 声明的是 1.4.1，但运行时已经被 Expo SDK 58 的依赖拉到 1.9.0（见[模拟器二次回归](#模拟器二次回归2026-11-16)）。可以单独评估把声明版本对齐到实际解析的版本。升级或对齐时要重新核对 `onTaskRemoved` 默认行为、通知相关 API 和 `pauseAllPlayersAndStopSelf` 的语义。
 - **播放恢复**（`MediaButtonReceiver` + `onPlaybackResumption`）：目前没有实现，与官方默认行为（关闭）一致，属于功能缺失，不是缺陷。
 - **持久化播放进度**：属于产品决策。

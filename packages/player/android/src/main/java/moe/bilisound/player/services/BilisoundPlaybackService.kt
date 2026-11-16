@@ -50,13 +50,18 @@ class BilisoundPlaybackService : MediaSessionService() {
         private var pendingPlaybackOrder: IntArray? = null
 
         /**
-         * 一次性的「当前曲目被替换」标记。
+         * 正在执行 [replaceMediaItemPreservingPlaybackOrder] 时为 true。
          *
-         * 替换当前曲目会触发 `PLAYLIST_CHANGED` transition，但它并不代表用户切歌。
-         * 记录被替换后的 mediaId，只忽略这一次匹配的 transition；其他情况一律不动，
-         * 避免旧实现的 500 ms 全局时间窗吞掉真实的切歌事件。
+         * 替换曲目期间派发的 transition 都不代表用户切歌，只是队列操作的副作用。
+         * 顺序播放时只会产生一次指向新条目的 `PLAYLIST_CHANGED`；随机播放时，旧条目被移除后
+         * 播放器会按随机顺序临时选中另一首，`seekTo` 再切回来，于是还会多出 mediaId 不同的
+         * `PLAYLIST_CHANGED` 和一次 `SEEK`。这些 transition 都在替换调用内同步派发，所以按
+         * 「是否处在替换调用内」判断，而不是按 mediaId 匹配单次标记；替换调用之外的真实切歌不受影响。
          */
-        private var pendingReplacementMediaId: String? = null
+        private var replacingMediaItem = false
+
+        val isReplacingMediaItem: Boolean
+            get() = replacingMediaItem
 
         fun replaceMediaItemPreservingPlaybackOrder(index: Int, mediaItem: MediaItem): Boolean {
             val player = checkNotNull(activePlayer) { "Playback service is not ready" }
@@ -65,35 +70,19 @@ class BilisoundPlaybackService : MediaSessionService() {
             val playbackOrder = checkNotNull(activePlaybackOrder) { "Playback order is not ready" }
             val replacingCurrentItem = index == player.currentMediaItemIndex
             val currentPosition = player.currentPosition.coerceAtLeast(0)
-            if (replacingCurrentItem) {
-                pendingReplacementMediaId = mediaItem.mediaId
-            }
 
-            player.replaceMediaItem(index, mediaItem)
-            player.setShuffleOrder(playbackOrder)
-            activePlaybackOrder = playbackOrder
-            if (replacingCurrentItem) {
-                player.seekTo(index, currentPosition)
-                // transition 是同步派发的：到这里还没被消费说明这次替换没有产生 transition，
-                // 不能让标记残留下去误伤下一次真实切歌。
-                pendingReplacementMediaId = null
+            replacingMediaItem = true
+            try {
+                player.replaceMediaItem(index, mediaItem)
+                player.setShuffleOrder(playbackOrder)
+                activePlaybackOrder = playbackOrder
+                if (replacingCurrentItem) {
+                    player.seekTo(index, currentPosition)
+                }
+            } finally {
+                replacingMediaItem = false
             }
             return replacingCurrentItem
-        }
-
-        /**
-         * 判断当前 transition 是否由 [replaceMediaItemPreservingPlaybackOrder] 触发。
-         */
-        fun consumeReplacementTransition(mediaItem: MediaItem?, reason: Int): Boolean {
-            if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
-                return false
-            }
-            val pending = pendingReplacementMediaId ?: return false
-            if (mediaItem?.mediaId != pending) {
-                return false
-            }
-            pendingReplacementMediaId = null
-            return true
         }
 
         fun setMediaItems(
@@ -223,8 +212,6 @@ class BilisoundPlaybackService : MediaSessionService() {
         installPlaybackOrder(exoPlayer, 0, C.INDEX_UNSET)
         activePlayer = exoPlayer
         player = exoPlayer
-        // 新实例不应继承上一个服务实例残留的替换标记。
-        pendingReplacementMediaId = null
 
         // 设置 sessionActivity
         val intent = packageManager.getLaunchIntentForPackage(packageName)
@@ -269,7 +256,6 @@ class BilisoundPlaybackService : MediaSessionService() {
             activePlayer = null
             activePlaybackOrder = null
             pendingPlaybackOrder = null
-            pendingReplacementMediaId = null
         }
     }
 
@@ -365,8 +351,8 @@ class BilisoundPlaybackService : MediaSessionService() {
 
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            if (consumeReplacementTransition(mediaItem, reason)) {
-                Log.d(TAG, "onMediaItemTransition: 忽略替换当前曲目产生的 transition")
+            if (isReplacingMediaItem) {
+                Log.d(TAG, "onMediaItemTransition: 忽略替换曲目产生的 transition（reason=$reason, mediaId=${mediaItem?.mediaId}）")
                 return
             }
             if (mediaItem == null) {
