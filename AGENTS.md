@@ -21,18 +21,16 @@ Bilisound 的目标是：
 bilisound/
 ├── apps/
 │   ├── mobile/            ← Expo React Native 客户端 (iOS/Android/Web)
-│   ├── server-cf/         ← Cloudflare Worker API 代理 (Web 端后端)
-├── packages/
-│   ├── sdk/               ← @bilisound/sdk — B 站 API 封装 (运行时无关)
-│   ├── player/            ← @bilisound/player — Expo 原生音频播放模块
-│   └── ui/                ← @bilisound/ui — v3 Tamagui 组件库与独立 Expo 展示项目
+│   └── server-cf/         ← Cloudflare Worker API 代理 (Web 端后端)
+└── packages/
+    ├── sdk/               ← @bilisound/sdk — B 站 API 封装 (运行时无关)
+    └── player/            ← @bilisound/player — Expo 原生音频播放模块
 ```
 
 - **apps/mobile**: Expo 客户端。源文件按功能分目录：`app/`（路由页面）、`features/`（业务功能边界，如 bilibili、config、cache、player、playback、playlist、theme）、`components/`、`store/`（仅纯 UI 交互状态）、`storage/`、`hooks/`、`utils/`、`api/`、`constants/`。资源在 `assets/` 和 `public/`。旧的 `business/` 目录已删除，新业务逻辑放进对应 `features/<domain>/`。
 - **apps/server-cf**: Cloudflare Worker，为 Web 端代理 B 站 API 请求。入口 `index.ts`，路由在 `route/bilisound.ts`。
 - **packages/sdk**: 运行时无关的核心逻辑，发布为 `@bilisound/sdk`（TypeScript → `dist/`）。
 - **packages/player**: Expo 原生音频播放模块（iOS/Android/Kotlin + Swift + Web shim），发布为 `@bilisound/player`。
-- **packages/ui**: v3 跨平台组件库，按 design token、recipe、component 分层，并可作为独立 Expo 项目运行。
 
 ## Architecture Overview
 
@@ -43,6 +41,12 @@ bilisound/
 - **平台分叉**: `.web.ts` 后缀文件为 Web 专属实现，同名无后缀文件供原生端使用。
 
 架构细节参见 **[agent-doc/architecture.md](agent-doc/architecture.md)**。
+
+## Current Maintenance Policy
+
+- `apps/mobile` 是当前唯一客户端。在可见未来以保守性维护为主：缺陷修复、系统与依赖兼容性适配、播放器生命周期维护，以及服务于这些目标的小范围结构重构和优化。
+- 保留既有版本中已经完成的结构重构与优化，不回退这些成果；但不要启动替代客户端、全量 UI 重写或新的 UI 技术栈迁移。
+- 涉及 `apps/mobile` 的改动应尽量局部且可回归，避免引入只有重写计划才需要的抽象或依赖。
 
 `agent-doc/` 用于导航与解释设计，源码是当前实现事实的最终权威。引用具体文件或符号前必须确认其仍然存在。
 
@@ -57,9 +61,7 @@ bilisound/
 | 进入 mobile 主界面、物理 Android 调试     | [agent-doc/mobile-debugging.md](agent-doc/mobile-debugging.md)                                                 |
 | 验证命令、既有 tsc / ESLint 失败          | [agent-doc/verification.md](agent-doc/verification.md)                                                         |
 | 图片资源、看板娘、PNG/SVG 渲染坑          | [agent-doc/assets-and-images.md](agent-doc/assets-and-images.md)                                               |
-| v3 分层改造计划、史诗任务、交接文档       | [agent-doc/v3-plan/README.md](agent-doc/v3-plan/README.md)                                                     |
-| 改用 Koi 设计系统（暂缓）、用户主题色兼容 | [agent-doc/v3-plan/koi-design-system.md](agent-doc/v3-plan/koi-design-system.md)                               |
-| Android 播放器生命周期缺陷与修复计划      | [agent-doc/v3-plan/player-lifecycle-fixes.md](agent-doc/v3-plan/player-lifecycle-fixes.md)                     |
+| Android 播放器生命周期修复与回归记录      | [agent-doc/player-lifecycle-fixes.md](agent-doc/player-lifecycle-fixes.md)                                     |
 | Player 模块 API                           | [packages/player/README.md](packages/player/README.md)                                                         |
 | CF Worker API 端点                        | [apps/server-cf/README.md](apps/server-cf/README.md)                                                           |
 | 创建 / 管理 AI agent skill                | [agent-doc/skills.md](agent-doc/skills.md)                                                                     |
@@ -82,13 +84,12 @@ bilisound/
 - Before diagnosing Android Gradle failures, verify `java -version`, `javac -version`, `jlink --version`, and `pnpm -C apps/mobile exec ./android/gradlew --version` all resolve to JDK 21.
 
 - Root build: `pnpm build` — runs Turborepo builds (e.g., `packages/sdk`).
-- Lint all: `pnpm lint` — runs the `lint` script of packages that define one (`packages/player`, `packages/ui`). `apps/mobile` has no `lint` script, so its ESLint is not covered; see [agent-doc/verification.md](agent-doc/verification.md).
+- Lint all: `pnpm lint` — runs the `lint` script of packages that define one (`packages/player`). `apps/mobile` has no `lint` script, so its ESLint is not covered; see [agent-doc/verification.md](agent-doc/verification.md).
 - Format: `pnpm format` — Prettier write across repo.
 - Mobile dev: `pnpm -C apps/mobile start` (Expo dev client), `pnpm -C apps/mobile ios`, `pnpm -C apps/mobile android`, `pnpm -C apps/mobile web`.
 - Mobile release: `pnpm -C apps/mobile build:android`, `pnpm -C apps/mobile build:web`.
 - SDK build: `pnpm -C packages/sdk build` (tsdown → `dist/`).
 - Player build: `pnpm -C packages/player build` (expo-module build).
-- UI typecheck: `pnpm -C packages/ui typecheck`; showcase: `pnpm -C packages/ui web`.
 - CF Worker dev: `pnpm -C apps/server-cf dev`; deploy: `pnpm -C apps/server-cf deploy`.
 
 ## Long-Running Process Rules

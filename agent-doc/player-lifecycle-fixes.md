@@ -1,8 +1,8 @@
-# Android 播放器生命周期修复计划
+# Android 播放器生命周期修复与回归记录
 
 状态：**已实施**（2026-11-10）；2026-11-16 在原生 Android 模拟器上二次回归，发现并修复了实施引入的 2 个回归（见[模拟器二次回归](#模拟器二次回归2026-11-16)）；F9 仍为长期方案，未实施，原因见文末。
 
-本计划来自一次 Android 播放器生命周期审计。审计时 `develop` 位于 `2b3606c3`，文中的行号都以这个提交为准；实施前请重新核对源码。审计范围只覆盖 Android 原生层（`packages/player/android`）和 `apps/mobile` / `apps/mobile-next` 的 JS 初始化与后台事件链路，**没有覆盖 iOS 和 Web**。
+本文保留既有 `apps/mobile` 与 `packages/player` 的 Android 播放器生命周期审计、修复和回归结果。审计时 `develop` 位于 `2b3606c3`，文中的行号都以这个提交为准；实施前请重新核对源码。审计范围只覆盖 Android 原生层（`packages/player/android`）和 `apps/mobile` 的 JS 初始化与后台事件链路，**没有覆盖 iOS 和 Web**。
 
 ## 背景与结论
 
@@ -44,7 +44,7 @@
 ```txt
 Step 1  P0-A 服务生命周期（F3 服务侧）
 Step 2  P0-B 模块 Controller 连接管理（F3 模块侧 + F2）  ← 依赖 Step 1 的释放语义
-Step 3  P0-C JS 队列恢复幂等（F1，同时补上 mobile-next 守卫的漏洞）
+Step 3  P0-C JS 队列恢复幂等（F1）
 Step 4  P1   Headless 服务（F4）+ 事件收敛（F5）
 Step 5  P1   音频焦点（F6）+ toggle 语义（F10）    ← F6 会产生 playbackSuppression，必须和 F10 一起改
 Step 6  P2/P3 其余各项
@@ -112,17 +112,15 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 
 - `apps/mobile/app/_layout.tsx:83, 98-104`：用 `useRef` 做守卫，作用域只是单次挂载。
 - `apps/mobile/utils/init.ts:61`、`apps/mobile/features/playback/queue-persistence.ts:79-84`：调用 `setQueueWithOptions(..., { preservePlaybackState: false })`，而且没有传 `position`。
-- `apps/mobile-next/app/_layout.tsx:21-46`：用模块级的 `initialization` Promise 做守卫，所以**不会出现 F1**；但守卫成功后就再也不会恢复队列。
 
-**问题的两面**
+**问题**
 
-- `apps/mobile`：每次重新挂载都会重新恢复队列，覆盖原生侧正在播放的状态（F1）。
-- `apps/mobile-next`：只在 JS 运行时内恢复一次。在 F3 场景下，服务被销毁而 JS 运行时还在，原生队列已经清空，JS 却认为初始化已经完成，于是队列不会再恢复。P0-B 修好以后，这个缺口就会暴露出来。
+每次重新挂载都会重新恢复队列，覆盖原生侧正在播放的状态（F1）。
 
-**方案**（两个 App 使用同一套规则）
+**方案**
 
 1. 把「一次性初始化」（日志、目录、数据库迁移、缓存迁移、占位资源）和「队列恢复」拆开：
-   - 一次性初始化：采用 mobile-next 的模块级 Promise 守卫，`apps/mobile` 照搬这个模式。
+   - 一次性初始化：使用模块级 Promise 守卫。
    - 队列恢复：抽出一个 `ensureQueueRestored()`，**每次根组件挂载都调用**。它先 `await Player.getTracks()`，只有在原生队列为空时，才从 `queueStorage` 恢复。
 2. 原生队列不为空时，以原生侧为准，不再覆盖。这样可以覆盖 Activity 重建、任务被移除后重开、Headless 冷启动后再进入前台等情况。
 3. 队列快照保存在 `features/playback/queue-snapshot.ts` 中，目前**不记录播放进度**。进程被杀后从 0 秒开始是现有的设计取舍，不属于本计划范围。
@@ -132,11 +130,11 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 - 播放中执行 `settings put system font_scale 1.1`（测完要恢复成 `1.0`）：继续播放，进度保持不变。
 - 播放中从最近任务划掉 App，再重新打开：继续播放，进度保持不变。
 - 未播放时划掉 App，再重新打开（与 P0-B 联合验证）：队列恢复，可以播放。
-- 为 `ensureQueueRestored` 编写 Jest 用例：mock `@bilisound/player`，当原生队列不为空时，断言不调用 `setQueueWithOptions`。按 [verification.md](../verification.md) 用 `--watchAll=false` 运行。
+- 为 `ensureQueueRestored` 编写 Jest 用例：mock `@bilisound/player`，当原生队列不为空时，断言不调用 `setQueueWithOptions`。按 [verification.md](./verification.md) 用 `--watchAll=false` 运行。
 
 ## P1：Headless 服务与事件收敛（F4、F5）
 
-**文件**：`services/BilisoundTaskService.kt:69-74`，`services/BilisoundPlaybackService.kt:248-256, 401-420`，`apps/*/features/playback/background.ts`
+**文件**：`services/BilisoundTaskService.kt:69-74`，`services/BilisoundPlaybackService.kt:248-256, 401-420`，`apps/mobile/features/playback/background.ts`
 
 **方案**
 
@@ -174,7 +172,7 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 | ID  | 方案要点                                                                                                                                                                                                                                 | 文件                                                                                           |
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | F7  | 删除进程全局的 500 ms 时间窗和 `replaceTrack` 中两处 `postDelayed`（100 ms / 500 ms），改用一次性标记：替换前记下 `mediaId`，只忽略这次替换产生的那一个 transition（`reason == PLAYLIST_CHANGED` 且 `mediaId` 不变）。                   | `BilisoundPlayerModule.kt:139, 161-181, 617-649`；`BilisoundPlaybackService.kt:67-85, 357-361` |
-| F8  | 前台和 Headless 都处理 `onPlaybackError`：遇到 HTTP 403/410 时刷新当前曲目的 URL 并调用 `replaceTrack`；网络类错误按退避策略重试 `prepare()`，同时限制最大重试次数。                                                                     | `apps/*/features/playback/background.ts`、`track-operations.ts`                                |
+| F8  | 前台和 Headless 都处理 `onPlaybackError`：遇到 HTTP 403/410 时刷新当前曲目的 URL 并调用 `replaceTrack`；网络类错误按退避策略重试 `prepare()`，同时限制最大重试次数。                                                                     | `apps/mobile/features/playback/background.ts`、`track-operations.ts`                           |
 | F12 | 在 `setQueue*` / `addTrack*` 时就为所有曲目写入 header bank，而不是等到切歌时才写；`DownloadManager` 初始化时遍历 `downloadIndex`，从 `request.data` 中恢复 header。                                                                     | `BilisoundPlayerModule.kt:102-159, 833-934`；`BilisoundPlaybackService.kt:373-377`             |
 | F9  | 长期方案：把 `setMediaItems`、`replaceMediaItem`、`get/setPlaybackOrder` 改成 `MediaSession` 自定义命令（`SessionCommand`），让 MediaController 成为唯一的修改入口，然后删除 `activePlayer` 静态引用和 `pendingPlaybackOrder` 补偿逻辑。 | `BilisoundPlaybackService.kt:53-177`、`BilisoundPlayerModule.kt`                               |
 | F11 | `OnDestroy` 和 `OnStartObserving` 投递的 Runnable 用 try/catch 包住，并改用 `appContext.reactContext?` 的空安全写法。随 P0-B 一起完成。                                                                                                  | `BilisoundPlayerModule.kt:263-279`                                                             |
@@ -200,7 +198,7 @@ Step 1 到 Step 3 应该放在同一个发布版本中。如果只修复服务�
 补充说明：
 
 - F5 同时删除了服务内的进度协程：前台进度由 `useProgress` 轮询，Headless 侧没有任何消费者。
-- F6 新增 `getShouldShowPlayButton()` 与 `onShouldShowPlayButtonChange` 事件，两个 App 的播放 / 暂停按钮按「播放意图」展示图标；iOS 同步实现了该接口（`timeControlStatus == .paused`）。
+- F6 新增 `getShouldShowPlayButton()` 与 `onShouldShowPlayButtonChange` 事件，`apps/mobile` 的播放 / 暂停按钮按「播放意图」展示图标；iOS 同步实现了该接口（`timeControlStatus == .paused`）。
 - F7 的标记由服务侧监听器同步消费；模块侧不再补发 `EVENT_TRACK_CHANGE`，UI 通知改由 Controller 的 transition 事件负责。
 - F8 的 `prepare()` 重试只在 Android 生效；iOS 的失败恢复依赖 `replaceTrack` 重建 `AVPlayerItem`。
 
@@ -249,7 +247,7 @@ F9 的目标是让 `MediaController` 成为唯一的修改入口，并删除 `ac
 
 ## 真机回归清单
 
-前置步骤见 [mobile-debugging.md](../mobile-debugging.md)。先运行 `agent:android:doctor`，如果提示 Dev Client 过旧就重新安装。临时产物统一写入 `.temp/`。
+前置步骤见 [mobile-debugging.md](./mobile-debugging.md)。先运行 `agent:android:doctor`，如果提示 Dev Client 过旧就重新安装。临时产物统一写入 `.temp/`。
 
 ```bash
 # 状态与进度

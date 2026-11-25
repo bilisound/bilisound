@@ -28,14 +28,6 @@ allowBuilds:
   workerd: true
 verifyDepsBeforeRun: false
 minimumReleaseAgeExclude:
-  - "@storybook/addon-docs@10.5.4"
-  - "@storybook/builder-vite@10.5.4"
-  - "@storybook/csf-plugin@10.5.4"
-  - "@storybook/react-dom-shim@10.5.4"
-  - "@storybook/react-native-web-vite@10.5.4"
-  - "@storybook/react-vite@10.5.4"
-  - "@storybook/react@10.5.4"
-  - storybook@10.5.4
   - "@expo/cli@58.1.16"
   - babel-preset-expo@58.0.21
   - expo-dev-client@58.0.16
@@ -47,4 +39,3 @@ publicHoistPattern:
   - "@expo/config-plugins"
 patchedDependencies:
   "@expo/router-server@58.0.18": patches/@expo__router-server@58.0.18.patch
-  "@tamagui/alert-dialog@2.4.2": patches/@tamagui__alert-dialog@2.4.2.patch

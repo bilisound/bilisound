@@ -60,12 +60,12 @@ features/bilibili/client.ts + mappers.ts  B 站访问边界；SDK DTO 转为应�
 
 ## 分层约束（apps/mobile）
 
-UI 层（`app/`、`components/`、`hooks/`）只通过 `~/features/*` 访问业务能力，不直接 import `@bilisound/player`、`@bilisound/sdk`、`~/storage/*` 或 `~/api/*`。v3 把播放、歌单、配置、缓存和 B 站数据拆成用例 API，UI 重写（Epic 7）只消费这些 API；UI 直接接触播放器内部、SDK DTO 或存储 key，会把耦合带进新界面。
+UI 层（`app/`、`components/`、`hooks/`）只通过 `~/features/*` 访问业务能力，不直接 import `@bilisound/player`、`@bilisound/sdk`、`~/storage/*` 或 `~/api/*`。播放、歌单、配置、缓存和 B 站数据已经按 feature 边界拆分，UI 应只消费这些 feature 暴露的用例 API；直接接触播放器内部、SDK DTO 或存储 key 会绕过既有边界。
 
 - 播放器能力从 `features/player`（`@bilisound/player` 的应用侧重导出）获取。播放编排在 `features/playback`，它直接使用 `@bilisound/player` 与 `~/storage/playlist`。
 - `store/` 只放无业务语义的 UI 交互状态；业务状态放进对应 feature。
 - 例外：`features/theme` 没有 `index.ts`，UI 目前直接引用其模块文件。
-- 公开 API 以各 feature 的 `index.ts` 和 [phase-2-audit.md 的冻结 API](v3-plan/phase-2-audit.md#frozen-feature-use-case-api) 为准。
+- 公开 API 以各 feature 的 `index.ts` 为准。
 - 没有 lint 规则强制这条约束。改动 UI 层后在仓库根目录自查，应无输出：
 
 ```bash
@@ -110,14 +110,6 @@ grep -rnE 'from "(@bilisound/(player|sdk)|~/storage/|~/api/)' apps/mobile/app ap
 - TanStack React Query
 - 样式现状是 NativeWind + GluestackUI 与逐步替换它们的本地组件并存，详见下节
 
-### packages/ui
-
-- `@tamagui/core` 及按需引入的 Tamagui 组件包，不使用 `@tamagui/config` 或聚合的 `tamagui` 包
-- 分层为 `design-token` → `recipe` → `component`，Tamagui 属于组件契约之下的实现细节
-- 源码直供 (`react-native` / `exports` 指向 `src/index.ts`)，无 `dist` 契约，由消费方 Metro/Babel 转译
-- Storybook (React Native Web) 作为组件目录，`App.tsx` 是独立的原生 smoke 展示
-- **尚未被 `apps/mobile` 依赖**：mobile 的 `package.json` 目前只依赖 `@bilisound/player` 和 `@bilisound/sdk`
-
 ### packages/sdk
 
 - TypeScript + tsdown (构建)
@@ -131,14 +123,13 @@ grep -rnE 'from "(@bilisound/(player|sdk)|~/storage/|~/api/)' apps/mobile/app ap
 - Android: Kotlin / Media3 / ExoPlayer
 - Web: TypeScript / HTMLAudioElement 实现
 
-## 当前 UI 栈的过渡状态
+## 当前 UI 栈与维护边界
 
-mobile 端同时存在三代 UI 代码，判断该往哪写之前先确认落点：
+mobile 端同时存在两套 UI 代码，判断该往哪写之前先确认落点：
 
-| 位置                            | 状态                                                              |
-| ------------------------------- | ----------------------------------------------------------------- |
-| `components/ui/*`               | GluestackUI 包装层，存量，不要在此新增                            |
-| `components/ui-next/*`          | 无 NativeWind / Gluestack 的本地 RN 组件，mobile 内新共享组件落点 |
-| `packages/ui` (`@bilisound/ui`) | v3 Tamagui 组件库，独立演进，暂未接入 mobile                      |
+| 位置                   | 状态                                                              |
+| ---------------------- | ----------------------------------------------------------------- |
+| `components/ui/*`      | GluestackUI 包装层，存量，不要在此新增                            |
+| `components/ui-next/*` | 无 NativeWind / Gluestack 的本地 RN 组件，mobile 内新共享组件落点 |
 
-`className` / NativeWind 与 Gluestack 在 mobile 中仍有可观存量，属于预期状态而非待修 bug。Epic 7 已决定由 `packages/ui`（Tamagui）取代 NativeWind 与 Gluestack，并在新的 `apps/mobile-next` 中重写界面、而非原地迁移 `apps/mobile`，见 [v3-plan/epic-7-plan.md](v3-plan/epic-7-plan.md)。在 `apps/mobile` 上的业务改动仍不借机替换 UI 技术，规则见 [v3-plan/README.md](v3-plan/README.md#ui-framework-replacement-is-a-later-decision)。
+`className` / NativeWind 与 Gluestack 在 mobile 中仍有可观存量，属于预期状态而非待修 bug。维护时不追求一次性替换；样式迁移只在具体技术约束或局部维护需要时进行。整体维护边界见 [AGENTS.md 的 Current Maintenance Policy](../AGENTS.md#current-maintenance-policy)。
