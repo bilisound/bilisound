@@ -108,7 +108,7 @@ grep -rnE 'from "(@bilisound/(player|sdk)|~/storage/|~/api/)' apps/mobile/app ap
 - MMKV (KV 存储)
 - Zustand (UI 状态)
 - TanStack React Query
-- 样式现状是 NativeWind + GluestackUI 与逐步替换它们的本地组件并存，详见下节
+- 样式现状是 NativeWind v5 + GluestackUI 与逐步替换它们的本地组件并存，详见下节
 
 ### packages/sdk
 
@@ -134,9 +134,24 @@ mobile 端同时存在两套 UI 代码，判断该往哪写之前先确认落点
 
 `className` / NativeWind 与 Gluestack 在 mobile 中仍有可观存量，属于预期状态而非待修 bug。维护时不追求一次性替换；样式迁移只在具体技术约束或局部维护需要时进行。整体维护边界见 [AGENTS.md 的 Current Maintenance Policy](../AGENTS.md#current-maintenance-policy)。
 
+### NativeWind 版本约定
+
+- 样式引擎是 NativeWind v5 + `react-native-css` + Tailwind v4。v5 目前只有 RC：`nativewind` 与 `react-native-css` 必须按精确版本成对升级（`nativewind` 的 peer 锁死了 `react-native-css` 版本）。上游 RC 只在 Expo 57 上验证过，本仓库跑在更新的 Expo / RN 上，升级后要重新做视觉回归。
+- 根 `pnpm-workspace.yaml` 的 `overrides` 把 `lightningcss` 钉在单一版本：Expo 的 CSS 管线与 `react-native-css` 用不同版本时，`global.css` 会反序列化失败。
+- `patches/react-native-css@3.1.0-rc.1.patch` 回移了上游 #504：`react-native-css/components` 手写了一份 `react-native` 导出清单，RC 版缺少 RN 0.88 新增的 `AssetRegistry`，expo-asset 会在启动时报 `getAssetByID of undefined`。升级 `react-native-css` 时先确认新版已包含该修复，再删除补丁。
+- 没有 `tailwind.config.js`。主题 token、阴影、字体等写在 `global.css` 的 `@theme` 里；扫描范围由 `@source` 显式限定为 `app/`、`components/`、`features/`。`postcss.config.mjs` 只挂 `@tailwindcss/postcss`。
+- `metro.config.js` 的 `inlineRem: 16` 保留 v4 时的 rem 换算；v5 原生默认是 14，去掉会让所有 rem 尺寸缩小。
+- 颜色是运行时变量：`global.css` 用 `@theme inline` 把 `--color-primary-500` 映射为 `rgb(var(--primary-500))`；原始 RGB 通道由 `GluestackUIProvider` 提供（原生用 `VariableContextProvider`，Web 写入 `:root` 的 `<style>`，让 portal 出去的浮层也能继承）。JS 侧（`ConfigDetail`、`useRawThemeValues`、用户主题）仍使用 `--color-*` 键名，转换只在 `toCssVariables()` 一处。
+  - 不要在 CSS 里给原始通道变量写默认值：`react-native-css` 会在编译期内联只声明过一次的变量，运行时换主题就失效了。
+- `dark:` 编译为 `prefers-color-scheme` 媒体查询，跟随系统；没有 `.dark` class 策略。
+- NativeWind v5 不再全局修补组件（没有 `cssInterop` / `remapProps`）。从 `react-native` 导入的基础组件由 Metro resolver 自动支持 `className`；Reanimated / legend-motion / SVG / expo-image / DOM 组件等第三方组件需要用 `styled()` 包装后再使用：
+  - 普通 `className → style` 用 `components/ui/utils/with-class-name.ts` 的 `withClassName()`（直接用 `styled()` 时，TypeScript 会在这类组件上报类型过深）。
+  - gluestack 图标用 `components/ui/utils/styled-icon.ts`；expo-image 用 `~/components/image` 导出的 `Image`。
+- 原生端会丢弃没有 RN 对应的工具类（如 `basis-auto`、`overflow-auto`、`fixed`），Metro 会打印汇总警告。另外 Tailwind v4 的 `flex-0` 是 CSS `flex: 0`（`flexBasis: 0%`），在原生端会把元素压扁，不要使用。
+
 ### GluestackUI 版本约定
 
-- `@gluestack-ui/core` / `@gluestack-ui/utils` 使用 5.x 正式包，样式引擎仍是 NativeWind v4 + Tailwind v3。上游的 v4（NativeWind v4 线）只发过 alpha 包，5.x core 的 creator 代码与它基本一致；上游 v5 组件模板要求 Tailwind v4（NativeWind v5 / UniWind），不在维护范围内。
-- 不要运行 `npx gluestack-ui upgrade` / `add`：前者会迁移到 Tailwind v4，后者会覆盖 `components/ui/*` 的本地定制和 v3 色板（用户主题依赖 `--color-primary-*` / `--color-accent-*`）。
+- `@gluestack-ui/core` / `@gluestack-ui/utils` 使用 5.x 正式包，组件包装层 `components/ui/*` 是本地维护的版本，`cssInterop` 已按上游 v5 模板的做法换成 `styled()`。
+- 不要运行 `npx gluestack-ui upgrade` / `add`：它们会覆盖 `components/ui/*` 的本地定制和色板（用户主题依赖 `--color-primary-*` / `--color-accent-*`）。
 - `modal`、`alert-dialog`、`menu` 的进出场动画用 Reanimated Keyframe，参数集中在 `components/ui/utils/overlay-animations.ts`；`actionsheet` 与上游 v4 模板一致，仍使用 `@legendapp/motion`。
 - `patches/@gluestack-ui__core@5.0.15.patch` 回移了 v3 线 3.0.23 的 Actionsheet 初始高度修复（打开时防跳动），5.x 未包含。升级 core 时先确认上游是否已修复，再决定保留或删除该 patch。

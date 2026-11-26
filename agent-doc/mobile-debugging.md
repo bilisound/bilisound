@@ -41,7 +41,9 @@ pnpm -C apps/mobile run agent:android:open
 - `agent-device metro reload` 后如果掉回系统桌面或 Dev Client 页，重新打开 app 并再次选择 `127.0.0.1:8081`。
 - Expo Dev Client 的 `Tools button` 是 a11y 验证常见干扰源；业务 UI 视觉正常但 snapshot 为空时，优先检查它，而不是直接判定页面无语义。
 
-## Metro 编译环境异常排查（布局错位 / a11y 树异常 / CssInterop 告警）
+## Metro 编译环境异常排查（布局错位 / a11y 树异常 / className 不生效）
+
+下面的现象记录于 NativeWind v4 时期（当时靠 Babel JSX 转换处理 `className`）。v5 改由 `react-native-css` 的 Metro resolver 与 CSS transformer 处理，组件名不再是 `CssInterop.*`，但 Metro 缓存与 watchman 失效时同样会表现为大面积 `className` 不生效，排查步骤不变。
 
 **现象**（2026-08 真机会话实测）：
 
