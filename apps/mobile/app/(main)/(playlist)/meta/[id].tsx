@@ -190,7 +190,7 @@ export default function Page() {
                     value={value}
                   />
                   {source ? (
-                    <ButtonOuter className="flex-0 basis-auto">
+                    <ButtonOuter>
                       <Button
                         onPress={() => {
                           onChange(source?.originalTitle);

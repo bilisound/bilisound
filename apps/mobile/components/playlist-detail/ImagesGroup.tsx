@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 
 interface ImagesGroupProps {
   images: string[];

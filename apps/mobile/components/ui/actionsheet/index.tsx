@@ -11,23 +11,34 @@ import {
   FlatList,
   SectionList,
   PressableProps,
+  ViewStyle,
 } from "react-native";
-import { PrimitiveIcon, UIIcon } from "@gluestack-ui/core/icon/creator";
+import { StyledUIIcon } from "~/components/ui/utils/styled-icon";
 import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
-import { cssInterop } from "nativewind";
-import { Motion, AnimatePresence, createMotionAnimatedComponent } from "@legendapp/motion";
+import { withClassName } from "~/components/ui/utils/with-class-name";
+import { Motion, AnimatePresence, createMotionAnimatedComponent, type MotionComponentProps } from "@legendapp/motion";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ItemWrapper = React.forwardRef<React.ElementRef<typeof Pressable>, PressableProps>(({ ...props }, ref) => {
   return <Pressable {...props} ref={ref} />;
 });
 
-const AnimatedPressable = createMotionAnimatedComponent(Pressable);
+// legend-motion's generated prop types are too wide to pass through as-is.
+type IMotionViewProps = React.ComponentProps<typeof View> &
+  MotionComponentProps<typeof View, ViewStyle, unknown, unknown, unknown>;
+type IAnimatedPressableProps = React.ComponentProps<typeof Pressable> &
+  MotionComponentProps<typeof Pressable, ViewStyle, unknown, unknown, unknown>;
+
+const MotionView = withClassName(Motion.View as React.ComponentType<IMotionViewProps>);
+const AnimatedPressable = withClassName(
+  createMotionAnimatedComponent(Pressable) as React.ComponentType<IAnimatedPressableProps>,
+);
+const SectionHeaderText = withClassName(H4);
 
 export const UIActionsheet = createActionsheet({
   Root: View,
-  Content: Motion.View,
+  Content: MotionView,
   Item: ItemWrapper,
   ItemText: Text,
   DragIndicator: View,
@@ -37,53 +48,9 @@ export const UIActionsheet = createActionsheet({
   VirtualizedList: VirtualizedList,
   FlatList: FlatList,
   SectionList: SectionList,
-  SectionHeaderText: H4,
-  Icon: UIIcon,
+  SectionHeaderText: SectionHeaderText,
+  Icon: StyledUIIcon,
   AnimatePresence: AnimatePresence,
-});
-
-cssInterop(UIActionsheet, { className: "style" });
-cssInterop(UIActionsheet.Content, { className: "style" });
-cssInterop(ItemWrapper, { className: "style" });
-cssInterop(UIActionsheet.ItemText, { className: "style" });
-cssInterop(UIActionsheet.DragIndicator, { className: "style" });
-cssInterop(UIActionsheet.DragIndicatorWrapper, { className: "style" });
-cssInterop(UIActionsheet.Backdrop, { className: "style" });
-cssInterop(UIActionsheet.ScrollView, {
-  className: "style",
-  contentContainerClassName: "contentContainerStyle",
-  indicatorClassName: "indicatorStyle",
-});
-cssInterop(UIActionsheet.VirtualizedList, {
-  className: "style",
-  ListFooterComponentClassName: "ListFooterComponentStyle",
-  ListHeaderComponentClassName: "ListHeaderComponentStyle",
-  contentContainerClassName: "contentContainerStyle",
-  indicatorClassName: "indicatorStyle",
-});
-cssInterop(UIActionsheet.FlatList, {
-  className: "style",
-  ListFooterComponentClassName: "ListFooterComponentStyle",
-  ListHeaderComponentClassName: "ListHeaderComponentStyle",
-  columnWrapperClassName: "columnWrapperStyle",
-  contentContainerClassName: "contentContainerStyle",
-  indicatorClassName: "indicatorStyle",
-});
-cssInterop(UIActionsheet.SectionList, { className: "style" });
-cssInterop(UIActionsheet.SectionHeaderText, { className: "style" });
-cssInterop(Motion.View, { className: "style" });
-
-cssInterop(PrimitiveIcon, {
-  className: {
-    target: "style",
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      color: "classNameColor",
-      stroke: true,
-    },
-  },
 });
 
 const actionsheetStyle = tva({ base: "h-full web:pointer-events-none" });

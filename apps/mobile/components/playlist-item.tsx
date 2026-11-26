@@ -8,7 +8,7 @@ import { Pressable } from "~/components/ui/pressable";
 import { Skeleton } from "~/components/ui/skeleton";
 import { SkeletonText } from "~/components/skeleton-text";
 import { Icon } from "~/components/icon";
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import { getVideoImageUrl } from "~/features/bilibili";
 import { Svg, Polygon } from "react-native-svg";
 
@@ -29,7 +29,7 @@ export function PlaylistItem({ item, onPress, onLongPress, className, style, gri
     <>
       <View className="flex-row items-center gap-3">
         {item ? (
-          <View className="w-6 h-6 items-center justify-center basis-auto flex-0">
+          <View className="w-6 h-6 items-center justify-center">
             {item.source ? (
               <Icon name="fa6-solid:cloud" size={20} color={item.color} />
             ) : (
@@ -37,7 +37,7 @@ export function PlaylistItem({ item, onPress, onLongPress, className, style, gri
             )}
           </View>
         ) : (
-          <View className="w-6 h-6 items-center justify-center basis-auto flex-0">
+          <View className="w-6 h-6 items-center justify-center">
             <Skeleton className="w-[0.875rem] h-[0.875rem] rounded-full" />
           </View>
         )}

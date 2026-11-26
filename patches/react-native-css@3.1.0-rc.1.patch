@@ -1,0 +1,42 @@
+diff --git a/dist/commonjs/components/index.cjs b/dist/commonjs/components/index.cjs
+index 23af26cff9df498d6c7723abba2e5f7a9a219336..e74693e3ad9a32475ad3da7f924f37733a4ed3b2 100644
+--- a/dist/commonjs/components/index.cjs
++++ b/dist/commonjs/components/index.cjs
+@@ -305,6 +305,9 @@ module.exports = {
+   },
+   get usePressability() {
+     return require("react-native").usePressability;
++  },
++  get AssetRegistry() {
++    return require("react-native").AssetRegistry;
+   }
+ };
+ //# sourceMappingURL=index.cjs.map
+\ No newline at end of file
+diff --git a/dist/module/components/index.cjs b/dist/module/components/index.cjs
+index 23af26cff9df498d6c7723abba2e5f7a9a219336..e74693e3ad9a32475ad3da7f924f37733a4ed3b2 100644
+--- a/dist/module/components/index.cjs
++++ b/dist/module/components/index.cjs
+@@ -305,6 +305,9 @@ module.exports = {
+   },
+   get usePressability() {
+     return require("react-native").usePressability;
++  },
++  get AssetRegistry() {
++    return require("react-native").AssetRegistry;
+   }
+ };
+ //# sourceMappingURL=index.cjs.map
+\ No newline at end of file
+diff --git a/src/components/index.cts b/src/components/index.cts
+index ead6ff4e49a132f375488744647af5baeb9a17a6..e624083970d02da8a8a0d152cf695eda3fac5516 100644
+--- a/src/components/index.cts
++++ b/src/components/index.cts
+@@ -305,4 +305,7 @@ module.exports = {
+   get usePressability() {
+     return require("react-native").usePressability;
+   },
++  get AssetRegistry() {
++    return require("react-native").AssetRegistry;
++  },
+ };

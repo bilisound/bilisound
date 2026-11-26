@@ -1,4 +1,4 @@
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import React, { forwardRef, useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, type ViewInstance, ViewProps } from "react-native";
 

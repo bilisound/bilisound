@@ -4,8 +4,8 @@ import { createCheckbox } from "@gluestack-ui/core/checkbox/creator";
 import { View, Pressable, Text, Platform } from "react-native";
 import type { TextProps, ViewProps } from "react-native";
 import { tva, withStyleContext, useStyleContext } from "@gluestack-ui/utils/nativewind-utils";
-import { PrimitiveIcon, IPrimitiveIcon, UIIcon } from "@gluestack-ui/core/icon/creator";
-import { cssInterop } from "nativewind";
+import { PrimitiveIcon, IPrimitiveIcon } from "@gluestack-ui/core/icon/creator";
+import { StyledUIIcon } from "~/components/ui/utils/styled-icon";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 
 const IndicatorWrapper = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(({ ...props }, ref) => {
@@ -17,7 +17,7 @@ const LabelWrapper = React.forwardRef<React.ElementRef<typeof Text>, TextProps>(
 });
 
 const IconWrapper = React.forwardRef<React.ElementRef<typeof PrimitiveIcon>, IPrimitiveIcon>(({ ...props }, ref) => {
-  return <UIIcon {...props} ref={ref} />;
+  return <StyledUIIcon {...props} ref={ref} />;
 });
 
 const SCOPE = "CHECKBOX";
@@ -28,19 +28,6 @@ const UICheckbox = createCheckbox({
   Icon: IconWrapper,
   Label: LabelWrapper,
   Indicator: IndicatorWrapper,
-});
-
-cssInterop(PrimitiveIcon, {
-  className: {
-    target: "style",
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      color: "classNameColor",
-      stroke: true,
-    },
-  },
 });
 
 const checkboxStyle = tva({
@@ -55,7 +42,7 @@ const checkboxStyle = tva({
 });
 
 const checkboxIndicatorStyle = tva({
-  base: "justify-center items-center border-outline-400 bg-transparent rounded web:data-[focus-visible=true]:outline-none web:data-[focus-visible=true]:ring-2 web:data-[focus-visible=true]:ring-indicator-primary data-[checked=true]:bg-primary-600 data-[checked=true]:border-primary-600 data-[hover=true]:data-[checked=false]:border-outline-500 data-[hover=true]:bg-transparent data-[hover=true]:data-[invalid=true]:border-error-700 data-[hover=true]:data-[checked=true]:bg-primary-700 data-[hover=true]:data-[checked=true]:border-primary-700 data-[hover=true]:data-[checked=true]:data-[disabled=true]:border-primary-600 data-[hover=true]:data-[checked=true]:data-[disabled=true]:bg-primary-600 data-[hover=true]:data-[checked=true]:data-[disabled=true]:opacity-40 data-[hover=true]:data-[checked=true]:data-[disabled=true]:data-[invalid=true]:border-error-700 data-[hover=true]:data-[disabled=true]:border-outline-400 data-[hover=true]:data-[disabled=true]:data-[invalid=true]:border-error-700 data-[active=true]:data-[checked=true]:bg-primary-800 data-[active=true]:data-[checked=true]:border-primary-800 data-[invalid=true]:border-error-700 data-[disabled=true]:opacity-40",
+  base: "justify-center items-center border-outline-400 bg-transparent rounded web:data-[focus-visible=true]:outline-hidden web:data-[focus-visible=true]:ring-2 web:data-[focus-visible=true]:ring-indicator-primary data-[checked=true]:bg-primary-600 data-[checked=true]:border-primary-600 data-[hover=true]:data-[checked=false]:border-outline-500 data-[hover=true]:bg-transparent data-[hover=true]:data-[invalid=true]:border-error-700 data-[hover=true]:data-[checked=true]:bg-primary-700 data-[hover=true]:data-[checked=true]:border-primary-700 data-[hover=true]:data-[checked=true]:data-[disabled=true]:border-primary-600 data-[hover=true]:data-[checked=true]:data-[disabled=true]:bg-primary-600 data-[hover=true]:data-[checked=true]:data-[disabled=true]:opacity-40 data-[hover=true]:data-[checked=true]:data-[disabled=true]:data-[invalid=true]:border-error-700 data-[hover=true]:data-[disabled=true]:border-outline-400 data-[hover=true]:data-[disabled=true]:data-[invalid=true]:border-error-700 data-[active=true]:data-[checked=true]:bg-primary-800 data-[active=true]:data-[checked=true]:border-primary-800 data-[invalid=true]:border-error-700 data-[disabled=true]:opacity-40",
   parentVariants: {
     size: {
       lg: "w-6 h-6 border-[3px]",

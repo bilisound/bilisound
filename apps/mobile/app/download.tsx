@@ -22,7 +22,7 @@ function DownloadEntry({ item }: DownloadEntryProps) {
           <Text className={"text-sm flex-1"} isTruncated>
             {item.title}
           </Text>
-          <Text className={`flex-0 basis-auto text-sm ${item.status === 3 ? "text-red-500" : "text-typography-500"}`}>
+          <Text className={`text-sm ${item.status === 3 ? "text-red-500" : "text-typography-500"}`}>
             {(() => {
               if (item.status === 0) {
                 return "排队中";
@@ -87,13 +87,13 @@ export default function Page() {
 
   return (
     <Layout leftAccessories={"BACK_BUTTON"} title={"下载管理"}>
-      <View className={"flex flex-0 basis-auto flex-row items-center gap-2 p-4 pt-0"}>
+      <View className={"flex flex-row items-center gap-2 p-4 pt-0"}>
         <View className={"flex-1"}>
           <Text className={"text-typography-500 text-sm"} isTruncated>
             {builtList.length <= 0 ? "无下载任务" : `当前有 ${runningList.length} / ${builtList.length} 个任务进行中`}
           </Text>
         </View>
-        <ButtonOuter className={"flex-0 basis-auto rounded-full"}>
+        <ButtonOuter className={"rounded-full"}>
           <Button onPress={handleCancel} action={"negative"} disabled={loading || builtList.length <= 0}>
             {loading ? (
               <View className={"size-[18px] items-center justify-center"}>

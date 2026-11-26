@@ -35,8 +35,13 @@ minimumReleaseAgeExclude:
   - expo-modules-core@58.0.27
   - expo-router@58.0.27
   - expo@58.0.20
+overrides:
+  # NativeWind v5 / react-native-css: Expo's CSS pipeline and react-native-css
+  # must share one lightningcss build, or global.css fails to deserialize.
+  lightningcss: 1.30.1
 publicHoistPattern:
   - "@expo/config-plugins"
 patchedDependencies:
   "@expo/router-server@58.0.18": patches/@expo__router-server@58.0.18.patch
   "@gluestack-ui/core@5.0.15": patches/@gluestack-ui__core@5.0.15.patch
+  react-native-css@3.1.0-rc.1: patches/react-native-css@3.1.0-rc.1.patch

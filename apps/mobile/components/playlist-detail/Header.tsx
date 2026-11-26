@@ -1,10 +1,10 @@
 import { View } from "react-native";
-import { Image } from "expo-image";
-import { useEffect, useRef, useState } from "react";
+import { Image } from "~/components/image";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Animated, { useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
-import { Circle as OrigCircle, Svg } from "react-native-svg";
-import { cssInterop } from "nativewind";
+import { Circle as OrigCircle, Svg, type CircleProps } from "react-native-svg";
+import { styled } from "nativewind";
 import { twMerge } from "tailwind-merge";
 import Toast from "react-native-toast-message";
 
@@ -20,18 +20,19 @@ import { getVideoImageUrl } from "~/features/bilibili";
 import { FEATURE_MASS_DOWNLOAD } from "~/constants/feature";
 import log from "~/utils/logger";
 
-cssInterop(OrigCircle, {
+// SVG paint comes from className (stroke-*), so map it onto the Circle props.
+// CircleProps has no `style`, but react-native-svg accepts one at runtime.
+const StyledCircle = styled(OrigCircle as ComponentType<CircleProps & { style?: unknown }>, {
   className: {
-    // @ts-ignore workaround
     target: "style",
-    nativeStyleToProp: {
+    nativeStyleMapping: {
       stroke: true,
       fill: true,
     },
   },
 });
 
-const Circle = Animated.createAnimatedComponent(OrigCircle);
+const Circle = Animated.createAnimatedComponent(StyledCircle);
 
 export interface HeaderProps {
   meta: Playlist;
@@ -177,7 +178,6 @@ export function Header({ meta, detail, images, onPlay, showPlayButton, className
               <View className="-rotate-90 w-16 h-16">
                 <Svg width={64} height={64} viewBox="0 0 64 64">
                   <Circle
-                    // @ts-ignore workaround
                     className="stroke-primary-100"
                     r={22}
                     cx={32}
@@ -190,7 +190,6 @@ export function Header({ meta, detail, images, onPlay, showPlayButton, className
                     r={22}
                     cx={32}
                     cy={32}
-                    // @ts-ignore workaround
                     className="stroke-primary-400"
                     strokeWidth={6}
                     strokeLinecap="round"

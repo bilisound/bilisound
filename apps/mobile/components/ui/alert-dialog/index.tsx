@@ -3,7 +3,7 @@ import React from "react";
 import { createAlertDialog } from "@gluestack-ui/core/alert-dialog/creator";
 import { tva, withStyleContext, useStyleContext } from "@gluestack-ui/utils/nativewind-utils";
 
-import { cssInterop } from "nativewind";
+import { withClassName } from "~/components/ui/utils/with-class-name";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { View, Pressable, ScrollView } from "react-native";
 import Animated from "react-native-reanimated";
@@ -14,8 +14,8 @@ import {
   dialogContentExiting,
 } from "~/components/ui/utils/overlay-animations";
 
-const AnimatedView = Animated.createAnimatedComponent(View);
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedView = withClassName(Animated.createAnimatedComponent(View));
+const AnimatedPressable = withClassName(Animated.createAnimatedComponent(Pressable));
 
 const SCOPE = "ALERT_DIALOG";
 
@@ -28,9 +28,6 @@ const UIAccessibleAlertDialog = createAlertDialog({
   Footer: View,
   Backdrop: AnimatedPressable,
 });
-
-cssInterop(AnimatedView, { className: "style" });
-cssInterop(AnimatedPressable, { className: "style" });
 
 const alertDialogStyle = tva({
   base: "group/modal w-full h-full justify-center items-center web:pointer-events-none",
@@ -59,7 +56,7 @@ const alertDialogContentStyle = tva({
 });
 
 const alertDialogCloseButtonStyle = tva({
-  base: "group/alert-dialog-close-button z-10 rounded-sm p-2 data-[focus-visible=true]:bg-background-100 web:cursor-pointer outline-0",
+  base: "group/alert-dialog-close-button z-10 rounded-xs p-2 data-[focus-visible=true]:bg-background-100 web:cursor-pointer outline-0",
 });
 
 const alertDialogHeaderStyle = tva({

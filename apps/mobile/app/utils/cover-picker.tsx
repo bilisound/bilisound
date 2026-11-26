@@ -5,7 +5,7 @@ import { Button, ButtonMonIcon, ButtonOuter, ButtonText } from "~/components/ui/
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPlaylistDetail, setPlaylistMeta } from "~/features/playlist";
 import { FlashList } from "@shopify/flash-list";
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import { Pressable } from "~/components/ui/pressable";
 import React, { useState } from "react";
 import {

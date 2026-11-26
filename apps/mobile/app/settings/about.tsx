@@ -4,7 +4,7 @@ import { RELEASE_CHANNEL, ReleaseChannel, VERSION } from "~/constants/releasing"
 import React, { useState } from "react";
 
 import { Text } from "~/components/ui/text";
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import { SettingMenuItem } from "~/components/setting-menu";
 import Toast from "react-native-toast-message";
 import log from "~/utils/logger";

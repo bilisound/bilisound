@@ -101,7 +101,7 @@ export function PlayerControl() {
         <View className={"items-center p-3 " + "sm:justify-center"}>
           <TabsPrimitive.List
             className={
-              "flex-0 w-48 h-10 flex-row items-center justify-center rounded-md bg-background-100 px-1 py-0 " +
+              "w-48 h-10 flex-row items-center justify-center rounded-md bg-background-100 px-1 py-0 " +
               "sm:w-10 sm:h-56 sm:flex-col sm:px-0 sm:py-1"
             }
           >
@@ -110,7 +110,7 @@ export function PlayerControl() {
                 key={tab.value}
                 value={tab.value}
                 className={
-                  "flex-1 items-center justify-center rounded-sm max-sm:h-8 px-3 py-0 " +
+                  "flex-1 items-center justify-center rounded-xs max-sm:h-8 px-3 py-0 " +
                   "sm:w-8 sm:px-0 sm:py-3 " +
                   (value === tab.value ? "bg-background-0" : "")
                 }
@@ -138,7 +138,7 @@ export function PlayerControl() {
       </TabsPrimitive.Root>
 
       {/* 右侧：播放控制 */}
-      <View className={"@container flex-0 basis-auto sm:flex-1 sm:justify-center gap-3 @sm:gap-4 " + DEBUG_COLOR[0]}>
+      <View className={"@container sm:flex-1 sm:justify-center gap-3 @sm:gap-4 " + DEBUG_COLOR[0]}>
         {/* 曲目信息，可点击 */}
         <Pressable className={"gap-1.5 @sm:gap-2 py-2 @sm:py-4 " + DEBUG_COLOR[1]} onPress={handleJump}>
           <Text className={"leading-normal text-lg @sm:text-xl font-extrabold color-typography-700 px-8"} isTruncated>

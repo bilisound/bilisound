@@ -139,7 +139,7 @@ export function SongItem({
         </View>
       ) : isActiveTrack ? (
         <>
-          <View className="flex-0 flex-basis-auto items-center justify-center w-8">
+          <View className="flex-basis-auto items-center justify-center w-8">
             <PlayingIcon />
           </View>
         </>

@@ -2,21 +2,21 @@
 import React from "react";
 import { createMenu } from "@gluestack-ui/core/menu/creator";
 import { tva } from "@gluestack-ui/utils/nativewind-utils";
-import { cssInterop } from "nativewind";
+import { withClassName } from "~/components/ui/utils/with-class-name";
 import { Pressable, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { shadow } from "~/constants/styles";
 import { menuEntering, menuExiting } from "~/components/ui/utils/overlay-animations";
 
-const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedView = withClassName(Animated.createAnimatedComponent(View));
 
 const menuStyle = tva({
   base: "rounded-md bg-background-0 border border-outline-100 p-1",
 });
 
 const menuItemStyle = tva({
-  base: "min-w-[200px] p-3 flex-row items-center rounded data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100 data-[focus=true]:bg-background-50 data-[focus=true]:web:outline-none data-[focus=true]:web:outline-0 data-[disabled=true]:opacity-40 data-[disabled=true]:web:cursor-not-allowed data-[focus-visible=true]:web:outline-2 data-[focus-visible=true]:web:outline-primary-700 data-[focus-visible=true]:web:outline data-[focus-visible=true]:web:cursor-pointer data-[disabled=true]:data-[focus=true]:bg-transparent",
+  base: "min-w-[200px] p-3 flex-row items-center rounded data-[hover=true]:bg-background-50 data-[active=true]:bg-background-100 data-[focus=true]:bg-background-50 data-[focus=true]:web:outline-hidden data-[focus=true]:web:outline-0 data-[disabled=true]:opacity-40 data-[disabled=true]:web:cursor-not-allowed data-[focus-visible=true]:web:outline-2 data-[focus-visible=true]:web:outline-primary-700 data-[focus-visible=true]:web:outline data-[focus-visible=true]:web:cursor-pointer data-[disabled=true]:data-[focus=true]:bg-transparent",
 });
 
 const menuBackdropStyle = tva({
@@ -116,8 +116,6 @@ export const UIMenu = createMenu({
   Backdrop: BackdropPressable,
   Separator: Separator,
 });
-
-cssInterop(AnimatedView, { className: "style" });
 
 type IMenuProps = React.ComponentProps<typeof UIMenu> & VariantProps<typeof menuStyle> & { className?: string };
 type IMenuItemLabelProps = React.ComponentProps<typeof UIMenu.ItemLabel> &

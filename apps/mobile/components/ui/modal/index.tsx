@@ -3,7 +3,7 @@ import { createModal } from "@gluestack-ui/core/modal/creator";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { tva, withStyleContext, useStyleContext } from "@gluestack-ui/utils/nativewind-utils";
 import { withStyleContextAndStates } from "~/components/ui/utils/with-style-context-and-states";
-import { cssInterop } from "nativewind";
+import { withClassName } from "~/components/ui/utils/with-class-name";
 import React from "react";
 import { Pressable, View, ScrollView, Platform } from "react-native";
 import Animated from "react-native-reanimated";
@@ -14,8 +14,8 @@ import {
   dialogContentExiting,
 } from "~/components/ui/utils/overlay-animations";
 
-const AnimatedView = Animated.createAnimatedComponent(View);
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedView = withClassName(Animated.createAnimatedComponent(View));
+const AnimatedPressable = withClassName(Animated.createAnimatedComponent(Pressable));
 
 const SCOPE = "MODAL";
 const ModalRoot = (
@@ -31,18 +31,6 @@ const UIModal = createModal({
   Footer: View,
   Header: View,
 });
-
-cssInterop(UIModal, { className: "style" });
-cssInterop(UIModal.Content, { className: "style" });
-cssInterop(UIModal.CloseButton, { className: "style" });
-cssInterop(UIModal.Header, { className: "style" });
-cssInterop(UIModal.Footer, { className: "style" });
-cssInterop(UIModal.Body, {
-  className: "style",
-  contentContainerClassName: "contentContainerStyle",
-  indicatorClassName: "indicatorStyle",
-});
-cssInterop(UIModal.Backdrop, { className: "style" });
 
 const ModalStyle = tva({
   base: "group/modal w-full h-full justify-center items-center web:pointer-events-none",
@@ -71,7 +59,7 @@ const ModalContentStyle = tva({
 });
 
 const ModalCloseButtonStyle = tva({
-  base: "group/alert-dialog-close-button z-10 rounded-sm p-2 data-[focus-visible=true]:bg-background-100 web:cursor-pointer outline-0",
+  base: "group/alert-dialog-close-button z-10 rounded-xs p-2 data-[focus-visible=true]:bg-background-100 web:cursor-pointer outline-0",
 });
 
 const ModalHeaderStyle = tva({

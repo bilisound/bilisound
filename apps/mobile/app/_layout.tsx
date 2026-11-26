@@ -11,7 +11,6 @@ import init from "~/utils/init";
 import { Roboto_400Regular, Roboto_700Bold } from "@expo-google-fonts/roboto";
 import { Poppins_700Bold } from "@expo-google-fonts/poppins";
 import "~/utils/polyfill";
-import "~/utils/nativewind";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { toastConfig } from "~/components/notify-toast";
 import Toast from "react-native-toast-message";

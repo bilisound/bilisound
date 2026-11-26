@@ -1,7 +1,10 @@
 import { Platform } from "react-native";
-import LogViewerDom from "~/components/dom/LogViewerDom";
+import LogViewerDomBase from "~/components/dom/LogViewerDom";
 import React from "react";
+import { styled } from "nativewind";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const LogViewerDom = styled(LogViewerDomBase, { className: "style" });
 
 export interface LogViewerProps {
   text?: string;

@@ -3,9 +3,8 @@ import { Text, View } from "react-native";
 import React from "react";
 import { createFormControl } from "@gluestack-ui/core/form-control/creator";
 import { tva, withStyleContext, useStyleContext } from "@gluestack-ui/utils/nativewind-utils";
-import { cssInterop } from "nativewind";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
-import { PrimitiveIcon, UIIcon } from "@gluestack-ui/core/icon/creator";
+import { StyledUIIcon } from "~/components/ui/utils/styled-icon";
 
 const SCOPE = "FORM_CONTROL";
 
@@ -230,25 +229,12 @@ export const UIFormControl = createFormControl({
   Root: withStyleContext(View, SCOPE),
   Error: View,
   ErrorText: Text,
-  ErrorIcon: UIIcon,
+  ErrorIcon: StyledUIIcon,
   Label: View,
   LabelText: Text,
   LabelAstrick: FormControlLabelAstrick,
   Helper: View,
   HelperText: Text,
-});
-
-cssInterop(PrimitiveIcon, {
-  className: {
-    target: "style",
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      color: true,
-      stroke: true,
-    },
-  },
 });
 
 type IFormControlProps = React.ComponentProps<typeof UIFormControl> & VariantProps<typeof formControlStyle>;

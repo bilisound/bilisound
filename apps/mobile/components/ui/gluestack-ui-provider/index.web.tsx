@@ -3,6 +3,7 @@ import { setFlushStyles } from "@gluestack-ui/utils/nativewind-utils";
 import { OverlayProvider } from "@gluestack-ui/core/overlay/creator";
 import React, { useEffect } from "react";
 
+import { toCssVariables } from "./config";
 import { ThemeValueProvider } from "./theme";
 
 import { findUserTheme, resolveThemeConfig, useThemeRegistry } from "~/features/theme/registry";
@@ -20,8 +21,9 @@ export function GluestackUIProvider({ mode = "light", ...props }: { mode?: "ligh
 
   const userTheme = findUserTheme(themes, theme);
   const themeConfig = resolveThemeConfig(theme, mode, userTheme);
-  const stringcssvars = Object.keys(themeConfig).reduce((acc, cur) => {
-    acc += `${cur}:${themeConfig[cur as keyof typeof themeConfig]};`;
+  // Written to :root rather than a wrapper element so portalled overlays inherit them too.
+  const stringcssvars = Object.entries(toCssVariables(themeConfig)).reduce((acc, [key, value]) => {
+    acc += `${key}:${value};`;
     return acc;
   }, "");
 

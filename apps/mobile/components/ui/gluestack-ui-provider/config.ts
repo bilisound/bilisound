@@ -1,5 +1,4 @@
 "use client";
-import { vars } from "nativewind";
 
 export type ThemeName = "classic" | "red";
 export type ColorSchemeName = "light" | "dark";
@@ -695,17 +694,19 @@ export const config: Record<ConfigName, ConfigDetail> = {
   },
 };
 
-export const parsedConfig: Record<string, ReturnType<typeof vars>> = {
-  classic_light: vars(config.classic_light),
-  classic_dark: vars(config.classic_dark),
-  red_light: vars(config.red_light),
-  red_dark: vars(config.red_dark),
-};
-
 export function getBuiltInConfig(theme: ThemeName, mode: ColorSchemeName): ConfigDetail {
   return config[`${theme}_${mode}`];
 }
 
-export function getParsedBuiltInConfig(theme: ThemeName, mode: ColorSchemeName) {
-  return parsedConfig[`${theme}_${mode}`];
+/**
+ * Convert theme keys (`--color-primary-500`) into the raw channel variables
+ * (`--primary-500`) that global.css feeds into `rgb(var(...))`. Tailwind v4 owns
+ * the `--color-*` namespace for its own tokens, so the raw values need other names.
+ */
+export function toCssVariables(detail: ConfigDetail): Record<`--${string}`, string> {
+  const result: Record<`--${string}`, string> = {};
+  for (const [key, value] of Object.entries(detail)) {
+    result[`--${key.slice("--color-".length)}`] = value;
+  }
+  return result;
 }

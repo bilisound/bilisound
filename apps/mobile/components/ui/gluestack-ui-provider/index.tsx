@@ -1,16 +1,11 @@
-import React, { useEffect } from "react";
-import { getParsedBuiltInConfig } from "./config";
+import React, { useEffect, useMemo } from "react";
+import { toCssVariables } from "./config";
 import { StyleProp, View, ViewStyle } from "react-native";
+import { VariableContextProvider } from "nativewind";
 import { OverlayProvider } from "@gluestack-ui/core/overlay/creator";
 import { ThemeValueProvider } from "~/components/ui/gluestack-ui-provider/theme";
 import { useAppearanceConfig } from "~/features/config";
-import {
-  createRuntimeVars,
-  findUserTheme,
-  getUserThemeId,
-  resolveThemeConfig,
-  useThemeRegistry,
-} from "~/features/theme/registry";
+import { findUserTheme, resolveThemeConfig, useThemeRegistry } from "~/features/theme/registry";
 
 type GluestackUIProviderProps = {
   mode?: "light" | "dark";
@@ -28,14 +23,9 @@ export function GluestackUIProvider({ mode = "light", ...props }: GluestackUIPro
     }
   }, [loadThemes, loaded]);
 
-  const userThemeId = getUserThemeId(theme);
   const userTheme = findUserTheme(themes, theme);
-  const themeConfig = resolveThemeConfig(theme, mode, userTheme);
-  const runtimeVars = createRuntimeVars(themeConfig);
-  const builtInParsedConfig = getParsedBuiltInConfig(
-    userThemeId ? "classic" : theme === "red" ? "red" : "classic",
-    mode,
-  );
+  const themeConfig = useMemo(() => resolveThemeConfig(theme, mode, userTheme), [theme, mode, userTheme]);
+  const cssVariables = useMemo(() => toCssVariables(themeConfig), [themeConfig]);
 
   return (
     <ThemeValueProvider.Provider
@@ -44,9 +34,11 @@ export function GluestackUIProvider({ mode = "light", ...props }: GluestackUIPro
         mode,
       }}
     >
-      <View style={[builtInParsedConfig, runtimeVars, { flex: 1, height: "100%", width: "100%" }, props.style]}>
-        <OverlayProvider>{props.children}</OverlayProvider>
-      </View>
+      <VariableContextProvider value={cssVariables}>
+        <View style={[{ flex: 1, height: "100%", width: "100%" }, props.style]}>
+          <OverlayProvider>{props.children}</OverlayProvider>
+        </View>
+      </VariableContextProvider>
     </ThemeValueProvider.Provider>
   );
 }

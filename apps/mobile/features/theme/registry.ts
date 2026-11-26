@@ -1,4 +1,3 @@
-import { vars } from "nativewind";
 import { create } from "zustand";
 
 import { ColorSchemeName, ConfigDetail, getBuiltInConfig } from "~/components/ui/gluestack-ui-provider/config";
@@ -85,8 +84,4 @@ export function resolveThemeConfig(
     fallback[`--color-accent-${shade}`] = rgbStringFromCssColor(accentPalette[shade]);
   }
   return fallback;
-}
-
-export function createRuntimeVars(config: ConfigDetail) {
-  return vars(config);
 }

@@ -8,7 +8,7 @@ import { breakpoints } from "~/constants/styles";
 import { YuruChara } from "~/components/yuru-chara";
 import { useAppearanceConfig } from "~/features/config";
 import { toggle, useCurrentTrack, useIsPlaying, usePlaybackState } from "~/features/player";
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import { useRawThemeValues } from "~/components/ui/gluestack-ui-provider/theme";
 import { PLACEHOLDER_AUDIO } from "~/constants/playback";
 import { Icon } from "~/components/icon";

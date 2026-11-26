@@ -1,5 +1,5 @@
 const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
+const { withNativewind } = require("nativewind/metro");
 const path = require("path");
 
 const projectRoot = __dirname;
@@ -33,6 +33,5 @@ config.transformer = {
   babelTransformerPath: require.resolve("react-native-svg-transformer"),
 };
 
-const configWithNativeWind = withNativeWind(config, { input: "./global.css", inlineRem: 16 });
-
-module.exports = configWithNativeWind;
+// NativeWind v4 inlined rem at 16px; v5 defaults to 14 on native, so keep 16 to preserve sizes.
+module.exports = withNativewind(config, { inlineRem: 16 });

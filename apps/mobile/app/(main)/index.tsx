@@ -75,7 +75,7 @@ export default function MainScreen() {
       <ScrollView className={"flex-1"}>
         <View className={`${isNarrowWidth ? "pt-6 pb-8" : "pt-10 pb-12"} items-center`}>
           <Text
-            className="text-3xl text-primary-500 dark:text-primary-400 h-12 leading-12"
+            className="text-3xl text-primary-500 dark:text-primary-400 h-12"
             style={{
               fontFamily: "Poppins_700Bold",
             }}

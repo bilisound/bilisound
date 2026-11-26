@@ -2,7 +2,7 @@ import { useCurrentTrack } from "~/features/player";
 import React, { useState } from "react";
 import { View } from "react-native";
 import { shadow } from "~/constants/styles";
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import { convertToHTTPS } from "~/utils/string";
 
 export function PlayerPicture() {

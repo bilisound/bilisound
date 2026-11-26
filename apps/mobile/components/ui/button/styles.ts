@@ -5,7 +5,7 @@ const cx = (...classes: string[]) => classes.filter(Boolean).join(" ");
 const pressFeedback = (classes: string) => (!IS_ANDROID_RIPPLE_ENABLED ? classes : "");
 
 export const buttonStyle = tva({
-  base: "group/button rounded-lg bg-primary-500 flex-row items-center justify-center data-[focus-visible=true]:web:outline-none data-[focus-visible=true]:web:ring-2 data-[disabled=true]:opacity-40 gap-2",
+  base: "group/button rounded-lg bg-primary-500 flex-row items-center justify-center data-[focus-visible=true]:web:outline-hidden data-[focus-visible=true]:web:ring-2 data-[disabled=true]:opacity-40 gap-2",
   variants: {
     action: {
       primary: cx(
@@ -277,7 +277,7 @@ export const buttonTextStyle = tva({
 });
 
 export const buttonIconStyle = tva({
-  base: "fill-none flex flex-0 items-center justify-center",
+  base: "fill-none flex items-center justify-center",
   parentVariants: {
     variant: {
       link: "data-[hover=true]:underline data-[active=true]:underline",

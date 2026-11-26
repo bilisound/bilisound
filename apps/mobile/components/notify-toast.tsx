@@ -19,7 +19,7 @@ export function NotifyToast({ type, title, description }: NotifyToastProps) {
       style={{ boxShadow: shadow.xl }}
       className="bg-background-0 border-background-100 border min-h-[50px] rounded-[25px] pl-3 pr-[1.125rem] py-[0.8125rem] flex-row gap-3 mx-6 my-2 max-w-[400px]"
     >
-      <View className={"size-6 items-center justify-center flex-0 basis-auto"}>
+      <View className={"size-6 items-center justify-center"}>
         {type === "success" && <Icon name="ion:checkmark-circle" color={colors.green[500]} size={24} />}
         {type === "info" && <Icon name="ion:information-circle" color={colors.neutral[500]} size={24} />}
         {type === "warning" && <Icon name="ion:alert-circle" color={colors.orange[500]} size={24} />}

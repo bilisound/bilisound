@@ -1,4 +1,4 @@
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import React from "react";
 import { View } from "react-native";
 
@@ -15,7 +15,7 @@ export interface VideoItemProps {
 export function VideoItem({ onPress, image, text1, text2 }: VideoItemProps) {
   const inner = (
     <>
-      <Image source={image} className="h-12 aspect-[3/2] flex-0 basis-auto rounded-lg" />
+      <Image source={image} className="h-12 aspect-[3/2] rounded-lg" />
       <View className="flex-1 gap-1">
         <Text className="font-semibold text-sm leading-normal" isTruncated>
           {text1}

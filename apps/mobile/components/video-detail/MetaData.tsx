@@ -5,7 +5,7 @@ import { Platform, View } from "react-native";
 import { router } from "expo-router";
 import { twMerge } from "tailwind-merge";
 import { decodeHTML } from "entities";
-import { Image } from "expo-image";
+import { Image } from "~/components/image";
 import type { VideoMetadata } from "~/features/bilibili";
 
 import { Text } from "~/components/ui/text";
@@ -79,7 +79,7 @@ export function MetaData({ data, className, style, showFullMeta }: MetaDataProps
               <View key={j} className={"flex-1 flex-row gap-3 w-full items-center"}>
                 <Image
                   source={getVideoImageUrl(f.avatarUrl, getVideoUrl(data.bvid))}
-                  className="flex-0 basis-auto size-10 rounded-full aspect-square"
+                  className="size-10 rounded-full aspect-square"
                 />
                 <View className={"flex-1 gap-1"}>
                   <Text className="text-sm font-semibold text-typography-700" isTruncated>

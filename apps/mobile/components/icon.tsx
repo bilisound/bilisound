@@ -1,6 +1,6 @@
 import React from "react";
 import { SvgProps } from "react-native-svg";
-import { cssInterop } from "nativewind";
+import { styled } from "nativewind";
 
 // Import all SVG icons
 import PauseIcon from "~/assets/icons/pause.svg";
@@ -160,14 +160,11 @@ function IconComponent({ name, size = 24, color, ...props }: IconProps) {
   return <SvgIcon width={size} height={size} color={color} {...props} />;
 }
 
-// Apply cssInterop for NativeWind support
-cssInterop(IconComponent, {
+export const Icon = styled(IconComponent, {
   className: {
     target: "style",
-    nativeStyleToProp: {
+    nativeStyleMapping: {
       color: true,
     },
   },
 });
-
-export const Icon = IconComponent;

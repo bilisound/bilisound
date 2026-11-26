@@ -1,6 +1,221 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" source(none);
+
+@import "nativewind/theme";
+
+/* Same scan scope as the old tailwind.config.js `content`. */
+@source "./app";
+@source "./components";
+@source "./features";
+
+/*
+ * Theme colors resolve at runtime. GluestackUIProvider supplies the raw "R G B"
+ * channels (e.g. --primary-500) through VariableContextProvider on native and a
+ * :root <style> on web, so user themes can swap them without a rebuild.
+ *
+ * Do not declare defaults for the raw channels here: react-native-css inlines any
+ * variable declared exactly once at compile time, which would freeze the theme.
+ */
+@theme inline {
+  --color-primary-0: rgb(var(--primary-0));
+  --color-primary-50: rgb(var(--primary-50));
+  --color-primary-100: rgb(var(--primary-100));
+  --color-primary-200: rgb(var(--primary-200));
+  --color-primary-300: rgb(var(--primary-300));
+  --color-primary-400: rgb(var(--primary-400));
+  --color-primary-500: rgb(var(--primary-500));
+  --color-primary-600: rgb(var(--primary-600));
+  --color-primary-700: rgb(var(--primary-700));
+  --color-primary-800: rgb(var(--primary-800));
+  --color-primary-900: rgb(var(--primary-900));
+  --color-primary-950: rgb(var(--primary-950));
+
+  --color-accent-0: rgb(var(--accent-0));
+  --color-accent-50: rgb(var(--accent-50));
+  --color-accent-100: rgb(var(--accent-100));
+  --color-accent-200: rgb(var(--accent-200));
+  --color-accent-300: rgb(var(--accent-300));
+  --color-accent-400: rgb(var(--accent-400));
+  --color-accent-500: rgb(var(--accent-500));
+  --color-accent-600: rgb(var(--accent-600));
+  --color-accent-700: rgb(var(--accent-700));
+  --color-accent-800: rgb(var(--accent-800));
+  --color-accent-900: rgb(var(--accent-900));
+  --color-accent-950: rgb(var(--accent-950));
+
+  --color-secondary-0: rgb(var(--secondary-0));
+  --color-secondary-50: rgb(var(--secondary-50));
+  --color-secondary-100: rgb(var(--secondary-100));
+  --color-secondary-200: rgb(var(--secondary-200));
+  --color-secondary-300: rgb(var(--secondary-300));
+  --color-secondary-400: rgb(var(--secondary-400));
+  --color-secondary-500: rgb(var(--secondary-500));
+  --color-secondary-600: rgb(var(--secondary-600));
+  --color-secondary-700: rgb(var(--secondary-700));
+  --color-secondary-800: rgb(var(--secondary-800));
+  --color-secondary-900: rgb(var(--secondary-900));
+  --color-secondary-950: rgb(var(--secondary-950));
+
+  --color-tertiary-50: rgb(var(--tertiary-50));
+  --color-tertiary-100: rgb(var(--tertiary-100));
+  --color-tertiary-200: rgb(var(--tertiary-200));
+  --color-tertiary-300: rgb(var(--tertiary-300));
+  --color-tertiary-400: rgb(var(--tertiary-400));
+  --color-tertiary-500: rgb(var(--tertiary-500));
+  --color-tertiary-600: rgb(var(--tertiary-600));
+  --color-tertiary-700: rgb(var(--tertiary-700));
+  --color-tertiary-800: rgb(var(--tertiary-800));
+  --color-tertiary-900: rgb(var(--tertiary-900));
+  --color-tertiary-950: rgb(var(--tertiary-950));
+
+  --color-error-0: rgb(var(--error-0));
+  --color-error-50: rgb(var(--error-50));
+  --color-error-100: rgb(var(--error-100));
+  --color-error-200: rgb(var(--error-200));
+  --color-error-300: rgb(var(--error-300));
+  --color-error-400: rgb(var(--error-400));
+  --color-error-500: rgb(var(--error-500));
+  --color-error-600: rgb(var(--error-600));
+  --color-error-700: rgb(var(--error-700));
+  --color-error-800: rgb(var(--error-800));
+  --color-error-900: rgb(var(--error-900));
+  --color-error-950: rgb(var(--error-950));
+
+  --color-success-0: rgb(var(--success-0));
+  --color-success-50: rgb(var(--success-50));
+  --color-success-100: rgb(var(--success-100));
+  --color-success-200: rgb(var(--success-200));
+  --color-success-300: rgb(var(--success-300));
+  --color-success-400: rgb(var(--success-400));
+  --color-success-500: rgb(var(--success-500));
+  --color-success-600: rgb(var(--success-600));
+  --color-success-700: rgb(var(--success-700));
+  --color-success-800: rgb(var(--success-800));
+  --color-success-900: rgb(var(--success-900));
+  --color-success-950: rgb(var(--success-950));
+
+  --color-warning-0: rgb(var(--warning-0));
+  --color-warning-50: rgb(var(--warning-50));
+  --color-warning-100: rgb(var(--warning-100));
+  --color-warning-200: rgb(var(--warning-200));
+  --color-warning-300: rgb(var(--warning-300));
+  --color-warning-400: rgb(var(--warning-400));
+  --color-warning-500: rgb(var(--warning-500));
+  --color-warning-600: rgb(var(--warning-600));
+  --color-warning-700: rgb(var(--warning-700));
+  --color-warning-800: rgb(var(--warning-800));
+  --color-warning-900: rgb(var(--warning-900));
+  --color-warning-950: rgb(var(--warning-950));
+
+  --color-info-0: rgb(var(--info-0));
+  --color-info-50: rgb(var(--info-50));
+  --color-info-100: rgb(var(--info-100));
+  --color-info-200: rgb(var(--info-200));
+  --color-info-300: rgb(var(--info-300));
+  --color-info-400: rgb(var(--info-400));
+  --color-info-500: rgb(var(--info-500));
+  --color-info-600: rgb(var(--info-600));
+  --color-info-700: rgb(var(--info-700));
+  --color-info-800: rgb(var(--info-800));
+  --color-info-900: rgb(var(--info-900));
+  --color-info-950: rgb(var(--info-950));
+
+  --color-typography-0: rgb(var(--typography-0));
+  --color-typography-50: rgb(var(--typography-50));
+  --color-typography-100: rgb(var(--typography-100));
+  --color-typography-200: rgb(var(--typography-200));
+  --color-typography-300: rgb(var(--typography-300));
+  --color-typography-400: rgb(var(--typography-400));
+  --color-typography-500: rgb(var(--typography-500));
+  --color-typography-600: rgb(var(--typography-600));
+  --color-typography-700: rgb(var(--typography-700));
+  --color-typography-800: rgb(var(--typography-800));
+  --color-typography-900: rgb(var(--typography-900));
+  --color-typography-950: rgb(var(--typography-950));
+  --color-typography-white: #ffffff;
+  --color-typography-gray: #d4d4d4;
+  --color-typography-black: #181718;
+
+  --color-outline-0: rgb(var(--outline-0));
+  --color-outline-50: rgb(var(--outline-50));
+  --color-outline-100: rgb(var(--outline-100));
+  --color-outline-200: rgb(var(--outline-200));
+  --color-outline-300: rgb(var(--outline-300));
+  --color-outline-400: rgb(var(--outline-400));
+  --color-outline-500: rgb(var(--outline-500));
+  --color-outline-600: rgb(var(--outline-600));
+  --color-outline-700: rgb(var(--outline-700));
+  --color-outline-800: rgb(var(--outline-800));
+  --color-outline-900: rgb(var(--outline-900));
+  --color-outline-950: rgb(var(--outline-950));
+
+  --color-background-0: rgb(var(--background-0));
+  --color-background-50: rgb(var(--background-50));
+  --color-background-100: rgb(var(--background-100));
+  --color-background-200: rgb(var(--background-200));
+  --color-background-300: rgb(var(--background-300));
+  --color-background-400: rgb(var(--background-400));
+  --color-background-500: rgb(var(--background-500));
+  --color-background-600: rgb(var(--background-600));
+  --color-background-700: rgb(var(--background-700));
+  --color-background-800: rgb(var(--background-800));
+  --color-background-900: rgb(var(--background-900));
+  --color-background-950: rgb(var(--background-950));
+  --color-background-error: rgb(var(--background-error));
+  --color-background-warning: rgb(var(--background-warning));
+  --color-background-muted: rgb(var(--background-muted));
+  --color-background-success: rgb(var(--background-success));
+  --color-background-info: rgb(var(--background-info));
+  --color-background-light: #fbfbfb;
+  --color-background-dark: #181719;
+
+  --color-indicator-primary: rgb(var(--indicator-primary));
+  --color-indicator-info: rgb(var(--indicator-info));
+  --color-indicator-error: rgb(var(--indicator-error));
+}
+
+@theme {
+  /* Tailwind v4 moved the default palette to OKLCH; keep the v3 hex for the shades
+     used outside the test page (download error text, `highlight` text variant). */
+  --color-red-500: #ef4444;
+  --color-yellow-500: #eab308;
+
+  --font-roboto: Roboto, sans-serif;
+  --font-weight-extrablack: 950;
+  --text-2xs: 10px;
+
+  /* Tailwind v3 values, kept so existing shadow-* classes look the same. */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-hard-1: -2px 2px 8px 0px rgba(38, 38, 38, 0.2);
+  --shadow-hard-2: 0px 3px 10px 0px rgba(38, 38, 38, 0.2);
+  --shadow-hard-3: 2px 2px 8px 0px rgba(38, 38, 38, 0.2);
+  --shadow-hard-4: 0px -3px 10px 0px rgba(38, 38, 38, 0.2);
+  --shadow-hard-5: 0px 2px 10px 0px rgba(38, 38, 38, 0.1);
+  --shadow-soft-1: 0px 0px 10px rgba(38, 38, 38, 0.1);
+  --shadow-soft-2: 0px 0px 20px rgba(38, 38, 38, 0.2);
+  --shadow-soft-3: 0px 0px 30px rgba(38, 38, 38, 0.1);
+  --shadow-soft-4: 0px 0px 40px rgba(38, 38, 38, 0.1);
+  --shadow-test: 0px 0px 40px rgba(157, 66, 200, 1);
+  --shadow-test2: 0px 0px 40px rgba(157, 200, 8, 1), 10px -10px 20px rgba(221, 32, 21, 1);
+}
+
+/* Web only: Tailwind v4 defaults border-color to currentColor; v3 used gray-200. */
+@supports selector(div > div) {
+  @layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+      border-color: var(--color-gray-200, currentColor);
+    }
+  }
+}
 
 /* Reset the native color input chrome so the swatch fills our styled box.
    Pseudo-elements can't be reached via inline styles, so they live here. */
