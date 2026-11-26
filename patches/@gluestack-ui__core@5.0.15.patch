@@ -1,0 +1,13 @@
+diff --git a/lib/esm/actionsheet/creator/ActionsheetContent.jsx b/lib/esm/actionsheet/creator/ActionsheetContent.jsx
+index 30962f7f5f903bae0047a1ebe22acf22f9803b36..0213d7ae7c2036b6eabe69cb6f9532d19c3a9871 100644
+--- a/lib/esm/actionsheet/creator/ActionsheetContent.jsx
++++ b/lib/esm/actionsheet/creator/ActionsheetContent.jsx
+@@ -33,7 +33,7 @@ function ActionsheetContent(StyledActionsheetContent, AnimatePresence) {
+         const pan = React.useRef(new Animated.ValueXY()).current;
+         const contentSheetHeight = React.useRef(0);
+         const [contentSheetHeightState, setContentSheetHeightState] = React.useState(0);
+-        const [animatedViewSheetHeight, setAnimatedViewSheetHeight] = React.useState(0);
++        const [animatedViewSheetHeight, setAnimatedViewSheetHeight] = React.useState(windowHeight);
+         const animationDefaultConfig = {
+             type: 'timing',
+             duration: 200,

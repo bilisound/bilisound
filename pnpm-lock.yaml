@@ -42,6 +42,7 @@ catalogs:
 
 patchedDependencies:
   '@expo/router-server@58.0.18': 11fcc4f2a4d12223636bf8a1d1941718515fb1fe44501565c5438c26f222b702
+  '@gluestack-ui/core@5.0.15': e961f7e56b933bff97d1fc96d14e2fb9880e76da11a6c13707504fee24bf5f76
 
 importers:
 
@@ -96,11 +97,11 @@ importers:
         specifier: ~58.0.24
         version: 58.0.24(@babel/core@7.29.7(supports-color@10.0.0))(expo@58.0.20)(react-dom@19.3.0(react@19.3.0))(react-native-worklets@0.13.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)(supports-color@10.0.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)
       '@gluestack-ui/core':
-        specifier: ^3.0.25
-        version: 3.0.25(32d2d26b0502603bb415f4f9470d147e)
+        specifier: ^5.0.15
+        version: 5.0.15(patch_hash=e961f7e56b933bff97d1fc96d14e2fb9880e76da11a6c13707504fee24bf5f76)(55d2e58fef31e5f5e27d7379c7ca11a4)
       '@gluestack-ui/utils':
-        specifier: ^3.0.21
-        version: 3.0.21(react-dom@19.3.0(react@19.3.0))(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))
+        specifier: ^5.0.6
+        version: 5.0.6(react-dom@19.3.0(react@19.3.0))(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))
       '@gorhom/bottom-sheet':
         specifier: 5.2.10
         version: 5.2.10(337ea9746c2662442115874192552ccd)
@@ -2294,19 +2295,19 @@ packages:
   '@formatjs/intl-localematcher@0.6.1':
     resolution: {integrity: sha512-ePEgLgVCqi2BBFnTMWPfIghu6FkbZnnBVhO2sSxvLfrdFw7wCHAHiDoM2h4NRgjbaY7+B7HgOLZGkK187pZTZg==}
 
-  '@gluestack-ui/core@3.0.25':
-    resolution: {integrity: sha512-ZXWWvW8+zbIhexkTRTAl7NtFxYafzsNvNDa/0TFTL5s3B7Uz99RWyhn+5qGJVew05uZ/NVHozcNTEpdWvFDL0w==}
+  '@gluestack-ui/core@5.0.15':
+    resolution: {integrity: sha512-H9dOYlofbraLbdxt0B0WFuWp+n4ZBNJcFTThiC6y5gvVZlrOoWLG67OehcAsPr7iD+yiV3dAXMkVjRZyWltnAQ==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@gluestack-ui/utils': '>=2.0.0'
+      '@gluestack-ui/utils': '*'
       react: '>=16.8.0'
       react-native: '>=0.64.0'
       react-native-safe-area-context: '>=4.0.0'
       react-native-svg: '>=12.0.0'
       react-native-web: '>=0.19.0'
 
-  '@gluestack-ui/utils@3.0.21':
-    resolution: {integrity: sha512-E5Ja65RLxFQQIAOTYFmCt+wBDzJGijDczuK1OG7XXeh8Gm2IyLfSCsiyhDHAMdJ4VZJtDKpEOg6GJ4RxUXQWtQ==}
+  '@gluestack-ui/utils@5.0.6':
+    resolution: {integrity: sha512-GjVIic+ea0XIrxgTzuiGqd/QiDyd/nPypIleKuMUthpTNX5MWz+dSTQf0GAXY0XeMxqGPlmX3T2o3uVTaevIcQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=16.8.0'
@@ -5237,6 +5238,9 @@ packages:
   data-view-byte-offset@1.0.1:
     resolution: {integrity: sha512-BS8PfmtDGnrgYdOonGZQdLZslWIeCGFP9tpan0hi1Co2Zr2NKADsvGYA8XxuG/4UWgJ6Cjtv+YJnB6MM69QGlQ==}
     engines: {node: '>= 0.4'}
+
+  date-fns@4.4.0:
+    resolution: {integrity: sha512-+1UMbeh68lH1SegH83CGWwpb6OHHbpSgr3+s5Eww5M4CAgswBpoWS0AjTOfEJ33HiYKz1hdj/KTFprzXHmq/6w==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -11882,9 +11886,9 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@gluestack-ui/core@3.0.25(32d2d26b0502603bb415f4f9470d147e)':
+  '@gluestack-ui/core@5.0.15(patch_hash=e961f7e56b933bff97d1fc96d14e2fb9880e76da11a6c13707504fee24bf5f76)(55d2e58fef31e5f5e27d7379c7ca11a4)':
     dependencies:
-      '@gluestack-ui/utils': 3.0.21(react-dom@19.3.0(react@19.3.0))(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))
+      '@gluestack-ui/utils': 5.0.6(react-dom@19.3.0(react@19.3.0))(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))
       '@react-aria/checkbox': 3.16.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@react-aria/focus': 3.21.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@react-aria/interactions': 3.26.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -11914,6 +11918,7 @@ snapshots:
       '@react-types/shared': 3.34.0(react@19.3.0)
       '@react-types/slider': 3.8.2(react@19.3.0)
       '@react-types/switch': 3.5.15(react@19.3.0)
+      date-fns: 4.4.0
       react: 19.3.0
       react-native: 0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0)
       react-native-safe-area-context: 5.10.1(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)
@@ -11922,7 +11927,7 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@gluestack-ui/utils@3.0.21(react-dom@19.3.0(react@19.3.0))(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))':
+  '@gluestack-ui/utils@5.0.6(react-dom@19.3.0(react@19.3.0))(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(@react-native/metro-config@0.88.0(@babel/core@7.29.7(supports-color@10.0.0))(supports-color@10.0.0))(@types/react@19.3.0)(react@19.3.0)(supports-color@10.0.0))(react@19.3.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
       '@react-aria/dialog': 3.5.32(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@react-aria/focus': 3.21.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -15365,6 +15370,8 @@ snapshots:
       call-bound: 1.0.4
       es-errors: 1.3.0
       is-data-view: 1.0.2
+
+  date-fns@4.4.0: {}
 
   debug@2.6.9(supports-color@10.0.0):
     dependencies:

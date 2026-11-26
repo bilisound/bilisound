@@ -4,9 +4,12 @@ import { createMenu } from "@gluestack-ui/core/menu/creator";
 import { tva } from "@gluestack-ui/utils/nativewind-utils";
 import { cssInterop } from "nativewind";
 import { Pressable, Text, View } from "react-native";
-import { Motion, AnimatePresence } from "@legendapp/motion";
+import Animated from "react-native-reanimated";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { shadow } from "~/constants/styles";
+import { menuEntering, menuExiting } from "~/components/ui/utils/overlay-animations";
+
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 const menuStyle = tva({
   base: "rounded-md bg-background-0 border border-outline-100 p-1",
@@ -107,15 +110,14 @@ const Separator = ({
   return <View ref={ref} className={menuSeparatorStyle({ class: className })} {...props} />;
 };
 export const UIMenu = createMenu({
-  Root: Motion.View,
+  Root: AnimatedView,
   Item: Item,
   Label: Text,
   Backdrop: BackdropPressable,
-  AnimatePresence: AnimatePresence,
   Separator: Separator,
 });
 
-cssInterop(Motion.View, { className: "style" });
+cssInterop(AnimatedView, { className: "style" });
 
 type IMenuProps = React.ComponentProps<typeof UIMenu> & VariantProps<typeof menuStyle> & { className?: string };
 type IMenuItemLabelProps = React.ComponentProps<typeof UIMenu.ItemLabel> &
@@ -126,22 +128,8 @@ const Menu = React.forwardRef<React.ElementRef<typeof UIMenu>, IMenuProps>(({ cl
     <UIMenu
       ref={ref}
       // 要暫時刪除scale動畫，因為存在bug: https://github.com/gluestack/gluestack-ui/issues/2613#issuecomment-2606537026
-      initial={{
-        opacity: 0,
-        scale: 1,
-      }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0.8,
-      }}
-      transition={{
-        type: "timing",
-        duration: 100,
-      }}
+      entering={menuEntering}
+      exiting={menuExiting}
       className={menuStyle({
         class: className,
       })}

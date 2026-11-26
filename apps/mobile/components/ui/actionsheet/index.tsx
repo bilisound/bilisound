@@ -71,6 +71,7 @@ cssInterop(UIActionsheet.FlatList, {
 });
 cssInterop(UIActionsheet.SectionList, { className: "style" });
 cssInterop(UIActionsheet.SectionHeaderText, { className: "style" });
+cssInterop(Motion.View, { className: "style" });
 
 cssInterop(PrimitiveIcon, {
   className: {

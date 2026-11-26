@@ -5,25 +5,31 @@ import { tva, withStyleContext, useStyleContext } from "@gluestack-ui/utils/nati
 
 import { cssInterop } from "nativewind";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
-import { Motion, AnimatePresence, createMotionAnimatedComponent } from "@legendapp/motion";
 import { View, Pressable, ScrollView } from "react-native";
+import Animated from "react-native-reanimated";
+import {
+  dialogBackdropEntering,
+  dialogBackdropExiting,
+  dialogContentEntering,
+  dialogContentExiting,
+} from "~/components/ui/utils/overlay-animations";
 
-const AnimatedPressable = createMotionAnimatedComponent(Pressable);
+const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SCOPE = "ALERT_DIALOG";
 
 const UIAccessibleAlertDialog = createAlertDialog({
   Root: withStyleContext(View, SCOPE),
   Body: ScrollView,
-  Content: Motion.View,
+  Content: AnimatedView,
   CloseButton: Pressable,
   Header: View,
   Footer: View,
   Backdrop: AnimatedPressable,
-  AnimatePresence: AnimatePresence,
 });
 
-cssInterop(Motion.View, { className: "style" });
+cssInterop(AnimatedView, { className: "style" });
 cssInterop(AnimatedPressable, { className: "style" });
 
 const alertDialogStyle = tva({
@@ -67,7 +73,7 @@ const alertDialogFooterStyle = tva({
 const alertDialogBodyStyle = tva({ base: "mt-3 mb-5" });
 
 const alertDialogBackdropStyle = tva({
-  base: "absolute left-0 top-0 right-0 bottom-0 bg-background-dark web:cursor-default",
+  base: "absolute left-0 top-0 right-0 bottom-0 bg-background-dark opacity-70 web:cursor-default",
 });
 
 type IAlertDialogProps = React.ComponentPropsWithoutRef<typeof UIAccessibleAlertDialog> &
@@ -115,22 +121,8 @@ const AlertDialogContent = React.forwardRef<
     <UIAccessibleAlertDialog.Content
       pointerEvents="auto"
       ref={ref}
-      initial={{
-        scale: 0.95,
-        opacity: 0,
-      }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-      }}
-      exit={{
-        scale: 0.95,
-        opacity: 0,
-      }}
-      transition={{
-        type: "timing",
-        duration: 250,
-      }}
+      entering={dialogContentEntering}
+      exiting={dialogContentExiting}
       {...props}
       className={alertDialogContentStyle({
         parentVariants: {
@@ -209,19 +201,8 @@ const AlertDialogBackdrop = React.forwardRef<
   return (
     <UIAccessibleAlertDialog.Backdrop
       ref={ref}
-      initial={{
-        opacity: 0,
-      }}
-      animate={{
-        opacity: 0.7,
-      }}
-      exit={{
-        opacity: 0,
-      }}
-      transition={{
-        type: "timing",
-        duration: 250,
-      }}
+      entering={dialogBackdropEntering}
+      exiting={dialogBackdropExiting}
       {...props}
       className={alertDialogBackdropStyle({
         class: className,

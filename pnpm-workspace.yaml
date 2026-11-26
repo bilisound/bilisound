@@ -39,3 +39,4 @@ publicHoistPattern:
   - "@expo/config-plugins"
 patchedDependencies:
   "@expo/router-server@58.0.18": patches/@expo__router-server@58.0.18.patch
+  "@gluestack-ui/core@5.0.15": patches/@gluestack-ui__core@5.0.15.patch

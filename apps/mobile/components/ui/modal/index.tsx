@@ -3,12 +3,19 @@ import { createModal } from "@gluestack-ui/core/modal/creator";
 import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 import { tva, withStyleContext, useStyleContext } from "@gluestack-ui/utils/nativewind-utils";
 import { withStyleContextAndStates } from "~/components/ui/utils/with-style-context-and-states";
-import { Motion, AnimatePresence, createMotionAnimatedComponent } from "@legendapp/motion";
 import { cssInterop } from "nativewind";
 import React from "react";
 import { Pressable, View, ScrollView, Platform } from "react-native";
+import Animated from "react-native-reanimated";
+import {
+  dialogBackdropEntering,
+  dialogBackdropExiting,
+  dialogContentEntering,
+  dialogContentExiting,
+} from "~/components/ui/utils/overlay-animations";
 
-const AnimatedPressable = createMotionAnimatedComponent(Pressable);
+const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SCOPE = "MODAL";
 const ModalRoot = (
@@ -18,12 +25,11 @@ const ModalRoot = (
 const UIModal = createModal({
   Root: ModalRoot,
   Backdrop: AnimatedPressable,
-  Content: Motion.View,
+  Content: AnimatedView,
   Body: ScrollView,
   CloseButton: Pressable,
   Footer: View,
   Header: View,
-  AnimatePresence,
 });
 
 cssInterop(UIModal, { className: "style" });
@@ -79,7 +85,7 @@ const ModalFooterStyle = tva({
 const ModalBodyStyle = tva({ base: "" });
 
 const ModalBackdropStyle = tva({
-  base: "absolute left-0 top-0 right-0 bottom-0 bg-background-dark web:cursor-default",
+  base: "absolute left-0 top-0 right-0 bottom-0 bg-background-dark opacity-70 web:cursor-default",
 });
 
 type IModalProps = React.ComponentPropsWithoutRef<typeof UIModal> & VariantProps<typeof ModalStyle>;
@@ -121,22 +127,8 @@ const ModalContent = React.forwardRef<React.ElementRef<typeof UIModal.Content>, 
       <UIModal.Content
         pointerEvents="auto"
         ref={ref}
-        initial={{
-          scale: 0.95,
-          opacity: 0,
-        }}
-        animate={{
-          scale: 1,
-          opacity: 1,
-        }}
-        exit={{
-          scale: 0.95,
-          opacity: 0,
-        }}
-        transition={{
-          type: "timing",
-          duration: 250,
-        }}
+        entering={dialogContentEntering}
+        exiting={dialogContentExiting}
         {...props}
         className={ModalContentStyle({
           parentVariants: {
@@ -211,19 +203,8 @@ const ModalBackdrop = React.forwardRef<React.ElementRef<typeof UIModal.Backdrop>
     return (
       <UIModal.Backdrop
         ref={ref}
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 0.7,
-        }}
-        exit={{
-          opacity: 0,
-        }}
-        transition={{
-          type: "timing",
-          duration: 250,
-        }}
+        entering={dialogBackdropEntering}
+        exiting={dialogBackdropExiting}
         {...props}
         className={ModalBackdropStyle({
           class: className,
