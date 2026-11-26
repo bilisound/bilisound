@@ -133,3 +133,10 @@ mobile 端同时存在两套 UI 代码，判断该往哪写之前先确认落点
 | `components/ui-next/*` | 无 NativeWind / Gluestack 的本地 RN 组件，mobile 内新共享组件落点 |
 
 `className` / NativeWind 与 Gluestack 在 mobile 中仍有可观存量，属于预期状态而非待修 bug。维护时不追求一次性替换；样式迁移只在具体技术约束或局部维护需要时进行。整体维护边界见 [AGENTS.md 的 Current Maintenance Policy](../AGENTS.md#current-maintenance-policy)。
+
+### GluestackUI 版本约定
+
+- `@gluestack-ui/core` / `@gluestack-ui/utils` 使用 5.x 正式包，样式引擎仍是 NativeWind v4 + Tailwind v3。上游的 v4（NativeWind v4 线）只发过 alpha 包，5.x core 的 creator 代码与它基本一致；上游 v5 组件模板要求 Tailwind v4（NativeWind v5 / UniWind），不在维护范围内。
+- 不要运行 `npx gluestack-ui upgrade` / `add`：前者会迁移到 Tailwind v4，后者会覆盖 `components/ui/*` 的本地定制和 v3 色板（用户主题依赖 `--color-primary-*` / `--color-accent-*`）。
+- `modal`、`alert-dialog`、`menu` 的进出场动画用 Reanimated Keyframe，参数集中在 `components/ui/utils/overlay-animations.ts`；`actionsheet` 与上游 v4 模板一致，仍使用 `@legendapp/motion`。
+- `patches/@gluestack-ui__core@5.0.15.patch` 回移了 v3 线 3.0.23 的 Actionsheet 初始高度修复（打开时防跳动），5.x 未包含。升级 core 时先确认上游是否已修复，再决定保留或删除该 patch。
